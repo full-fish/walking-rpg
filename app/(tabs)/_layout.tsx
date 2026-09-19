@@ -14,7 +14,7 @@ export default function TabsLayout() {
           backgroundColor: colors.panel,
           borderTopWidth: border,
           borderTopColor: colors.edge,
-          height: 60,
+          // height를 박으면 제스처 바 영역(safe area)이 사라져 라벨이 가려진다. 기본 높이를 쓴다.
           paddingTop: space.sm,
         },
         tabBarLabelStyle: { fontFamily: font.family, fontSize: font.md },

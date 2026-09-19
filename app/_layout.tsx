@@ -9,13 +9,14 @@ import { colors } from '@/ui/theme';
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded] = useFonts({ Galmuri11: require('../assets/fonts/Galmuri11.ttf') });
+  const [loaded, error] = useFonts({ Galmuri11: require('../assets/fonts/Galmuri11.ttf') });
 
+  // 폰트 로딩이 실패해도 스플래시에 갇히지 않고 기본 폰트로 진행한다.
   useEffect(() => {
-    if (loaded) SplashScreen.hideAsync();
-  }, [loaded]);
+    if (loaded || error) SplashScreen.hideAsync();
+  }, [loaded, error]);
 
-  if (!loaded) return null;
+  if (!loaded && !error) return null;
 
   return (
     <>
