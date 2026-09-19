@@ -8,7 +8,7 @@
     "scheme": "stepquest",
     "userInterfaceStyle": "dark",
     "android": {
-      "package": "com.choimanseon.wakingRPG",
+      "package": "com.choimanseon.walkingRPG",
       "adaptiveIcon": {
         "backgroundColor": "#1A1626",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
