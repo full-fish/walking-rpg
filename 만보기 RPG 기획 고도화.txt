@@ -1,0 +1,318 @@
+﻿차세대 만보기 방치형 RPG 기획 및 시스템 설계 상세 보고서: 서울 모바일 게임 트렌드 기반 M2E 게임 디자인
+1. 서론 및 웰니스(Wellness) 게이미피케이션 시장 동향 분석
+현대 모바일 게임 시장, 특히 서울과 같이 대중교통 이용률이 높고 보행 인구가 밀집된 메가시티 환경에서는 사용자의 일상생활과 자연스럽게 통합되는 형태의 게임이 폭발적인 성장을 기록하고 있다. 과거의 단순한 방치형(Idle) 게임을 넘어, 플레이어의 물리적 걷기 활동을 가상 세계의 성장 재화로 치환하는 만보기 방치형 RPG(Pedometer Idle RPG)는 최신 게임 디자인의 핵심 트렌드로 자리 잡았다1. 초기의 Move-to-Earn (M2E) 모델이 암호화폐 보상에 치중하여 심각한 인플레이션과 토큰 생태계 붕괴라는 구조적 한계를 노출했던 반면, 최근의 동향은 철저히 '게임의 본질적인 재미'와 '개인의 건강 관리(Wellness)'라는 내재적 동기에 집중하는 양상을 띤다3.
+무분별한 과금(Pay-to-Win)을 유도하기보다는 외형 꾸미기(Cosmetics), 배틀패스, 편의성 향상 중심의 소액 결제 모델을 구축하여 폭넓은 대중적 유저풀을 확보하는 것이 장기 생존의 필수 조건이 되었다6. 서울의 2030 직장인 타겟층은 출퇴근 시간의 짧은 여유를 활용해 시각적 만족감과 점진적 성장을 경험하길 원하며, 과도한 스트레스나 끝없는 경쟁보다는 안정적인 루프 안에서 안도감을 느끼는 코지(Cozy) 게임의 특성을 선호하는 경향을 보인다7. 본 보고서는 이러한 최신 동향을 반영하여, 유저의 걸음 수를 기반으로 작동하는 방치형 RPG의 페이지별 UI/UX 구성, 상세한 과금 모델(BM), 다차원 레벨링 시스템, 아이템 경제 체계, 그리고 React Native 기반의 프론트엔드 UI 코드 구현 방안까지 아우르는 포괄적이고 심층적인 기획 설계를 제시한다.
+2. 핵심 게임플레이 루프와 시스템 아키텍처
+만보기 방치형 RPG의 골조를 이루는 핵심 루프는 현실의 물리적 활동량과 가상 세계의 누적된 성장이 교차하는 지점에서 정교하게 형성된다. 플레이어는 스마트폰을 소지하고 현실 세계를 걷는 행위만으로 게임 내 핵심 에너지원인 '스텝 파워(Step Power)'를 축적하게 된다1. 축적된 에너지는 방치형 전투를 수행하는 캐릭터의 능력치를 영구적으로 상승시키거나, 새로운 장비를 획득하는 데 필수적인 재화로 활용된다9.
+2.1. 시간 루프와 병렬 진행 시스템 (Parallel Progression)
+단순히 걷기만 하는 1차원적 구조의 지루함을 탈피하기 위해, 현대 방치형 게임은 병렬 진행(Parallel Progression) 시스템을 채택하여 복합적인 재미를 선사한다10. 플레이어의 캐릭터는 애플리케이션이 백그라운드에 있는 동안에도 서버 사이드의 시간 계산 로직에 의해 자동으로 몬스터와 전투를 벌이고 경험치와 기본 골드를 끝없이 수집한다2. 반면, 현실에서 유저가 직접 걸어서 획득한 특수 재화인 스텝 파워는 캐릭터가 돌파하기 어려운 정체 구간(Paywall 또는 Grindwall)을 단번에 뚫어내는 핵심 열쇠로 작용한다.
+이러한 두 가지 루프(자동 전투에 의한 시간 누적 루프와 현실 걷기에 의한 활동 루프)가 맞물려 돌아가며, 플레이어는 하루 일과를 마치고 애플리케이션을 실행했을 때 자신의 육체적 노력과 시간의 흐름이 결합하여 만들어낸 막대한 보상과 직면하게 된다. 비동기식 이벤트 구동 아키텍처를 도입하여 5분 단위의 일정 주기마다 새로운 탐험 구역이 해금되거나 특정 보스 몬스터가 출현하도록 설계함으로써, 지속적인 흥미를 유도한다2.
+2.2. 어뷰징 방지 및 데이터 무결성 검증 (Anti-Cheat Validation)
+만보기 기반 게임 생태계에서 가장 치명적인 위험 요소는 기계식 흔들기 기구(Phone rocker, Pendulum)를 사용하거나 서드파티 데이터 주입 앱을 이용한 걸음 수의 악의적 조작이다11. 단순한 스마트폰 가속도계는 1.5Hz에서 2.5Hz 사이의 리듬감 있는 수직 가속 패턴을 모두 보행으로 인식하도록 설계되어 있기 때문에, 인위적인 진동조차 걸음 수로 오인할 확률이 매우 높다12.
+이를 원천적으로 방지하기 위해 단말기의 가속도계 센서 데이터와 Health Connect (Android) 및 CoreMotion (iOS) API를 교차 검증하는 다중 신호 시스템이 필수적으로 요구된다13. 시스템은 단순히 운영체제에서 전달받은 걸음 수의 총량만 맹신하는 것이 아니라, 분당 걸음 수(Cadence)를 면밀히 측정하여 비정상적인 패턴을 필터링한다. 구체적으로 인간의 물리적 보행 한계를 고려하여 분당 0보에서 최대 200보(MAX_STEPS_PER_MINUTE)를 초과하는 규칙적인 신호 입력은 기계적 어뷰징으로 간주하여 보상에서 제외하는 로직을 삽입한다15.
+3. 페이지별 UI/UX 및 UX 플로우 상세 설계
+바쁜 일상을 살아가는 유저들의 성향을 고려할 때, UI는 극도로 직관적이면서도 시각적인 타격감을 제공해야 한다. 최신 앱 트렌드인 다크 모드 기반의 네온 엑센트 컬러를 활용한 디자인이 몰입도를 극대화한다.
+3.1. 메인 대시보드 및 실시간 전투 렌더링 영역
+* 화면 상단 (진척도 바 및 바이옴 전환): 유저의 현실 걸음 수 진행도를 나타내는 직관적이고 굵은 프로그레스 바가 위치한다. 걸음 수가 특정 목표치(예: 3,000보, 5,000보)에 도달할 때마다 화면 전체를 뒤덮는 파티클 이펙트와 함께 배경 테마가 '신비로운 푸른 숲'에서 '사막 협곡', '작열하는 화산 지대', '얼어붙은 봉우리' 순으로 실시간 전환되며 시각적 보상을 제공한다1.
+* 화면 중앙 (전투 뷰): 2.5D 아이소메트릭 뷰나 고품질 픽셀 아트 프레임워크로 구성되어, 플레이어의 캐릭터와 수집한 펫들이 끝없이 몰려오는 몬스터를 자동으로 사냥하는 애니메이션이 재생된다.
+* 화면 하단 (플로팅 퀵 액션): 캐릭터의 레벨업, 장비 강화, 스킬 승급을 즉각적으로 실행할 수 있는 UI가 고정 배치되어 지하철 등에서 한 손으로 탭하기 편하게 구성된다.
+3.2. 캐릭터 스테이터스 및 직업 스킬 트리 페이지
+이 화면에서는 캐릭터의 상세 스테이터스와 6개의 부위별 장비 슬롯(무기, 투구, 갑옷, 장갑, 신발, 장신구)이 표시된다. 가장 중요한 차별점은 깊이 있는 직업 스킬 트리 시스템이다.
+* 초반에는 무직(초보자)으로 시작하지만, 일정 스테이지 돌파와 걸음 수를 달성하면 기공사(Artificer), 용병(Mercenary), 순찰자(Ranger), 현자(Sage), 종자(Squire) 중 하나로 직업을 선택하여 거대한 노드 맵을 뻗어나간다16.
+* 특정 스킬(자식 노드)을 개방하려면 부모 노드의 선행 마스터리가 요구되며, 스킬 노드를 개방할 때마다 화면을 가로지르는 빛의 궤적 이펙트를 연출한다16.
+3.3. 탐험 및 특수 비경 던전 페이지 (Parallel Gameplay)
+단순 방치를 넘어선 유저의 능동적 개입이 이루어지는 병렬 플레이(Parallel Gameplay) 공간이다10. 유저가 걷기를 통해 획득한 특수 재화인 '탐험가의 나침반(행동력)'을 일시에 소모하여 진입할 수 있다. 미니게임 형태나 타일을 수동으로 뒤집어 숨겨진 재화를 찾고 요일 보스를 사냥하는 등, 메인 화면과는 전혀 다른 호흡의 플레이를 제공하여 지루함을 환기한다.
+3.4. 소셜 연대와 비동기 길드 시스템
+길드 랭크는 구리(Copper)부터 은, 금, 백금(Platinum)까지 나뉘며, 길드원 전체의 오늘 하루 걸음 수가 실시간으로 합산되어 공통의 목표(예: 주간 100만 보 달성 시 전설 펫 알 지급)를 향해 나아간다. 누군가의 부족한 걸음을 다른 길드원이 채워주는 구조는 건강한 연대감을 자극한다.
+4. 아이템 경제 체계 및 세부 설계 예시
+장비는 단순히 수치를 올리는 일차원적 기능을 넘어, 캐릭터의 외형을 변화시키거나 고유한 시너지 패시브를 부여해야 한다.
+4.1. 상세 아이템 기획 예시
+* 무기 및 방어구 (장착 장비)
+   * 일반: '초심자의 낡은 만보기', '닳아버린 나무 검'
+   * 희귀: '바람을 가르는 러닝화' (착용 시 오프라인 보상 누적률 3% 상승)
+   * 영웅: '사막 협곡의 수호자 갑옷' (화염 지대 몬스터 대상 방어력 추가 증가)
+   * 전설: '엑스칼리버 스니커즈' (장착 시 캐릭터의 걷는 모션 발밑에 황금빛 잔상 이펙트 및 대시 스킬 부여)
+* 퀘스트 및 재료 아이템
+   * 수정 파편(Crystal Shard): 특정 지대(예: 얼어붙은 봉우리)에서 5,000보를 걸어야만 드랍되는 수집용 퀘스트 아이템1.
+   * 마법 램프(Magic Lamp): 보스 몬스터 처치 시 확정적으로 드랍되는 아이템으로, 스토어에 가지 않고도 인벤토리에서 바로 열어 장비나 재화를 뽑을 수 있는 일종의 무료 가챠권 역할을 한다17.
+4.2. 아이템 등급 체계
+장비 등급 (Rarity)
+	색상 및 테두리 연출
+	주요 획득 난이도 및 획득처
+	장비 고유 특성 및 시너지 세트 효과
+	일반 (Common)
+	회색 텍스트
+	자동 사냥 시 1분마다 대량 드랍
+	기본 스탯 1종 증가. 추가 옵션 없음.
+	고급 (Uncommon)
+	녹색 텍스트, 은은한 빛
+	자동 사냥, 일일 하급 상자
+	기본 스탯 2종 증가. 상위 합성 재료.
+	희귀 (Rare)
+	파란색 텍스트, 파동 연출
+	중간 보스 처치, 중급 상자
+	'스킬 대미지 5% 증가' 등 보조 옵션 부여.
+	영웅 (Epic)
+	보라색 텍스트, 스파크
+	특수 던전, 프리미엄 패스
+	3세트 착용 시 '오프라인 에너지 전환율 증가' 시너지.
+	전설 (Legendary)
+	금색 텍스트, 후광
+	월드 보스 레이드, 가챠 천장
+	장착 시 캐릭터 외형 변경. 고유 패시브 부여.
+	신화 (Mythic)
+	붉은색 텍스트, 화염 연출
+	전설 장비 합성 및 특수 재화
+	이동 시 발밑에 고유 궤적(Aura) 연출.
+	5. 다차원 레벨링 및 성장(환생) 시스템
+성장 곡선(Progression Curve)은 초반에는 극도로 가파르게 상승하여 유저의 시선을 사로잡고, 중후반에는 서서히 완만해지도록 다차원으로 분리된다18.
+1. 캐릭터 베이스 레벨: 자동 사냥 경험치로 오르는 기본 스테이터스.
+2. 스텝 레벨: 오직 현실의 걷기(생체 에너지)를 통해서만 올릴 수 있는 특수 레벨. 스텝 레벨이 오를수록 오프라인 최대 방치 시간(예: 기본 4시간 -> 최대 24시간)과 골드 획득 배율이 확장된다.
+3. 환생(Prestige)과 가보(Heirloom) 시스템: 유저가 스테이지 등반의 한계에 부딪혔을 때, 레벨을 1로 초기화하는 대신 '영원의 모래'라는 강력한 특수 재화를 얻는다16. 이때 획득한 포인트로 애착이 가는 특정 장비 하나를 '가보(Heirloom)'로 지정할 수 있다. 가보로 지정된 장비는 환생 시에도 파괴되거나 초기화되지 않고 다음 회차로 그대로 전승되어 장기적인 성취감을 극대화한다16.
+6. 과금 모델 (Monetization / BM)의 전략적 배치
+과도한 극단적 P2W(Pay to Win) 모델은 무소과금 플레이어의 상대적 박탈감을 유발하므로 배제한다6. '성장 시간의 단축'과 '외형적 만족감'에 방점을 둔 소액 다수 결제 중심으로 설계한다.
+
+
+BM 유형
+	핵심 상품 및 판매 방식
+	기획 의도 및 심리적 효과
+	스텝 패스 (Step Pass)
+	월간 구독형 배틀패스
+	매일 걷기 목표 달성 시 보상 지급. 최고 보상은 능력치 차이가 없는 한정판 코스튬으로 구성.
+	조각(Shard) 기반 소환 가챠
+	펫 및 스킬 파편 뽑기
+	게임의 핵심 무기를 가챠로 팔지 않고, 화려한 스킬과 펫을 여러 '조각(Shard)'으로 쪼개어 배치. 무료 램프로도 수만 번 뽑기를 진행하며 점진적으로 완성하는 구조17.
+	광고 제거 패키지
+	영구 광고 면제 권한
+	소모적 시간 낭비를 혐오하는 직장인 유저 타겟. 평생 적용으로 극초반 높은 전환율 유도.
+	마이크로 광고 보상
+	보상형 동영상 시청
+	오프라인 수익 2배 수령 등 자발적 선택을 통한 시청으로 무과금 유저의 트래픽을 수익화.
+	7. 주요 리텐션 지표 달성 전략
+성공적인 모바일 게임 비즈니스를 영위하기 위한 리텐션 벤치마크는 D1(1일 차) 40%, D7(7일 차) 20%, D30(30일 차) 10% 방어이다19.
+* D1 (40% 목표): 앱 설치 후 첫 10분 내에 1,000보 달성 시 레벨이 폭발적으로 상승하며 지형(Biome)이 변화하는 시각적 쾌감을 제공하여 인지적 매핑을 각인시킨다.
+* D7 (20% 목표): 첫 번째 성장의 벽에 부딪혔을 때 '환생(Prestige)' 시스템을 유도하여, 막혔던 구간을 폭발적으로 돌파하는 카타르시스를 제공하고 가보 전승의 재미를 학습시킨다16.
+* D30 (10% 이상 목표): 길드 단위의 주간 걸음 수 챌린지와 새로운 한 달이 시작됨에 따라 리셋되는 스텝 패스의 보상 트랙이 유저를 단단히 묶어두는 닻 역할을 한다.
+8. 기술 구현: React Native 기반 프론트엔드 UI 및 헬스 데이터 통합 로직
+본 프로젝트는 단일 코드베이스로 iOS와 Android 크로스 플랫폼을 모두 지원하며, 무중단 배포를 위해 React Native 프레임워크를 기반으로 개발된다. Android 환경에서는 react-native-health-connect 라이브러리를 통해 어뷰징 필터링이 완료된 정제된 걸음 데이터를 수신하고, iOS에서는 expo-sensors의 Pedometer 패키지를 활용한다13.
+아래는 걸음 수에 따른 프로그레스 바 애니메이션과 Health Connect 데이터를 비동기로 호출하여 게임 내 에너지로 변환하는 복합적인 메인 대시보드 UI 코드입니다.
+
+
+
+
+
+
+JavaScript
+import React, { useState, useEffect, useRef } from 'react';
+import { 
+ StyleSheet, Text, View, TouchableOpacity, SafeAreaView, 
+ Animated, Dimensions, Alert 
+} from 'react-native';
+import { Pedometer } from 'expo-sensors';
+import { initialize, readRecords, requestPermission } from 'react-native-health-connect';
+import { NavigationContainer } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+const { width } = Dimensions.get('window');
+
+// 방치형 전투 렌더링 구역
+const IdleBattleEngine = ({ currentLevel }) => (
+ <View style={styles.battleView}>
+   <Text style={styles.battleText}>⚔️ Idle Battle Active</Text>
+   <Text style={styles.monsterText}>Stage {currentLevel} Boss HP: 45%</Text>
+ </View>
+);
+
+// 메인 대시보드 화면
+function MainDashboardScreen() {
+ const [currentSteps, setCurrentSteps] = useState(0);
+ const [stepPower, setStepPower] = useState(0);
+ const [level, setLevel] = useState(1);
+ const [gold, setGold] = useState(1500);
+ 
+ const stepGoal = 10000;
+ const progressAnim = useRef(new Animated.Value(0)).current;
+
+ useEffect(() => {
+   let pedometerSubscription;
+
+   const setupHealthData = async () => {
+     try {
+       // Android Health Connect 초기화 로직
+       const isInitialized = await initialize();
+       if (isInitialized) {
+         await requestPermission([{ accessType: 'read', recordType: 'Steps' }]);
+         
+         const todayStart = new Date();
+         todayStart.setHours(0, 0, 0, 0);
+         
+         const result = await readRecords('Steps', {
+           timeRangeFilter: {
+             operator: 'between',
+             startTime: todayStart.toISOString(),
+             endTime: new Date().toISOString(),
+           },
+         });
+         
+         // 0~200 케이던스 필터링 및 수동 데이터 제외 로직 위치
+         const totalValidSteps = result.records.reduce((sum, record) => sum + record.count, 0);
+         setCurrentSteps(totalValidSteps);
+         setStepPower(totalValidSteps * 2); 
+       }
+
+       // 실시간 포그라운드 리스너
+       const isPedometerAvailable = await Pedometer.isAvailableAsync();
+       if (isPedometerAvailable) {
+         pedometerSubscription = Pedometer.watchStepCount(result => {
+           setCurrentSteps(prev => prev + 1);
+           setStepPower(prev => prev + 2);
+         });
+       }
+     } catch (error) {
+       console.error("Health API Sync Error: ", error);
+     }
+   };
+
+   setupHealthData();
+
+   return () => {
+     if (pedometerSubscription) pedometerSubscription.remove();
+   };
+ }, []);
+
+ useEffect(() => {
+   const percentage = Math.min((currentSteps / stepGoal) * 100, 100);
+   Animated.timing(progressAnim, {
+     toValue: percentage,
+     duration: 500,
+     useNativeDriver: false,
+   }).start();
+ }, [currentSteps]);
+
+ const handleLevelUp = () => {
+   const cost = level * 500;
+   if (gold >= cost) {
+     setGold(prev => prev - cost);
+     setLevel(prev => prev + 1);
+   } else {
+     Alert.alert("자원 부족", "골드가 부족하여 성장할 수 없습니다.");
+   }
+ };
+
+ return (
+   <SafeAreaView style={styles.container}>
+     <View style={styles.header}>
+       <View style={styles.profileSection}>
+         <Text style={styles.avatar}>🚶‍♂️</Text>
+         <View>
+           <Text style={styles.playerName}>SeoulWalker</Text>
+           <Text style={styles.levelText}>Lv. {level}</Text>
+         </View>
+       </View>
+       <View style={styles.resourceSection}>
+         <Text style={styles.resourceText}>⚡ {stepPower.toLocaleString()}</Text>
+         <Text style={styles.resourceText}>🪙 {gold.toLocaleString()}</Text>
+       </View>
+     </View>
+
+     <View style={styles.progressContainer}>
+       <Text style={styles.stepCounterText}>
+         {currentSteps.toLocaleString()} / {stepGoal.toLocaleString()} Steps
+       </Text>
+       <View style={styles.progressBarBackground}>
+         <Animated.View style={[
+           styles.progressBarFill, 
+           { width: progressAnim.interpolate({
+               inputRange: [0, 100],
+               outputRange: ['0%', '100%']
+             }) 
+           }
+         ]} />
+       </View>
+       <Text style={styles.biomeText}>현재 구역: 얼어붙은 봉우리 진입 임박</Text>
+     </View>
+
+     <IdleBattleEngine currentLevel={level} />
+
+     <View style={styles.actionContainer}>
+       <TouchableOpacity style={styles.actionButton} onPress={handleLevelUp}>
+         <Text style={styles.actionText}>캐릭터 한계 돌파 (비용: {level * 500} 🪙)</Text>
+       </TouchableOpacity>
+     </View>
+   </SafeAreaView>
+ );
+}
+
+// 탭 네비게이션 더미
+const EquipmentScreen = () => <View style={styles.centerView}><Text style={{color:'#fff'}}>직업 트리 & 장비(가보) 관리</Text></View>;
+const GachaScreen = () => <View style={styles.centerView}><Text style={{color:'#fff'}}>램프 및 조각 소환 상점</Text></View>;
+const GuildScreen = () => <View style={styles.centerView}><Text style={{color:'#fff'}}>길드 연대 페이지</Text></View>;
+
+const Tab = createBottomTabNavigator();
+
+export default function App() {
+ return (
+   <NavigationContainer>
+     <Tab.Navigator screenOptions={{
+       headerShown: false,
+       tabBarStyle: { backgroundColor: '#1E1E1E', borderTopWidth: 0 },
+       tabBarActiveTintColor: '#00E5FF',
+       tabBarInactiveTintColor: '#888',
+     }}>
+       <Tab.Screen name="전투" component={MainDashboardScreen} options={{ tabBarIcon: () => <Text>⚔️</Text> }} />
+       <Tab.Screen name="장비" component={EquipmentScreen} options={{ tabBarIcon: () => <Text>🎒</Text> }} />
+       <Tab.Screen name="소환" component={GachaScreen} options={{ tabBarIcon: () => <Text>✨</Text> }} />
+       <Tab.Screen name="소셜" component={GuildScreen} options={{ tabBarIcon: () => <Text>🏆</Text> }} />
+     </Tab.Navigator>
+   </NavigationContainer>
+ );
+}
+
+const styles = StyleSheet.create({
+ container: { flex: 1, backgroundColor: '#121212' },
+ centerView: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#121212' },
+ header: { flexDirection: 'row', justifyContent: 'space-between', padding: 20, backgroundColor: '#1E1E1E', borderBottomWidth: 1, borderBottomColor: '#333' },
+ profileSection: { flexDirection: 'row', alignItems: 'center' },
+ avatar: { fontSize: 40, marginRight: 10 },
+ playerName: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+ levelText: { color: '#00E5FF', fontSize: 14, fontWeight: '600' },
+ resourceSection: { alignItems: 'flex-end', justifyContent: 'center' },
+ resourceText: { color: '#FFD700', fontSize: 16, fontWeight: 'bold', marginBottom: 4 },
+ progressContainer: { padding: 20, alignItems: 'center' },
+ stepCounterText: { color: '#FFF', fontSize: 24, fontWeight: '900', marginBottom: 12 },
+ progressBarBackground: { width: width - 40, height: 16, backgroundColor: '#333', borderRadius: 8, overflow: 'hidden' },
+ progressBarFill: { height: '100%', backgroundColor: '#00E5FF', borderRadius: 8 },
+ biomeText: { color: '#AAA', fontSize: 13, marginTop: 10 },
+ battleView: { flex: 1, margin: 20, backgroundColor: '#1A1A2E', borderRadius: 16, borderWidth: 2, borderColor: '#0F3460', justifyContent: 'center', alignItems: 'center' },
+ battleText: { color: '#E94560', fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
+ monsterText: { color: '#FFF', fontSize: 16 },
+ actionContainer: { padding: 20 },
+ actionButton: { backgroundColor: '#00E5FF', paddingVertical: 18, borderRadius: 12, alignItems: 'center', shadowColor: '#00E5FF', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.4, shadowRadius: 6 },
+ actionText: { color: '#000', fontSize: 18, fontWeight: 'bold' }
+});
+
+9. 결론
+서울과 같은 인구 과밀형 거대 메가시티를 주 무대로 삼는 최신 모바일 게임 시장에서, 만보기와 결합된 방치형 RPG는 단순한 킬링타임용 소프트웨어를 넘어 현대인의 건강한 일상을 돕는 웰니스(Wellness) 도구로 작용한다.
+걷기를 통한 지형 변화와 퀘스트 수집 아이템(수정 파편 등), 조각 기반의 무소과금 친화적 가챠 시스템, 그리고 환생과 가보 전승 시스템이 유기적으로 결합되어야 한다. 무엇보다 가속도계 센서의 케이던스 기반 필터링(0~200보 임계값)을 통해 데이터 무결성을 지켜낼 때15, 이 프로젝트는 D30 리텐션 10% 벤치마크를 훌쩍 상회하는 성공적인 앱테크 게이미피케이션 사례가 될 것이다.
+참고 자료
+1. Best Walking RPG Apps 2026: Fitness RPGs & Step Quests, https://mistyway.app/blog/walking-rpg-apps
+2. Loop Dungeon Idle Rpg Guide, https://sanandres.uep.edu.py/default.aspx/T5oJRa/703391/Loop%20Dungeon%20Idle%20Rpg%20Guide.pdf
+3. Play to Earn (P2E) Vs Move to Earn (M2E) - Step App, https://step.app/articles/play-to-earn-vs-move-to-earn
+4. What is Move-to-Earn (M2E)? A look at Genopets, STEPN, and, https://www.coingecko.com/research/publications/what-is-move-to-earn-a-look-at-genopets-stepn-and-wirtual
+5. What Is Move-to-Earn (M2E)? How Fitness Meets Crypto in Web3, https://changelly.com/blog/what-is-move-to-earn-m2e/
+6. How much would you realistically spend on an idle/gacha game, https://www.reddit.com/r/GameDevelopment/comments/1s2gcia/how_much_would_you_realistically_spend_on_an/
+7. I'm developing a cozy pedometer RPG where you progress ... - Reddit, https://www.reddit.com/r/CozyGamers/comments/17506d6/im_developing_a_cozy_pedometer_rpg_where_you/
+8. Walkr - Fit with Fun Walking Game - sparkful, https://sparkful.app/walkr
+9. Loop Dungeon Idle Rpg Guide, https://enflomaplata.uep.edu.py/sites/T5oJRa/703391/Loop%20Dungeon%20Idle%20Rpg%20Guide.pdf
+10. How crossing mechanics became a game changer in Idle games?, https://appquantum.com/news/october-2024/how-crossing-mechanics-became-a-game-changer-in-idle-games.html
+11. Fitness App Testing: Beating Step Counter Algorithms (+Test Results), https://www.testdevlab.com/blog/testing-fitness-apps-can-you-cheat-the-algorithm
+12. How Anti-Cheat Works in Step Challenge Apps (And Why Most Fail), https://upkeep.social/blog/how-anti-cheat-works-step-challenge-apps
+13. React Native Wearables SDK, https://openwearables.io/docs/sdk/react-native
+14. Pedometer - Expo documentation, https://docs.expo.dev/versions/latest/sdk/pedometer/
+15. How to filterout manual step count from health connect, https://stackoverflow.com/questions/79411456/how-to-filterout-manual-step-count-from-health-connect
+16. Idle RPG Concept - Looking for Feedback before I sink too ... - Reddit, https://www.reddit.com/r/gamedev/comments/1uatgzi/idle_rpg_concept_looking_for_feedback_before_i/
+17. The Magic of 'Legend Of Mushroom' - Deconstructor of Fun, https://www.deconstructoroffun.com/blog/2024/4/15/the-magic-of-legend-of-mushroom
+18. Game KPIs Guide: Metrics Every Publisher and Studio, https://galaxy4games.com/en/knowledgebase/blog/understanding-game-kpis-metrics-every-publisher-and-studio-should-track
+19. Game Retention: Strategies to Engage & Retain Players - Stash.gg, https://www.stash.gg/glossary/game-retention
+20. Mobile App Retention: Benchmarks, Curve & 7 Tactics - Digipeak, https://digipeak.org/mobile-app-retention/
+21. Retention (D1 / D7 / D30) - MWM AI, https://mwm.ai/glossary/retention
