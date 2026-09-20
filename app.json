@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "StepQuest",
-    "slug": "stepquest",
+    "name": "walkingRPG",
+    "slug": "walking-rpg",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "stepquest",
+    "scheme": "walkingrpg",
     "userInterfaceStyle": "dark",
     "android": {
       "package": "com.choimanseon.walkingRPG",
@@ -31,6 +31,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "owner": "choimanseon",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "30f1afc2-2901-416d-8c10-0041ef29a4cb"
+      }
     }
   }
 }
