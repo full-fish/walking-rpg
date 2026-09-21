@@ -10,6 +10,7 @@ import {
   HP_REGEN_RATE,
   INDIVIDUAL_REWARD_RATE,
   POINTS_PER_LEVEL,
+  STARTING_STATS,
   type StatSpend,
 } from './formulas';
 
@@ -22,6 +23,20 @@ export type StatKey = keyof StatSpend;
 /** 세이브의 레벨·배분으로 전투 스탯을 만든다. 화면과 전투가 반드시 이걸 거쳐 같은 값을 본다. */
 export function statsOf(save: Save) {
   return combatStats(save.player.level, 'warrior', save.statPoints);
+}
+
+/**
+ * 화면에 보이는 1차 스탯 = 직업 시작값 + 배분한 포인트 (§4.3).
+ * 세이브에는 배분분만 있다 — 시작값은 직업의 성질이라 저장할 게 아니다.
+ */
+export function primaryStats(save: Save): StatSpend {
+  const start = STARTING_STATS.warrior;
+  return {
+    str: start.str + save.statPoints.str,
+    vit: start.vit + save.statPoints.vit,
+    agi: start.agi + save.statPoints.agi,
+    luk: start.luk + save.statPoints.luk,
+  };
 }
 
 /**

@@ -99,6 +99,7 @@ export const MonsterSchema = z.object({
   cri: z.number().min(0).max(1),
   crd: z.number().positive(),
   eva: z.number().min(0).max(1),
+  scale: z.number().positive(),
   exp: z.int().min(1),
   gold: z.int().min(1),
   traits: z.array(z.string().min(1)).nonempty(),

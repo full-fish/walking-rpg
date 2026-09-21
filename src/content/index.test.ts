@@ -15,8 +15,8 @@ import {
  */
 test('로더 — 원형 12개와 지역 데이터가 파싱된다 (§7.2)', () => {
   expect(MONSTER_ARCHETYPES).toHaveLength(12);
-  expect(REGIONS).toHaveLength(2);
-  expect(MONSTERS.length).toBeGreaterThan(30);
+  expect(REGIONS).toHaveLength(5);
+  expect(MONSTERS.length).toBeGreaterThan(70);
   expect(regionById(1).fields).toHaveLength(5);
 });
 

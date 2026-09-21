@@ -29,5 +29,5 @@ test('gen — 지역별 몬스터 JSON을 쓴다', () => {
     );
   }
 
-  expect(REGIONS).toHaveLength(2);
+  expect(REGIONS).toHaveLength(5);
 });

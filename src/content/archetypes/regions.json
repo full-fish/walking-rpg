@@ -2,133 +2,971 @@
   {
     "id": 1,
     "name": "바람의 초원",
-    "levelRange": [1, 8],
-    "tierBand": [1, 5],
-    "difficulty": 1.0,
-    "town": { "name": "초원 마을", "inn": 150 },
+    "levelRange": [
+      1,
+      8
+    ],
+    "tierBand": [
+      1,
+      5
+    ],
+    "difficulty": 0.7,
+    "town": {
+      "name": "초원 마을",
+      "inn": 150
+    },
     "fields": [
       {
         "id": "f_r1_meadow",
         "name": "시작의 들판",
-        "pool": [["arch_beast", 1], ["arch_slime", 1], ["arch_insect", 2], ["arch_beast", 2]],
-        "material": { "id": "mat_r1_meadow", "name": "들판의 마른 풀" },
+        "pool": [
+          [
+            "arch_beast",
+            1
+          ],
+          [
+            "arch_slime",
+            1
+          ],
+          [
+            "arch_insect",
+            2
+          ],
+          [
+            "arch_beast",
+            2
+          ]
+        ],
+        "material": {
+          "id": "mat_r1_meadow",
+          "name": "들판의 마른 풀"
+        },
         "reward": {
           "id": "uniq_r1_meadow",
           "name": "풀잎을 감은 단검",
-          "cost": { "material": 3, "gold": 1300 }
+          "cost": {
+            "material": 3,
+            "gold": 1300
+          }
         }
       },
       {
         "id": "f_r1_mushroom",
         "name": "버섯 골짜기",
-        "pool": [["arch_fungus", 1], ["arch_fungus", 4], ["arch_insect", 4], ["arch_lizard", 4]],
-        "material": { "id": "mat_r1_mushroom", "name": "마르지 않는 홀씨" },
+        "pool": [
+          [
+            "arch_fungus",
+            1
+          ],
+          [
+            "arch_fungus",
+            4
+          ],
+          [
+            "arch_insect",
+            4
+          ],
+          [
+            "arch_lizard",
+            4
+          ]
+        ],
+        "material": {
+          "id": "mat_r1_mushroom",
+          "name": "마르지 않는 홀씨"
+        },
         "reward": {
           "id": "uniq_r1_mushroom",
           "name": "홀씨가 붙은 장갑",
-          "cost": { "material": 3, "gold": 1300 }
+          "cost": {
+            "material": 3,
+            "gold": 1300
+          }
         }
       },
       {
         "id": "f_r1_bramble",
         "name": "가시덤불 길",
-        "pool": [["arch_plant", 3], ["arch_bird", 3], ["arch_beast", 4], ["arch_lizard", 4]],
-        "material": { "id": "mat_r1_bramble", "name": "부러지지 않는 가시" },
+        "pool": [
+          [
+            "arch_plant",
+            3
+          ],
+          [
+            "arch_bird",
+            3
+          ],
+          [
+            "arch_beast",
+            4
+          ],
+          [
+            "arch_lizard",
+            4
+          ]
+        ],
+        "material": {
+          "id": "mat_r1_bramble",
+          "name": "부러지지 않는 가시"
+        },
         "reward": {
           "id": "uniq_r1_bramble",
           "name": "가시를 엮은 갑옷",
-          "cost": { "material": 3, "gold": 1300 }
+          "cost": {
+            "material": 3,
+            "gold": 1300
+          }
         }
       },
       {
         "id": "f_r1_tower",
         "name": "무너진 돌탑",
-        "pool": [["arch_golem", 3], ["arch_slime", 3], ["arch_undead", 5], ["arch_plant", 5]],
-        "material": { "id": "mat_r1_tower", "name": "금이 간 초석" },
+        "pool": [
+          [
+            "arch_golem",
+            3
+          ],
+          [
+            "arch_slime",
+            3
+          ],
+          [
+            "arch_undead",
+            5
+          ],
+          [
+            "arch_plant",
+            5
+          ]
+        ],
+        "material": {
+          "id": "mat_r1_tower",
+          "name": "금이 간 초석"
+        },
         "reward": {
           "id": "uniq_r1_tower",
           "name": "초석을 깎은 둔기",
-          "cost": { "material": 3, "gold": 1300 }
+          "cost": {
+            "material": 3,
+            "gold": 1300
+          }
         }
       },
       {
         "id": "f_r1_camp",
         "name": "도적 야영지",
-        "pool": [["arch_bandit", 5], ["arch_beast", 4], ["arch_undead", 5], ["arch_insect", 2]],
-        "material": { "id": "mat_r1_camp", "name": "빼앗긴 인장" },
+        "pool": [
+          [
+            "arch_bandit",
+            5
+          ],
+          [
+            "arch_beast",
+            4
+          ],
+          [
+            "arch_undead",
+            5
+          ],
+          [
+            "arch_insect",
+            2
+          ]
+        ],
+        "material": {
+          "id": "mat_r1_camp",
+          "name": "빼앗긴 인장"
+        },
         "reward": {
           "id": "uniq_r1_camp",
           "name": "인장이 박힌 반지",
-          "cost": { "material": 3, "gold": 1300 }
+          "cost": {
+            "material": 3,
+            "gold": 1300
+          }
         }
       }
     ],
-    "boss": { "arch": "arch_golem", "tier": 5, "name": "이끼 덮인 수호석" }
+    "boss": {
+      "arch": "arch_golem",
+      "tier": 5,
+      "name": "이끼 덮인 수호석"
+    }
   },
   {
     "id": 2,
     "name": "속삭이는 숲",
-    "levelRange": [8, 16],
-    "tierBand": [6, 10],
+    "levelRange": [
+      8,
+      16
+    ],
+    "tierBand": [
+      6,
+      10
+    ],
     "difficulty": 1.0,
-    "town": { "name": "숲가 마을", "inn": 330 },
+    "town": {
+      "name": "숲가 마을",
+      "inn": 330
+    },
     "fields": [
       {
         "id": "f_r2_cave",
         "name": "이끼 낀 동굴",
-        "pool": [["arch_beast", 6], ["arch_insect", 6], ["arch_fungus", 7], ["arch_lizard", 7]],
-        "material": { "id": "mat_r2_cave", "name": "빛나는 동굴 이끼" },
+        "pool": [
+          [
+            "arch_beast",
+            6
+          ],
+          [
+            "arch_insect",
+            6
+          ],
+          [
+            "arch_fungus",
+            7
+          ],
+          [
+            "arch_lizard",
+            7
+          ]
+        ],
+        "material": {
+          "id": "mat_r2_cave",
+          "name": "빛나는 동굴 이끼"
+        },
         "reward": {
           "id": "uniq_r2_cave",
           "name": "이끼로 덮인 방패",
-          "cost": { "material": 3, "gold": 2700 }
+          "cost": {
+            "material": 3,
+            "gold": 2700
+          }
         }
       },
       {
         "id": "f_r2_grave",
         "name": "잊혀진 무덤가",
-        "pool": [["arch_undead", 7], ["arch_plant", 8], ["arch_beast", 8], ["arch_bandit", 8]],
-        "material": { "id": "mat_r2_grave", "name": "삭지 않은 수의 조각" },
+        "pool": [
+          [
+            "arch_undead",
+            7
+          ],
+          [
+            "arch_plant",
+            8
+          ],
+          [
+            "arch_beast",
+            8
+          ],
+          [
+            "arch_bandit",
+            8
+          ]
+        ],
+        "material": {
+          "id": "mat_r2_grave",
+          "name": "삭지 않은 수의 조각"
+        },
         "reward": {
           "id": "uniq_r2_grave",
           "name": "수의를 덧댄 외투",
-          "cost": { "material": 3, "gold": 2700 }
+          "cost": {
+            "material": 3,
+            "gold": 2700
+          }
         }
       },
       {
         "id": "f_r2_logging",
         "name": "버려진 벌목지",
-        "pool": [["arch_beast", 8], ["arch_insect", 9], ["arch_spirit", 9], ["arch_plant", 8]],
-        "material": { "id": "mat_r2_logging", "name": "타다 만 장작" },
+        "pool": [
+          [
+            "arch_beast",
+            8
+          ],
+          [
+            "arch_insect",
+            9
+          ],
+          [
+            "arch_spirit",
+            9
+          ],
+          [
+            "arch_plant",
+            8
+          ]
+        ],
+        "material": {
+          "id": "mat_r2_logging",
+          "name": "타다 만 장작"
+        },
         "reward": {
           "id": "uniq_r2_logging",
           "name": "장작을 벼린 도끼",
-          "cost": { "material": 3, "gold": 2700 }
+          "cost": {
+            "material": 3,
+            "gold": 2700
+          }
         }
       },
       {
         "id": "f_r2_quarry",
         "name": "무너진 채석장",
-        "pool": [["arch_golem", 9], ["arch_lizard", 10], ["arch_bird", 10], ["arch_insect", 9]],
-        "material": { "id": "mat_r2_quarry", "name": "결이 고운 석재" },
+        "pool": [
+          [
+            "arch_golem",
+            9
+          ],
+          [
+            "arch_lizard",
+            10
+          ],
+          [
+            "arch_bird",
+            10
+          ],
+          [
+            "arch_insect",
+            9
+          ]
+        ],
+        "material": {
+          "id": "mat_r2_quarry",
+          "name": "결이 고운 석재"
+        },
         "reward": {
           "id": "uniq_r2_quarry",
           "name": "석재를 물린 투구",
-          "cost": { "material": 3, "gold": 2700 }
+          "cost": {
+            "material": 3,
+            "gold": 2700
+          }
         }
       },
       {
         "id": "f_r2_marsh",
         "name": "안개 낀 늪",
-        "pool": [["arch_undead", 10], ["arch_lizard", 10], ["arch_bird", 6], ["arch_spirit", 9]],
-        "material": { "id": "mat_r2_marsh", "name": "걷히지 않는 늪안개" },
+        "pool": [
+          [
+            "arch_undead",
+            10
+          ],
+          [
+            "arch_lizard",
+            10
+          ],
+          [
+            "arch_bird",
+            6
+          ],
+          [
+            "arch_spirit",
+            9
+          ]
+        ],
+        "material": {
+          "id": "mat_r2_marsh",
+          "name": "걷히지 않는 늪안개"
+        },
         "reward": {
           "id": "uniq_r2_marsh",
           "name": "늪안개를 담은 목걸이",
-          "cost": { "material": 3, "gold": 2700 }
+          "cost": {
+            "material": 3,
+            "gold": 2700
+          }
         }
       }
     ],
-    "boss": { "arch": "arch_lizard", "tier": 10, "name": "늪을 삼킨 악어" }
+    "boss": {
+      "arch": "arch_lizard",
+      "tier": 10,
+      "name": "늪을 삼킨 악어"
+    }
+  },
+  {
+    "id": 3,
+    "name": "메마른 협곡",
+    "levelRange": [
+      16,
+      26
+    ],
+    "tierBand": [
+      11,
+      15
+    ],
+    "difficulty": 1.0,
+    "town": {
+      "name": "협곡 관문",
+      "inn": 545
+    },
+    "fields": [
+      {
+        "id": "f_r3_riverbed",
+        "name": "마른 강바닥",
+        "pool": [
+          [
+            "arch_slime",
+            11
+          ],
+          [
+            "arch_insect",
+            12
+          ],
+          [
+            "arch_golem",
+            11
+          ],
+          [
+            "arch_lizard",
+            13
+          ]
+        ],
+        "material": {
+          "id": "mat_r3_riverbed",
+          "name": "마른 강바닥의 흔적"
+        },
+        "reward": {
+          "id": "uniq_r3_riverbed",
+          "name": "강바닥의 휜 마검",
+          "cost": {
+            "material": 3,
+            "gold": 4000
+          }
+        }
+      },
+      {
+        "id": "f_r3_cliff",
+        "name": "무너진 절벽길",
+        "pool": [
+          [
+            "arch_spirit",
+            11
+          ],
+          [
+            "arch_bird",
+            14
+          ],
+          [
+            "arch_bandit",
+            12
+          ],
+          [
+            "arch_plant",
+            13
+          ]
+        ],
+        "material": {
+          "id": "mat_r3_cliff",
+          "name": "절벽의 부서진 뼈대"
+        },
+        "reward": {
+          "id": "uniq_r3_cliff",
+          "name": "절벽을 딛는 각반",
+          "cost": {
+            "material": 3,
+            "gold": 4000
+          }
+        }
+      },
+      {
+        "id": "f_r3_saltflat",
+        "name": "소금 평원",
+        "pool": [
+          [
+            "arch_fungus",
+            12
+          ],
+          [
+            "arch_slime",
+            13
+          ],
+          [
+            "arch_lizard",
+            13
+          ],
+          [
+            "arch_golem",
+            14
+          ]
+        ],
+        "material": {
+          "id": "mat_r3_saltflat",
+          "name": "굳은 소금 결정"
+        },
+        "reward": {
+          "id": "uniq_r3_saltflat",
+          "name": "소금에 절인 흉갑",
+          "cost": {
+            "material": 3,
+            "gold": 4000
+          }
+        }
+      },
+      {
+        "id": "f_r3_ridge",
+        "name": "바람 능선",
+        "pool": [
+          [
+            "arch_bird",
+            14
+          ],
+          [
+            "arch_spirit",
+            14
+          ],
+          [
+            "arch_undead",
+            15
+          ],
+          [
+            "arch_beast",
+            15
+          ]
+        ],
+        "material": {
+          "id": "mat_r3_ridge",
+          "name": "능선의 마른 깃털"
+        },
+        "reward": {
+          "id": "uniq_r3_ridge",
+          "name": "바람을 가르는 활",
+          "cost": {
+            "material": 3,
+            "gold": 4000
+          }
+        }
+      },
+      {
+        "id": "f_r3_outpost",
+        "name": "버려진 초소",
+        "pool": [
+          [
+            "arch_knight",
+            15
+          ],
+          [
+            "arch_bandit",
+            12
+          ],
+          [
+            "arch_undead",
+            15
+          ],
+          [
+            "arch_insect",
+            12
+          ]
+        ],
+        "material": {
+          "id": "mat_r3_outpost",
+          "name": "초소의 녹슨 열쇠"
+        },
+        "reward": {
+          "id": "uniq_r3_outpost",
+          "name": "초소장의 낡은 인장",
+          "cost": {
+            "material": 3,
+            "gold": 4000
+          }
+        }
+      }
+    ],
+    "boss": {
+      "arch": "arch_golem",
+      "tier": 15,
+      "name": "협곡을 지키는 거상"
+    }
+  },
+  {
+    "id": 4,
+    "name": "잿빛 화산지대",
+    "levelRange": [
+      26,
+      37
+    ],
+    "tierBand": [
+      16,
+      20
+    ],
+    "difficulty": 1.0,
+    "town": {
+      "name": "화산 관문",
+      "inn": 799
+    },
+    "fields": [
+      {
+        "id": "f_r4_crater",
+        "name": "분화구 가장자리",
+        "pool": [
+          [
+            "arch_beast",
+            16
+          ],
+          [
+            "arch_insect",
+            16
+          ],
+          [
+            "arch_spirit",
+            17
+          ],
+          [
+            "arch_fungus",
+            17
+          ]
+        ],
+        "material": {
+          "id": "mat_r4_crater",
+          "name": "식지 않는 분화구 재"
+        },
+        "reward": {
+          "id": "uniq_r4_crater",
+          "name": "재를 머금은 장갑",
+          "cost": {
+            "material": 3,
+            "gold": 5300
+          }
+        }
+      },
+      {
+        "id": "f_r4_ashfield",
+        "name": "재의 들판",
+        "pool": [
+          [
+            "arch_bandit",
+            16
+          ],
+          [
+            "arch_bird",
+            18
+          ],
+          [
+            "arch_undead",
+            18
+          ],
+          [
+            "arch_lizard",
+            17
+          ]
+        ],
+        "material": {
+          "id": "mat_r4_ashfield",
+          "name": "들판에 쌓인 화산재"
+        },
+        "reward": {
+          "id": "uniq_r4_ashfield",
+          "name": "잿빛 사슬 갑옷",
+          "cost": {
+            "material": 3,
+            "gold": 5300
+          }
+        }
+      },
+      {
+        "id": "f_r4_lavatube",
+        "name": "용암 동굴",
+        "pool": [
+          [
+            "arch_lizard",
+            17
+          ],
+          [
+            "arch_golem",
+            19
+          ],
+          [
+            "arch_fungus",
+            17
+          ],
+          [
+            "arch_plant",
+            19
+          ]
+        ],
+        "material": {
+          "id": "mat_r4_lavatube",
+          "name": "식은 용암 덩이"
+        },
+        "reward": {
+          "id": "uniq_r4_lavatube",
+          "name": "용암으로 벼린 대검",
+          "cost": {
+            "material": 3,
+            "gold": 5300
+          }
+        }
+      },
+      {
+        "id": "f_r4_obsidian",
+        "name": "흑요석 비탈",
+        "pool": [
+          [
+            "arch_knight",
+            18
+          ],
+          [
+            "arch_undead",
+            18
+          ],
+          [
+            "arch_insect",
+            16
+          ],
+          [
+            "arch_bird",
+            18
+          ]
+        ],
+        "material": {
+          "id": "mat_r4_obsidian",
+          "name": "깨진 흑요석 조각"
+        },
+        "reward": {
+          "id": "uniq_r4_obsidian",
+          "name": "흑요석을 박은 방패",
+          "cost": {
+            "material": 3,
+            "gold": 5300
+          }
+        }
+      },
+      {
+        "id": "f_r4_forge",
+        "name": "버려진 대장간",
+        "pool": [
+          [
+            "arch_knight",
+            20
+          ],
+          [
+            "arch_bandit",
+            20
+          ],
+          [
+            "arch_plant",
+            19
+          ],
+          [
+            "arch_undead",
+            18
+          ]
+        ],
+        "material": {
+          "id": "mat_r4_forge",
+          "name": "꺼지지 않은 불씨"
+        },
+        "reward": {
+          "id": "uniq_r4_forge",
+          "name": "대장장이의 마지막 망치",
+          "cost": {
+            "material": 3,
+            "gold": 5300
+          }
+        }
+      }
+    ],
+    "boss": {
+      "arch": "arch_knight",
+      "tier": 20,
+      "name": "대장간의 마지막 기사"
+    }
+  },
+  {
+    "id": 5,
+    "name": "잊혀진 심연",
+    "levelRange": [
+      37,
+      50
+    ],
+    "tierBand": [
+      21,
+      25
+    ],
+    "difficulty": 1.0,
+    "town": {
+      "name": "심연 관문",
+      "inn": 1098
+    },
+    "fields": [
+      {
+        "id": "f_r5_abyss",
+        "name": "심연 입구",
+        "pool": [
+          [
+            "arch_slime",
+            21
+          ],
+          [
+            "arch_insect",
+            21
+          ],
+          [
+            "arch_spirit",
+            21
+          ],
+          [
+            "arch_bird",
+            22
+          ]
+        ],
+        "material": {
+          "id": "mat_r5_abyss",
+          "name": "심연에서 건진 조각"
+        },
+        "reward": {
+          "id": "uniq_r5_abyss",
+          "name": "심연을 담은 단검",
+          "cost": {
+            "material": 3,
+            "gold": 6700
+          }
+        }
+      },
+      {
+        "id": "f_r5_frost",
+        "name": "서리 회랑",
+        "pool": [
+          [
+            "arch_golem",
+            22
+          ],
+          [
+            "arch_bird",
+            22
+          ],
+          [
+            "arch_fungus",
+            23
+          ],
+          [
+            "arch_lizard",
+            23
+          ]
+        ],
+        "material": {
+          "id": "mat_r5_frost",
+          "name": "녹지 않는 서리"
+        },
+        "reward": {
+          "id": "uniq_r5_frost",
+          "name": "서리로 짠 망토",
+          "cost": {
+            "material": 3,
+            "gold": 6700
+          }
+        }
+      },
+      {
+        "id": "f_r5_hall",
+        "name": "무너진 대전",
+        "pool": [
+          [
+            "arch_knight",
+            22
+          ],
+          [
+            "arch_undead",
+            25
+          ],
+          [
+            "arch_plant",
+            24
+          ],
+          [
+            "arch_spirit",
+            24
+          ]
+        ],
+        "material": {
+          "id": "mat_r5_hall",
+          "name": "대전의 깨진 왕관"
+        },
+        "reward": {
+          "id": "uniq_r5_hall",
+          "name": "대전을 지킨 창",
+          "cost": {
+            "material": 3,
+            "gold": 6700
+          }
+        }
+      },
+      {
+        "id": "f_r5_root",
+        "name": "세계수 뿌리",
+        "pool": [
+          [
+            "arch_plant",
+            24
+          ],
+          [
+            "arch_lizard",
+            23
+          ],
+          [
+            "arch_fungus",
+            23
+          ],
+          [
+            "arch_spirit",
+            24
+          ]
+        ],
+        "material": {
+          "id": "mat_r5_root",
+          "name": "세계수의 잔뿌리"
+        },
+        "reward": {
+          "id": "uniq_r5_root",
+          "name": "뿌리를 엮은 지팡이",
+          "cost": {
+            "material": 3,
+            "gold": 6700
+          }
+        }
+      },
+      {
+        "id": "f_r5_throne",
+        "name": "폐왕의 옥좌",
+        "pool": [
+          [
+            "arch_knight",
+            24
+          ],
+          [
+            "arch_bandit",
+            25
+          ],
+          [
+            "arch_undead",
+            25
+          ],
+          [
+            "arch_insect",
+            21
+          ]
+        ],
+        "material": {
+          "id": "mat_r5_throne",
+          "name": "폐왕의 부러진 홀"
+        },
+        "reward": {
+          "id": "uniq_r5_throne",
+          "name": "폐왕의 대관 투구",
+          "cost": {
+            "material": 3,
+            "gold": 6700
+          }
+        }
+      }
+    ],
+    "boss": {
+      "arch": "arch_golem",
+      "tier": 25,
+      "name": "심연의 지배자"
+    }
   }
 ]

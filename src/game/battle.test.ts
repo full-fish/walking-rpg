@@ -2,24 +2,21 @@ import { expect, test, vi } from 'vitest';
 
 import {
   actionRatio,
-  BASE_STATS,
   combatStats,
   damageMultiplier,
   HARDCAP_ACTIONS,
+  LEVEL_GROWTH,
   SPD_RATIO_MAX,
 } from './formulas';
 import { makeRng, simulateBattle, type Combatant } from './battle';
 
+/** Lv1 전사. BASE_STATS는 1차 스탯을 뺀 잔여분이라 그대로 쓰면 플레이어가 안 된다. */
+const LV1 = combatStats(1);
+
 const player = (over: Partial<Combatant> = {}): Combatant => ({
   name: '플레이어',
-  hp: BASE_STATS.maxHp,
-  maxHp: BASE_STATS.maxHp,
-  atk: BASE_STATS.atk,
-  def: BASE_STATS.def,
-  spd: BASE_STATS.spd,
-  cri: BASE_STATS.cri,
-  crd: BASE_STATS.crd,
-  eva: BASE_STATS.eva,
+  ...LV1,
+  hp: LV1.maxHp,
   ...over,
 });
 
@@ -138,11 +135,16 @@ test('HP가 0인 채로 들어가면 바로 진다', () => {
   expect(r.events).toHaveLength(0);
 });
 
-test('레벨 스탯은 §4.3 표 그대로 — 직업 성장 + 3포인트 균등 배분', () => {
-  expect(combatStats(1)).toEqual({ ...BASE_STATS });
+test('레벨 스탯은 §4.3 표 그대로 — 시작 스탯 + 직업 성장 + 3포인트 균등 배분', () => {
+  // §4.3 "Lv1 기본값"은 전사 기준 합계다. 시작 스탯(STR5 VIT6 AGI4 LUK4)을 포함한 값
+  expect(combatStats(1)).toMatchObject({ maxHp: 100, atk: 10, def: 5, spd: 10 });
+  expect(combatStats(1).cri).toBeCloseTo(0.05, 6);
+  expect(combatStats(1).eva).toBeCloseTo(0.03, 6);
 
-  // 전사 Lv2: maxHP +14+10, ATK +2+2, DEF +1.5+0.5, SPD +0.8+1.5, EVA +0.15%p
-  expect(combatStats(2)).toMatchObject({ maxHp: 124, atk: 14, def: 7, spd: 12.3 });
+  // 전사 Lv2: (maxHP +14+10, ATK +2+2, DEF +1.5+0.5, SPD +0.8+1.5) × 레벨 배수 1.04
+  expect(combatStats(2).maxHp).toBe(Math.round(124 * LEVEL_GROWTH));
+  expect(combatStats(2).atk).toBeCloseTo(14 * LEVEL_GROWTH, 6);
+  expect(combatStats(2).spd).toBeCloseTo(12.3 * LEVEL_GROWTH, 6);
   expect(combatStats(2).eva).toBeCloseTo(0.0315, 6);
 
   // 도적은 더 빠르고 덜 단단하다
@@ -156,7 +158,8 @@ test('레벨 스탯은 §4.3 표 그대로 — 직업 성장 + 3포인트 균등
 
 test('SPD가 빠르면 연속으로 두 번 때린다 — 화면에서 보여야 하는 것 (T8 완료 기준)', () => {
   // 플레이어 SPD 10 vs 슬라임 7.47 → 행동 비율 1.34. 서너 라운드마다 한 번 연속이 나온다.
-  const slime = monster({ hp: 120, maxHp: 120, atk: 0.96, def: 2.47, spd: 7.47, eva: 0.03 });
+  // 수치는 gen-content가 뽑은 지역 1 초록 슬라임 그대로다 (T11·T12).
+  const slime = monster({ hp: 86, maxHp: 86, atk: 2.5, def: 1.73, spd: 7.47, eva: 0.03 });
   let battlesWithStreak = 0;
 
   for (let seed = 0; seed < 50; seed++) {
@@ -169,7 +172,7 @@ test('SPD가 빠르면 연속으로 두 번 때린다 — 화면에서 보여야
   expect(battlesWithStreak).toBe(50);
 
   // 비율이 1에 가까우면 전투 길이 안에서는 연속이 안 나온다 — 데모 몬스터가 이랬다.
-  const twin = monster({ hp: 120, maxHp: 120, atk: 0.96, def: 2.47, spd: 9.96 });
+  const twin = monster({ hp: 86, maxHp: 86, atk: 2.5, def: 1.73, spd: 9.96 });
   const { events } = simulateBattle(player(), twin, makeRng(0));
   expect(
     events.some((e, i) => i > 0 && e.actor === 'player' && events[i - 1].actor === 'player'),

@@ -9,6 +9,9 @@ import archetypesRaw from './archetypes/monsters.json';
 import regionsRaw from './archetypes/regions.json';
 import region01 from './data/monsters/region-01.json';
 import region02 from './data/monsters/region-02.json';
+import region03 from './data/monsters/region-03.json';
+import region04 from './data/monsters/region-04.json';
+import region05 from './data/monsters/region-05.json';
 import {
   MonsterArchetypesSchema,
   MonstersSchema,
@@ -24,11 +27,17 @@ export type { Field, Monster, MonsterArchetype, Region };
 /** 몬스터 원형 12개 (§7.2). */
 export const MONSTER_ARCHETYPES = MonsterArchetypesSchema.parse(archetypesRaw);
 
-/** 지역과 사냥터 (§7.2⑤). 지역 3~5는 T12에서 추가한다. */
+/** 지역 5개와 사냥터 25개 (§7.2⑤). */
 export const REGIONS = RegionsSchema.parse(regionsRaw);
 
 /** gen-content.ts가 뽑아둔 몬스터 전부. 보스도 여기 들어 있다. */
-export const MONSTERS = MonstersSchema.parse([...region01, ...region02]);
+export const MONSTERS = MonstersSchema.parse([
+  ...region01,
+  ...region02,
+  ...region03,
+  ...region04,
+  ...region05,
+]);
 
 export function regionById(id: number): Region {
   const region = REGIONS.find((r) => r.id === id);

@@ -21,6 +21,11 @@ export type Combatant = {
   crd: number;
   /** 회피 확률 0~1 */
   eva: number;
+  /**
+   * 여태 받은 성장 배수 (§4.2). Lv1 플레이어와 티어 0 몬스터가 1.0.
+   * 피해배율의 K를 같이 키워서 DEF의 감소율이 레벨을 타지 않게 한다.
+   */
+  scale?: number;
 };
 
 export type BattleEvent = {
@@ -67,7 +72,7 @@ function strike(attacker: Combatant, target: Combatant, rng: () => number) {
   if (rng() < target.eva) return { type: 'miss' as const, value: 0 };
 
   const roll = DAMAGE_ROLL_MIN + rng() * (DAMAGE_ROLL_MAX - DAMAGE_ROLL_MIN);
-  let damage = attacker.atk * damageMultiplier(target.def) * roll;
+  let damage = attacker.atk * damageMultiplier(target.def, target.scale) * roll;
 
   const critical = rng() < attacker.cri;
   if (critical) damage *= attacker.crd;

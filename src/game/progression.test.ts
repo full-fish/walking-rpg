@@ -4,6 +4,7 @@ import { defaultSave, type Save } from '../save/schema';
 import {
   DEATH_GOLD_LOSS,
   HP_REGEN_INTERVAL_MS,
+  LEVEL_GROWTH,
   POINTS_PER_LEVEL,
   expToNext,
   monsterExp,
@@ -102,9 +103,10 @@ test('레벨업하면 포인트 3점을 받고 늘어난 최대 HP만큼 현재 
   expect(s.levelsGained).toBe(1);
   expect(s.save.player.level).toBe(2);
   expect(s.save.statPoints.unspent).toBe(POINTS_PER_LEVEL);
-  // Lv1 maxHp 100 → Lv2(미배분) 114. 다친 40은 그대로 두고 14만 더한다
-  expect(statsOf(s.save).maxHp).toBe(114);
-  expect(s.save.player.hp).toBe(74);
+  // Lv1 maxHp 100 → Lv2(미배분) 119 = (40 + 직업 14 + VIT 6×10) × 레벨 배수 1.04.
+  // 다친 40은 그대로 두고 늘어난 19만 더한다
+  expect(statsOf(s.save).maxHp).toBe(119);
+  expect(s.save.player.hp).toBe(79);
 });
 
 test('도망 — 보상 없이 그 시점 HP만 남는다 (§4.2)', () => {
@@ -146,7 +148,8 @@ test('스탯 배분 — 포인트가 있어야 쓰이고 VIT는 현재 HP도 올
   // STR은 최대 HP와 무관하므로 현재 HP를 건드리지 않는다
   const str = spendPoint(save, 'str');
   expect(str!.player.hp).toBe(50);
-  expect(statsOf(str!).atk - statsOf(save).atk).toBe(2);
+  // 포인트 1점 = ATK +2. 레벨 배수가 곱해지므로 Lv2에서는 2 × 1.04다 (§4.3)
+  expect(statsOf(str!).atk - statsOf(save).atk).toBeCloseTo(2 * LEVEL_GROWTH, 6);
 
   // 포인트가 없으면 null
   expect(spendPoint({ ...save, statPoints: { ...save.statPoints, unspent: 0 } }, 'str')).toBeNull();

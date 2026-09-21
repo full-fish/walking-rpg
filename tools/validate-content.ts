@@ -12,6 +12,15 @@ import { MONSTERS, REGIONS } from '../src/content';
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
 import { generateAll, tierInRegion } from './gen-content';
 
+/** 키 순서에 안 흔들리게 비교한다 — zod parse는 스키마 순서로 키를 다시 깐다. */
+function canonical(value: unknown): string {
+  return JSON.stringify(value, (_, v) =>
+    v && typeof v === 'object' && !Array.isArray(v)
+      ? Object.fromEntries(Object.entries(v).sort(([a], [b]) => a.localeCompare(b)))
+      : v,
+  );
+}
+
 /** 두 번 이상 나온 값만 골라낸다. */
 function duplicates(values: string[]): string[] {
   const seen = new Set<string>();
@@ -65,7 +74,7 @@ export function validateGenerated(): string[] {
   for (const region of REGIONS) {
     const committed = MONSTERS.filter((m) => m.region === region.id);
     const expected = fresh.get(region.id) ?? [];
-    if (JSON.stringify(committed) !== JSON.stringify(expected)) {
+    if (canonical(committed) !== canonical(expected)) {
       errors.push(`[생성물 낡음] 지역 ${region.id} — npm run gen을 다시 돌려라`);
     }
 

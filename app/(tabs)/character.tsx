@@ -2,7 +2,7 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { expToNext } from '@/game/formulas';
-import { statsOf, type StatKey } from '@/game/progression';
+import { primaryStats, statsOf, type StatKey } from '@/game/progression';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
@@ -23,6 +23,7 @@ export default function Character() {
   const allocate = usePlayer((s) => s.allocate);
   const stats = statsOf(save);
   const { unspent } = save.statPoints;
+  const primary = primaryStats(save);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -43,7 +44,7 @@ export default function Character() {
           <View key={key} style={styles.row}>
             <View style={styles.name}>
               <Text>
-                {label} {save.statPoints[key]}
+                {label} {primary[key]}
               </Text>
               <Text size="sm" dim>
                 {effect}
