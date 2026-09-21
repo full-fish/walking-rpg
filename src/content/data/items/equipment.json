@@ -8,11 +8,11 @@
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
-    "atk": 1,
-    "maxHp": 1,
+    "atk": 6,
+    "maxHp": 4,
     "def": 0,
     "spd": 0.1,
-    "price": 42
+    "price": 278
   },
   {
     "id": "eq_t1_weapon_uncommon",
@@ -23,11 +23,11 @@
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
-    "atk": 1,
-    "maxHp": 1,
+    "atk": 7,
+    "maxHp": 5,
     "def": 0,
     "spd": 0.2,
-    "price": 93
+    "price": 612
   },
   {
     "id": "eq_t1_weapon_rare",
@@ -38,11 +38,11 @@
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
-    "atk": 1,
-    "maxHp": 1,
+    "atk": 8,
+    "maxHp": 6,
     "def": 0,
     "spd": 0.2,
-    "price": 212
+    "price": 1392
   },
   {
     "id": "eq_t1_weapon_epic",
@@ -53,11 +53,11 @@
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
-    "atk": 1,
-    "maxHp": 1,
+    "atk": 9,
+    "maxHp": 7,
     "def": 0,
     "spd": 0.2,
-    "price": 509
+    "price": 3340
   },
   {
     "id": "eq_t1_weapon_legendary",
@@ -68,11 +68,11 @@
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
-    "atk": 2,
-    "maxHp": 1,
+    "atk": 11,
+    "maxHp": 8,
     "def": 0,
     "spd": 0.3,
-    "price": 1272
+    "price": 8349
   },
   {
     "id": "eq_t1_helm_common",
@@ -83,11 +83,11 @@
     "level": 1,
     "region": 1,
     "sprite": "helm_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 17,
+    "def": 1,
     "spd": 0.1,
-    "price": 25
+    "price": 167
   },
   {
     "id": "eq_t1_helm_uncommon",
@@ -98,11 +98,11 @@
     "level": 1,
     "region": 1,
     "sprite": "helm_1",
-    "atk": 0,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 20,
+    "def": 1,
     "spd": 0.2,
-    "price": 56
+    "price": 367
   },
   {
     "id": "eq_t1_helm_rare",
@@ -113,11 +113,11 @@
     "level": 1,
     "region": 1,
     "sprite": "helm_1",
-    "atk": 0,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 23,
+    "def": 1,
     "spd": 0.2,
-    "price": 127
+    "price": 835
   },
   {
     "id": "eq_t1_helm_epic",
@@ -128,11 +128,11 @@
     "level": 1,
     "region": 1,
     "sprite": "helm_1",
-    "atk": 0,
-    "maxHp": 4,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 28,
+    "def": 2,
     "spd": 0.2,
-    "price": 305
+    "price": 2004
   },
   {
     "id": "eq_t1_helm_legendary",
@@ -143,11 +143,11 @@
     "level": 1,
     "region": 1,
     "sprite": "helm_1",
-    "atk": 0,
-    "maxHp": 5,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 33,
+    "def": 2,
     "spd": 0.3,
-    "price": 763
+    "price": 5009
   },
   {
     "id": "eq_t1_armor_common",
@@ -158,11 +158,11 @@
     "level": 1,
     "region": 1,
     "sprite": "armor_1",
-    "atk": 0,
-    "maxHp": 4,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 30,
+    "def": 2,
     "spd": 0.1,
-    "price": 34
+    "price": 223
   },
   {
     "id": "eq_t1_armor_uncommon",
@@ -173,11 +173,11 @@
     "level": 1,
     "region": 1,
     "sprite": "armor_1",
-    "atk": 0,
-    "maxHp": 5,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 35,
+    "def": 2,
     "spd": 0.2,
-    "price": 75
+    "price": 490
   },
   {
     "id": "eq_t1_armor_rare",
@@ -188,11 +188,11 @@
     "level": 1,
     "region": 1,
     "sprite": "armor_1",
-    "atk": 0,
-    "maxHp": 6,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 41,
+    "def": 2,
     "spd": 0.2,
-    "price": 170
+    "price": 1113
   },
   {
     "id": "eq_t1_armor_epic",
@@ -203,11 +203,11 @@
     "level": 1,
     "region": 1,
     "sprite": "armor_1",
-    "atk": 0,
-    "maxHp": 7,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 48,
+    "def": 3,
     "spd": 0.2,
-    "price": 407
+    "price": 2672
   },
   {
     "id": "eq_t1_armor_legendary",
@@ -218,11 +218,11 @@
     "level": 1,
     "region": 1,
     "sprite": "armor_1",
-    "atk": 0,
-    "maxHp": 8,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 57,
+    "def": 3,
     "spd": 0.3,
-    "price": 1017
+    "price": 6679
   },
   {
     "id": "eq_t1_gloves_common",
@@ -233,11 +233,11 @@
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 0,
-    "maxHp": 1,
-    "def": 0,
+    "atk": 2,
+    "maxHp": 9,
+    "def": 1,
     "spd": 0.5,
-    "price": 23
+    "price": 148
   },
   {
     "id": "eq_t1_gloves_uncommon",
@@ -248,11 +248,11 @@
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 0,
-    "maxHp": 1,
-    "def": 0,
+    "atk": 2,
+    "maxHp": 10,
+    "def": 1,
     "spd": 0.6,
-    "price": 50
+    "price": 327
   },
   {
     "id": "eq_t1_gloves_rare",
@@ -263,11 +263,11 @@
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 2,
+    "maxHp": 12,
+    "def": 1,
     "spd": 0.7,
-    "price": 113
+    "price": 742
   },
   {
     "id": "eq_t1_gloves_epic",
@@ -278,11 +278,11 @@
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 3,
+    "maxHp": 14,
+    "def": 1,
     "spd": 0.9,
-    "price": 271
+    "price": 1781
   },
   {
     "id": "eq_t1_gloves_legendary",
@@ -293,11 +293,11 @@
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 3,
+    "maxHp": 16,
+    "def": 1,
     "spd": 1,
-    "price": 678
+    "price": 4453
   },
   {
     "id": "eq_t1_boots_common",
@@ -308,11 +308,11 @@
     "level": 1,
     "region": 1,
     "sprite": "boots_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 13,
+    "def": 1,
     "spd": 1.2,
-    "price": 23
+    "price": 148
   },
   {
     "id": "eq_t1_boots_uncommon",
@@ -323,11 +323,11 @@
     "level": 1,
     "region": 1,
     "sprite": "boots_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 15,
+    "def": 1,
     "spd": 1.4,
-    "price": 50
+    "price": 327
   },
   {
     "id": "eq_t1_boots_rare",
@@ -338,11 +338,11 @@
     "level": 1,
     "region": 1,
     "sprite": "boots_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 17,
+    "def": 1,
     "spd": 1.7,
-    "price": 113
+    "price": 742
   },
   {
     "id": "eq_t1_boots_epic",
@@ -353,11 +353,11 @@
     "level": 1,
     "region": 1,
     "sprite": "boots_1",
-    "atk": 0,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 21,
+    "def": 1,
     "spd": 2,
-    "price": 271
+    "price": 1781
   },
   {
     "id": "eq_t1_boots_legendary",
@@ -368,11 +368,11 @@
     "level": 1,
     "region": 1,
     "sprite": "boots_1",
-    "atk": 0,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 25,
+    "def": 1,
     "spd": 2.3,
-    "price": 678
+    "price": 4453
   },
   {
     "id": "eq_t1_accessory_common",
@@ -383,11 +383,11 @@
     "level": 1,
     "region": 1,
     "sprite": "accessory_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 2,
+    "maxHp": 13,
+    "def": 1,
     "spd": 0.5,
-    "price": 23
+    "price": 148
   },
   {
     "id": "eq_t1_accessory_uncommon",
@@ -398,11 +398,11 @@
     "level": 1,
     "region": 1,
     "sprite": "accessory_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 2,
+    "maxHp": 15,
+    "def": 1,
     "spd": 0.6,
-    "price": 50
+    "price": 327
   },
   {
     "id": "eq_t1_accessory_rare",
@@ -413,11 +413,11 @@
     "level": 1,
     "region": 1,
     "sprite": "accessory_1",
-    "atk": 0,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 2,
+    "maxHp": 17,
+    "def": 1,
     "spd": 0.7,
-    "price": 113
+    "price": 742
   },
   {
     "id": "eq_t1_accessory_epic",
@@ -428,11 +428,11 @@
     "level": 1,
     "region": 1,
     "sprite": "accessory_1",
-    "atk": 0,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 3,
+    "maxHp": 21,
+    "def": 1,
     "spd": 0.9,
-    "price": 271
+    "price": 1781
   },
   {
     "id": "eq_t1_accessory_legendary",
@@ -443,11 +443,11 @@
     "level": 1,
     "region": 1,
     "sprite": "accessory_1",
-    "atk": 0,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 3,
+    "maxHp": 25,
+    "def": 1,
     "spd": 1,
-    "price": 678
+    "price": 4453
   },
   {
     "id": "eq_t2_weapon_common",
@@ -458,11 +458,11 @@
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 4,
-    "maxHp": 2,
-    "def": 0,
+    "atk": 12,
+    "maxHp": 8,
+    "def": 1,
     "spd": 0.2,
-    "price": 113
+    "price": 343
   },
   {
     "id": "eq_t2_weapon_uncommon",
@@ -473,11 +473,11 @@
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 4,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 14,
+    "maxHp": 9,
+    "def": 1,
     "spd": 0.3,
-    "price": 248
+    "price": 754
   },
   {
     "id": "eq_t2_weapon_rare",
@@ -488,11 +488,11 @@
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 5,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 16,
+    "maxHp": 11,
+    "def": 1,
     "spd": 0.3,
-    "price": 563
+    "price": 1715
   },
   {
     "id": "eq_t2_weapon_epic",
@@ -503,11 +503,11 @@
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 6,
-    "maxHp": 4,
-    "def": 0,
+    "atk": 19,
+    "maxHp": 13,
+    "def": 1,
     "spd": 0.4,
-    "price": 1351
+    "price": 4115
   },
   {
     "id": "eq_t2_weapon_legendary",
@@ -518,11 +518,11 @@
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 7,
-    "maxHp": 5,
-    "def": 0,
+    "atk": 22,
+    "maxHp": 15,
+    "def": 1,
     "spd": 0.4,
-    "price": 3377
+    "price": 10288
   },
   {
     "id": "eq_t2_helm_common",
@@ -533,11 +533,11 @@
     "level": 5,
     "region": 1,
     "sprite": "helm_2",
-    "atk": 0,
-    "maxHp": 10,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 32,
+    "def": 2,
     "spd": 0.2,
-    "price": 68
+    "price": 206
   },
   {
     "id": "eq_t2_helm_uncommon",
@@ -548,11 +548,11 @@
     "level": 5,
     "region": 1,
     "sprite": "helm_2",
-    "atk": 0,
-    "maxHp": 11,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 36,
+    "def": 2,
     "spd": 0.3,
-    "price": 149
+    "price": 453
   },
   {
     "id": "eq_t2_helm_rare",
@@ -563,11 +563,11 @@
     "level": 5,
     "region": 1,
     "sprite": "helm_2",
-    "atk": 0,
-    "maxHp": 13,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 43,
+    "def": 3,
     "spd": 0.3,
-    "price": 338
+    "price": 1029
   },
   {
     "id": "eq_t2_helm_epic",
@@ -578,11 +578,11 @@
     "level": 5,
     "region": 1,
     "sprite": "helm_2",
-    "atk": 1,
-    "maxHp": 15,
-    "def": 1,
+    "atk": 2,
+    "maxHp": 50,
+    "def": 3,
     "spd": 0.4,
-    "price": 810
+    "price": 2469
   },
   {
     "id": "eq_t2_helm_legendary",
@@ -593,11 +593,11 @@
     "level": 5,
     "region": 1,
     "sprite": "helm_2",
-    "atk": 1,
-    "maxHp": 18,
-    "def": 1,
+    "atk": 2,
+    "maxHp": 60,
+    "def": 4,
     "spd": 0.4,
-    "price": 2026
+    "price": 6173
   },
   {
     "id": "eq_t2_armor_common",
@@ -608,11 +608,11 @@
     "level": 5,
     "region": 1,
     "sprite": "armor_2",
-    "atk": 0,
-    "maxHp": 17,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 55,
+    "def": 4,
     "spd": 0.2,
-    "price": 90
+    "price": 274
   },
   {
     "id": "eq_t2_armor_uncommon",
@@ -623,11 +623,11 @@
     "level": 5,
     "region": 1,
     "sprite": "armor_2",
-    "atk": 0,
-    "maxHp": 19,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 63,
+    "def": 4,
     "spd": 0.3,
-    "price": 198
+    "price": 604
   },
   {
     "id": "eq_t2_armor_rare",
@@ -638,11 +638,11 @@
     "level": 5,
     "region": 1,
     "sprite": "armor_2",
-    "atk": 0,
-    "maxHp": 23,
-    "def": 2,
+    "atk": 1,
+    "maxHp": 74,
+    "def": 5,
     "spd": 0.3,
-    "price": 450
+    "price": 1372
   },
   {
     "id": "eq_t2_armor_epic",
@@ -653,11 +653,11 @@
     "level": 5,
     "region": 1,
     "sprite": "armor_2",
-    "atk": 1,
-    "maxHp": 27,
-    "def": 2,
+    "atk": 2,
+    "maxHp": 88,
+    "def": 6,
     "spd": 0.4,
-    "price": 1081
+    "price": 3292
   },
   {
     "id": "eq_t2_armor_legendary",
@@ -668,11 +668,11 @@
     "level": 5,
     "region": 1,
     "sprite": "armor_2",
-    "atk": 1,
-    "maxHp": 32,
-    "def": 2,
+    "atk": 2,
+    "maxHp": 105,
+    "def": 7,
     "spd": 0.4,
-    "price": 2701
+    "price": 8230
   },
   {
     "id": "eq_t2_gloves_common",
@@ -683,11 +683,11 @@
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 1,
-    "maxHp": 5,
-    "def": 0,
+    "atk": 3,
+    "maxHp": 16,
+    "def": 2,
     "spd": 0.9,
-    "price": 60
+    "price": 183
   },
   {
     "id": "eq_t2_gloves_uncommon",
@@ -698,11 +698,11 @@
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 1,
-    "maxHp": 5,
-    "def": 1,
+    "atk": 4,
+    "maxHp": 18,
+    "def": 2,
     "spd": 1.1,
-    "price": 132
+    "price": 402
   },
   {
     "id": "eq_t2_gloves_rare",
@@ -713,11 +713,11 @@
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 1,
-    "maxHp": 6,
-    "def": 1,
+    "atk": 4,
+    "maxHp": 21,
+    "def": 2,
     "spd": 1.2,
-    "price": 300
+    "price": 914
   },
   {
     "id": "eq_t2_gloves_epic",
@@ -728,11 +728,11 @@
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 2,
-    "maxHp": 8,
-    "def": 1,
+    "atk": 5,
+    "maxHp": 25,
+    "def": 3,
     "spd": 1.5,
-    "price": 720
+    "price": 2195
   },
   {
     "id": "eq_t2_gloves_legendary",
@@ -743,11 +743,11 @@
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 2,
-    "maxHp": 9,
-    "def": 1,
+    "atk": 6,
+    "maxHp": 30,
+    "def": 3,
     "spd": 1.7,
-    "price": 1801
+    "price": 5487
   },
   {
     "id": "eq_t2_boots_common",
@@ -758,11 +758,11 @@
     "level": 5,
     "region": 1,
     "sprite": "boots_2",
-    "atk": 0,
-    "maxHp": 7,
-    "def": 0,
+    "atk": 1,
+    "maxHp": 24,
+    "def": 2,
     "spd": 2.1,
-    "price": 60
+    "price": 183
   },
   {
     "id": "eq_t2_boots_uncommon",
@@ -773,11 +773,11 @@
     "level": 5,
     "region": 1,
     "sprite": "boots_2",
-    "atk": 0,
-    "maxHp": 8,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 27,
+    "def": 2,
     "spd": 2.4,
-    "price": 132
+    "price": 402
   },
   {
     "id": "eq_t2_boots_rare",
@@ -788,11 +788,11 @@
     "level": 5,
     "region": 1,
     "sprite": "boots_2",
-    "atk": 0,
-    "maxHp": 10,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 32,
+    "def": 2,
     "spd": 2.8,
-    "price": 300
+    "price": 914
   },
   {
     "id": "eq_t2_boots_epic",
@@ -803,11 +803,11 @@
     "level": 5,
     "region": 1,
     "sprite": "boots_2",
-    "atk": 1,
-    "maxHp": 11,
-    "def": 1,
+    "atk": 2,
+    "maxHp": 38,
+    "def": 3,
     "spd": 3.3,
-    "price": 720
+    "price": 2195
   },
   {
     "id": "eq_t2_boots_legendary",
@@ -818,11 +818,11 @@
     "level": 5,
     "region": 1,
     "sprite": "boots_2",
-    "atk": 1,
-    "maxHp": 14,
-    "def": 1,
+    "atk": 2,
+    "maxHp": 45,
+    "def": 3,
     "spd": 3.9,
-    "price": 1801
+    "price": 5487
   },
   {
     "id": "eq_t2_accessory_common",
@@ -833,11 +833,11 @@
     "level": 5,
     "region": 1,
     "sprite": "accessory_2",
-    "atk": 1,
-    "maxHp": 7,
-    "def": 0,
+    "atk": 3,
+    "maxHp": 24,
+    "def": 1,
     "spd": 0.9,
-    "price": 60
+    "price": 183
   },
   {
     "id": "eq_t2_accessory_uncommon",
@@ -848,11 +848,11 @@
     "level": 5,
     "region": 1,
     "sprite": "accessory_2",
-    "atk": 1,
-    "maxHp": 8,
-    "def": 0,
+    "atk": 4,
+    "maxHp": 27,
+    "def": 1,
     "spd": 1.1,
-    "price": 132
+    "price": 402
   },
   {
     "id": "eq_t2_accessory_rare",
@@ -863,11 +863,11 @@
     "level": 5,
     "region": 1,
     "sprite": "accessory_2",
-    "atk": 1,
-    "maxHp": 10,
-    "def": 0,
+    "atk": 4,
+    "maxHp": 32,
+    "def": 1,
     "spd": 1.2,
-    "price": 300
+    "price": 914
   },
   {
     "id": "eq_t2_accessory_epic",
@@ -878,11 +878,11 @@
     "level": 5,
     "region": 1,
     "sprite": "accessory_2",
-    "atk": 2,
-    "maxHp": 11,
-    "def": 1,
+    "atk": 5,
+    "maxHp": 38,
+    "def": 2,
     "spd": 1.5,
-    "price": 720
+    "price": 2195
   },
   {
     "id": "eq_t2_accessory_legendary",
@@ -893,11 +893,11 @@
     "level": 5,
     "region": 1,
     "sprite": "accessory_2",
-    "atk": 2,
-    "maxHp": 14,
-    "def": 1,
+    "atk": 6,
+    "maxHp": 45,
+    "def": 2,
     "spd": 1.7,
-    "price": 1801
+    "price": 5487
   },
   {
     "id": "eq_t3_weapon_common",
@@ -908,11 +908,11 @@
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 11,
-    "maxHp": 7,
-    "def": 0,
+    "atk": 23,
+    "maxHp": 15,
+    "def": 1,
     "spd": 0.4,
-    "price": 220
+    "price": 442
   },
   {
     "id": "eq_t3_weapon_uncommon",
@@ -923,11 +923,11 @@
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 12,
-    "maxHp": 8,
+    "atk": 27,
+    "maxHp": 17,
     "def": 1,
     "spd": 0.4,
-    "price": 484
+    "price": 972
   },
   {
     "id": "eq_t3_weapon_rare",
@@ -938,11 +938,11 @@
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 14,
-    "maxHp": 9,
+    "atk": 32,
+    "maxHp": 20,
     "def": 1,
     "spd": 0.5,
-    "price": 1100
+    "price": 2209
   },
   {
     "id": "eq_t3_weapon_epic",
@@ -953,11 +953,11 @@
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 17,
-    "maxHp": 11,
-    "def": 1,
+    "atk": 37,
+    "maxHp": 23,
+    "def": 2,
     "spd": 0.6,
-    "price": 2639
+    "price": 5302
   },
   {
     "id": "eq_t3_weapon_legendary",
@@ -968,11 +968,11 @@
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 20,
-    "maxHp": 13,
-    "def": 1,
+    "atk": 44,
+    "maxHp": 28,
+    "def": 2,
     "spd": 0.7,
-    "price": 6598
+    "price": 13255
   },
   {
     "id": "eq_t3_helm_common",
@@ -983,11 +983,11 @@
     "level": 8,
     "region": 2,
     "sprite": "helm_3",
-    "atk": 1,
-    "maxHp": 27,
-    "def": 2,
+    "atk": 2,
+    "maxHp": 58,
+    "def": 4,
     "spd": 0.4,
-    "price": 132
+    "price": 265
   },
   {
     "id": "eq_t3_helm_uncommon",
@@ -998,11 +998,11 @@
     "level": 8,
     "region": 2,
     "sprite": "helm_3",
-    "atk": 1,
-    "maxHp": 31,
-    "def": 2,
+    "atk": 2,
+    "maxHp": 67,
+    "def": 5,
     "spd": 0.4,
-    "price": 290
+    "price": 583
   },
   {
     "id": "eq_t3_helm_rare",
@@ -1013,11 +1013,11 @@
     "level": 8,
     "region": 2,
     "sprite": "helm_3",
-    "atk": 1,
-    "maxHp": 36,
-    "def": 3,
+    "atk": 3,
+    "maxHp": 79,
+    "def": 6,
     "spd": 0.5,
-    "price": 660
+    "price": 1325
   },
   {
     "id": "eq_t3_helm_epic",
@@ -1028,11 +1028,11 @@
     "level": 8,
     "region": 2,
     "sprite": "helm_3",
-    "atk": 2,
-    "maxHp": 43,
-    "def": 3,
+    "atk": 3,
+    "maxHp": 93,
+    "def": 7,
     "spd": 0.6,
-    "price": 1583
+    "price": 3181
   },
   {
     "id": "eq_t3_helm_legendary",
@@ -1043,11 +1043,11 @@
     "level": 8,
     "region": 2,
     "sprite": "helm_3",
-    "atk": 2,
-    "maxHp": 51,
-    "def": 4,
+    "atk": 4,
+    "maxHp": 111,
+    "def": 8,
     "spd": 0.7,
-    "price": 3959
+    "price": 7953
   },
   {
     "id": "eq_t3_armor_common",
@@ -1058,11 +1058,11 @@
     "level": 8,
     "region": 2,
     "sprite": "armor_3",
-    "atk": 1,
-    "maxHp": 47,
-    "def": 3,
+    "atk": 2,
+    "maxHp": 102,
+    "def": 7,
     "spd": 0.4,
-    "price": 176
+    "price": 353
   },
   {
     "id": "eq_t3_armor_uncommon",
@@ -1073,11 +1073,11 @@
     "level": 8,
     "region": 2,
     "sprite": "armor_3",
-    "atk": 1,
-    "maxHp": 54,
-    "def": 4,
+    "atk": 2,
+    "maxHp": 117,
+    "def": 9,
     "spd": 0.4,
-    "price": 387
+    "price": 778
   },
   {
     "id": "eq_t3_armor_rare",
@@ -1088,11 +1088,11 @@
     "level": 8,
     "region": 2,
     "sprite": "armor_3",
-    "atk": 1,
-    "maxHp": 63,
-    "def": 5,
+    "atk": 3,
+    "maxHp": 138,
+    "def": 10,
     "spd": 0.5,
-    "price": 880
+    "price": 1767
   },
   {
     "id": "eq_t3_armor_epic",
@@ -1103,11 +1103,11 @@
     "level": 8,
     "region": 2,
     "sprite": "armor_3",
-    "atk": 2,
-    "maxHp": 75,
-    "def": 5,
+    "atk": 3,
+    "maxHp": 163,
+    "def": 12,
     "spd": 0.6,
-    "price": 2111
+    "price": 4241
   },
   {
     "id": "eq_t3_armor_legendary",
@@ -1118,11 +1118,11 @@
     "level": 8,
     "region": 2,
     "sprite": "armor_3",
-    "atk": 2,
-    "maxHp": 89,
-    "def": 6,
+    "atk": 4,
+    "maxHp": 194,
+    "def": 14,
     "spd": 0.7,
-    "price": 5278
+    "price": 10604
   },
   {
     "id": "eq_t3_gloves_common",
@@ -1133,11 +1133,11 @@
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 3,
-    "maxHp": 13,
-    "def": 1,
+    "atk": 6,
+    "maxHp": 29,
+    "def": 3,
     "spd": 1.4,
-    "price": 117
+    "price": 236
   },
   {
     "id": "eq_t3_gloves_uncommon",
@@ -1148,11 +1148,11 @@
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 3,
-    "maxHp": 15,
-    "def": 2,
+    "atk": 7,
+    "maxHp": 34,
+    "def": 4,
     "spd": 1.6,
-    "price": 258
+    "price": 518
   },
   {
     "id": "eq_t3_gloves_rare",
@@ -1163,11 +1163,11 @@
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 4,
-    "maxHp": 18,
-    "def": 2,
+    "atk": 9,
+    "maxHp": 39,
+    "def": 4,
     "spd": 1.9,
-    "price": 586
+    "price": 1178
   },
   {
     "id": "eq_t3_gloves_epic",
@@ -1178,11 +1178,11 @@
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 5,
-    "maxHp": 21,
-    "def": 2,
+    "atk": 10,
+    "maxHp": 47,
+    "def": 5,
     "spd": 2.3,
-    "price": 1408
+    "price": 2828
   },
   {
     "id": "eq_t3_gloves_legendary",
@@ -1193,11 +1193,11 @@
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 6,
-    "maxHp": 25,
-    "def": 3,
+    "atk": 12,
+    "maxHp": 55,
+    "def": 6,
     "spd": 2.7,
-    "price": 3519
+    "price": 7069
   },
   {
     "id": "eq_t3_boots_common",
@@ -1208,11 +1208,11 @@
     "level": 8,
     "region": 2,
     "sprite": "boots_3",
-    "atk": 1,
-    "maxHp": 20,
-    "def": 1,
+    "atk": 2,
+    "maxHp": 44,
+    "def": 3,
     "spd": 3.2,
-    "price": 117
+    "price": 236
   },
   {
     "id": "eq_t3_boots_uncommon",
@@ -1223,11 +1223,11 @@
     "level": 8,
     "region": 2,
     "sprite": "boots_3",
-    "atk": 1,
-    "maxHp": 23,
-    "def": 2,
+    "atk": 2,
+    "maxHp": 50,
+    "def": 4,
     "spd": 3.6,
-    "price": 258
+    "price": 518
   },
   {
     "id": "eq_t3_boots_rare",
@@ -1238,11 +1238,11 @@
     "level": 8,
     "region": 2,
     "sprite": "boots_3",
-    "atk": 1,
-    "maxHp": 27,
-    "def": 2,
+    "atk": 3,
+    "maxHp": 59,
+    "def": 4,
     "spd": 4.3,
-    "price": 586
+    "price": 1178
   },
   {
     "id": "eq_t3_boots_epic",
@@ -1253,11 +1253,11 @@
     "level": 8,
     "region": 2,
     "sprite": "boots_3",
-    "atk": 2,
-    "maxHp": 32,
-    "def": 2,
+    "atk": 3,
+    "maxHp": 70,
+    "def": 5,
     "spd": 5.1,
-    "price": 1408
+    "price": 2828
   },
   {
     "id": "eq_t3_boots_legendary",
@@ -1268,11 +1268,11 @@
     "level": 8,
     "region": 2,
     "sprite": "boots_3",
-    "atk": 2,
-    "maxHp": 38,
-    "def": 3,
+    "atk": 4,
+    "maxHp": 83,
+    "def": 6,
     "spd": 6,
-    "price": 3519
+    "price": 7069
   },
   {
     "id": "eq_t3_accessory_common",
@@ -1283,11 +1283,11 @@
     "level": 8,
     "region": 2,
     "sprite": "accessory_3",
-    "atk": 3,
-    "maxHp": 20,
-    "def": 1,
+    "atk": 6,
+    "maxHp": 44,
+    "def": 2,
     "spd": 1.4,
-    "price": 117
+    "price": 236
   },
   {
     "id": "eq_t3_accessory_uncommon",
@@ -1298,11 +1298,11 @@
     "level": 8,
     "region": 2,
     "sprite": "accessory_3",
-    "atk": 3,
-    "maxHp": 23,
-    "def": 1,
+    "atk": 7,
+    "maxHp": 50,
+    "def": 2,
     "spd": 1.6,
-    "price": 258
+    "price": 518
   },
   {
     "id": "eq_t3_accessory_rare",
@@ -1313,11 +1313,11 @@
     "level": 8,
     "region": 2,
     "sprite": "accessory_3",
-    "atk": 4,
-    "maxHp": 27,
-    "def": 1,
+    "atk": 9,
+    "maxHp": 59,
+    "def": 3,
     "spd": 1.9,
-    "price": 586
+    "price": 1178
   },
   {
     "id": "eq_t3_accessory_epic",
@@ -1328,11 +1328,11 @@
     "level": 8,
     "region": 2,
     "sprite": "accessory_3",
-    "atk": 5,
-    "maxHp": 32,
-    "def": 2,
+    "atk": 10,
+    "maxHp": 70,
+    "def": 3,
     "spd": 2.3,
-    "price": 1408
+    "price": 2828
   },
   {
     "id": "eq_t3_accessory_legendary",
@@ -1343,11 +1343,11 @@
     "level": 8,
     "region": 2,
     "sprite": "accessory_3",
-    "atk": 6,
-    "maxHp": 38,
-    "def": 2,
+    "atk": 12,
+    "maxHp": 83,
+    "def": 4,
     "spd": 2.7,
-    "price": 3519
+    "price": 7069
   },
   {
     "id": "eq_t4_weapon_common",
@@ -1358,11 +1358,11 @@
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 23,
-    "maxHp": 14,
-    "def": 1,
+    "atk": 40,
+    "maxHp": 24,
+    "def": 2,
     "spd": 0.5,
-    "price": 346
+    "price": 558
   },
   {
     "id": "eq_t4_weapon_uncommon",
@@ -1373,11 +1373,11 @@
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 26,
-    "maxHp": 16,
-    "def": 1,
+    "atk": 46,
+    "maxHp": 28,
+    "def": 2,
     "spd": 0.5,
-    "price": 760
+    "price": 1227
   },
   {
     "id": "eq_t4_weapon_rare",
@@ -1388,11 +1388,11 @@
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 31,
-    "maxHp": 18,
-    "def": 1,
+    "atk": 54,
+    "maxHp": 32,
+    "def": 2,
     "spd": 0.6,
-    "price": 1728
+    "price": 2788
   },
   {
     "id": "eq_t4_weapon_epic",
@@ -1403,11 +1403,11 @@
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 36,
-    "maxHp": 22,
-    "def": 2,
+    "atk": 64,
+    "maxHp": 38,
+    "def": 3,
     "spd": 0.8,
-    "price": 4146
+    "price": 6690
   },
   {
     "id": "eq_t4_weapon_legendary",
@@ -1418,11 +1418,11 @@
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 43,
-    "maxHp": 26,
-    "def": 2,
+    "atk": 75,
+    "maxHp": 46,
+    "def": 3,
     "spd": 0.9,
-    "price": 10366
+    "price": 16725
   },
   {
     "id": "eq_t4_helm_common",
@@ -1433,11 +1433,11 @@
     "level": 12,
     "region": 2,
     "sprite": "helm_4",
-    "atk": 2,
-    "maxHp": 55,
-    "def": 4,
+    "atk": 4,
+    "maxHp": 96,
+    "def": 7,
     "spd": 0.5,
-    "price": 207
+    "price": 335
   },
   {
     "id": "eq_t4_helm_uncommon",
@@ -1448,11 +1448,11 @@
     "level": 12,
     "region": 2,
     "sprite": "helm_4",
-    "atk": 2,
-    "maxHp": 63,
-    "def": 5,
+    "atk": 4,
+    "maxHp": 110,
+    "def": 8,
     "spd": 0.5,
-    "price": 456
+    "price": 736
   },
   {
     "id": "eq_t4_helm_rare",
@@ -1463,11 +1463,11 @@
     "level": 12,
     "region": 2,
     "sprite": "helm_4",
-    "atk": 3,
-    "maxHp": 74,
-    "def": 6,
+    "atk": 5,
+    "maxHp": 130,
+    "def": 10,
     "spd": 0.6,
-    "price": 1037
+    "price": 1673
   },
   {
     "id": "eq_t4_helm_epic",
@@ -1478,11 +1478,11 @@
     "level": 12,
     "region": 2,
     "sprite": "helm_4",
-    "atk": 3,
-    "maxHp": 88,
-    "def": 7,
+    "atk": 6,
+    "maxHp": 154,
+    "def": 12,
     "spd": 0.8,
-    "price": 2488
+    "price": 4014
   },
   {
     "id": "eq_t4_helm_legendary",
@@ -1493,11 +1493,11 @@
     "level": 12,
     "region": 2,
     "sprite": "helm_4",
-    "atk": 4,
-    "maxHp": 104,
-    "def": 8,
+    "atk": 7,
+    "maxHp": 182,
+    "def": 14,
     "spd": 0.9,
-    "price": 6219
+    "price": 10035
   },
   {
     "id": "eq_t4_armor_common",
@@ -1508,11 +1508,11 @@
     "level": 12,
     "region": 2,
     "sprite": "armor_4",
-    "atk": 2,
-    "maxHp": 96,
-    "def": 7,
+    "atk": 4,
+    "maxHp": 168,
+    "def": 13,
     "spd": 0.5,
-    "price": 276
+    "price": 446
   },
   {
     "id": "eq_t4_armor_uncommon",
@@ -1523,11 +1523,11 @@
     "level": 12,
     "region": 2,
     "sprite": "armor_4",
-    "atk": 2,
-    "maxHp": 110,
-    "def": 8,
+    "atk": 4,
+    "maxHp": 193,
+    "def": 15,
     "spd": 0.5,
-    "price": 608
+    "price": 981
   },
   {
     "id": "eq_t4_armor_rare",
@@ -1538,11 +1538,11 @@
     "level": 12,
     "region": 2,
     "sprite": "armor_4",
-    "atk": 3,
-    "maxHp": 129,
-    "def": 10,
+    "atk": 5,
+    "maxHp": 227,
+    "def": 17,
     "spd": 0.6,
-    "price": 1382
+    "price": 2230
   },
   {
     "id": "eq_t4_armor_epic",
@@ -1553,11 +1553,11 @@
     "level": 12,
     "region": 2,
     "sprite": "armor_4",
-    "atk": 3,
-    "maxHp": 153,
-    "def": 12,
+    "atk": 6,
+    "maxHp": 269,
+    "def": 20,
     "spd": 0.8,
-    "price": 3317
+    "price": 5352
   },
   {
     "id": "eq_t4_armor_legendary",
@@ -1568,11 +1568,11 @@
     "level": 12,
     "region": 2,
     "sprite": "armor_4",
-    "atk": 4,
-    "maxHp": 182,
-    "def": 14,
+    "atk": 7,
+    "maxHp": 319,
+    "def": 24,
     "spd": 0.9,
-    "price": 8293
+    "price": 13380
   },
   {
     "id": "eq_t4_gloves_common",
@@ -1583,11 +1583,11 @@
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 6,
-    "maxHp": 27,
-    "def": 3,
+    "atk": 11,
+    "maxHp": 48,
+    "def": 5,
     "spd": 1.9,
-    "price": 184
+    "price": 297
   },
   {
     "id": "eq_t4_gloves_uncommon",
@@ -1598,11 +1598,11 @@
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 7,
-    "maxHp": 32,
-    "def": 4,
+    "atk": 12,
+    "maxHp": 55,
+    "def": 6,
     "spd": 2.2,
-    "price": 405
+    "price": 654
   },
   {
     "id": "eq_t4_gloves_rare",
@@ -1613,11 +1613,11 @@
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 8,
-    "maxHp": 37,
-    "def": 4,
+    "atk": 15,
+    "maxHp": 65,
+    "def": 7,
     "spd": 2.6,
-    "price": 921
+    "price": 1487
   },
   {
     "id": "eq_t4_gloves_epic",
@@ -1628,11 +1628,11 @@
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 10,
-    "maxHp": 44,
-    "def": 5,
+    "atk": 17,
+    "maxHp": 77,
+    "def": 9,
     "spd": 3,
-    "price": 2211
+    "price": 3568
   },
   {
     "id": "eq_t4_gloves_legendary",
@@ -1643,11 +1643,11 @@
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 12,
-    "maxHp": 52,
-    "def": 6,
+    "atk": 21,
+    "maxHp": 91,
+    "def": 10,
     "spd": 3.6,
-    "price": 5528
+    "price": 8920
   },
   {
     "id": "eq_t4_boots_common",
@@ -1658,11 +1658,11 @@
     "level": 12,
     "region": 2,
     "sprite": "boots_4",
-    "atk": 2,
-    "maxHp": 41,
-    "def": 3,
+    "atk": 4,
+    "maxHp": 72,
+    "def": 5,
     "spd": 4.3,
-    "price": 184
+    "price": 297
   },
   {
     "id": "eq_t4_boots_uncommon",
@@ -1673,11 +1673,11 @@
     "level": 12,
     "region": 2,
     "sprite": "boots_4",
-    "atk": 2,
-    "maxHp": 47,
-    "def": 4,
+    "atk": 4,
+    "maxHp": 83,
+    "def": 6,
     "spd": 4.9,
-    "price": 405
+    "price": 654
   },
   {
     "id": "eq_t4_boots_rare",
@@ -1688,11 +1688,11 @@
     "level": 12,
     "region": 2,
     "sprite": "boots_4",
-    "atk": 3,
-    "maxHp": 55,
-    "def": 4,
+    "atk": 5,
+    "maxHp": 97,
+    "def": 7,
     "spd": 5.8,
-    "price": 921
+    "price": 1487
   },
   {
     "id": "eq_t4_boots_epic",
@@ -1703,11 +1703,11 @@
     "level": 12,
     "region": 2,
     "sprite": "boots_4",
-    "atk": 3,
-    "maxHp": 66,
-    "def": 5,
+    "atk": 6,
+    "maxHp": 115,
+    "def": 9,
     "spd": 6.8,
-    "price": 2211
+    "price": 3568
   },
   {
     "id": "eq_t4_boots_legendary",
@@ -1718,11 +1718,11 @@
     "level": 12,
     "region": 2,
     "sprite": "boots_4",
-    "atk": 4,
-    "maxHp": 78,
-    "def": 6,
+    "atk": 7,
+    "maxHp": 137,
+    "def": 10,
     "spd": 8.1,
-    "price": 5528
+    "price": 8920
   },
   {
     "id": "eq_t4_accessory_common",
@@ -1733,11 +1733,11 @@
     "level": 12,
     "region": 2,
     "sprite": "accessory_4",
-    "atk": 6,
-    "maxHp": 41,
-    "def": 2,
+    "atk": 11,
+    "maxHp": 72,
+    "def": 4,
     "spd": 1.9,
-    "price": 184
+    "price": 297
   },
   {
     "id": "eq_t4_accessory_uncommon",
@@ -1748,11 +1748,11 @@
     "level": 12,
     "region": 2,
     "sprite": "accessory_4",
-    "atk": 7,
-    "maxHp": 47,
-    "def": 2,
+    "atk": 12,
+    "maxHp": 83,
+    "def": 4,
     "spd": 2.2,
-    "price": 405
+    "price": 654
   },
   {
     "id": "eq_t4_accessory_rare",
@@ -1763,11 +1763,11 @@
     "level": 12,
     "region": 2,
     "sprite": "accessory_4",
-    "atk": 8,
-    "maxHp": 55,
-    "def": 3,
+    "atk": 15,
+    "maxHp": 97,
+    "def": 5,
     "spd": 2.6,
-    "price": 921
+    "price": 1487
   },
   {
     "id": "eq_t4_accessory_epic",
@@ -1778,11 +1778,11 @@
     "level": 12,
     "region": 2,
     "sprite": "accessory_4",
-    "atk": 10,
-    "maxHp": 66,
-    "def": 3,
+    "atk": 17,
+    "maxHp": 115,
+    "def": 6,
     "spd": 3,
-    "price": 2211
+    "price": 3568
   },
   {
     "id": "eq_t4_accessory_legendary",
@@ -1793,11 +1793,11 @@
     "level": 12,
     "region": 2,
     "sprite": "accessory_4",
-    "atk": 12,
-    "maxHp": 78,
-    "def": 4,
+    "atk": 21,
+    "maxHp": 137,
+    "def": 7,
     "spd": 3.6,
-    "price": 5528
+    "price": 8920
   },
   {
     "id": "eq_t5_weapon_common",
@@ -1808,11 +1808,11 @@
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 41,
-    "maxHp": 24,
-    "def": 2,
+    "atk": 62,
+    "maxHp": 37,
+    "def": 3,
     "spd": 0.6,
-    "price": 492
+    "price": 693
   },
   {
     "id": "eq_t5_weapon_uncommon",
@@ -1823,11 +1823,11 @@
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 47,
-    "maxHp": 28,
-    "def": 2,
+    "atk": 71,
+    "maxHp": 42,
+    "def": 3,
     "spd": 0.7,
-    "price": 1083
+    "price": 1524
   },
   {
     "id": "eq_t5_weapon_rare",
@@ -1838,11 +1838,11 @@
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 55,
-    "maxHp": 33,
-    "def": 2,
+    "atk": 84,
+    "maxHp": 50,
+    "def": 4,
     "spd": 0.8,
-    "price": 2462
+    "price": 3464
   },
   {
     "id": "eq_t5_weapon_epic",
@@ -1853,11 +1853,11 @@
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 65,
-    "maxHp": 39,
-    "def": 3,
+    "atk": 99,
+    "maxHp": 59,
+    "def": 5,
     "spd": 1,
-    "price": 5910
+    "price": 8314
   },
   {
     "id": "eq_t5_weapon_legendary",
@@ -1868,11 +1868,11 @@
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 77,
-    "maxHp": 46,
-    "def": 4,
+    "atk": 118,
+    "maxHp": 70,
+    "def": 5,
     "spd": 1.1,
-    "price": 14774
+    "price": 20785
   },
   {
     "id": "eq_t5_helm_common",
@@ -1883,11 +1883,11 @@
     "level": 16,
     "region": 3,
     "sprite": "helm_5",
-    "atk": 4,
-    "maxHp": 96,
-    "def": 7,
+    "atk": 6,
+    "maxHp": 147,
+    "def": 11,
     "spd": 0.6,
-    "price": 295
+    "price": 416
   },
   {
     "id": "eq_t5_helm_uncommon",
@@ -1898,11 +1898,11 @@
     "level": 16,
     "region": 3,
     "sprite": "helm_5",
-    "atk": 4,
-    "maxHp": 111,
-    "def": 9,
+    "atk": 6,
+    "maxHp": 169,
+    "def": 13,
     "spd": 0.7,
-    "price": 650
+    "price": 915
   },
   {
     "id": "eq_t5_helm_rare",
@@ -1913,11 +1913,11 @@
     "level": 16,
     "region": 3,
     "sprite": "helm_5",
-    "atk": 5,
-    "maxHp": 130,
-    "def": 10,
+    "atk": 8,
+    "maxHp": 199,
+    "def": 15,
     "spd": 0.8,
-    "price": 1477
+    "price": 2079
   },
   {
     "id": "eq_t5_helm_epic",
@@ -1928,11 +1928,11 @@
     "level": 16,
     "region": 3,
     "sprite": "helm_5",
-    "atk": 6,
-    "maxHp": 154,
-    "def": 12,
+    "atk": 9,
+    "maxHp": 235,
+    "def": 18,
     "spd": 1,
-    "price": 3546
+    "price": 4988
   },
   {
     "id": "eq_t5_helm_legendary",
@@ -1943,11 +1943,11 @@
     "level": 16,
     "region": 3,
     "sprite": "helm_5",
-    "atk": 7,
-    "maxHp": 183,
-    "def": 14,
+    "atk": 11,
+    "maxHp": 280,
+    "def": 21,
     "spd": 1.1,
-    "price": 8864
+    "price": 12471
   },
   {
     "id": "eq_t5_armor_common",
@@ -1958,11 +1958,11 @@
     "level": 16,
     "region": 3,
     "sprite": "armor_5",
-    "atk": 4,
-    "maxHp": 169,
-    "def": 13,
+    "atk": 6,
+    "maxHp": 257,
+    "def": 20,
     "spd": 0.6,
-    "price": 394
+    "price": 554
   },
   {
     "id": "eq_t5_armor_uncommon",
@@ -1973,11 +1973,11 @@
     "level": 16,
     "region": 3,
     "sprite": "armor_5",
-    "atk": 4,
-    "maxHp": 194,
-    "def": 15,
+    "atk": 6,
+    "maxHp": 296,
+    "def": 23,
     "spd": 0.7,
-    "price": 867
+    "price": 1219
   },
   {
     "id": "eq_t5_armor_rare",
@@ -1988,11 +1988,11 @@
     "level": 16,
     "region": 3,
     "sprite": "armor_5",
-    "atk": 5,
-    "maxHp": 228,
-    "def": 17,
+    "atk": 8,
+    "maxHp": 348,
+    "def": 27,
     "spd": 0.8,
-    "price": 1970
+    "price": 2771
   },
   {
     "id": "eq_t5_armor_epic",
@@ -2003,11 +2003,11 @@
     "level": 16,
     "region": 3,
     "sprite": "armor_5",
-    "atk": 6,
-    "maxHp": 270,
-    "def": 21,
+    "atk": 9,
+    "maxHp": 412,
+    "def": 32,
     "spd": 1,
-    "price": 4728
+    "price": 6651
   },
   {
     "id": "eq_t5_armor_legendary",
@@ -2018,11 +2018,11 @@
     "level": 16,
     "region": 3,
     "sprite": "armor_5",
-    "atk": 7,
-    "maxHp": 320,
-    "def": 25,
+    "atk": 11,
+    "maxHp": 489,
+    "def": 38,
     "spd": 1.1,
-    "price": 11819
+    "price": 16628
   },
   {
     "id": "eq_t5_gloves_common",
@@ -2033,11 +2033,11 @@
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 11,
-    "maxHp": 48,
-    "def": 6,
+    "atk": 17,
+    "maxHp": 74,
+    "def": 8,
     "spd": 2.4,
-    "price": 263
+    "price": 370
   },
   {
     "id": "eq_t5_gloves_uncommon",
@@ -2048,11 +2048,11 @@
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 13,
-    "maxHp": 55,
-    "def": 6,
+    "atk": 19,
+    "maxHp": 85,
+    "def": 10,
     "spd": 2.7,
-    "price": 578
+    "price": 813
   },
   {
     "id": "eq_t5_gloves_rare",
@@ -2063,11 +2063,11 @@
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 15,
-    "maxHp": 65,
-    "def": 7,
+    "atk": 23,
+    "maxHp": 99,
+    "def": 11,
     "spd": 3.2,
-    "price": 1313
+    "price": 1848
   },
   {
     "id": "eq_t5_gloves_epic",
@@ -2078,11 +2078,11 @@
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 18,
-    "maxHp": 77,
-    "def": 9,
+    "atk": 27,
+    "maxHp": 118,
+    "def": 14,
     "spd": 3.8,
-    "price": 3152
+    "price": 4434
   },
   {
     "id": "eq_t5_gloves_legendary",
@@ -2093,11 +2093,11 @@
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 21,
-    "maxHp": 91,
-    "def": 11,
+    "atk": 32,
+    "maxHp": 140,
+    "def": 16,
     "spd": 4.5,
-    "price": 7879
+    "price": 11085
   },
   {
     "id": "eq_t5_boots_common",
@@ -2108,11 +2108,11 @@
     "level": 16,
     "region": 3,
     "sprite": "boots_5",
-    "atk": 4,
-    "maxHp": 72,
-    "def": 6,
+    "atk": 6,
+    "maxHp": 110,
+    "def": 8,
     "spd": 5.4,
-    "price": 263
+    "price": 370
   },
   {
     "id": "eq_t5_boots_uncommon",
@@ -2123,11 +2123,11 @@
     "level": 16,
     "region": 3,
     "sprite": "boots_5",
-    "atk": 4,
-    "maxHp": 83,
-    "def": 6,
+    "atk": 6,
+    "maxHp": 127,
+    "def": 10,
     "spd": 6.2,
-    "price": 578
+    "price": 813
   },
   {
     "id": "eq_t5_boots_rare",
@@ -2138,11 +2138,11 @@
     "level": 16,
     "region": 3,
     "sprite": "boots_5",
-    "atk": 5,
-    "maxHp": 98,
-    "def": 7,
+    "atk": 8,
+    "maxHp": 149,
+    "def": 11,
     "spd": 7.3,
-    "price": 1313
+    "price": 1848
   },
   {
     "id": "eq_t5_boots_epic",
@@ -2153,11 +2153,11 @@
     "level": 16,
     "region": 3,
     "sprite": "boots_5",
-    "atk": 6,
-    "maxHp": 116,
-    "def": 9,
+    "atk": 9,
+    "maxHp": 177,
+    "def": 14,
     "spd": 8.6,
-    "price": 3152
+    "price": 4434
   },
   {
     "id": "eq_t5_boots_legendary",
@@ -2168,11 +2168,11 @@
     "level": 16,
     "region": 3,
     "sprite": "boots_5",
-    "atk": 7,
-    "maxHp": 137,
-    "def": 11,
+    "atk": 11,
+    "maxHp": 210,
+    "def": 16,
     "spd": 10.2,
-    "price": 7879
+    "price": 11085
   },
   {
     "id": "eq_t5_accessory_common",
@@ -2183,11 +2183,11 @@
     "level": 16,
     "region": 3,
     "sprite": "accessory_5",
-    "atk": 11,
-    "maxHp": 72,
-    "def": 4,
+    "atk": 17,
+    "maxHp": 110,
+    "def": 6,
     "spd": 2.4,
-    "price": 263
+    "price": 370
   },
   {
     "id": "eq_t5_accessory_uncommon",
@@ -2198,11 +2198,11 @@
     "level": 16,
     "region": 3,
     "sprite": "accessory_5",
-    "atk": 13,
-    "maxHp": 83,
-    "def": 4,
+    "atk": 19,
+    "maxHp": 127,
+    "def": 6,
     "spd": 2.7,
-    "price": 578
+    "price": 813
   },
   {
     "id": "eq_t5_accessory_rare",
@@ -2213,11 +2213,11 @@
     "level": 16,
     "region": 3,
     "sprite": "accessory_5",
-    "atk": 15,
-    "maxHp": 98,
-    "def": 5,
+    "atk": 23,
+    "maxHp": 149,
+    "def": 8,
     "spd": 3.2,
-    "price": 1313
+    "price": 1848
   },
   {
     "id": "eq_t5_accessory_epic",
@@ -2228,11 +2228,11 @@
     "level": 16,
     "region": 3,
     "sprite": "accessory_5",
-    "atk": 18,
-    "maxHp": 116,
-    "def": 6,
+    "atk": 27,
+    "maxHp": 177,
+    "def": 9,
     "spd": 3.8,
-    "price": 3152
+    "price": 4434
   },
   {
     "id": "eq_t5_accessory_legendary",
@@ -2243,11 +2243,11 @@
     "level": 16,
     "region": 3,
     "sprite": "accessory_5",
-    "atk": 21,
-    "maxHp": 137,
-    "def": 7,
+    "atk": 32,
+    "maxHp": 210,
+    "def": 11,
     "spd": 4.5,
-    "price": 7879
+    "price": 11085
   },
   {
     "id": "eq_t6_weapon_common",
@@ -2258,11 +2258,11 @@
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 74,
-    "maxHp": 43,
-    "def": 3,
+    "atk": 101,
+    "maxHp": 59,
+    "def": 5,
     "spd": 0.8,
-    "price": 712
+    "price": 895
   },
   {
     "id": "eq_t6_weapon_uncommon",
@@ -2273,11 +2273,11 @@
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 85,
-    "maxHp": 49,
-    "def": 4,
+    "atk": 116,
+    "maxHp": 68,
+    "def": 5,
     "spd": 0.9,
-    "price": 1566
+    "price": 1969
   },
   {
     "id": "eq_t6_weapon_rare",
@@ -2288,11 +2288,11 @@
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 100,
-    "maxHp": 58,
-    "def": 5,
+    "atk": 136,
+    "maxHp": 79,
+    "def": 6,
     "spd": 1,
-    "price": 3559
+    "price": 4474
   },
   {
     "id": "eq_t6_weapon_epic",
@@ -2303,11 +2303,11 @@
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 118,
-    "maxHp": 69,
-    "def": 5,
+    "atk": 161,
+    "maxHp": 94,
+    "def": 7,
     "spd": 1.2,
-    "price": 8541
+    "price": 10737
   },
   {
     "id": "eq_t6_weapon_legendary",
@@ -2318,11 +2318,11 @@
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 140,
-    "maxHp": 82,
-    "def": 6,
+    "atk": 191,
+    "maxHp": 112,
+    "def": 9,
     "spd": 1.4,
-    "price": 21351
+    "price": 26844
   },
   {
     "id": "eq_t6_helm_common",
@@ -2333,11 +2333,11 @@
     "level": 21,
     "region": 3,
     "sprite": "helm_6",
-    "atk": 7,
-    "maxHp": 172,
-    "def": 13,
+    "atk": 9,
+    "maxHp": 235,
+    "def": 18,
     "spd": 0.8,
-    "price": 427
+    "price": 537
   },
   {
     "id": "eq_t6_helm_uncommon",
@@ -2348,11 +2348,11 @@
     "level": 21,
     "region": 3,
     "sprite": "helm_6",
-    "atk": 8,
-    "maxHp": 198,
-    "def": 15,
+    "atk": 11,
+    "maxHp": 270,
+    "def": 21,
     "spd": 0.9,
-    "price": 939
+    "price": 1181
   },
   {
     "id": "eq_t6_helm_rare",
@@ -2363,11 +2363,11 @@
     "level": 21,
     "region": 3,
     "sprite": "helm_6",
-    "atk": 9,
-    "maxHp": 232,
-    "def": 18,
+    "atk": 12,
+    "maxHp": 317,
+    "def": 25,
     "spd": 1,
-    "price": 2135
+    "price": 2684
   },
   {
     "id": "eq_t6_helm_epic",
@@ -2378,11 +2378,11 @@
     "level": 21,
     "region": 3,
     "sprite": "helm_6",
-    "atk": 11,
-    "maxHp": 275,
-    "def": 21,
+    "atk": 15,
+    "maxHp": 376,
+    "def": 29,
     "spd": 1.2,
-    "price": 5124
+    "price": 6442
   },
   {
     "id": "eq_t6_helm_legendary",
@@ -2393,11 +2393,11 @@
     "level": 21,
     "region": 3,
     "sprite": "helm_6",
-    "atk": 13,
-    "maxHp": 327,
-    "def": 26,
+    "atk": 17,
+    "maxHp": 446,
+    "def": 35,
     "spd": 1.4,
-    "price": 12811
+    "price": 16106
   },
   {
     "id": "eq_t6_armor_common",
@@ -2408,11 +2408,11 @@
     "level": 21,
     "region": 3,
     "sprite": "armor_6",
-    "atk": 7,
-    "maxHp": 301,
-    "def": 23,
+    "atk": 9,
+    "maxHp": 411,
+    "def": 32,
     "spd": 0.8,
-    "price": 569
+    "price": 716
   },
   {
     "id": "eq_t6_armor_uncommon",
@@ -2423,11 +2423,11 @@
     "level": 21,
     "region": 3,
     "sprite": "armor_6",
-    "atk": 8,
-    "maxHp": 346,
-    "def": 27,
+    "atk": 11,
+    "maxHp": 473,
+    "def": 37,
     "spd": 0.9,
-    "price": 1253
+    "price": 1575
   },
   {
     "id": "eq_t6_armor_rare",
@@ -2438,11 +2438,11 @@
     "level": 21,
     "region": 3,
     "sprite": "armor_6",
-    "atk": 9,
-    "maxHp": 406,
-    "def": 32,
+    "atk": 12,
+    "maxHp": 555,
+    "def": 43,
     "spd": 1,
-    "price": 2847
+    "price": 3579
   },
   {
     "id": "eq_t6_armor_epic",
@@ -2453,11 +2453,11 @@
     "level": 21,
     "region": 3,
     "sprite": "armor_6",
-    "atk": 11,
-    "maxHp": 482,
-    "def": 38,
+    "atk": 15,
+    "maxHp": 658,
+    "def": 51,
     "spd": 1.2,
-    "price": 6832
+    "price": 8590
   },
   {
     "id": "eq_t6_armor_legendary",
@@ -2468,11 +2468,11 @@
     "level": 21,
     "region": 3,
     "sprite": "armor_6",
-    "atk": 13,
-    "maxHp": 572,
-    "def": 45,
+    "atk": 17,
+    "maxHp": 781,
+    "def": 61,
     "spd": 1.4,
-    "price": 17081
+    "price": 21475
   },
   {
     "id": "eq_t6_gloves_common",
@@ -2483,11 +2483,11 @@
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 20,
-    "maxHp": 86,
-    "def": 10,
+    "atk": 27,
+    "maxHp": 117,
+    "def": 14,
     "spd": 3,
-    "price": 380
+    "price": 477
   },
   {
     "id": "eq_t6_gloves_uncommon",
@@ -2498,11 +2498,11 @@
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 23,
-    "maxHp": 99,
-    "def": 12,
+    "atk": 32,
+    "maxHp": 135,
+    "def": 16,
     "spd": 3.5,
-    "price": 835
+    "price": 1050
   },
   {
     "id": "eq_t6_gloves_rare",
@@ -2513,11 +2513,11 @@
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 27,
-    "maxHp": 116,
-    "def": 14,
+    "atk": 37,
+    "maxHp": 159,
+    "def": 19,
     "spd": 4.1,
-    "price": 1898
+    "price": 2386
   },
   {
     "id": "eq_t6_gloves_epic",
@@ -2528,11 +2528,11 @@
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 32,
-    "maxHp": 138,
-    "def": 16,
+    "atk": 44,
+    "maxHp": 188,
+    "def": 22,
     "spd": 4.8,
-    "price": 4555
+    "price": 5727
   },
   {
     "id": "eq_t6_gloves_legendary",
@@ -2543,11 +2543,11 @@
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 38,
-    "maxHp": 163,
-    "def": 19,
+    "atk": 52,
+    "maxHp": 223,
+    "def": 26,
     "spd": 5.7,
-    "price": 11387
+    "price": 14317
   },
   {
     "id": "eq_t6_boots_common",
@@ -2558,11 +2558,11 @@
     "level": 21,
     "region": 3,
     "sprite": "boots_6",
-    "atk": 7,
-    "maxHp": 129,
-    "def": 10,
+    "atk": 9,
+    "maxHp": 176,
+    "def": 14,
     "spd": 6.8,
-    "price": 380
+    "price": 477
   },
   {
     "id": "eq_t6_boots_uncommon",
@@ -2573,11 +2573,11 @@
     "level": 21,
     "region": 3,
     "sprite": "boots_6",
-    "atk": 8,
-    "maxHp": 148,
-    "def": 12,
+    "atk": 11,
+    "maxHp": 203,
+    "def": 16,
     "spd": 7.8,
-    "price": 835
+    "price": 1050
   },
   {
     "id": "eq_t6_boots_rare",
@@ -2588,11 +2588,11 @@
     "level": 21,
     "region": 3,
     "sprite": "boots_6",
-    "atk": 9,
-    "maxHp": 174,
-    "def": 14,
+    "atk": 12,
+    "maxHp": 238,
+    "def": 19,
     "spd": 9.1,
-    "price": 1898
+    "price": 2386
   },
   {
     "id": "eq_t6_boots_epic",
@@ -2603,11 +2603,11 @@
     "level": 21,
     "region": 3,
     "sprite": "boots_6",
-    "atk": 11,
-    "maxHp": 206,
-    "def": 16,
+    "atk": 15,
+    "maxHp": 282,
+    "def": 22,
     "spd": 10.8,
-    "price": 4555
+    "price": 5727
   },
   {
     "id": "eq_t6_boots_legendary",
@@ -2618,11 +2618,11 @@
     "level": 21,
     "region": 3,
     "sprite": "boots_6",
-    "atk": 13,
-    "maxHp": 245,
-    "def": 19,
+    "atk": 17,
+    "maxHp": 335,
+    "def": 26,
     "spd": 12.9,
-    "price": 11387
+    "price": 14317
   },
   {
     "id": "eq_t6_accessory_common",
@@ -2633,11 +2633,11 @@
     "level": 21,
     "region": 3,
     "sprite": "accessory_6",
-    "atk": 20,
-    "maxHp": 129,
-    "def": 7,
+    "atk": 27,
+    "maxHp": 176,
+    "def": 9,
     "spd": 3,
-    "price": 380
+    "price": 477
   },
   {
     "id": "eq_t6_accessory_uncommon",
@@ -2648,11 +2648,11 @@
     "level": 21,
     "region": 3,
     "sprite": "accessory_6",
-    "atk": 23,
-    "maxHp": 148,
-    "def": 8,
+    "atk": 32,
+    "maxHp": 203,
+    "def": 11,
     "spd": 3.5,
-    "price": 835
+    "price": 1050
   },
   {
     "id": "eq_t6_accessory_rare",
@@ -2663,11 +2663,11 @@
     "level": 21,
     "region": 3,
     "sprite": "accessory_6",
-    "atk": 27,
-    "maxHp": 174,
-    "def": 9,
+    "atk": 37,
+    "maxHp": 238,
+    "def": 12,
     "spd": 4.1,
-    "price": 1898
+    "price": 2386
   },
   {
     "id": "eq_t6_accessory_epic",
@@ -2678,11 +2678,11 @@
     "level": 21,
     "region": 3,
     "sprite": "accessory_6",
-    "atk": 32,
-    "maxHp": 206,
-    "def": 11,
+    "atk": 44,
+    "maxHp": 282,
+    "def": 15,
     "spd": 4.8,
-    "price": 4555
+    "price": 5727
   },
   {
     "id": "eq_t6_accessory_legendary",
@@ -2693,11 +2693,11 @@
     "level": 21,
     "region": 3,
     "sprite": "accessory_6",
-    "atk": 38,
-    "maxHp": 245,
-    "def": 13,
+    "atk": 52,
+    "maxHp": 335,
+    "def": 17,
     "spd": 5.7,
-    "price": 11387
+    "price": 14317
   },
   {
     "id": "eq_t7_weapon_common",
@@ -2708,11 +2708,11 @@
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 134,
-    "maxHp": 77,
-    "def": 6,
+    "atk": 168,
+    "maxHp": 96,
+    "def": 8,
     "spd": 0.9,
-    "price": 1038
+    "price": 1196
   },
   {
     "id": "eq_t7_weapon_uncommon",
@@ -2723,11 +2723,11 @@
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 154,
-    "maxHp": 89,
-    "def": 7,
+    "atk": 193,
+    "maxHp": 111,
+    "def": 9,
     "spd": 1.1,
-    "price": 2284
+    "price": 2630
   },
   {
     "id": "eq_t7_weapon_rare",
@@ -2738,11 +2738,11 @@
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 181,
-    "maxHp": 104,
-    "def": 8,
+    "atk": 226,
+    "maxHp": 130,
+    "def": 10,
     "spd": 1.3,
-    "price": 5192
+    "price": 5978
   },
   {
     "id": "eq_t7_weapon_epic",
@@ -2753,11 +2753,11 @@
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 215,
-    "maxHp": 123,
-    "def": 10,
+    "atk": 268,
+    "maxHp": 154,
+    "def": 12,
     "spd": 1.5,
-    "price": 12461
+    "price": 14348
   },
   {
     "id": "eq_t7_weapon_legendary",
@@ -2768,11 +2768,11 @@
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 255,
-    "maxHp": 147,
-    "def": 12,
+    "atk": 319,
+    "maxHp": 183,
+    "def": 14,
     "spd": 1.8,
-    "price": 31152
+    "price": 35870
   },
   {
     "id": "eq_t7_helm_common",
@@ -2783,11 +2783,11 @@
     "level": 26,
     "region": 4,
     "sprite": "helm_7",
-    "atk": 12,
-    "maxHp": 309,
-    "def": 24,
+    "atk": 15,
+    "maxHp": 386,
+    "def": 30,
     "spd": 0.9,
-    "price": 623
+    "price": 717
   },
   {
     "id": "eq_t7_helm_uncommon",
@@ -2798,11 +2798,11 @@
     "level": 26,
     "region": 4,
     "sprite": "helm_7",
-    "atk": 14,
-    "maxHp": 355,
-    "def": 28,
+    "atk": 18,
+    "maxHp": 444,
+    "def": 35,
     "spd": 1.1,
-    "price": 1371
+    "price": 1578
   },
   {
     "id": "eq_t7_helm_rare",
@@ -2813,11 +2813,11 @@
     "level": 26,
     "region": 4,
     "sprite": "helm_7",
-    "atk": 16,
-    "maxHp": 417,
-    "def": 33,
+    "atk": 21,
+    "maxHp": 521,
+    "def": 41,
     "spd": 1.3,
-    "price": 3115
+    "price": 3587
   },
   {
     "id": "eq_t7_helm_epic",
@@ -2828,11 +2828,11 @@
     "level": 26,
     "region": 4,
     "sprite": "helm_7",
-    "atk": 20,
-    "maxHp": 494,
-    "def": 39,
+    "atk": 24,
+    "maxHp": 617,
+    "def": 49,
     "spd": 1.5,
-    "price": 7476
+    "price": 8609
   },
   {
     "id": "eq_t7_helm_legendary",
@@ -2843,11 +2843,11 @@
     "level": 26,
     "region": 4,
     "sprite": "helm_7",
-    "atk": 23,
-    "maxHp": 586,
-    "def": 46,
+    "atk": 29,
+    "maxHp": 733,
+    "def": 58,
     "spd": 1.8,
-    "price": 18691
+    "price": 21522
   },
   {
     "id": "eq_t7_armor_common",
@@ -2858,11 +2858,11 @@
     "level": 26,
     "region": 4,
     "sprite": "armor_7",
-    "atk": 12,
-    "maxHp": 540,
-    "def": 43,
+    "atk": 15,
+    "maxHp": 675,
+    "def": 53,
     "spd": 0.9,
-    "price": 831
+    "price": 957
   },
   {
     "id": "eq_t7_armor_uncommon",
@@ -2873,11 +2873,11 @@
     "level": 26,
     "region": 4,
     "sprite": "armor_7",
-    "atk": 14,
-    "maxHp": 621,
-    "def": 49,
+    "atk": 18,
+    "maxHp": 776,
+    "def": 61,
     "spd": 1.1,
-    "price": 1828
+    "price": 2104
   },
   {
     "id": "eq_t7_armor_rare",
@@ -2888,11 +2888,11 @@
     "level": 26,
     "region": 4,
     "sprite": "armor_7",
-    "atk": 16,
-    "maxHp": 729,
-    "def": 58,
+    "atk": 21,
+    "maxHp": 911,
+    "def": 72,
     "spd": 1.3,
-    "price": 4154
+    "price": 4783
   },
   {
     "id": "eq_t7_armor_epic",
@@ -2903,11 +2903,11 @@
     "level": 26,
     "region": 4,
     "sprite": "armor_7",
-    "atk": 20,
-    "maxHp": 864,
-    "def": 68,
+    "atk": 24,
+    "maxHp": 1080,
+    "def": 85,
     "spd": 1.5,
-    "price": 9969
+    "price": 11478
   },
   {
     "id": "eq_t7_armor_legendary",
@@ -2918,11 +2918,11 @@
     "level": 26,
     "region": 4,
     "sprite": "armor_7",
-    "atk": 23,
-    "maxHp": 1026,
-    "def": 81,
+    "atk": 29,
+    "maxHp": 1283,
+    "def": 101,
     "spd": 1.8,
-    "price": 24921
+    "price": 28696
   },
   {
     "id": "eq_t7_gloves_common",
@@ -2933,11 +2933,11 @@
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 37,
-    "maxHp": 154,
-    "def": 18,
+    "atk": 46,
+    "maxHp": 193,
+    "def": 23,
     "spd": 3.7,
-    "price": 554
+    "price": 638
   },
   {
     "id": "eq_t7_gloves_uncommon",
@@ -2948,11 +2948,11 @@
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 42,
-    "maxHp": 177,
-    "def": 21,
+    "atk": 53,
+    "maxHp": 222,
+    "def": 26,
     "spd": 4.3,
-    "price": 1218
+    "price": 1403
   },
   {
     "id": "eq_t7_gloves_rare",
@@ -2963,11 +2963,11 @@
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 49,
-    "maxHp": 208,
-    "def": 25,
+    "atk": 62,
+    "maxHp": 260,
+    "def": 31,
     "spd": 5.1,
-    "price": 2769
+    "price": 3188
   },
   {
     "id": "eq_t7_gloves_epic",
@@ -2978,11 +2978,11 @@
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 59,
-    "maxHp": 247,
-    "def": 29,
+    "atk": 73,
+    "maxHp": 309,
+    "def": 37,
     "spd": 6,
-    "price": 6646
+    "price": 7652
   },
   {
     "id": "eq_t7_gloves_legendary",
@@ -2993,11 +2993,11 @@
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 69,
-    "maxHp": 293,
-    "def": 35,
+    "atk": 87,
+    "maxHp": 367,
+    "def": 43,
     "spd": 7.1,
-    "price": 16614
+    "price": 19131
   },
   {
     "id": "eq_t7_boots_common",
@@ -3008,11 +3008,11 @@
     "level": 26,
     "region": 4,
     "sprite": "boots_7",
-    "atk": 12,
-    "maxHp": 231,
-    "def": 18,
+    "atk": 15,
+    "maxHp": 289,
+    "def": 23,
     "spd": 8.4,
-    "price": 554
+    "price": 638
   },
   {
     "id": "eq_t7_boots_uncommon",
@@ -3023,11 +3023,11 @@
     "level": 26,
     "region": 4,
     "sprite": "boots_7",
-    "atk": 14,
-    "maxHp": 266,
-    "def": 21,
+    "atk": 18,
+    "maxHp": 333,
+    "def": 26,
     "spd": 9.7,
-    "price": 1218
+    "price": 1403
   },
   {
     "id": "eq_t7_boots_rare",
@@ -3038,11 +3038,11 @@
     "level": 26,
     "region": 4,
     "sprite": "boots_7",
-    "atk": 16,
-    "maxHp": 312,
-    "def": 25,
+    "atk": 21,
+    "maxHp": 391,
+    "def": 31,
     "spd": 11.4,
-    "price": 2769
+    "price": 3188
   },
   {
     "id": "eq_t7_boots_epic",
@@ -3053,11 +3053,11 @@
     "level": 26,
     "region": 4,
     "sprite": "boots_7",
-    "atk": 20,
-    "maxHp": 370,
-    "def": 29,
+    "atk": 24,
+    "maxHp": 463,
+    "def": 37,
     "spd": 13.5,
-    "price": 6646
+    "price": 7652
   },
   {
     "id": "eq_t7_boots_legendary",
@@ -3068,11 +3068,11 @@
     "level": 26,
     "region": 4,
     "sprite": "boots_7",
-    "atk": 23,
-    "maxHp": 440,
-    "def": 35,
+    "atk": 29,
+    "maxHp": 550,
+    "def": 43,
     "spd": 16,
-    "price": 16614
+    "price": 19131
   },
   {
     "id": "eq_t7_accessory_common",
@@ -3083,11 +3083,11 @@
     "level": 26,
     "region": 4,
     "sprite": "accessory_7",
-    "atk": 37,
-    "maxHp": 231,
-    "def": 12,
+    "atk": 46,
+    "maxHp": 289,
+    "def": 15,
     "spd": 3.7,
-    "price": 554
+    "price": 638
   },
   {
     "id": "eq_t7_accessory_uncommon",
@@ -3098,11 +3098,11 @@
     "level": 26,
     "region": 4,
     "sprite": "accessory_7",
-    "atk": 42,
-    "maxHp": 266,
-    "def": 14,
+    "atk": 53,
+    "maxHp": 333,
+    "def": 18,
     "spd": 4.3,
-    "price": 1218
+    "price": 1403
   },
   {
     "id": "eq_t7_accessory_rare",
@@ -3113,11 +3113,11 @@
     "level": 26,
     "region": 4,
     "sprite": "accessory_7",
-    "atk": 49,
-    "maxHp": 312,
-    "def": 16,
+    "atk": 62,
+    "maxHp": 391,
+    "def": 21,
     "spd": 5.1,
-    "price": 2769
+    "price": 3188
   },
   {
     "id": "eq_t7_accessory_epic",
@@ -3128,11 +3128,11 @@
     "level": 26,
     "region": 4,
     "sprite": "accessory_7",
-    "atk": 59,
-    "maxHp": 370,
-    "def": 20,
+    "atk": 73,
+    "maxHp": 463,
+    "def": 24,
     "spd": 6,
-    "price": 6646
+    "price": 7652
   },
   {
     "id": "eq_t7_accessory_legendary",
@@ -3143,11 +3143,11 @@
     "level": 26,
     "region": 4,
     "sprite": "accessory_7",
-    "atk": 69,
-    "maxHp": 440,
-    "def": 23,
+    "atk": 87,
+    "maxHp": 550,
+    "def": 29,
     "spd": 7.1,
-    "price": 16614
+    "price": 19131
   },
   {
     "id": "eq_t8_weapon_common",
@@ -3158,11 +3158,11 @@
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 207,
-    "maxHp": 118,
-    "def": 9,
+    "atk": 246,
+    "maxHp": 140,
+    "def": 11,
     "spd": 1.1,
-    "price": 1376
+    "price": 1507
   },
   {
     "id": "eq_t8_weapon_uncommon",
@@ -3173,11 +3173,11 @@
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 238,
-    "maxHp": 136,
-    "def": 11,
+    "atk": 283,
+    "maxHp": 161,
+    "def": 13,
     "spd": 1.3,
-    "price": 3027
+    "price": 3314
   },
   {
     "id": "eq_t8_weapon_rare",
@@ -3188,11 +3188,11 @@
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 279,
-    "maxHp": 159,
-    "def": 13,
+    "atk": 332,
+    "maxHp": 190,
+    "def": 15,
     "spd": 1.5,
-    "price": 6880
+    "price": 7533
   },
   {
     "id": "eq_t8_weapon_epic",
@@ -3203,11 +3203,11 @@
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 331,
-    "maxHp": 189,
-    "def": 15,
+    "atk": 393,
+    "maxHp": 225,
+    "def": 18,
     "spd": 1.7,
-    "price": 16511
+    "price": 18079
   },
   {
     "id": "eq_t8_weapon_legendary",
@@ -3218,11 +3218,11 @@
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 393,
-    "maxHp": 224,
-    "def": 18,
+    "atk": 467,
+    "maxHp": 267,
+    "def": 21,
     "spd": 2.1,
-    "price": 41277
+    "price": 45196
   },
   {
     "id": "eq_t8_helm_common",
@@ -3233,11 +3233,11 @@
     "level": 32,
     "region": 4,
     "sprite": "helm_8",
-    "atk": 19,
-    "maxHp": 472,
-    "def": 38,
+    "atk": 22,
+    "maxHp": 562,
+    "def": 45,
     "spd": 1.1,
-    "price": 826
+    "price": 904
   },
   {
     "id": "eq_t8_helm_uncommon",
@@ -3248,11 +3248,11 @@
     "level": 32,
     "region": 4,
     "sprite": "helm_8",
-    "atk": 22,
-    "maxHp": 543,
-    "def": 43,
+    "atk": 26,
+    "maxHp": 646,
+    "def": 51,
     "spd": 1.3,
-    "price": 1816
+    "price": 1989
   },
   {
     "id": "eq_t8_helm_rare",
@@ -3263,11 +3263,11 @@
     "level": 32,
     "region": 4,
     "sprite": "helm_8",
-    "atk": 25,
-    "maxHp": 638,
-    "def": 51,
+    "atk": 30,
+    "maxHp": 758,
+    "def": 60,
     "spd": 1.5,
-    "price": 4128
+    "price": 4520
   },
   {
     "id": "eq_t8_helm_epic",
@@ -3278,11 +3278,11 @@
     "level": 32,
     "region": 4,
     "sprite": "helm_8",
-    "atk": 30,
-    "maxHp": 756,
-    "def": 60,
+    "atk": 36,
+    "maxHp": 899,
+    "def": 72,
     "spd": 1.7,
-    "price": 9907
+    "price": 10847
   },
   {
     "id": "eq_t8_helm_legendary",
@@ -3293,11 +3293,11 @@
     "level": 32,
     "region": 4,
     "sprite": "helm_8",
-    "atk": 36,
-    "maxHp": 898,
-    "def": 71,
+    "atk": 42,
+    "maxHp": 1067,
+    "def": 85,
     "spd": 2.1,
-    "price": 24766
+    "price": 27118
   },
   {
     "id": "eq_t8_armor_common",
@@ -3308,11 +3308,11 @@
     "level": 32,
     "region": 4,
     "sprite": "armor_8",
-    "atk": 19,
-    "maxHp": 827,
-    "def": 66,
+    "atk": 22,
+    "maxHp": 983,
+    "def": 78,
     "spd": 1.1,
-    "price": 1101
+    "price": 1205
   },
   {
     "id": "eq_t8_armor_uncommon",
@@ -3323,11 +3323,11 @@
     "level": 32,
     "region": 4,
     "sprite": "armor_8",
-    "atk": 22,
-    "maxHp": 951,
-    "def": 76,
+    "atk": 26,
+    "maxHp": 1130,
+    "def": 90,
     "spd": 1.3,
-    "price": 2422
+    "price": 2652
   },
   {
     "id": "eq_t8_armor_rare",
@@ -3338,11 +3338,11 @@
     "level": 32,
     "region": 4,
     "sprite": "armor_8",
-    "atk": 25,
-    "maxHp": 1116,
-    "def": 89,
+    "atk": 30,
+    "maxHp": 1327,
+    "def": 106,
     "spd": 1.5,
-    "price": 5504
+    "price": 6026
   },
   {
     "id": "eq_t8_armor_epic",
@@ -3353,11 +3353,11 @@
     "level": 32,
     "region": 4,
     "sprite": "armor_8",
-    "atk": 30,
-    "maxHp": 1323,
-    "def": 105,
+    "atk": 36,
+    "maxHp": 1573,
+    "def": 125,
     "spd": 1.7,
-    "price": 13209
+    "price": 14463
   },
   {
     "id": "eq_t8_armor_legendary",
@@ -3368,11 +3368,11 @@
     "level": 32,
     "region": 4,
     "sprite": "armor_8",
-    "atk": 36,
-    "maxHp": 1571,
-    "def": 125,
+    "atk": 42,
+    "maxHp": 1868,
+    "def": 149,
     "spd": 2.1,
-    "price": 33022
+    "price": 36157
   },
   {
     "id": "eq_t8_gloves_common",
@@ -3383,11 +3383,11 @@
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 56,
-    "maxHp": 236,
-    "def": 28,
+    "atk": 67,
+    "maxHp": 281,
+    "def": 34,
     "spd": 4.4,
-    "price": 734
+    "price": 803
   },
   {
     "id": "eq_t8_gloves_uncommon",
@@ -3398,11 +3398,11 @@
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 65,
-    "maxHp": 272,
-    "def": 32,
+    "atk": 77,
+    "maxHp": 323,
+    "def": 39,
     "spd": 5,
-    "price": 1614
+    "price": 1768
   },
   {
     "id": "eq_t8_gloves_rare",
@@ -3413,11 +3413,11 @@
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 76,
-    "maxHp": 319,
-    "def": 38,
+    "atk": 91,
+    "maxHp": 379,
+    "def": 45,
     "spd": 5.9,
-    "price": 3669
+    "price": 4017
   },
   {
     "id": "eq_t8_gloves_epic",
@@ -3428,11 +3428,11 @@
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 90,
-    "maxHp": 378,
-    "def": 45,
+    "atk": 107,
+    "maxHp": 449,
+    "def": 54,
     "spd": 7,
-    "price": 8806
+    "price": 9642
   },
   {
     "id": "eq_t8_gloves_legendary",
@@ -3443,11 +3443,11 @@
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 107,
-    "maxHp": 449,
-    "def": 54,
+    "atk": 127,
+    "maxHp": 534,
+    "def": 64,
     "spd": 8.3,
-    "price": 22015
+    "price": 24105
   },
   {
     "id": "eq_t8_boots_common",
@@ -3458,11 +3458,11 @@
     "level": 32,
     "region": 4,
     "sprite": "boots_8",
-    "atk": 19,
-    "maxHp": 354,
-    "def": 28,
+    "atk": 22,
+    "maxHp": 421,
+    "def": 34,
     "spd": 9.8,
-    "price": 734
+    "price": 803
   },
   {
     "id": "eq_t8_boots_uncommon",
@@ -3473,11 +3473,11 @@
     "level": 32,
     "region": 4,
     "sprite": "boots_8",
-    "atk": 22,
-    "maxHp": 408,
-    "def": 32,
+    "atk": 26,
+    "maxHp": 484,
+    "def": 39,
     "spd": 11.3,
-    "price": 1614
+    "price": 1768
   },
   {
     "id": "eq_t8_boots_rare",
@@ -3488,11 +3488,11 @@
     "level": 32,
     "region": 4,
     "sprite": "boots_8",
-    "atk": 25,
-    "maxHp": 478,
-    "def": 38,
+    "atk": 30,
+    "maxHp": 569,
+    "def": 45,
     "spd": 13.2,
-    "price": 3669
+    "price": 4017
   },
   {
     "id": "eq_t8_boots_epic",
@@ -3503,11 +3503,11 @@
     "level": 32,
     "region": 4,
     "sprite": "boots_8",
-    "atk": 30,
-    "maxHp": 567,
-    "def": 45,
+    "atk": 36,
+    "maxHp": 674,
+    "def": 54,
     "spd": 15.7,
-    "price": 8806
+    "price": 9642
   },
   {
     "id": "eq_t8_boots_legendary",
@@ -3518,11 +3518,11 @@
     "level": 32,
     "region": 4,
     "sprite": "boots_8",
-    "atk": 36,
-    "maxHp": 673,
-    "def": 54,
+    "atk": 42,
+    "maxHp": 800,
+    "def": 64,
     "spd": 18.6,
-    "price": 22015
+    "price": 24105
   },
   {
     "id": "eq_t8_accessory_common",
@@ -3533,11 +3533,11 @@
     "level": 32,
     "region": 4,
     "sprite": "accessory_8",
-    "atk": 56,
-    "maxHp": 354,
-    "def": 19,
+    "atk": 67,
+    "maxHp": 421,
+    "def": 22,
     "spd": 4.4,
-    "price": 734
+    "price": 803
   },
   {
     "id": "eq_t8_accessory_uncommon",
@@ -3548,11 +3548,11 @@
     "level": 32,
     "region": 4,
     "sprite": "accessory_8",
-    "atk": 65,
-    "maxHp": 408,
-    "def": 22,
+    "atk": 77,
+    "maxHp": 484,
+    "def": 26,
     "spd": 5,
-    "price": 1614
+    "price": 1768
   },
   {
     "id": "eq_t8_accessory_rare",
@@ -3563,11 +3563,11 @@
     "level": 32,
     "region": 4,
     "sprite": "accessory_8",
-    "atk": 76,
-    "maxHp": 478,
-    "def": 25,
+    "atk": 91,
+    "maxHp": 569,
+    "def": 30,
     "spd": 5.9,
-    "price": 3669
+    "price": 4017
   },
   {
     "id": "eq_t8_accessory_epic",
@@ -3578,11 +3578,11 @@
     "level": 32,
     "region": 4,
     "sprite": "accessory_8",
-    "atk": 90,
-    "maxHp": 567,
-    "def": 30,
+    "atk": 107,
+    "maxHp": 674,
+    "def": 36,
     "spd": 7,
-    "price": 8806
+    "price": 9642
   },
   {
     "id": "eq_t8_accessory_legendary",
@@ -3593,11 +3593,11 @@
     "level": 32,
     "region": 4,
     "sprite": "accessory_8",
-    "atk": 107,
-    "maxHp": 673,
-    "def": 36,
+    "atk": 127,
+    "maxHp": 800,
+    "def": 42,
     "spd": 8.3,
-    "price": 22015
+    "price": 24105
   },
   {
     "id": "eq_t9_weapon_common",
@@ -3608,11 +3608,11 @@
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 330,
-    "maxHp": 187,
-    "def": 15,
+    "atk": 376,
+    "maxHp": 213,
+    "def": 17,
     "spd": 1.3,
-    "price": 1879
+    "price": 1970
   },
   {
     "id": "eq_t9_weapon_uncommon",
@@ -3623,11 +3623,11 @@
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 380,
-    "maxHp": 215,
-    "def": 17,
+    "atk": 432,
+    "maxHp": 245,
+    "def": 20,
     "spd": 1.5,
-    "price": 4133
+    "price": 4333
   },
   {
     "id": "eq_t9_weapon_rare",
@@ -3638,11 +3638,11 @@
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 446,
-    "maxHp": 253,
-    "def": 20,
+    "atk": 507,
+    "maxHp": 288,
+    "def": 23,
     "spd": 1.7,
-    "price": 9394
+    "price": 9849
   },
   {
     "id": "eq_t9_weapon_epic",
@@ -3653,11 +3653,11 @@
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 528,
-    "maxHp": 300,
-    "def": 24,
+    "atk": 601,
+    "maxHp": 341,
+    "def": 27,
     "spd": 2,
-    "price": 22546
+    "price": 23637
   },
   {
     "id": "eq_t9_weapon_legendary",
@@ -3668,11 +3668,11 @@
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 627,
-    "maxHp": 356,
-    "def": 29,
+    "atk": 714,
+    "maxHp": 405,
+    "def": 32,
     "spd": 2.4,
-    "price": 56364
+    "price": 59092
   },
   {
     "id": "eq_t9_helm_common",
@@ -3683,11 +3683,11 @@
     "level": 37,
     "region": 5,
     "sprite": "helm_9",
-    "atk": 30,
-    "maxHp": 749,
-    "def": 60,
+    "atk": 34,
+    "maxHp": 853,
+    "def": 68,
     "spd": 1.3,
-    "price": 1127
+    "price": 1182
   },
   {
     "id": "eq_t9_helm_uncommon",
@@ -3698,11 +3698,11 @@
     "level": 37,
     "region": 5,
     "sprite": "helm_9",
-    "atk": 35,
-    "maxHp": 862,
-    "def": 69,
+    "atk": 39,
+    "maxHp": 981,
+    "def": 79,
     "spd": 1.5,
-    "price": 2480
+    "price": 2600
   },
   {
     "id": "eq_t9_helm_rare",
@@ -3713,11 +3713,11 @@
     "level": 37,
     "region": 5,
     "sprite": "helm_9",
-    "atk": 41,
-    "maxHp": 1012,
-    "def": 81,
+    "atk": 46,
+    "maxHp": 1151,
+    "def": 92,
     "spd": 1.7,
-    "price": 5636
+    "price": 5909
   },
   {
     "id": "eq_t9_helm_epic",
@@ -3728,11 +3728,11 @@
     "level": 37,
     "region": 5,
     "sprite": "helm_9",
-    "atk": 48,
-    "maxHp": 1199,
-    "def": 96,
+    "atk": 55,
+    "maxHp": 1365,
+    "def": 109,
     "spd": 2,
-    "price": 13527
+    "price": 14182
   },
   {
     "id": "eq_t9_helm_legendary",
@@ -3743,11 +3743,11 @@
     "level": 37,
     "region": 5,
     "sprite": "helm_9",
-    "atk": 57,
-    "maxHp": 1424,
-    "def": 114,
+    "atk": 65,
+    "maxHp": 1621,
+    "def": 130,
     "spd": 2.4,
-    "price": 33819
+    "price": 35455
   },
   {
     "id": "eq_t9_armor_common",
@@ -3758,11 +3758,11 @@
     "level": 37,
     "region": 5,
     "sprite": "armor_9",
-    "atk": 30,
-    "maxHp": 1311,
-    "def": 105,
+    "atk": 34,
+    "maxHp": 1493,
+    "def": 120,
     "spd": 1.3,
-    "price": 1503
+    "price": 1576
   },
   {
     "id": "eq_t9_armor_uncommon",
@@ -3773,11 +3773,11 @@
     "level": 37,
     "region": 5,
     "sprite": "armor_9",
-    "atk": 35,
-    "maxHp": 1508,
-    "def": 121,
+    "atk": 39,
+    "maxHp": 1716,
+    "def": 138,
     "spd": 1.5,
-    "price": 3307
+    "price": 3467
   },
   {
     "id": "eq_t9_armor_rare",
@@ -3788,11 +3788,11 @@
     "level": 37,
     "region": 5,
     "sprite": "armor_9",
-    "atk": 41,
-    "maxHp": 1770,
-    "def": 142,
+    "atk": 46,
+    "maxHp": 2015,
+    "def": 161,
     "spd": 1.7,
-    "price": 7515
+    "price": 7879
   },
   {
     "id": "eq_t9_armor_epic",
@@ -3803,11 +3803,11 @@
     "level": 37,
     "region": 5,
     "sprite": "armor_9",
-    "atk": 48,
-    "maxHp": 2098,
-    "def": 168,
+    "atk": 55,
+    "maxHp": 2388,
+    "def": 191,
     "spd": 2,
-    "price": 18037
+    "price": 18910
   },
   {
     "id": "eq_t9_armor_legendary",
@@ -3818,11 +3818,11 @@
     "level": 37,
     "region": 5,
     "sprite": "armor_9",
-    "atk": 57,
-    "maxHp": 2491,
-    "def": 200,
+    "atk": 65,
+    "maxHp": 2836,
+    "def": 227,
     "spd": 2.4,
-    "price": 45091
+    "price": 47274
   },
   {
     "id": "eq_t9_gloves_common",
@@ -3833,11 +3833,11 @@
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 90,
-    "maxHp": 375,
-    "def": 45,
+    "atk": 102,
+    "maxHp": 426,
+    "def": 51,
     "spd": 5.1,
-    "price": 1002
+    "price": 1051
   },
   {
     "id": "eq_t9_gloves_uncommon",
@@ -3848,11 +3848,11 @@
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 104,
-    "maxHp": 431,
-    "def": 52,
+    "atk": 118,
+    "maxHp": 490,
+    "def": 59,
     "spd": 5.9,
-    "price": 2204
+    "price": 2311
   },
   {
     "id": "eq_t9_gloves_rare",
@@ -3863,11 +3863,11 @@
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 122,
-    "maxHp": 506,
-    "def": 61,
+    "atk": 138,
+    "maxHp": 576,
+    "def": 69,
     "spd": 6.9,
-    "price": 5010
+    "price": 5253
   },
   {
     "id": "eq_t9_gloves_epic",
@@ -3878,11 +3878,11 @@
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 144,
-    "maxHp": 599,
-    "def": 72,
+    "atk": 164,
+    "maxHp": 682,
+    "def": 82,
     "spd": 8.2,
-    "price": 12024
+    "price": 12606
   },
   {
     "id": "eq_t9_gloves_legendary",
@@ -3893,11 +3893,11 @@
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 171,
-    "maxHp": 712,
-    "def": 86,
+    "atk": 195,
+    "maxHp": 810,
+    "def": 97,
     "spd": 9.7,
-    "price": 30061
+    "price": 31516
   },
   {
     "id": "eq_t9_boots_common",
@@ -3908,11 +3908,11 @@
     "level": 37,
     "region": 5,
     "sprite": "boots_9",
-    "atk": 30,
-    "maxHp": 562,
-    "def": 45,
+    "atk": 34,
+    "maxHp": 640,
+    "def": 51,
     "spd": 11.5,
-    "price": 1002
+    "price": 1051
   },
   {
     "id": "eq_t9_boots_uncommon",
@@ -3923,11 +3923,11 @@
     "level": 37,
     "region": 5,
     "sprite": "boots_9",
-    "atk": 35,
-    "maxHp": 646,
-    "def": 52,
+    "atk": 39,
+    "maxHp": 736,
+    "def": 59,
     "spd": 13.2,
-    "price": 2204
+    "price": 2311
   },
   {
     "id": "eq_t9_boots_rare",
@@ -3938,11 +3938,11 @@
     "level": 37,
     "region": 5,
     "sprite": "boots_9",
-    "atk": 41,
-    "maxHp": 759,
-    "def": 61,
+    "atk": 46,
+    "maxHp": 864,
+    "def": 69,
     "spd": 15.5,
-    "price": 5010
+    "price": 5253
   },
   {
     "id": "eq_t9_boots_epic",
@@ -3953,11 +3953,11 @@
     "level": 37,
     "region": 5,
     "sprite": "boots_9",
-    "atk": 48,
-    "maxHp": 899,
-    "def": 72,
+    "atk": 55,
+    "maxHp": 1023,
+    "def": 82,
     "spd": 18.3,
-    "price": 12024
+    "price": 12606
   },
   {
     "id": "eq_t9_boots_legendary",
@@ -3968,11 +3968,11 @@
     "level": 37,
     "region": 5,
     "sprite": "boots_9",
-    "atk": 57,
-    "maxHp": 1068,
-    "def": 86,
+    "atk": 65,
+    "maxHp": 1215,
+    "def": 97,
     "spd": 21.8,
-    "price": 30061
+    "price": 31516
   },
   {
     "id": "eq_t9_accessory_common",
@@ -3983,11 +3983,11 @@
     "level": 37,
     "region": 5,
     "sprite": "accessory_9",
-    "atk": 90,
-    "maxHp": 562,
-    "def": 30,
+    "atk": 102,
+    "maxHp": 640,
+    "def": 34,
     "spd": 5.1,
-    "price": 1002
+    "price": 1051
   },
   {
     "id": "eq_t9_accessory_uncommon",
@@ -3998,11 +3998,11 @@
     "level": 37,
     "region": 5,
     "sprite": "accessory_9",
-    "atk": 104,
-    "maxHp": 646,
-    "def": 35,
+    "atk": 118,
+    "maxHp": 736,
+    "def": 39,
     "spd": 5.9,
-    "price": 2204
+    "price": 2311
   },
   {
     "id": "eq_t9_accessory_rare",
@@ -4013,11 +4013,11 @@
     "level": 37,
     "region": 5,
     "sprite": "accessory_9",
-    "atk": 122,
-    "maxHp": 759,
-    "def": 41,
+    "atk": 138,
+    "maxHp": 864,
+    "def": 46,
     "spd": 6.9,
-    "price": 5010
+    "price": 5253
   },
   {
     "id": "eq_t9_accessory_epic",
@@ -4028,11 +4028,11 @@
     "level": 37,
     "region": 5,
     "sprite": "accessory_9",
-    "atk": 144,
-    "maxHp": 899,
-    "def": 48,
+    "atk": 164,
+    "maxHp": 1023,
+    "def": 55,
     "spd": 8.2,
-    "price": 12024
+    "price": 12606
   },
   {
     "id": "eq_t9_accessory_legendary",
@@ -4043,11 +4043,11 @@
     "level": 37,
     "region": 5,
     "sprite": "accessory_9",
-    "atk": 171,
-    "maxHp": 1068,
-    "def": 57,
+    "atk": 195,
+    "maxHp": 1215,
+    "def": 65,
     "spd": 9.7,
-    "price": 30061
+    "price": 31516
   },
   {
     "id": "eq_t10_weapon_common",
@@ -4058,11 +4058,11 @@
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 541,
-    "maxHp": 306,
-    "def": 25,
+    "atk": 595,
+    "maxHp": 336,
+    "def": 27,
     "spd": 1.5,
-    "price": 2637
+    "price": 2668
   },
   {
     "id": "eq_t10_weapon_uncommon",
@@ -4073,11 +4073,11 @@
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 623,
-    "maxHp": 351,
-    "def": 28,
+    "atk": 684,
+    "maxHp": 386,
+    "def": 31,
     "spd": 1.7,
-    "price": 5800
+    "price": 5869
   },
   {
     "id": "eq_t10_weapon_rare",
@@ -4088,11 +4088,11 @@
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 731,
-    "maxHp": 412,
-    "def": 33,
+    "atk": 803,
+    "maxHp": 453,
+    "def": 37,
     "spd": 2,
-    "price": 13183
+    "price": 13338
   },
   {
     "id": "eq_t10_weapon_epic",
@@ -4103,11 +4103,11 @@
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 866,
-    "maxHp": 489,
-    "def": 39,
+    "atk": 952,
+    "maxHp": 537,
+    "def": 43,
     "spd": 2.4,
-    "price": 31638
+    "price": 32012
   },
   {
     "id": "eq_t10_weapon_legendary",
@@ -4118,11 +4118,11 @@
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 1029,
-    "maxHp": 580,
-    "def": 47,
+    "atk": 1130,
+    "maxHp": 638,
+    "def": 51,
     "spd": 2.8,
-    "price": 79096
+    "price": 80029
   },
   {
     "id": "eq_t10_helm_common",
@@ -4133,11 +4133,11 @@
     "level": 44,
     "region": 5,
     "sprite": "helm_10",
-    "atk": 49,
-    "maxHp": 1222,
-    "def": 98,
+    "atk": 54,
+    "maxHp": 1342,
+    "def": 108,
     "spd": 1.5,
-    "price": 1582
+    "price": 1601
   },
   {
     "id": "eq_t10_helm_uncommon",
@@ -4148,11 +4148,11 @@
     "level": 44,
     "region": 5,
     "sprite": "helm_10",
-    "atk": 57,
-    "maxHp": 1405,
-    "def": 113,
+    "atk": 62,
+    "maxHp": 1544,
+    "def": 124,
     "spd": 1.7,
-    "price": 3480
+    "price": 3521
   },
   {
     "id": "eq_t10_helm_rare",
@@ -4163,11 +4163,11 @@
     "level": 44,
     "region": 5,
     "sprite": "helm_10",
-    "atk": 66,
-    "maxHp": 1650,
-    "def": 133,
+    "atk": 73,
+    "maxHp": 1812,
+    "def": 146,
     "spd": 2,
-    "price": 7910
+    "price": 8003
   },
   {
     "id": "eq_t10_helm_epic",
@@ -4178,11 +4178,11 @@
     "level": 44,
     "region": 5,
     "sprite": "helm_10",
-    "atk": 79,
-    "maxHp": 1955,
-    "def": 158,
+    "atk": 87,
+    "maxHp": 2148,
+    "def": 173,
     "spd": 2.4,
-    "price": 18983
+    "price": 19207
   },
   {
     "id": "eq_t10_helm_legendary",
@@ -4193,11 +4193,11 @@
     "level": 44,
     "region": 5,
     "sprite": "helm_10",
-    "atk": 94,
-    "maxHp": 2322,
-    "def": 187,
+    "atk": 103,
+    "maxHp": 2551,
+    "def": 205,
     "spd": 2.8,
-    "price": 47457
+    "price": 48017
   },
   {
     "id": "eq_t10_armor_common",
@@ -4208,11 +4208,11 @@
     "level": 44,
     "region": 5,
     "sprite": "armor_10",
-    "atk": 49,
-    "maxHp": 2139,
-    "def": 172,
+    "atk": 54,
+    "maxHp": 2349,
+    "def": 189,
     "spd": 1.5,
-    "price": 2109
+    "price": 2134
   },
   {
     "id": "eq_t10_armor_uncommon",
@@ -4223,11 +4223,11 @@
     "level": 44,
     "region": 5,
     "sprite": "armor_10",
-    "atk": 57,
-    "maxHp": 2459,
-    "def": 198,
+    "atk": 62,
+    "maxHp": 2702,
+    "def": 218,
     "spd": 1.7,
-    "price": 4640
+    "price": 4695
   },
   {
     "id": "eq_t10_armor_rare",
@@ -4238,11 +4238,11 @@
     "level": 44,
     "region": 5,
     "sprite": "armor_10",
-    "atk": 66,
-    "maxHp": 2887,
-    "def": 233,
+    "atk": 73,
+    "maxHp": 3171,
+    "def": 256,
     "spd": 2,
-    "price": 10546
+    "price": 10671
   },
   {
     "id": "eq_t10_armor_epic",
@@ -4253,11 +4253,11 @@
     "level": 44,
     "region": 5,
     "sprite": "armor_10",
-    "atk": 79,
-    "maxHp": 3422,
-    "def": 276,
+    "atk": 87,
+    "maxHp": 3759,
+    "def": 303,
     "spd": 2.4,
-    "price": 25311
+    "price": 25609
   },
   {
     "id": "eq_t10_armor_legendary",
@@ -4268,11 +4268,11 @@
     "level": 44,
     "region": 5,
     "sprite": "armor_10",
-    "atk": 94,
-    "maxHp": 4063,
-    "def": 327,
+    "atk": 103,
+    "maxHp": 4464,
+    "def": 360,
     "spd": 2.8,
-    "price": 63277
+    "price": 64023
   },
   {
     "id": "eq_t10_gloves_common",
@@ -4283,11 +4283,11 @@
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 148,
-    "maxHp": 611,
-    "def": 74,
+    "atk": 162,
+    "maxHp": 671,
+    "def": 81,
     "spd": 6,
-    "price": 1406
+    "price": 1423
   },
   {
     "id": "eq_t10_gloves_uncommon",
@@ -4298,11 +4298,11 @@
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 170,
-    "maxHp": 703,
-    "def": 85,
+    "atk": 187,
+    "maxHp": 772,
+    "def": 93,
     "spd": 6.9,
-    "price": 3094
+    "price": 3130
   },
   {
     "id": "eq_t10_gloves_rare",
@@ -4313,11 +4313,11 @@
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 199,
-    "maxHp": 825,
-    "def": 100,
+    "atk": 219,
+    "maxHp": 906,
+    "def": 110,
     "spd": 8,
-    "price": 7031
+    "price": 7114
   },
   {
     "id": "eq_t10_gloves_epic",
@@ -4328,11 +4328,11 @@
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 236,
-    "maxHp": 978,
-    "def": 118,
+    "atk": 260,
+    "maxHp": 1074,
+    "def": 130,
     "spd": 9.5,
-    "price": 16874
+    "price": 17073
   },
   {
     "id": "eq_t10_gloves_legendary",
@@ -4343,11 +4343,11 @@
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 281,
-    "maxHp": 1161,
-    "def": 140,
+    "atk": 308,
+    "maxHp": 1275,
+    "def": 154,
     "spd": 11.3,
-    "price": 42184
+    "price": 42682
   },
   {
     "id": "eq_t10_boots_common",
@@ -4358,11 +4358,11 @@
     "level": 44,
     "region": 5,
     "sprite": "boots_10",
-    "atk": 49,
-    "maxHp": 917,
-    "def": 74,
+    "atk": 54,
+    "maxHp": 1007,
+    "def": 81,
     "spd": 13.4,
-    "price": 1406
+    "price": 1423
   },
   {
     "id": "eq_t10_boots_uncommon",
@@ -4373,11 +4373,11 @@
     "level": 44,
     "region": 5,
     "sprite": "boots_10",
-    "atk": 57,
-    "maxHp": 1054,
-    "def": 85,
+    "atk": 62,
+    "maxHp": 1158,
+    "def": 93,
     "spd": 15.4,
-    "price": 3094
+    "price": 3130
   },
   {
     "id": "eq_t10_boots_rare",
@@ -4388,11 +4388,11 @@
     "level": 44,
     "region": 5,
     "sprite": "boots_10",
-    "atk": 66,
-    "maxHp": 1237,
-    "def": 100,
+    "atk": 73,
+    "maxHp": 1359,
+    "def": 110,
     "spd": 18.1,
-    "price": 7031
+    "price": 7114
   },
   {
     "id": "eq_t10_boots_epic",
@@ -4403,11 +4403,11 @@
     "level": 44,
     "region": 5,
     "sprite": "boots_10",
-    "atk": 79,
-    "maxHp": 1466,
-    "def": 118,
+    "atk": 87,
+    "maxHp": 1611,
+    "def": 130,
     "spd": 21.4,
-    "price": 16874
+    "price": 17073
   },
   {
     "id": "eq_t10_boots_legendary",
@@ -4418,11 +4418,11 @@
     "level": 44,
     "region": 5,
     "sprite": "boots_10",
-    "atk": 94,
-    "maxHp": 1741,
-    "def": 140,
+    "atk": 103,
+    "maxHp": 1913,
+    "def": 154,
     "spd": 25.5,
-    "price": 42184
+    "price": 42682
   },
   {
     "id": "eq_t10_accessory_common",
@@ -4433,11 +4433,11 @@
     "level": 44,
     "region": 5,
     "sprite": "accessory_10",
-    "atk": 148,
-    "maxHp": 917,
-    "def": 49,
+    "atk": 162,
+    "maxHp": 1007,
+    "def": 54,
     "spd": 6,
-    "price": 1406
+    "price": 1423
   },
   {
     "id": "eq_t10_accessory_uncommon",
@@ -4448,11 +4448,11 @@
     "level": 44,
     "region": 5,
     "sprite": "accessory_10",
-    "atk": 170,
-    "maxHp": 1054,
-    "def": 57,
+    "atk": 187,
+    "maxHp": 1158,
+    "def": 62,
     "spd": 6.9,
-    "price": 3094
+    "price": 3130
   },
   {
     "id": "eq_t10_accessory_rare",
@@ -4463,11 +4463,11 @@
     "level": 44,
     "region": 5,
     "sprite": "accessory_10",
-    "atk": 199,
-    "maxHp": 1237,
-    "def": 66,
+    "atk": 219,
+    "maxHp": 1359,
+    "def": 73,
     "spd": 8,
-    "price": 7031
+    "price": 7114
   },
   {
     "id": "eq_t10_accessory_epic",
@@ -4478,11 +4478,11 @@
     "level": 44,
     "region": 5,
     "sprite": "accessory_10",
-    "atk": 236,
-    "maxHp": 1466,
-    "def": 79,
+    "atk": 260,
+    "maxHp": 1611,
+    "def": 87,
     "spd": 9.5,
-    "price": 16874
+    "price": 17073
   },
   {
     "id": "eq_t10_accessory_legendary",
@@ -4493,10 +4493,10 @@
     "level": 44,
     "region": 5,
     "sprite": "accessory_10",
-    "atk": 281,
-    "maxHp": 1741,
-    "def": 94,
+    "atk": 308,
+    "maxHp": 1913,
+    "def": 103,
     "spd": 11.3,
-    "price": 42184
+    "price": 42682
   }
 ]

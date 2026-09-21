@@ -7,6 +7,7 @@ import {
   gearSetPrice,
   gearShare,
   gearStats,
+  GEAR_FLOOR,
   GEAR_PRICE_K,
   GEAR_SLOTS,
   itemStat,
@@ -40,12 +41,19 @@ test('한 판 마릿수는 §4.4 삼각분포를 따른다 (평균 4.0)', () => 
 });
 
 test('장비가 채우는 몫 — 그 레벨 common 풀세트가 기대 배수를 만든다 (§4.5)', () => {
-  // Lv1은 맨몸이 기준이다. 시작부터 장비에 의존하면 첫 화면이 성립하지 않는다
-  expect(gearShare(1)).toBe(0);
+  // Lv1에도 장비가 맨몸의 절반을 얹는다 (GEAR_FLOOR).
+  // 0이면 티어 1 무기가 ATK +1이 되어 힘 1포인트(+2)보다 약해진다
+  expect(gearShare(1)).toBe(GEAR_FLOOR);
   expect(powerScale(1)).toBe(1);
 
-  // Lv50에서 전투력의 85%가 장비 몫 — 이게 v5.2의 성장 모델 그 자체다
-  expect(gearShare(50) / powerScale(50)).toBeCloseTo(0.854, 3);
+  // Lv1 33% → Lv50 86%. 뒤로 갈수록 장비 비중이 커지는 건 그대로다
+  for (const [level, want] of [
+    [1, 0.33],
+    [10, 0.48],
+    [50, 0.86],
+  ] as const) {
+    expect(gearShare(level) / (1 + gearShare(level)), `Lv${level} 장비 몫`).toBeCloseTo(want, 2);
+  }
 
   for (const level of [10, 25, 50]) {
     const naked = combatStats(level);
@@ -53,8 +61,8 @@ test('장비가 채우는 몫 — 그 레벨 common 풀세트가 기대 배수�
     const atk = set.reduce((s, g) => s + g.atk, 0);
     const maxHp = set.reduce((s, g) => s + g.maxHp, 0);
     // 부위 몫(SLOT_BIAS)의 합이 1.0이므로 풀세트 = 그 레벨의 장비 몫 전체가 된다
-    expect((naked.atk + atk) / naked.atk).toBeCloseTo(powerScale(level), 1);
-    expect((naked.maxHp + maxHp) / naked.maxHp).toBeCloseTo(powerScale(level), 1);
+    expect((naked.atk + atk) / naked.atk).toBeCloseTo(1 + gearShare(level), 1);
+    expect((naked.maxHp + maxHp) / naked.maxHp).toBeCloseTo(1 + gearShare(level), 1);
   }
 });
 

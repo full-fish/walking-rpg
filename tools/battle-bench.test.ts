@@ -219,7 +219,7 @@ test('한 판 — 4·6마리 완주율 진단 (§4.4)', () => {
   expect(Math.min(...atProper), '적정 레벨 4마리 완주율 최저').toBeGreaterThanOrEqual(0.5);
 });
 
-test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 2배)', () => {
+test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 3배)', () => {
   console.log('\nSPD 비율 → 행동 횟수 비율');
 
   for (const [playerSpd, monsterSpd, expected] of [
@@ -231,10 +231,12 @@ test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 2배)', () 
     let playerActions = 0;
     let monsterActions = 0;
     for (let seed = 0; seed < RUNS; seed++) {
-      // 양쪽 다 안 죽을 만큼 HP를 크게 줘서 비율만 본다
+      // 플레이어는 안 죽을 만큼 HP를 크게 주고, 몬스터는 **오래 버티게** 한다.
+      // 전투가 짧으면 마지막 한 라운드가 통째로 편향이 된다 — 비율 3에서 몬스터가
+      // 33번만 행동하면 1/33 = 3%가 그대로 오차로 찍힌다. 400번쯤 행동하게 두면 0.2%다.
       const r = simulateBattle(
         { ...warrior(1), spd: playerSpd, hp: 1e9, maxHp: 1e9 },
-        { ...poolOf(REGIONS[0].fields[0])[0], spd: monsterSpd, hp: 1_500, maxHp: 1_500 },
+        { ...poolOf(REGIONS[0].fields[0])[0], spd: monsterSpd, hp: 20_000, maxHp: 20_000 },
         makeRng(seed),
       );
       for (const e of r.events) {

@@ -192,11 +192,21 @@ export function powerScale(level: number): number {
 }
 
 /**
+ * 티어와 상관없이 장비가 기본으로 얹어주는 몫 (§4.5).
+ *
+ * 없을 때는 Lv1 장비가 ATK +1이었다 — **힘 1포인트(+2)보다 약한 무기**다.
+ * 강화를 해도 1.1배가 반올림에 먹혀 화면이 안 움직였다.
+ * 0.5면 Lv1 풀세트가 맨몸의 절반을 얹어주고(전투력의 33%), 티어 1 무기가 ATK +5가 된다.
+ * 뒤로 갈수록 gearShare가 커지므로 이 값의 비중은 저절로 줄어든다 — Lv50에서는 8%다.
+ */
+export const GEAR_FLOOR = 0.5;
+
+/**
  * 그 레벨에서 **장비가 채워야 하는 몫** (§4.5). 맨몸 대비 몇 배를 더 얹느냐다.
- * Lv1은 0 (맨몸이 기준), Lv50은 5.83 (장비가 전투력의 85%).
+ * Lv1은 0.5(전투력의 33%), Lv50은 6.33(86%).
  */
 export function gearShare(level: number): number {
-  return powerScale(level) - 1;
+  return powerScale(level) - 1 + GEAR_FLOOR;
 }
 
 /**
@@ -514,9 +524,18 @@ export function rollQuality(rng: () => number): number {
   return Math.round((QUALITY_MIN + (QUALITY_MAX - QUALITY_MIN) * t) * 100) / 100;
 }
 
-/** 인스턴스 하나의 최종 스탯 (§4.5). 기본 × 품질 × 1.1^강화. */
+/**
+ * 인스턴스 하나의 최종 스탯 (§4.5). 기본 × 품질 × 1.1^강화.
+ *
+ * **한 단계는 최소 1을 올린다.** 기본값이 작으면 1.1배가 반올림에 먹혀서
+ * 강화를 해도 화면이 안 움직인다(기본 5짜리 무기는 +2·+4가 통째로 안 보였다).
+ * 기본이 10을 넘으면 1.1배가 이미 1보다 크므로 이 바닥은 저절로 안 쓰인다 —
+ * 낮은 티어에서만 일하고 높은 티어에서는 §4.5 표 그대로다.
+ */
 export function itemStat(base: number, quality: number, enhance: number): number {
-  return base * quality * ENHANCE_MULT ** enhance;
+  const scaled = base * quality * ENHANCE_MULT ** enhance;
+  if (base <= 0 || enhance === 0) return scaled;
+  return Math.max(scaled, Math.round(base * quality) + enhance);
 }
 
 /**

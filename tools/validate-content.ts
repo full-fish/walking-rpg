@@ -13,6 +13,7 @@ import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
 import {
   combatStats,
   gearSetPrice,
+  gearShare,
   GEAR_SLOTS,
   GEAR_SPD_RATE,
   FIELDS_PER_REGION,
@@ -268,7 +269,8 @@ function validateEquipment(): string[] {
     // 기준선: 맨몸 + common 풀세트 = 맨몸 × powerScale
     const naked = combatStats(refLevel);
     const gear = setBonus(set);
-    const target = powerScale(refLevel);
+    // 목표 배수 = 1 + gearShare (powerScale에 GEAR_FLOOR가 더 얹힌다, §4.5)
+    const target = 1 + gearShare(refLevel);
     // SPD만 목표가 다르다 — gearShare를 안 쓰고 레벨과 무관하게 +15%다 (§4.5)
     for (const [label, got, base, want] of [
       ['ATK', naked.atk + gear.atk, naked.atk, naked.atk * target],

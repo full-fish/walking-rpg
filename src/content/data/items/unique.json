@@ -8,11 +8,11 @@
     "level": 5,
     "region": 1,
     "sprite": "uniq_f_r1_meadow",
-    "atk": 4,
-    "maxHp": 3,
-    "def": 0,
+    "atk": 15,
+    "maxHp": 10,
+    "def": 1,
     "spd": 0.3,
-    "price": 675
+    "price": 2058
   },
   {
     "id": "uniq_r1_mushroom",
@@ -23,11 +23,11 @@
     "level": 5,
     "region": 1,
     "sprite": "uniq_f_r1_mushroom",
-    "atk": 1,
-    "maxHp": 6,
-    "def": 1,
+    "atk": 4,
+    "maxHp": 20,
+    "def": 2,
     "spd": 1.1,
-    "price": 360
+    "price": 1097
   },
   {
     "id": "uniq_r1_bramble",
@@ -38,11 +38,11 @@
     "level": 5,
     "region": 1,
     "sprite": "uniq_f_r1_bramble",
-    "atk": 0,
-    "maxHp": 21,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 69,
+    "def": 5,
     "spd": 0.3,
-    "price": 540
+    "price": 1646
   },
   {
     "id": "uniq_r1_tower",
@@ -53,11 +53,11 @@
     "level": 5,
     "region": 1,
     "sprite": "uniq_f_r1_tower",
-    "atk": 0,
-    "maxHp": 12,
-    "def": 1,
+    "atk": 1,
+    "maxHp": 39,
+    "def": 3,
     "spd": 0.3,
-    "price": 405
+    "price": 1235
   },
   {
     "id": "uniq_r1_camp",
@@ -68,11 +68,11 @@
     "level": 5,
     "region": 1,
     "sprite": "uniq_f_r1_camp",
-    "atk": 1,
-    "maxHp": 9,
-    "def": 0,
+    "atk": 4,
+    "maxHp": 30,
+    "def": 1,
     "spd": 1.1,
-    "price": 360
+    "price": 1097
   },
   {
     "id": "uniq_r2_cave",
@@ -83,11 +83,11 @@
     "level": 12,
     "region": 2,
     "sprite": "uniq_f_r2_cave",
-    "atk": 3,
-    "maxHp": 51,
-    "def": 4,
+    "atk": 5,
+    "maxHp": 90,
+    "def": 7,
     "spd": 5.3,
-    "price": 1106
+    "price": 1784
   },
   {
     "id": "uniq_r2_grave",
@@ -98,11 +98,11 @@
     "level": 12,
     "region": 2,
     "sprite": "uniq_f_r2_grave",
-    "atk": 3,
-    "maxHp": 120,
-    "def": 9,
+    "atk": 5,
+    "maxHp": 210,
+    "def": 16,
     "spd": 0.6,
-    "price": 1659
+    "price": 2676
   },
   {
     "id": "uniq_r2_logging",
@@ -113,11 +113,11 @@
     "level": 12,
     "region": 2,
     "sprite": "uniq_f_r2_logging",
-    "atk": 28,
-    "maxHp": 17,
-    "def": 1,
+    "atk": 50,
+    "maxHp": 30,
+    "def": 2,
     "spd": 0.6,
-    "price": 2073
+    "price": 3345
   },
   {
     "id": "uniq_r2_quarry",
@@ -128,11 +128,11 @@
     "level": 12,
     "region": 2,
     "sprite": "uniq_f_r2_quarry",
-    "atk": 3,
-    "maxHp": 69,
-    "def": 5,
+    "atk": 5,
+    "maxHp": 120,
+    "def": 9,
     "spd": 0.6,
-    "price": 1244
+    "price": 2007
   },
   {
     "id": "uniq_r2_marsh",
@@ -143,11 +143,11 @@
     "level": 12,
     "region": 2,
     "sprite": "uniq_f_r2_marsh",
-    "atk": 8,
-    "maxHp": 51,
-    "def": 3,
+    "atk": 14,
+    "maxHp": 90,
+    "def": 5,
     "spd": 2.4,
-    "price": 1106
+    "price": 1784
   },
   {
     "id": "uniq_r3_riverbed",
@@ -158,11 +158,11 @@
     "level": 21,
     "region": 3,
     "sprite": "uniq_f_r3_riverbed",
-    "atk": 92,
-    "maxHp": 54,
-    "def": 4,
+    "atk": 126,
+    "maxHp": 73,
+    "def": 6,
     "spd": 0.9,
-    "price": 4270
+    "price": 5369
   },
   {
     "id": "uniq_r3_cliff",
@@ -173,11 +173,11 @@
     "level": 21,
     "region": 3,
     "sprite": "uniq_f_r3_cliff",
-    "atk": 8,
-    "maxHp": 161,
-    "def": 13,
+    "atk": 11,
+    "maxHp": 220,
+    "def": 17,
     "spd": 8.5,
-    "price": 2277
+    "price": 2863
   },
   {
     "id": "uniq_r3_saltflat",
@@ -188,11 +188,11 @@
     "level": 21,
     "region": 3,
     "sprite": "uniq_f_r3_saltflat",
-    "atk": 8,
-    "maxHp": 376,
-    "def": 29,
+    "atk": 11,
+    "maxHp": 514,
+    "def": 40,
     "spd": 0.9,
-    "price": 3416
+    "price": 4295
   },
   {
     "id": "uniq_r3_ridge",
@@ -203,11 +203,11 @@
     "level": 21,
     "region": 3,
     "sprite": "uniq_f_r3_ridge",
-    "atk": 25,
-    "maxHp": 108,
-    "def": 13,
+    "atk": 34,
+    "maxHp": 147,
+    "def": 17,
     "spd": 3.8,
-    "price": 2277
+    "price": 2863
   },
   {
     "id": "uniq_r3_outpost",
@@ -218,11 +218,11 @@
     "level": 21,
     "region": 3,
     "sprite": "uniq_f_r3_outpost",
-    "atk": 25,
-    "maxHp": 161,
-    "def": 8,
+    "atk": 34,
+    "maxHp": 220,
+    "def": 11,
     "spd": 3.8,
-    "price": 2277
+    "price": 2863
   },
   {
     "id": "uniq_r4_crater",
@@ -233,11 +233,11 @@
     "level": 32,
     "region": 4,
     "sprite": "uniq_f_r4_crater",
-    "atk": 71,
-    "maxHp": 295,
-    "def": 35,
+    "atk": 84,
+    "maxHp": 351,
+    "def": 42,
     "spd": 5.4,
-    "price": 4403
+    "price": 4821
   },
   {
     "id": "uniq_r4_ashfield",
@@ -248,11 +248,11 @@
     "level": 32,
     "region": 4,
     "sprite": "uniq_f_r4_ashfield",
-    "atk": 24,
-    "maxHp": 1034,
-    "def": 82,
+    "atk": 28,
+    "maxHp": 1229,
+    "def": 98,
     "spd": 1.4,
-    "price": 6604
+    "price": 7231
   },
   {
     "id": "uniq_r4_lavatube",
@@ -263,11 +263,11 @@
     "level": 32,
     "region": 4,
     "sprite": "uniq_f_r4_lavatube",
-    "atk": 259,
-    "maxHp": 148,
-    "def": 12,
+    "atk": 307,
+    "maxHp": 176,
+    "def": 14,
     "spd": 1.4,
-    "price": 8255
+    "price": 9039
   },
   {
     "id": "uniq_r4_obsidian",
@@ -278,11 +278,11 @@
     "level": 32,
     "region": 4,
     "sprite": "uniq_f_r4_obsidian",
-    "atk": 24,
-    "maxHp": 591,
-    "def": 47,
+    "atk": 28,
+    "maxHp": 702,
+    "def": 56,
     "spd": 1.4,
-    "price": 4953
+    "price": 5424
   },
   {
     "id": "uniq_r4_forge",
@@ -293,11 +293,11 @@
     "level": 32,
     "region": 4,
     "sprite": "uniq_f_r4_forge",
-    "atk": 24,
-    "maxHp": 443,
-    "def": 35,
+    "atk": 28,
+    "maxHp": 527,
+    "def": 42,
     "spd": 12.3,
-    "price": 4403
+    "price": 4821
   },
   {
     "id": "uniq_r5_abyss",
@@ -308,11 +308,11 @@
     "level": 44,
     "region": 5,
     "sprite": "uniq_f_r5_abyss",
-    "atk": 677,
-    "maxHp": 382,
-    "def": 31,
+    "atk": 744,
+    "maxHp": 420,
+    "def": 34,
     "spd": 1.9,
-    "price": 15819
+    "price": 16006
   },
   {
     "id": "uniq_r5_frost",
@@ -323,11 +323,11 @@
     "level": 44,
     "region": 5,
     "sprite": "uniq_f_r5_frost",
-    "atk": 62,
-    "maxHp": 2673,
-    "def": 215,
+    "atk": 68,
+    "maxHp": 2937,
+    "def": 237,
     "spd": 1.9,
-    "price": 12655
+    "price": 12805
   },
   {
     "id": "uniq_r5_hall",
@@ -338,11 +338,11 @@
     "level": 44,
     "region": 5,
     "sprite": "uniq_f_r5_hall",
-    "atk": 62,
-    "maxHp": 1146,
-    "def": 92,
+    "atk": 68,
+    "maxHp": 1259,
+    "def": 101,
     "spd": 16.8,
-    "price": 8437
+    "price": 8536
   },
   {
     "id": "uniq_r5_root",
@@ -353,11 +353,11 @@
     "level": 44,
     "region": 5,
     "sprite": "uniq_f_r5_root",
-    "atk": 185,
-    "maxHp": 1146,
-    "def": 62,
+    "atk": 203,
+    "maxHp": 1259,
+    "def": 68,
     "spd": 7.4,
-    "price": 8437
+    "price": 8536
   },
   {
     "id": "uniq_r5_throne",
@@ -368,10 +368,10 @@
     "level": 44,
     "region": 5,
     "sprite": "uniq_f_r5_throne",
-    "atk": 62,
-    "maxHp": 1528,
-    "def": 123,
+    "atk": 68,
+    "maxHp": 1678,
+    "def": 135,
     "spd": 1.9,
-    "price": 9491
+    "price": 9603
   }
 ]
