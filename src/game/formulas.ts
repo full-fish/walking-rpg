@@ -158,3 +158,12 @@ export const HP_REGEN_MAX_ELAPSED_MS = 24 * 60 * 60 * 1000;
 export const DEATH_GOLD_LOSS = 0.1;
 /** 사망 후 부활 HP 비율 (§4.2). */
 export const DEATH_HP_RATIO = 0.1;
+
+// ─────────────────────────────────────────────────────────────
+// 콘텐츠 (§7.2)
+// ─────────────────────────────────────────────────────────────
+
+/** 티어는 전역 1~25. 지역 5개가 5티어씩 나눠 갖는다 (§7.2①). */
+export const REGION_COUNT = 5;
+export const TIERS_PER_REGION = 5;
+export const MAX_TIER = REGION_COUNT * TIERS_PER_REGION;

@@ -1,0 +1,73 @@
+[
+  { "id": "arch_slime", "label": "점액형", "power": 0.70,
+    "statBias": { "hp": 1.30, "atk": 0.85, "def": 0.70, "spd": 0.75 },
+    "cri": 0.02, "eva": 0.03, "traits": ["ooze"], "spriteTag": "slime",
+    "tiers":    [1, 2, 3, 11, 13, 21],
+    "namePool": ["초록 슬라임", "끈적이", "늪 젤리", "모래 점액", "석영 슬라임", "심연 젤리"] },
+
+  { "id": "arch_fungus", "label": "균사형", "power": 0.75,
+    "statBias": { "hp": 1.05, "atk": 0.80, "def": 0.90, "spd": 0.90 },
+    "cri": 0.02, "eva": 0.04, "traits": ["fungus", "poison"], "spriteTag": "fungus",
+    "tiers":    [1, 4, 7, 12, 17, 23],
+    "namePool": ["홀씨 버섯", "독포자 버섯", "부패한 균사체", "유황 버섯", "발광 포자군", "심연 균사왕"] },
+
+  { "id": "arch_plant", "label": "식물형", "power": 0.80,
+    "statBias": { "hp": 1.25, "atk": 0.75, "def": 1.30, "spd": 0.50 },
+    "cri": 0.01, "eva": 0.02, "traits": ["plant"], "spriteTag": "plant",
+    "tiers":    [3, 5, 8, 13, 19, 24],
+    "namePool": ["가시덩굴", "식인초", "뒤틀린 고목", "사막 선인장", "무쇠 덩굴", "세계수의 가지"] },
+
+  { "id": "arch_bird", "label": "조류형", "power": 0.90,
+    "statBias": { "hp": 0.75, "atk": 1.00, "def": 0.70, "spd": 1.55 },
+    "cri": 0.08, "eva": 0.15, "traits": ["beast", "flying"], "spriteTag": "bird",
+    "tiers":    [3, 6, 10, 14, 18, 22],
+    "namePool": ["들까마귀", "매부리", "절벽 독수리", "폭풍 까마귀", "잿빛 하피", "뇌명조"] },
+
+  { "id": "arch_undead", "label": "망령형", "power": 0.90,
+    "statBias": { "hp": 1.10, "atk": 1.00, "def": 0.85, "spd": 0.80 },
+    "cri": 0.04, "eva": 0.05, "traits": ["undead"], "spriteTag": "undead",
+    "tiers":    [5, 7, 10, 15, 18, 25],
+    "namePool": ["떠도는 해골", "무덤지기", "창백한 망령", "원한의 유령", "흑요석 리치", "폐허의 군주"] },
+
+  { "id": "arch_insect", "label": "벌레형", "power": 0.95,
+    "statBias": { "hp": 0.85, "atk": 1.05, "def": 0.75, "spd": 1.35 },
+    "cri": 0.06, "eva": 0.12, "traits": ["insect"], "spriteTag": "insect",
+    "tiers":    [2, 4, 6, 9, 12, 16, 21],
+    "namePool": ["왕개미", "독거미", "날개미 떼", "뿔풍뎅이", "모래 전갈", "검은 말벌", "심연 지네"] },
+
+  { "id": "arch_beast", "label": "야수형", "power": 1.00,
+    "statBias": { "hp": 1.00, "atk": 1.15, "def": 0.80, "spd": 1.25 },
+    "cri": 0.10, "eva": 0.08, "traits": ["beast"], "spriteTag": "beast",
+    "tiers":    [1, 2, 4, 6, 8, 15, 16],
+    "namePool": ["들개", "잿빛 늑대", "굶주린 살쾡이", "동굴 박쥐", "검은 멧돼지", "설원 이리", "화산 비룡"] },
+
+  { "id": "arch_bandit", "label": "인간형", "power": 1.05,
+    "statBias": { "hp": 0.95, "atk": 1.10, "def": 0.95, "spd": 1.10 },
+    "cri": 0.12, "eva": 0.07, "traits": ["humanoid"], "spriteTag": "bandit",
+    "tiers":    [5, 8, 12, 16, 20, 25],
+    "namePool": ["떠돌이 도적", "산적 두목", "사막 약탈자", "검은 손 자객", "혈맹 검객", "배신자 장군"] },
+
+  { "id": "arch_spirit", "label": "정령형", "power": 1.10,
+    "statBias": { "hp": 0.90, "atk": 1.40, "def": 0.65, "spd": 1.05 },
+    "cri": 0.07, "eva": 0.10, "traits": ["spirit"], "spriteTag": "spirit",
+    "tiers":    [9, 11, 14, 17, 21, 24],
+    "namePool": ["불씨 정령", "모래 소용돌이", "물안개 정령", "번개 정령", "흑염 정령", "태초의 불꽃"] },
+
+  { "id": "arch_lizard", "label": "파충류형", "power": 1.15,
+    "statBias": { "hp": 1.15, "atk": 1.10, "def": 1.10, "spd": 0.85 },
+    "cri": 0.05, "eva": 0.04, "traits": ["dragonkin"], "spriteTag": "lizard",
+    "tiers":    [4, 7, 10, 13, 17, 20, 23],
+    "namePool": ["새끼 도마뱀", "도마뱀 전사", "늪지 악어", "협곡 이구아나", "비늘 사냥꾼", "용린 전사", "고룡의 후예"] },
+
+  { "id": "arch_knight", "label": "기갑형", "power": 1.35,
+    "statBias": { "hp": 1.20, "atk": 1.25, "def": 1.35, "spd": 0.80 },
+    "cri": 0.06, "eva": 0.02, "traits": ["humanoid", "armored"], "spriteTag": "knight",
+    "tiers":    [15, 18, 20, 22, 24],
+    "namePool": ["녹슨 갑주병", "흑철 기사", "성채 수호병", "심판의 기사", "폐왕의 근위대"] },
+
+  { "id": "arch_golem", "label": "바위형", "power": 1.40,
+    "statBias": { "hp": 1.45, "atk": 0.95, "def": 1.40, "spd": 0.60 },
+    "cri": 0.02, "eva": 0.01, "traits": ["construct"], "spriteTag": "golem",
+    "tiers":    [3, 9, 11, 14, 19, 22, 25],
+    "namePool": ["돌무더기", "강철 조각상", "모래 골렘", "이끼 낀 석상", "무쇠 수호자", "서리 거상", "태고의 거인"] }
+]

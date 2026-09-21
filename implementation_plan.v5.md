@@ -26,7 +26,7 @@ v5   사냥터 입장 1,200 WP → 몬스터 2~6마리(몇 마리인지 모름) 
 4. **§11** — 질문 (전부 확정됨)
 5. **§14** — v4→v5 변경 요약
 
-**현재 진행 상황: T1~T9 코드 완료(T4·T6·T8·T9는 실기기 확인 대기). 다음 작업은 T10.**
+**현재 진행 상황: T1~T10 코드 완료(T4·T6·T8·T9는 실기기 확인 대기). 다음 작업은 T11.**
 **§9의 태스크 블록은 T4~T29 전부 채워져 있습니다** (T21 던전·T29 길드는 기획 선행이라 의도적으로 비어 있음).
 
 ---
@@ -670,9 +670,9 @@ walking_rpg/
 │   │   └── economy.ts          ⬜ T14 골드/상점/강화/창고/드랍
 │   │
 │   ├── content/                # ★ 게임 데이터 (§7)
-│   │   ├── schema.ts           ⬜ T10
-│   │   ├── index.ts            ⬜ T10 로더 + 런타임 검증
-│   │   ├── archetypes/         ⬜ T10 원형 12개 (제가 초안 작성)
+│   │   ├── schema.ts           ✅ T10 zod — 원형 스키마
+│   │   ├── index.ts            ✅ T10 로더 + 런타임 검증 (import만 해도 검증)
+│   │   ├── archetypes/         ✅ T10 원형 12개 → 몬스터 75종
 │   │   └── data/               ⬜ T11 gen-content.ts 산출물 (커밋함)
 │   │
 │   ├── save/                   ✅ T3
@@ -688,7 +688,7 @@ walking_rpg/
 │
 ├── tools/
 │   ├── battle-bench.test.ts    ✅ T7  npm run bench — 전투 1,000회 통계 + 목표 검사
-│   ├── validate-content.ts     ⬜ T10
+│   ├── validate-content.ts     ✅ T10 npm run validate — 중복·스키마 검사
 │   ├── gen-content.ts          ⬜ T11
 │   └── simulate.ts             ⬜ T12
 │
@@ -1108,8 +1108,8 @@ src/content/
 | **S2 전투** | T7 `formulas.ts` + `battle.ts` ATB 엔진 | ✅ **완료** |
 | | T8 전투 화면 (이벤트 재생) | ✅ **완료** |
 | | T9 보상 정산 / 레벨업 / 사망 | ✅ **완료** |
-| **S3 콘텐츠** | T10 content 스키마 + 원형 12개 + validate | ⬜ **다음** |
-| | T11 gen-content + 지역 1~2 + 사냥터 10개 실제 데이터 | ⬜ |
+| **S3 콘텐츠** | T10 content 스키마 + 원형 12개 + validate | ✅ **완료** |
+| | T11 gen-content + 지역 1~2 + 사냥터 10개 실제 데이터 | ⬜ **다음** |
 | | T12 밸런스 시뮬레이터 | ⬜ |
 | **S4 성장·경제** | T13 인벤토리 + 장착 + 품질 | ⬜ |
 | | T14 상점 + 여관 + 창고 + 물약 + **고유 장비 교환** | ⬜ |
@@ -1314,6 +1314,18 @@ src/content/
           다시 물어보라"고 하셨다(§7.2③ 하단) — 12개 초안이 나오면 커밋 전에 검토를 요청한다.
           장비 원형(무기 등 6종, §7.2 하단)은 여기 포함하지 않는다 — 장비는 T13.
           src/content/도 src/game/과 같은 규칙: React import 금지, 순수 TS라 Node/Vitest로 바로 테스트.
+결과      원형 12개 → 몬스터 75종, power 평균 1.004, 지역별 평균 0.91~1.06 (검증 기준 1.0±0.15).
+          검증을 두 갈래로 나눴다. index.ts는 import하는 순간 parse하고 틀리면 던진다(앱: 즉시 죽는다).
+          validate-content.ts는 safeParse로 오류를 전부 모아서 돌려준다(도구: 한 번에 다 보여준다).
+          같은 스키마를 쓰므로 둘이 어긋날 일은 없다.
+          "T11 검사를 미리 채워둔다"는 계획을 접었다 — 볼 데이터가 없는 검사는 죽은 코드다.
+          T11 블록에 이미 "§7.4 2·6·7번 추가"가 적혀 있어서 거기서 쓰는 게 맞다.
+          대신 validateContent(data)가 인자를 받게 했다. 테스트가 일부러 깨진 데이터를 넣어
+          "검증기가 실제로 잡아내는지"를 확인하고, T11 gen-content도 파일로 쓰기 전에 이 함수를 탄다.
+          티어당 최소 2종 검사를 넣었다. 1종이면 그 티어로 사냥터 풀을 짤 수가 없다.
+          npm run bench가 --dir tools라 validate까지 같이 돌던 문제가 생겨 둘 다 파일 지정으로 바꿨다.
+          MAX_TIER(=25)는 formulas.ts로 갔다. 스키마가 티어 범위를 검사하려면 필요한데
+          숫자를 content에 또 박으면 §7.2①이 두 곳에 사는 게 된다.
 ```
 
 ### T11 — gen-content + 지역 1~2 실제 데이터
@@ -1578,7 +1590,7 @@ src/content/
 npm run typecheck   # tsc --noEmit
 npm run lint        # expo lint
 npm test            # vitest run --dir src
-npm run validate    # tools/validate-content.ts  (T10부터)
+npm run validate    # tools/validate-content.ts  ✅ T10
 npm run sim         # tools/simulate.ts          (T12부터)
 ```
 

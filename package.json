@@ -10,7 +10,8 @@
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --dir src",
-    "bench": "vitest run --dir tools --disable-console-intercept"
+    "bench": "vitest run tools/battle-bench.test.ts --disable-console-intercept",
+    "validate": "vitest run tools/validate-content.test.ts --disable-console-intercept"
   },
   "dependencies": {
     "expo": "~57.0.24",
