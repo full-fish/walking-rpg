@@ -11,7 +11,14 @@ import {
   type Field,
 } from '@/content';
 import { depositNet, sellPrice } from '@/game/economy';
-import { VAULT, vaultExpandCost } from '@/game/formulas';
+import {
+  ENHANCE_MAX,
+  enhanceCost,
+  enhanceExpected,
+  enhanceRate,
+  VAULT,
+  vaultExpandCost,
+} from '@/game/formulas';
 import { itemLabel } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
@@ -21,7 +28,7 @@ import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
 
-const TABS = ['상점', '여관', '창고', '특별 교환'] as const;
+const TABS = ['상점', '강화', '여관', '창고', '특별 교환'] as const;
 type Tab = (typeof TABS)[number];
 
 /** 한 줄 = 이름·설명 + 버튼. 상점 전체가 이 모양이라 화면 안에 둔다. */
@@ -56,8 +63,11 @@ function Row({
 export default function Shop() {
   const save = usePlayer((s) => s.save);
   const trade = usePlayer((s) => s.trade);
+  const enhance = usePlayer((s) => s.enhance);
   const [tab, setTab] = useState<Tab>('상점');
   const [amount, setAmount] = useState(1_000);
+  /** 마지막 강화 결과. 성공·실패를 한 줄로 보여주려고 들고 있는다 */
+  const [lastEnhance, setLastEnhance] = useState<string | null>(null);
 
   const region = regionById(save.regionProgress.current);
   const stats = statsOf(save);
@@ -133,6 +143,51 @@ export default function Shop() {
           </>
         )}
 
+        {tab === '강화' && (
+          <Panel title="강화 — 실패해도 단계는 안 내려갑니다">
+            {lastEnhance && <Text color={colors.gold}>{lastEnhance}</Text>}
+            <Text size="sm" dim>
+              골드만 사라집니다. 장비가 깨지거나 단계가 떨어지지는 않습니다.
+            </Text>
+            {save.inventory.length === 0 ? (
+              <Text size="sm" dim>
+                강화할 장비가 없습니다.
+              </Text>
+            ) : (
+              save.inventory.map((item) => {
+                const def = equipmentById(item.defId);
+                const next = item.enhance + 1;
+                const maxed = item.enhance >= ENHANCE_MAX;
+                const cost = maxed ? 0 : enhanceCost(def.price, next);
+                return (
+                  <Row
+                    key={item.uid}
+                    title={itemLabel(item)}
+                    detail={
+                      maxed
+                        ? '최대 단계입니다'
+                        : `+${next} 성공률 ${(enhanceRate(next) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
+                          ` · +10까지 기대 ${enhanceExpected(def.price).gold.toLocaleString()}G`
+                    }
+                    action={maxed ? '완료' : '강화'}
+                    tone={Object.values(save.equipped).includes(item.uid) ? 'gold' : 'normal'}
+                    disabled={maxed || gold < cost}
+                    onPress={() => {
+                      const r = enhance(item.uid);
+                      if (!r) return;
+                      setLastEnhance(
+                        r.success
+                          ? `성공! ${def.name} +${r.step} (${r.cost.toLocaleString()}G)`
+                          : `실패… +${r.step} 못 붙었습니다 (${r.cost.toLocaleString()}G)`,
+                      );
+                    }}
+                  />
+                );
+              })
+            )}
+          </Panel>
+        )}
+
         {tab === '여관' && (
           <Panel title={`${region.town.name}의 여관`}>
             <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
@@ -168,19 +223,27 @@ export default function Shop() {
                 />
               ))}
             </View>
+            {/* 넣은 액수와 들어간 액수가 다르다. 그 차이를 골드로 못 박아 둔다 */}
             <Row
-              title={`${amount.toLocaleString()}G 입금`}
-              detail={`수수료 ${VAULT.fee * 100}% — 실제로 ${depositNet(amount).toLocaleString()}G가 들어갑니다`}
+              title={`${amount.toLocaleString()}G 내고 ${depositNet(amount).toLocaleString()}G 넣기`}
+              detail={`수수료 ${VAULT.fee * 100}% = ${(amount - depositNet(amount)).toLocaleString()}G — 넣고 바로 빼면 그만큼 손해입니다`}
               action="입금"
               disabled={gold < amount || save.vault.gold + depositNet(amount) > save.vault.capacity}
               onPress={() => trade(trades.deposit(amount))}
             />
             <Row
-              title={`${amount.toLocaleString()}G 출금`}
-              detail="출금은 무료입니다"
+              title="소지 골드 전부 넣기"
+              detail={`${gold.toLocaleString()}G → ${depositNet(gold).toLocaleString()}G`}
+              action="전액"
+              disabled={gold <= 0 || save.vault.gold + depositNet(gold) > save.vault.capacity}
+              onPress={() => trade(trades.deposit(gold))}
+            />
+            <Row
+              title={`${Math.min(amount, save.vault.gold).toLocaleString()}G 찾기`}
+              detail="출금은 수수료가 없습니다 — 낸 만큼 그대로 나옵니다"
               action="출금"
-              disabled={save.vault.gold < amount}
-              onPress={() => trade(trades.withdraw(amount))}
+              disabled={save.vault.gold <= 0}
+              onPress={() => trade(trades.withdraw(Math.min(amount, save.vault.gold)))}
             />
             <Row
               title={`한도 확장 (${save.vault.expansions}/${VAULT.maxExpansions})`}

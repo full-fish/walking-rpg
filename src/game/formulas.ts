@@ -469,9 +469,44 @@ export const QUALITY_MAX = 1.2;
 /** 인벤토리 상한. 차면 드랍만 건너뛰고 사냥은 계속된다 (§4.5). */
 export const INVENTORY_MAX = 60;
 
-/** 강화 (§4.5). 최종 스탯 = 기본 × quality × 1.1^강화. 실제 강화 로직은 T15. */
+/** 강화 (§4.5). 최종 스탯 = 기본 × quality × 1.1^강화. */
 export const ENHANCE_MAX = 10;
 export const ENHANCE_MULT = 1.1;
+
+/**
+ * 강화 성공률 (§4.5). **표가 곧 기획이라 근사식을 만들지 않는다** —
+ * 식으로 바꾸면 끝자리가 달라지고, 그 끝자리가 +8~+10의 체감을 정한다.
+ * 인덱스 i는 "+i+1로 올리는 시도"다. +1·+2는 확정이고 +8부터 20%/15%/10%로 떨어진다.
+ */
+export const ENHANCE_RATE = [1, 1, 0.9, 0.75, 0.6, 0.45, 0.3, 0.2, 0.15, 0.1] as const;
+
+/** 비용 곡선 (§4.5). 장비가격 × 0.3 × 1.5^(N-1) — 단계마다 1.5배씩 비싸진다. */
+export const ENHANCE_COST_RATE = 0.3;
+export const ENHANCE_COST_GROWTH = 1.5;
+
+/** `next`단계(1~10)로 올리는 데 드는 골드. 실패해도 나간다. */
+export function enhanceCost(price: number, next: number): number {
+  return Math.round(price * ENHANCE_COST_RATE * ENHANCE_COST_GROWTH ** (next - 1));
+}
+
+/** `next`단계로 올릴 확률. 상한을 넘으면 0 — 호출부가 더 못 올린다는 걸 이걸로 안다. */
+export function enhanceRate(next: number): number {
+  return ENHANCE_RATE[next - 1] ?? 0;
+}
+
+/**
+ * +N까지 올리는 데 드는 **기대** 시도 수와 골드 (§4.5).
+ * 실패해도 단계가 안 내려가므로 단계마다 1/성공률 번씩 두드리면 된다 — 단계끼리 독립이다.
+ */
+export function enhanceExpected(price: number, target = ENHANCE_MAX) {
+  let tries = 0;
+  let gold = 0;
+  for (let n = 1; n <= target; n++) {
+    tries += 1 / enhanceRate(n);
+    gold += (1 / enhanceRate(n)) * enhanceCost(price, n);
+  }
+  return { tries, gold: Math.round(gold) };
+}
 
 /** 품질을 뽑는다. 난수 둘의 평균이 삼각분포가 된다 — 표를 따로 들 필요가 없다 (§4.5). */
 export function rollQuality(rng: () => number): number {

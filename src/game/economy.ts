@@ -7,9 +7,17 @@
  */
 import { consumableById, equipmentById, fieldById } from '../content';
 import type { ItemInstance, Save } from '../save/schema';
-import { INVENTORY_MAX, SELL_RATE, VAULT, vaultExpandCost } from './formulas';
+import {
+  ENHANCE_MAX,
+  enhanceCost,
+  enhanceRate,
+  INVENTORY_MAX,
+  SELL_RATE,
+  VAULT,
+  vaultExpandCost,
+} from './formulas';
 import { itemDef, makeItem } from './items';
-import { addItem, statsOf } from './progression';
+import { addItem, statsOf, withStatChange } from './progression';
 
 /** 골드를 더하고 뺀다. 음수 잔고는 여기서 막는다. */
 function withGold(save: Save, delta: number): Save | null {
@@ -183,4 +191,45 @@ export function exchangeUnique(save: Save, fieldId: string, rng: () => number): 
     ...addItem(paid, item),
     materials: bump(paid.materials, fieldId, -material),
   };
+}
+
+// ─────────────────────────────────────────────────────────────
+// 강화 (§4.5) — T15
+// ─────────────────────────────────────────────────────────────
+
+export type EnhanceResult = {
+  save: Save;
+  success: boolean;
+  /** 성공하든 실패하든 나간 골드 */
+  cost: number;
+  /** 시도한 단계 (+N의 N) */
+  step: number;
+};
+
+/**
+ * 장비 한 점을 한 단계 올려 본다 (§4.5).
+ *
+ * **실패해도 골드만 없어진다** — 단계가 내려가지도, 장비가 깨지지도 않는다.
+ * 그래서 +10은 운이 아니라 **돈으로 가는 곳**이고, 기대 골드가 곧 목표 난이도다.
+ * 강화는 **인스턴스 단위**다. 같은 이름의 장비 두 개가 서로 다른 단계를 가진다.
+ * 난수를 주입받는 건 기대 시도 횟수를 테스트로 재현해야 하기 때문이다.
+ */
+export function enhanceItem(save: Save, uid: string, rng: () => number): EnhanceResult | null {
+  const item = save.inventory.find((i) => i.uid === uid);
+  if (!item || item.enhance >= ENHANCE_MAX) return null;
+
+  const step = item.enhance + 1;
+  const cost = enhanceCost(itemDef(item).price, step);
+  const paid = withGold(save, -cost);
+  if (!paid) return null;
+
+  const success = rng() < enhanceRate(step);
+  if (!success) return { save: paid, success, cost, step };
+
+  const next: Save = {
+    ...paid,
+    inventory: paid.inventory.map((i) => (i.uid === uid ? { ...i, enhance: step } : i)),
+  };
+  // 낀 장비를 강화하면 최대 HP가 늘어난다. 현재 HP도 같이 올린다 (장착과 같은 규칙)
+  return { save: withStatChange(paid, next), success, cost, step };
 }

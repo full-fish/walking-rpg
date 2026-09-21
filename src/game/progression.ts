@@ -239,15 +239,18 @@ export function unequipSlot(save: Save, slot: GearSlot): Save {
 }
 
 /**
- * 장착을 바꾸고 HP를 정리한다.
- * 최대 HP가 늘면 그만큼 현재 HP도 올리고(레벨업과 같은 규칙), 줄면 넘치지 않게 자른다.
+ * 최대 HP를 바꾸는 변경을 반영한다 (장착·해제·강화).
+ * 늘면 그만큼 현재 HP도 올리고(레벨업과 같은 규칙), 줄면 넘치지 않게 자른다.
  */
-function withGear(save: Save, equipped: Save['equipped']): Save {
-  const before = statsOf(save).maxHp;
-  const next: Save = { ...save, equipped };
-  const after = statsOf(next).maxHp;
-  const hp = after > before ? save.player.hp + (after - before) : Math.min(save.player.hp, after);
+export function withStatChange(before: Save, next: Save): Save {
+  const was = statsOf(before).maxHp;
+  const now = statsOf(next).maxHp;
+  const hp = now > was ? before.player.hp + (now - was) : Math.min(before.player.hp, now);
   return { ...next, player: { ...next.player, hp: Math.max(1, hp) } };
+}
+
+function withGear(save: Save, equipped: Save['equipped']): Save {
+  return withStatChange(save, { ...save, equipped });
 }
 
 /** 인벤토리에 넣는다. 상한은 호출부(드랍은 T16)가 본다. */

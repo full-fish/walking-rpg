@@ -1,12 +1,13 @@
 import { expect, test } from 'vitest';
 
-import { fieldById, regionById } from '../content';
+import { equipmentById, fieldById, regionById } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import { makeRng } from './battle';
 import {
   buyConsumable,
   buyEquipment,
   depositNet,
+  enhanceItem,
   exchangeUnique,
   sellItem,
   sellPrice,
@@ -16,7 +17,16 @@ import {
   vaultExpand,
   vaultWithdraw,
 } from './economy';
-import { DEATH_GOLD_LOSS, innCost, VAULT, vaultExpandCost } from './formulas';
+import {
+  DEATH_GOLD_LOSS,
+  ENHANCE_MAX,
+  enhanceCost,
+  enhanceExpected,
+  innCost,
+  VAULT,
+  vaultExpandCost,
+} from './formulas';
+import { itemStats } from './items';
 import { equipItem, settleBattle, statsOf } from './progression';
 
 const rng = () => 0.5;
@@ -150,4 +160,95 @@ test('고유 교환 — 소재 3개 + 골드. 소재가 모자라면 거부 (§4
   expect(got.inventory[0].defId).toBe(field.reward.id);
   expect(got.materials.f_r1_meadow, '다 쓰면 항목이 사라진다').toBeUndefined();
   expect(got.player.gold).toBe(10_000 - field.reward.cost.gold);
+});
+
+test('강화 — §4.5 표 그대로. 실패해도 단계가 안 내려간다', () => {
+  const def = equipmentById('eq_t5_weapon_common');
+  let save = buyEquipment(rich(10_000_000), def.id, rng)!;
+  const uid = save.inventory[0].uid;
+
+  // §4.5 비용 곡선 — 장비가격 × 0.3 × 1.5^(N-1)
+  expect(enhanceCost(def.price, 1)).toBe(Math.round(def.price * 0.3));
+  expect(enhanceCost(def.price, 10)).toBe(Math.round(def.price * 0.3 * 1.5 ** 9));
+
+  // +1·+2는 확정이다 (성공률 100%) — 난수가 뭐가 나오든 붙는다
+  for (let step = 1; step <= 2; step++) {
+    const r = enhanceItem(save, uid, () => 0.999)!;
+    expect(r.success, `+${step}`).toBe(true);
+    save = r.save;
+  }
+  expect(save.inventory[0].enhance).toBe(2);
+
+  // +3(90%)을 반드시 실패하는 난수로 두드리면 단계는 2 그대로, 골드만 나간다
+  const gold = save.player.gold;
+  const failed = enhanceItem(save, uid, () => 0.999)!;
+  expect(failed.success).toBe(false);
+  expect(failed.save.inventory[0].enhance, '실패해도 안 내려간다').toBe(2);
+  expect(gold - failed.save.player.gold).toBe(failed.cost);
+  expect(failed.cost).toBe(enhanceCost(def.price, 3));
+
+  // 상한에 닿으면 null — 호출부가 더 못 올린다는 걸 이걸로 안다
+  const maxed = { ...save, inventory: [{ ...save.inventory[0], enhance: ENHANCE_MAX }] };
+  expect(enhanceItem(maxed, uid, rng)).toBeNull();
+  expect(enhanceItem(save, '없는uid', rng)).toBeNull();
+});
+
+test('강화는 인스턴스 단위다 — 같은 이름 둘이 섞이면 안 된다 (§4.5)', () => {
+  let save = buyEquipment(rich(10_000_000), 'eq_t5_weapon_common', rng)!;
+  save = buyEquipment(save, 'eq_t5_weapon_common', rng)!;
+
+  const [a, b] = save.inventory;
+  const after = enhanceItem(save, a.uid, () => 0)!.save;
+  expect(after.inventory.find((i) => i.uid === a.uid)!.enhance).toBe(1);
+  expect(after.inventory.find((i) => i.uid === b.uid)!.enhance).toBe(0);
+});
+
+test('★ +10 기대 시도 33.3회 · 기대 골드를 난수로 재현한다 (§4.5)', () => {
+  const def = equipmentById('eq_t5_weapon_common');
+  const want = enhanceExpected(def.price);
+  expect(want.tries).toBeCloseTo(33.33, 1);
+
+  // 실제로 1,000번 키워보고 평균이 기댓값과 맞는지 본다
+  const RUNS = 1_000;
+  let tries = 0;
+  let gold = 0;
+  for (let seed = 0; seed < RUNS; seed++) {
+    const r = makeRng(seed);
+    let save = { ...defaultSave(), player: { ...defaultSave().player, gold: 100_000_000 } };
+    save = buyEquipment(save, def.id, rng)!;
+    const uid = save.inventory[0].uid;
+    const start = save.player.gold;
+    while (save.inventory[0].enhance < ENHANCE_MAX) {
+      save = enhanceItem(save, uid, r)!.save;
+      tries += 1;
+    }
+    gold += start - save.player.gold;
+  }
+
+  expect(tries / RUNS, '평균 시도').toBeCloseTo(want.tries, 0);
+  expect(Math.abs(gold / RUNS - want.gold) / want.gold, '평균 골드 오차').toBeLessThan(0.1);
+});
+
+test('+10 최종 배율이 §4.5 표와 맞는다 (80% 2.08 / 100% 2.59 / 120% 3.11)', () => {
+  for (const [quality, table] of [
+    [0.8, 2.08],
+    [1.0, 2.59],
+    [1.2, 3.11],
+  ] as const) {
+    const at0 = itemStats({ uid: '1', defId: 'eq_t10_armor_common', quality, enhance: 0 });
+    const at10 = itemStats({ uid: '1', defId: 'eq_t10_armor_common', quality, enhance: 10 });
+    expect(Math.abs(at10.maxHp / (at0.maxHp / quality) - table), `품질 ${quality}`).toBeLessThan(0.02);
+  }
+});
+
+test('낀 장비를 강화하면 현재 HP도 같이 오른다 (장착과 같은 규칙)', () => {
+  let save = buyEquipment(rich(10_000_000, { level: 20 }), 'eq_t5_armor_common', rng)!;
+  const uid = save.inventory[0].uid;
+  save = equipItem(save, uid)!;
+  save = { ...save, player: { ...save.player, hp: statsOf(save).maxHp } };
+
+  const before = statsOf(save).maxHp;
+  const after = enhanceItem(save, uid, () => 0)!.save;
+  expect(statsOf(after).maxHp).toBeGreaterThan(before);
+  expect(after.player.hp).toBe(statsOf(after).maxHp);
 });

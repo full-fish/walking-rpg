@@ -5,7 +5,9 @@ import type { Outcome } from '@/game/battle';
 import {
   buyConsumable,
   buyEquipment,
+  enhanceItem,
   exchangeUnique,
+  type EnhanceResult,
   sellItem,
   stayInn,
   consumeItem,
@@ -56,6 +58,11 @@ type PlayerStore = {
   trade: (change: (save: Save) => Save | null) => boolean;
   /** 실기기 확인용 — 지금 레벨의 common 풀세트를 공짜로 준다 */
   grantGearSet: () => void;
+  /**
+   * 장비 한 점을 한 단계 올려 본다 (§4.5). 성공·실패를 화면이 보여줘야 해서
+   * trade()와 달리 결과를 그대로 돌려준다. 골드가 모자라면 null.
+   */
+  enhance: (uid: string) => EnhanceResult | null;
   /** 실기기 확인용 — 사냥터 소재를 3개 준다. 진짜 드랍은 T16 */
   grantMaterial: (fieldId: string) => void;
   reset: () => void;
@@ -148,6 +155,13 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
       uids.push(item.uid);
     }
     set({ save: persist(equipAll(save, uids)) });
+  },
+
+  enhance: (uid) => {
+    const result = enhanceItem(get().save, uid, Math.random);
+    if (!result) return null;
+    set({ save: persist(result.save) });
+    return result;
   },
 
   grantMaterial: (fieldId) => {
