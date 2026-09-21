@@ -37,7 +37,7 @@ export type Steps = {
   status: StepsStatus;
   /** 보조 수단. 안 눌러도 자동으로 갱신된다 */
   refresh: () => void;
-  /** 안내 화면의 [연결] 버튼용. HC 권한 재요청 */
+  /** 안내 화면의 [연결] 버튼용. 센서 권한과 HC 권한을 둘 다 다시 요청한다 */
   connect: () => void;
 };
 
@@ -92,6 +92,8 @@ export function useSteps(): Steps {
   /** 센서 누적에 더할 기준선 = 센서가 0일 때의 HC 오늘치. */
   const baseline = useRef<number | null>(null);
   const dayRef = useRef(dayKey(new Date()));
+  /** 지금 구독 중인 센서. 이미 있으면 ensureSensor가 다시 구독하지 않는다. */
+  const pedometerSub = useRef<{ remove: () => void } | undefined>(undefined);
 
   const refresh = useCallback(() => {
     const now = new Date();
@@ -116,51 +118,59 @@ export function useSteps(): Steps {
     });
   }, []);
 
-  // 센서 실시간 구독. 권한이 없거나 센서가 없으면 조용히 건너뛴다.
-  useEffect(() => {
-    let sub: { remove: () => void } | undefined;
-    let cancelled = false;
-    void (async () => {
-      try {
-        if (!(await Pedometer.isAvailableAsync())) {
-          if (!cancelled) setStatus((s) => (s === 'connected' ? s : 'unavailable'));
-          return;
-        }
-        const perm = await Pedometer.requestPermissionsAsync();
-        if (!perm.granted || cancelled) return;
-        sub = Pedometer.watchStepCount(({ steps }) => {
-          liveRef.current = steps;
-          setLive(steps);
-        });
-      } catch (e) {
-        console.warn('[steps] 센서 구독 실패 — Health Connect 값만 씁니다.', e);
+  // 센서 권한을 확보하고 구독한다. 이미 구독 중이면 아무것도 하지 않는다.
+  // 첫 마운트와 [연결] 버튼(connect) 둘 다 이 함수 하나로 들어온다 — 버튼을 눌러도
+  // 센서 권한은 재요청 안 되던 문제(실기기 확인)의 원인이 "로직이 두 곳에 따로" 있었던 것이라
+  // 하나로 합쳤다.
+  const ensureSensor = useCallback(async () => {
+    if (pedometerSub.current) return;
+    try {
+      if (!(await Pedometer.isAvailableAsync())) {
+        setStatus((s) => (s === 'connected' ? s : 'unavailable'));
+        return;
       }
-    })();
-    return () => {
-      cancelled = true;
-      sub?.remove();
-    };
+      const perm = await Pedometer.requestPermissionsAsync();
+      if (!perm.granted) return;
+      pedometerSub.current = Pedometer.watchStepCount(({ steps }) => {
+        liveRef.current = steps;
+        setLive(steps);
+      });
+    } catch (e) {
+      console.warn('[steps] 센서 권한 요청 실패 — Health Connect 값만 씁니다.', e);
+    }
   }, []);
 
-  // 첫 실행에서 HC 권한을 한 번 물어본 뒤, 포그라운드 복귀 + 60초마다 자동으로 읽는다.
+  // 초기화: 센서 권한 → HC 권한 → 포그라운드 복귀 + 60초 폴링.
+  //
+  // 센서 권한(ACTIVITY_RECOGNITION)과 HC 권한은 둘 다 "액티비티 결과"로 응답받는
+  // 시스템 창이라, 동시에 요청하면 안드로이드가 하나를 화면에 띄우지도 않고 조용히
+  // 묵살한다(실기기 확인: HC 창만 뜨고 센서 권한 창이 아예 안 뜸). 한쪽이 완전히
+  // 끝난 뒤 다음 걸 요청해야 한다.
   useEffect(() => {
+    let cancelled = false;
     void (async () => {
+      await ensureSensor();
+      if (cancelled) return;
       try {
         if ((await prepare()) && !(await hasPermission())) await requestPermission([READ_STEPS]);
       } catch (e) {
         console.warn('[steps] Health Connect 권한 요청 실패', e);
       }
-      refresh();
+      if (!cancelled) refresh();
     })();
+
     const timer = setInterval(refresh, POLL_MS);
-    const sub = AppState.addEventListener('change', (s) => {
+    const appStateSub = AppState.addEventListener('change', (s) => {
       if (s === 'active') refresh();
     });
     return () => {
+      cancelled = true;
+      pedometerSub.current?.remove();
+      pedometerSub.current = undefined;
       clearInterval(timer);
-      sub.remove();
+      appStateSub.remove();
     };
-  }, [refresh]);
+  }, [ensureSensor, refresh]);
 
   // HC든 센서든 값이 움직이면 오늘치를 다시 접는다.
   useEffect(() => {
@@ -171,6 +181,10 @@ export function useSteps(): Steps {
 
   const connect = useCallback(() => {
     void (async () => {
+      // 거부했던 두 권한을 순서대로 다시 물어본다(동시 요청 금지 이유는 위 주석 참고).
+      // 안드로이드가 "다시 묻지 않음"으로 기억해뒀으면 창 없이 바로 거부로 돌아온다 —
+      // 그 경우 앱에서 더 할 수 있는 건 없고 사용자가 시스템 설정에서 직접 켜야 한다.
+      await ensureSensor();
       try {
         if (await prepare()) await requestPermission([READ_STEPS]);
       } catch (e) {
@@ -178,7 +192,7 @@ export function useSteps(): Steps {
       }
       refresh();
     })();
-  }, [refresh]);
+  }, [ensureSensor, refresh]);
 
   // HC는 오늘치를 늦게 반영하고, 센서만 쓰는 폰은 아예 안 준다.
   // 호출부가 매번 합치다 빠뜨리지 않도록 여기서 한 번만 덮어쓴다.
