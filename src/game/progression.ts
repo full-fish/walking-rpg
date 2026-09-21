@@ -39,6 +39,7 @@ export function statsOf(save: Save) {
     maxHp: base.maxHp + gear.maxHp,
     atk: base.atk + gear.atk,
     def: base.def + gear.def,
+    spd: base.spd + gear.spd,
   };
 }
 
@@ -64,10 +65,11 @@ export function primaryStats(save: Save): StatSpend {
  * 기본값은 gen-content가 §6.2·§6.3 공식으로 뽑아 몬스터에 박아둔 값이다.
  * 여기서 다시 계산하면 JSON과 어긋날 수 있다.
  */
-export function killReward(base: Reward): Reward {
+export function killReward(base: Reward, goldFind = 0): Reward {
   return {
     exp: Math.round(base.exp * INDIVIDUAL_REWARD_RATE),
-    gold: Math.round(base.gold * INDIVIDUAL_REWARD_RATE),
+    // 행운은 골드에만 붙는다 (§4.3). EXP까지 늘리면 LUK이 성장 속도까지 사는 스탯이 된다
+    gold: Math.round(base.gold * INDIVIDUAL_REWARD_RATE * (1 + goldFind)),
   };
 }
 

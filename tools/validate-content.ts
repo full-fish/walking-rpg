@@ -10,7 +10,13 @@
 import raw from '../src/content/archetypes/monsters.json';
 import { EQUIPMENT, MONSTERS, REGIONS } from '../src/content';
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
-import { combatStats, gearSetPrice, GEAR_SLOTS, powerScale } from '../src/game/formulas';
+import {
+  combatStats,
+  gearSetPrice,
+  GEAR_SLOTS,
+  GEAR_SPD_RATE,
+  powerScale,
+} from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
 import { generateAll, generateEquipment, gearTierLevels, tierInRegion } from './gen-content';
 
@@ -186,12 +192,13 @@ function validateEquipment(): string[] {
     const naked = combatStats(refLevel);
     const gear = setBonus(set);
     const target = powerScale(refLevel);
-    for (const [label, got, base] of [
-      ['ATK', naked.atk + gear.atk, naked.atk],
-      ['HP', naked.maxHp + gear.maxHp, naked.maxHp],
-      ['DEF', naked.def + gear.def, naked.def],
+    // SPD만 목표가 다르다 — gearShare를 안 쓰고 레벨과 무관하게 +15%다 (§4.5)
+    for (const [label, got, base, want] of [
+      ['ATK', naked.atk + gear.atk, naked.atk, naked.atk * target],
+      ['HP', naked.maxHp + gear.maxHp, naked.maxHp, naked.maxHp * target],
+      ['DEF', naked.def + gear.def, naked.def, naked.def * target],
+      ['SPD', naked.spd + gear.spd, naked.spd, naked.spd * (1 + GEAR_SPD_RATE)],
     ] as const) {
-      const want = base * target;
       // 부위마다 정수로 반올림하므로 최악이 6칸 × 0.5 = 3이다. 그만큼은 봐준다 —
       // 티어 1 DEF처럼 몫 자체가 1도 안 되는 칸이 여기 걸린다
       const slack = Math.max(GEAR_SLOTS.length / 2, want * GEAR_TOLERANCE);
@@ -202,9 +209,9 @@ function validateEquipment(): string[] {
       }
     }
 
-    // §4.5 — common 6부위 풀세트 가격 ≈ 그 지역 하루 수입 1일치
+    // §4.5 — 값은 **그 장비가 실제로 주는 몫**에 비례한다. 티어와는 무관하다
     const price = set.reduce((sum, e) => sum + e.price, 0);
-    const want = gearSetPrice(tier);
+    const want = gearSetPrice(refLevel);
     if (Math.abs(price - want) / want > PRICE_TOLERANCE) {
       errors.push(`[풀세트 가격] 티어 ${tier} — ${price}골드 (목표 ${Math.round(want)})`);
     }
@@ -216,7 +223,7 @@ function validateEquipment(): string[] {
       (a, b) => a.tier - b.tier,
     );
     for (let i = 1; i < line.length; i++) {
-      const sum = (e: (typeof line)[number]) => e.atk + e.maxHp + e.def;
+      const sum = (e: (typeof line)[number]) => e.atk + e.maxHp + e.def + e.spd;
       if (sum(line[i]) <= sum(line[i - 1])) {
         errors.push(`[장비 단조 증가 깨짐] ${line[i - 1].name} → ${line[i].name}`);
       }

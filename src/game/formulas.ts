@@ -80,9 +80,17 @@ export const DAMAGE_K = 50;
 export const DAMAGE_ROLL_MIN = 0.8;
 export const DAMAGE_ROLL_MAX = 1.2;
 
-/** ATB 행동 비율 상·하한. 민첩 몰빵도 2배가 한계 (§4.2). */
+/**
+ * ATB 행동 비율 상·하한 (§4.2).
+ *
+ * 2.0이었는데 3.0으로 올렸다. 이유는 "민첩 몰빵에 여유를 주려고"가 아니라 **상한이 기본값이었기
+ * 때문**이다 — 플레이어 SPD는 레벨당 선형(+2.3)인데 몬스터는 티어당 1.06배라, Lv8부터는
+ * 민첩을 한 점도 안 찍어도 비율이 2를 넘었다(Lv50에 3.04). AGI의 SPD가 죽은 스탯이었다.
+ * MONSTER_SPD_GROWTH를 같이 올려서 균등 배분이 0.96~1.67에 머물게 했고,
+ * 그래서 이제 이 상한은 **민첩을 실제로 찍은 사람만 닿는다.**
+ */
 export const SPD_RATIO_MIN = 0.5;
-export const SPD_RATIO_MAX = 2.0;
+export const SPD_RATIO_MAX = 3.0;
 
 /**
  * 무한루프 방지용 행동 하드캡. 게임 규칙이 아니라 안전장치다 (§3.5).
@@ -114,11 +122,19 @@ export function actionRatio(playerSpd: number, monsterSpd: number): number {
 // 성장 (§4.3)
 // ─────────────────────────────────────────────────────────────
 
-/** 직업별 레벨당 자동 성장. 배분 불가 (§4.3). */
+/**
+ * 직업별 레벨당 자동 성장. 배분 불가 (§4.3).
+ *
+ * spd가 0.8/1.6/1.0에서 2.6/3.4/2.8로 올랐다(+1.8). **빌드 간 SPD 격차를 좁히려는 것**이다 —
+ * 전에는 Lv50에서 민첩 0점(49)과 몰빵(270)이 5.5배 차이라 행동 비율 창 [0.5, 3.0] 안에
+ * 도저히 안 들어갔고, 몬스터를 어디에 맞춰도 한쪽이 바닥이나 상한에 붙었다.
+ * 자동 성장을 올리면 격차가 2.6배로 줄어 셋 다 창 안에 들어온다.
+ * AGI 1점의 값(+1.5)은 그대로다 — 비중만 38%로 일정해진다.
+ */
 export const JOB_GROWTH = {
-  warrior: { maxHp: 14, maxMp: 2, atk: 2.0, matk: 0.2, def: 1.5, spd: 0.8 },
-  rogue: { maxHp: 8, maxMp: 3, atk: 2.5, matk: 0.5, def: 0.8, spd: 1.6 },
-  mage: { maxHp: 7, maxMp: 8, atk: 3.0, matk: 3.0, def: 0.6, spd: 1.0 },
+  warrior: { maxHp: 14, maxMp: 2, atk: 2.0, matk: 0.2, def: 1.5, spd: 2.6 },
+  rogue: { maxHp: 8, maxMp: 3, atk: 2.5, matk: 0.5, def: 0.8, spd: 3.4 },
+  mage: { maxHp: 7, maxMp: 8, atk: 3.0, matk: 3.0, def: 0.6, spd: 2.8 },
 } as const;
 
 export type JobId = keyof typeof JOB_GROWTH;
@@ -128,7 +144,12 @@ export const STAT_PER_POINT = {
   str: { atk: 2 },
   vit: { maxHp: 10, def: 0.5 },
   agi: { spd: 1.5, eva: 0.0015 },
-  luk: { cri: 0.0025, dropRate: 0.002 },
+  /**
+   * 치명 확률만으로는 너무 얇아서 몰빵이 Lv50에 못 갔다 (T13 시뮬 400일 미달).
+   * 확률과 배율을 같이 올리고 골드 획득률까지 준다 — 기댓값을 증폭하는 스탯이라는 성격 그대로,
+   * 대신 실제로 증폭되게 한다. dropRate는 드랍이 붙는 T16부터 일한다.
+   */
+  luk: { cri: 0.0025, crd: 0.005, dropRate: 0.002, goldFind: 0.002 },
   /** 마법사용. 쓸 데가 생기는 건 스킬이 들어오는 T18이라 아직 배분 대상이 아니다 */
   int: { maxMp: 10, matk: 2 },
 } as const;
@@ -207,8 +228,12 @@ export function combatStats(level: number, job: JobId = 'warrior', spend?: StatS
     def: BASE_STATS.def + growth.def * ups + STAT_PER_POINT.vit.def * s.vit,
     spd: BASE_STATS.spd + growth.spd * ups + STAT_PER_POINT.agi.spd * s.agi,
     cri: BASE_STATS.cri + STAT_PER_POINT.luk.cri * s.luk,
-    crd: BASE_STATS.crd,
+    crd: BASE_STATS.crd + STAT_PER_POINT.luk.crd * s.luk,
     eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * s.agi,
+    /** 드랍률 가산. 쓰는 건 T16 */
+    dropRate: STAT_PER_POINT.luk.dropRate * s.luk,
+    /** 골드 획득률 가산. killReward가 골드에만 곱한다 (EXP는 안 건드린다) */
+    goldFind: STAT_PER_POINT.luk.goldFind * s.luk,
     /** 피해배율 K의 기준선 — 스탯에 곱하는 값이 아니다 (§4.2) */
     scale: powerScale(level),
   };
@@ -277,8 +302,18 @@ export const MONSTER_GROWTH = 1.2;
  * (Lv1 14대 → Lv50 9대) 맞을 기회 자체가 줄어 후반이 통째로 안전해진다.
  */
 export const MONSTER_HP_GROWTH = 1.223;
-/** SPD만 따로 완만하게 오른다. 행동 횟수가 SPD 비율에 직접 비례하기 때문 (§4.2). */
-export const MONSTER_SPD_GROWTH = 1.06;
+/**
+ * SPD만 **선형**으로 오른다 — 티어당 +7.2 (§4.2, §7.2④).
+ *
+ * 다른 스탯이 지수인 건 플레이어의 HP/ATK/DEF가 장비를 끼고 지수로 자라기 때문이다(§4.5).
+ * 그런데 **SPD는 장비가 배수로 밀어주지 않아 레벨에 선형으로만 자란다.** 여기에 지수를 맞추면
+ * 어디선가 반드시 어긋난다 — 1.06이면 Lv8부터 플레이어가 상한(2배)에 붙어 AGI가 죽고,
+ * 1.11~1.13으로 올리면 중반에 플레이어가 앞질러 적정 레벨 완주율이 100%로 굳었다.
+ * 선형으로 두면 **Lv1부터 Lv50까지 비율이 1.08~1.30으로 평평하다.**
+ *   민첩 0점 0.73~1.30 · 균등 1.08~1.30 · 민첩 몰빵 1.78~2.26
+ * 셋 다 [0.5, 3.0] 창 안이고, 상한은 몰빵 + 좋은 신발 + 느린 원형이 겹쳐야 닿는다.
+ */
+export const MONSTER_SPD_PER_TIER = 7.2;
 
 /**
  * 티어 0 기준 몬스터 (§7.2④).
@@ -287,7 +322,7 @@ export const MONSTER_SPD_GROWTH = 1.06;
  * 사냥터마다 적정 레벨(그 풀의 평균 티어로 정해지는)에서 한 마리에 HP 10~20%를 깎는다 —
  * 한 판 평균 4마리(§4.4)가 빠듯하게 도는 값이다. 최종 확정은 T12 시뮬레이터가 한다.
  */
-export const MONSTER_BASE = { hp: 110, atk: 5.0, def: 4.2, spd: 9.4 } as const;
+export const MONSTER_BASE = { hp: 110, atk: 3.4, def: 4.2, spd: 2.0 } as const;
 
 export type StatBias = { hp: number; atk: number; def: number; spd: number };
 
@@ -298,12 +333,12 @@ export type StatBias = { hp: number; atk: number; def: number; spd: number };
  * power까지 곱하면 센 원형이 2배 상한에 쉽게 닿는다.
  */
 export function monsterStats(tier: number, difficulty: number, power: number, bias: StatBias) {
-  const scale = MONSTER_GROWTH ** tier * difficulty * power;
+  const common = difficulty * power;
   return {
-    maxHp: Math.round(MONSTER_BASE.hp * MONSTER_HP_GROWTH ** tier * difficulty * power * bias.hp),
-    atk: round2(MONSTER_BASE.atk * scale * bias.atk),
-    def: round2(MONSTER_BASE.def * scale * bias.def),
-    spd: round2(MONSTER_BASE.spd * MONSTER_SPD_GROWTH ** tier * bias.spd),
+    maxHp: Math.round(MONSTER_BASE.hp * MONSTER_HP_GROWTH ** tier * common * bias.hp),
+    atk: round2(MONSTER_BASE.atk * MONSTER_GROWTH ** tier * common * bias.atk),
+    def: round2(MONSTER_BASE.def * MONSTER_GROWTH ** tier * common * bias.def),
+    spd: round2((MONSTER_BASE.spd + MONSTER_SPD_PER_TIER * tier) * bias.spd),
     scale: round2(MONSTER_GROWTH ** tier * difficulty),
   };
 }
@@ -311,6 +346,10 @@ export function monsterStats(tier: number, difficulty: number, power: number, bi
 /** 생성물 JSON에 끝없는 소수가 들어가지 않게 자른다. */
 function round2(v: number): number {
   return Math.round(v * 100) / 100;
+}
+
+function round1(v: number): number {
+  return Math.round(v * 10) / 10;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -379,14 +418,28 @@ export const RARITY_PRICE: Record<Rarity, number> = {
  * 부위가 가져가는 몫 (§4.5). **스탯마다 합이 1.0**이라 6부위 풀세트가 곧 그 티어의 몫이다.
  * 무기는 ATK, 갑옷·투구는 HP/DEF — 부위마다 성격이 다르게만 나눠 갖는다.
  */
-export const SLOT_BIAS: Record<GearSlot, { atk: number; maxHp: number; def: number }> = {
-  weapon: { atk: 0.55, maxHp: 0.05, def: 0.05 },
-  helm: { atk: 0.05, maxHp: 0.2, def: 0.2 },
-  armor: { atk: 0.05, maxHp: 0.35, def: 0.35 },
-  gloves: { atk: 0.15, maxHp: 0.1, def: 0.15 },
-  boots: { atk: 0.05, maxHp: 0.15, def: 0.15 },
-  accessory: { atk: 0.15, maxHp: 0.15, def: 0.1 },
+export const SLOT_BIAS: Record<
+  GearSlot,
+  { atk: number; maxHp: number; def: number; spd: number }
+> = {
+  weapon: { atk: 0.55, maxHp: 0.05, def: 0.05, spd: 0.05 },
+  helm: { atk: 0.05, maxHp: 0.2, def: 0.2, spd: 0.05 },
+  armor: { atk: 0.05, maxHp: 0.35, def: 0.35, spd: 0.05 },
+  gloves: { atk: 0.15, maxHp: 0.1, def: 0.15, spd: 0.2 },
+  boots: { atk: 0.05, maxHp: 0.15, def: 0.15, spd: 0.45 },
+  accessory: { atk: 0.15, maxHp: 0.15, def: 0.1, spd: 0.2 },
 };
+
+/**
+ * common 풀세트가 올려주는 SPD 비율 (§4.5). **레벨과 무관하게 항상 이만큼이다.**
+ *
+ * SPD만 다른 스탯과 계산이 다르다. ATK/HP/DEF처럼 gearShare에 비례시키면
+ * 티어 10 신발 한 켤레가 맨몸 SPD보다 많이 준다(+147 vs 109) — 모두가 공짜로
+ * 민첩 몰빵 속도를 갖게 되어 AGI 배분이 다시 죽는다.
+ * 행동 횟수는 **비율**이 전부라(§4.2) 절대량을 키울 이유도 없다.
+ * SPD의 주인은 AGI고 장비는 거드는 정도여야 한다.
+ */
+export const GEAR_SPD_RATE = 0.15;
 
 /** 부위별 가격 몫. 합이 6.0이라 "풀세트 = 세트 가격"이 그대로 성립한다. */
 export const SLOT_PRICE: Record<GearSlot, number> = {
@@ -424,8 +477,9 @@ export function itemStat(base: number, quality: number, enhance: number): number
  * 장비 한 점의 기본 스탯 (§4.5).
  *
  * 기준은 **그 레벨의 맨몸 스탯**이다. gearShare(level)만큼을 6부위가 나눠 가지므로
- * common 풀세트를 갖춰 입으면 전투력이 정확히 powerScale(level)배가 된다.
- * SPD·크리·회피는 안 준다 — 행동 횟수는 이미 2배 상한에 눌려 있고(§4.2) 그건 AGI 몫이다.
+ * common 풀세트를 갖춰 입으면 ATK·HP·DEF가 정확히 powerScale(level)배가 된다.
+ * SPD만 GEAR_SPD_RATE를 한 번 더 곱해 완만하게 준다. 크리·회피는 안 준다 —
+ * 확률 스탯까지 장비가 주면 LUK·AGI 배분이 할 일이 없어진다.
  */
 export function gearStats(level: number, slot: GearSlot, rarity: Rarity) {
   const naked = combatStats(level);
@@ -435,6 +489,9 @@ export function gearStats(level: number, slot: GearSlot, rarity: Rarity) {
     atk: Math.round(naked.atk * share * bias.atk),
     maxHp: Math.round(naked.maxHp * share * bias.maxHp),
     def: Math.round(naked.def * share * bias.def),
+    // SPD는 gearShare를 안 쓴다 — 레벨이 올라도 "풀세트 = +15%"로 일정하다.
+    // 소수 한 자리로 두는 건 정수로 자르면 낮은 티어 신발이 통째로 +0이 되기 때문이다
+    spd: round1(naked.spd * GEAR_SPD_RATE * RARITY_MULT[rarity] * bias.spd),
   };
 }
 
@@ -449,14 +506,27 @@ export function regionOfGearTier(gearTier: number): number {
   return Math.ceil(gearTier / GEAR_TIERS_PER_REGION);
 }
 
-/** 그 티어 common 풀세트의 값 (§4.5). 지역 앞단은 0.8일치, 뒷단은 1.2일치. */
-export function gearSetPrice(gearTier: number): number {
-  const region = regionOfGearTier(gearTier);
-  const day = REGION_DAILY_GOLD[region - 1];
-  return day * (gearTier % 2 === 1 ? 0.8 : 1.2);
+/** 성장 곡선이 끝나는 레벨 (§6.2). 장비 값의 기준점이기도 하다. */
+export const MAX_LEVEL = 50;
+
+/**
+ * 장비 값의 계수 (§4.5).
+ *
+ * T13에서는 "그 지역 하루 수입 1일치"로 묶었는데, 그러면 **티어 1 풀세트가 1,616골드인데
+ * 주는 건 ATK +1 · HP +12**가 된다 — 첫 구매가 함정이었다. 값을 **그 장비가 실제로 주는 몫**
+ * (gearShare)에 비례시키면 어느 티어를 사도 골드당 얻는 게 같아진다.
+ * 계수는 **Lv50 풀세트가 지역 5 하루 수입의 1.2일치**가 되게 잡았다.
+ */
+export const GEAR_PRICE_K = (REGION_DAILY_GOLD[REGION_COUNT - 1] * 1.2) / gearShare(MAX_LEVEL);
+
+/** 그 레벨용 common 풀세트의 값 (§4.5). 인자가 티어가 아니라 레벨인 건 값이 성능을 따르기 때문. */
+export function gearSetPrice(refLevel: number): number {
+  return GEAR_PRICE_K * gearShare(refLevel);
 }
 
 /** 장비 한 점의 값. 풀세트를 다 더하면 gearSetPrice가 된다 (SLOT_PRICE 합이 6). */
-export function gearPrice(gearTier: number, slot: GearSlot, rarity: Rarity): number {
-  return Math.round((gearSetPrice(gearTier) / 6) * SLOT_PRICE[slot] * RARITY_PRICE[rarity]);
+export function gearPrice(refLevel: number, slot: GearSlot, rarity: Rarity): number {
+  return Math.round(
+    (gearSetPrice(refLevel) / GEAR_SLOTS.length) * SLOT_PRICE[slot] * RARITY_PRICE[rarity],
+  );
 }

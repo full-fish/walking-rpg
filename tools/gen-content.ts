@@ -142,7 +142,8 @@ export function generateEquipment(): Equipment[] {
           region,
           sprite: `${arch.spriteTag}_${tier}`,
           ...gearStats(refLevel, arch.slot, rarity),
-          price: gearPrice(tier, arch.slot, rarity),
+          // 값은 티어가 아니라 **그 장비가 실제로 주는 몫**을 따른다 (§4.5)
+          price: gearPrice(refLevel, arch.slot, rarity),
         });
       }
     }

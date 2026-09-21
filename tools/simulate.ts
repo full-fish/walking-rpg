@@ -176,7 +176,7 @@ export function simulateRun(save: Save, rng: () => number): RunResult {
 
     hp = result.playerHp;
     kills += 1;
-    const got = killReward(monster);
+    const got = killReward(monster, stats.goldFind);
     individual.exp += got.exp;
     individual.gold += got.gold;
   }

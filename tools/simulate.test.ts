@@ -15,6 +15,25 @@ import { BUILDS, dayAtLevel, simulate, type Build, type DayLog } from './simulat
 const STEPS = 10_000;
 const CAP = { maxLevel: 50, maxDays: 400 };
 
+/**
+ * 시드 5개를 돌려 평균을 본다.
+ *
+ * 한 판의 마릿수·크리·회피가 전부 난수라 시드 하나로는 도달 일수가 ±1일 흔들린다.
+ * 그 폭이 §6.2 목표의 15%라, 시드 하나로 밸런스를 잡으면 노이즈를 쫓게 된다.
+ */
+const SEEDS = [1, 2, 3, 4, 5];
+
+function runAll(build: Build) {
+  return SEEDS.map((seed) => simulate({ steps: STEPS, build, ...CAP }, seed));
+}
+
+/** 그 레벨에 도달한 평균 일수. 한 시드라도 못 찍으면 undefined. */
+function meanDay(runs: ReturnType<typeof runAll>, level: number): number | undefined {
+  const days = runs.map((r) => dayAtLevel(r.log, level));
+  if (days.some((d) => d === undefined)) return undefined;
+  return (days as number[]).reduce((sum, d) => sum + d, 0) / days.length;
+}
+
 /** §6.2 "결과 — 목표와 대조" 표. */
 const TARGET_DAYS = [
   [10, 7.1],
@@ -44,30 +63,35 @@ function averageBetween(log: DayLog[], from: number, to: number) {
 const balanced: Build = BUILDS[0];
 
 test('§6.2 도달 일수 — Lv10 7.1일 / Lv30 45.0일 / Lv50 120.1일', () => {
-  const { log, days, save } = simulate({ steps: STEPS, build: balanced, ...CAP });
+  const runs = runAll(balanced);
 
-  console.log(`\n■ 하루 ${STEPS.toLocaleString()}보 · ${balanced.name} 배분 · ${days}일 시뮬`);
-  console.log('  목표 레벨   계획서    시뮬     차이');
-  console.log('  ' + '─'.repeat(40));
+  console.log(
+    `\n■ 하루 ${STEPS.toLocaleString()}보 · ${balanced.name} 배분 · 시드 ${SEEDS.length}개 평균`,
+  );
+  console.log('  목표 레벨   계획서    시뮬     차이      시드별');
+  console.log('  ' + '─'.repeat(54));
   for (const [level, target] of TARGET_DAYS) {
-    const actual = dayAtLevel(log, level);
+    const actual = meanDay(runs, level);
     const diff = actual ? `${(((actual - target) / target) * 100).toFixed(0)}%` : '미달';
-    console.log(`  Lv${pad(level, 2)}      ${pad(target, 7)}일 ${pad(actual ?? '-', 6)}일 ${pad(diff, 8)}`);
+    const each = runs.map((r) => dayAtLevel(r.log, level) ?? '-').join(' ');
+    console.log(
+      `  Lv${pad(level, 2)}      ${pad(target, 7)}일 ${pad(actual?.toFixed(1) ?? '-', 6)}일 ${pad(diff, 8)}  ${each}`,
+    );
   }
-  console.log('  ' + '─'.repeat(40));
-  console.log(`  ${days}일차 도달 레벨: ${save.player.level}`);
+  console.log('  ' + '─'.repeat(54));
+  console.log(`  마지막 날 도달 레벨: ${runs.map((r) => r.save.player.level).join(' ')}`);
 
   // T12 완료 기준. 계획서는 5%지만 Lv30이 -7%로 나온다 — §6.2 표는 "평균 티어 3"을
   // 가정하는데 실제 플레이어는 갈 수 있는 사냥터 중 제일 쉬운 쪽부터 돈다.
   for (const [level, target] of TARGET_DAYS) {
-    const actual = dayAtLevel(log, level);
+    const actual = meanDay(runs, level);
     expect(actual, `Lv${level} 도달`).toBeDefined();
     expect(Math.abs((actual! - target) / target), `Lv${level} 오차`).toBeLessThan(0.1);
   }
 });
 
 test('§6.2·§6.3 하루 수입 — 지역별 EXP와 골드', () => {
-  const { log } = simulate({ steps: STEPS, build: balanced, ...CAP });
+  const log = runAll(balanced).flatMap((r) => r.log);
 
   // §6.2 "하루 EXP" / §6.3 "하루 골드" 표
   const planned = [
@@ -120,11 +144,12 @@ test('빌드별 편차 — 배분을 어떻게 하든 굴러가야 한다 (§4.3
 
   const reached: { name: string; day: number | undefined }[] = [];
   for (const build of BUILDS) {
-    const { log } = simulate({ steps: STEPS, build, ...CAP });
+    const runs = runAll(build);
+    const log = runs.flatMap((r) => r.log);
     const deaths = log.reduce((s, d) => s + d.deaths, 0) / Math.max(1, log.length);
     const clear = log.reduce((s, d) => s + d.clearRate, 0) / Math.max(1, log.length);
-    const at = (lv: number) => pad(dayAtLevel(log, lv) ?? '-', 6);
-    reached.push({ name: build.name, day: dayAtLevel(log, 50) });
+    const at = (lv: number) => pad(meanDay(runs, lv)?.toFixed(0) ?? '-', 6);
+    reached.push({ name: build.name, day: meanDay(runs, 50) });
     console.log(
       `  ${padEnd(build.name, 12)}${at(10)}  ${at(30)}  ${at(50)}  ` +
         `${pad(deaths.toFixed(2), 7)}  ${pad((clear * 100).toFixed(0) + '%', 6)}`,
@@ -132,8 +157,10 @@ test('빌드별 편차 — 배분을 어떻게 하든 굴러가야 한다 (§4.3
   }
   console.log('  ' + '─'.repeat(56));
 
-  const done = reached.filter((r) => r.day !== undefined);
-  expect(done.length, '레벨 50에 닿은 빌드').toBeGreaterThan(0);
+  // §4.3 "배분을 어떻게 하든 굴러가야 한다" — 하나도 빠짐없이 Lv50에 닿아야 한다.
+  // T13까지는 행운 몰빵이 400일 안에 못 끝냈다.
+  const stuck = reached.filter((r) => r.day === undefined).map((r) => r.name);
+  expect(stuck, 'Lv50에 못 간 빌드').toEqual([]);
 });
 
 test('장비가 전투력의 85%를 댄다 (§4.5) — 맨몸 성장은 선형으로 남는다', () => {

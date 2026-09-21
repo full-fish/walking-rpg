@@ -9,9 +9,9 @@ import { equipmentById, type Equipment } from '../content';
 import type { ItemInstance, Save } from '../save/schema';
 import { GEAR_SLOTS, itemStat, rollQuality, type GearSlot } from './formulas';
 
-export type GearBonus = { atk: number; maxHp: number; def: number };
+export type GearBonus = { atk: number; maxHp: number; def: number; spd: number };
 
-const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0 };
+const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0, spd: 0 };
 
 /** 세이브 안에서만 유일하면 된다. 가진 것 중 가장 큰 번호 + 1. */
 export function nextUid(inventory: ItemInstance[]): string {
@@ -40,7 +40,13 @@ export function itemDef(inst: ItemInstance): Equipment {
 export function itemStats(inst: ItemInstance): GearBonus {
   const def = itemDef(inst);
   const scaled = (base: number) => Math.round(itemStat(base, inst.quality, inst.enhance));
-  return { atk: scaled(def.atk), maxHp: scaled(def.maxHp), def: scaled(def.def) };
+  return {
+    atk: scaled(def.atk),
+    maxHp: scaled(def.maxHp),
+    def: scaled(def.def),
+    // SPD만 소수 한 자리를 남긴다. 반올림하면 낮은 티어에서 전부 0이 된다
+    spd: Math.round(itemStat(def.spd, inst.quality, inst.enhance) * 10) / 10,
+  };
 }
 
 /** 인벤토리 표시용 — "강철 대검 (114%)", 강화했으면 "+3" (§4.5). */
@@ -65,7 +71,12 @@ export function equippedItems(save: Save): ItemInstance[] {
 export function equippedStats(save: Save): GearBonus {
   return equippedItems(save).reduce((sum, inst) => {
     const s = itemStats(inst);
-    return { atk: sum.atk + s.atk, maxHp: sum.maxHp + s.maxHp, def: sum.def + s.def };
+    return {
+      atk: sum.atk + s.atk,
+      maxHp: sum.maxHp + s.maxHp,
+      def: sum.def + s.def,
+      spd: round1(sum.spd + s.spd),
+    };
   }, NONE);
 }
 
@@ -78,7 +89,17 @@ export function equippedIn(save: Save, slot: GearSlot): ItemInstance | undefined
 /** 정의 여러 개의 스탯 합 (§4.5). 품질 100%·강화 0 — **밸런스 기준선**이다. */
 export function setBonus(defs: Equipment[]): GearBonus {
   return defs.reduce(
-    (sum, e) => ({ atk: sum.atk + e.atk, maxHp: sum.maxHp + e.maxHp, def: sum.def + e.def }),
+    (sum, e) => ({
+      atk: sum.atk + e.atk,
+      maxHp: sum.maxHp + e.maxHp,
+      def: sum.def + e.def,
+      spd: round1(sum.spd + e.spd),
+    }),
     NONE,
   );
+}
+
+/** 소수 한 자리. 0.1을 여러 번 더하면 부동소수점 찌꺼기가 붙는다. */
+function round1(v: number): number {
+  return Math.round(v * 10) / 10;
 }

@@ -72,7 +72,7 @@ export default function Battle() {
     return {
       player,
       monster,
-      reward: killReward(picked),
+      reward: killReward(picked, stats.goldFind),
       result: simulateBattle(player, monster, makeRng(Date.now())),
     };
   });

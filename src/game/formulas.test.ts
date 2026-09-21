@@ -7,15 +7,15 @@ import {
   gearSetPrice,
   gearShare,
   gearStats,
+  GEAR_PRICE_K,
   GEAR_SLOTS,
-  GEAR_TIERS,
   itemStat,
+  MAX_LEVEL,
   powerScale,
   QUALITY_MAX,
   QUALITY_MIN,
   RARITIES,
   REGION_DAILY_GOLD,
-  regionOfGearTier,
   rollQuality,
   rollRunSize,
   RUN_SIZE_WEIGHTS,
@@ -87,13 +87,22 @@ test('품질은 0.8~1.2 삼각분포 — 1.0 근처가 흔하다 (§4.5)', () =>
   expect(mid).toBeGreaterThan(edge * 2);
 });
 
-test('풀세트 값 = 그 지역 하루 수입 1일치 안팎 (§4.5)', () => {
-  for (let tier = 1; tier <= GEAR_TIERS; tier++) {
-    const pieces = GEAR_SLOTS.reduce((sum, slot) => sum + gearPrice(tier, slot, 'common'), 0);
+test('장비 값은 성능에 비례한다 — 골드당 얻는 게 티어마다 같다 (§4.5)', () => {
+  // 값이 티어가 아니라 **그 장비가 주는 몫**을 따른다. T13에서는 티어 1 풀세트가
+  // 1,616골드인데 ATK +1밖에 안 줘서 첫 구매가 함정이었다.
+  let last = 0;
+  for (const level of [3, 6, 10, 14, 18, 23, 29, 34, 40, 47]) {
+    const pieces = GEAR_SLOTS.reduce((sum, slot) => sum + gearPrice(level, slot, 'common'), 0);
     // SLOT_PRICE 합이 6이라 부위 값을 다 더하면 세트 값이 된다
-    expect(Math.abs(pieces - gearSetPrice(tier)) / gearSetPrice(tier)).toBeLessThan(0.02);
-    const day = REGION_DAILY_GOLD[regionOfGearTier(tier) - 1];
-    expect(pieces / day).toBeGreaterThan(0.5);
-    expect(pieces / day).toBeLessThan(1.5);
+    expect(Math.abs(pieces - gearSetPrice(level)) / gearSetPrice(level)).toBeLessThan(0.02);
+    // 골드당 성능이 일정하다 = 값 ÷ 장비 몫이 어느 레벨에서나 같다
+    // 부위마다 정수로 반올림하므로 딱 떨어지진 않는다. 1% 안이면 비례다
+    expect(Math.abs(pieces / gearShare(level) - GEAR_PRICE_K) / GEAR_PRICE_K).toBeLessThan(0.01);
+    expect(pieces).toBeGreaterThan(last);
+    last = pieces;
   }
+
+  // 마지막 티어 풀세트는 지역 5 하루 수입의 1.2일치 (§6.3)
+  const top = GEAR_SLOTS.reduce((sum, slot) => sum + gearPrice(MAX_LEVEL, slot, 'common'), 0);
+  expect(top / REGION_DAILY_GOLD[REGION_DAILY_GOLD.length - 1]).toBeCloseTo(1.2, 1);
 });

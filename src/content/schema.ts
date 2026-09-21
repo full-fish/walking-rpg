@@ -158,6 +158,8 @@ export const EquipmentSchema = z.object({
   atk: z.int().min(0),
   maxHp: z.int().min(0),
   def: z.int().min(0),
+  /** 소수 한 자리. 정수로 자르면 낮은 티어 신발이 통째로 0이 된다 (§4.5) */
+  spd: z.number().min(0),
   price: z.int().min(1),
 });
 

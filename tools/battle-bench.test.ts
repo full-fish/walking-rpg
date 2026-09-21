@@ -35,6 +35,7 @@ function warrior(level: number): Combatant {
     maxHp: stats.maxHp + gear.maxHp,
     atk: stats.atk + gear.atk,
     def: stats.def + gear.def,
+    spd: stats.spd + gear.spd,
   };
   return { name: `Lv${level} 전사`, hp: geared.maxHp, ...geared };
 }
@@ -210,7 +211,8 @@ test('한 판 — 4·6마리 완주율 진단 (§4.4)', () => {
       `    적정 레벨에는 ${pct(Math.min(...atProper), 0)}~${pct(Math.max(...atProper), 0)}.\n` +
       `    T11의 "못 깨거나 100%거나"는 T13에서 닫혔다 — 맨몸은 레벨에 선형으로 자라고(§4.3)\n` +
       `    몬스터와의 격차는 장비가 메운다(§4.5). 위 숫자는 그 레벨 common 풀세트 기준이다.\n` +
-      `    들어갈 때 낮은 건 정상이다. 지역 안에서도 쉬운 사냥터부터 도는 게 설계다 (§4.4).`,
+      `    적정 레벨이 100%인 건 여기가 **딱 맞는 레벨**만 재기 때문이다. 실제로는 그 아래에서도\n` +
+      `    들어가므로 시뮬은 지역별 91~100%가 나온다 (npm run sim).`,
   );
 
   // 적정 레벨에서 절반도 못 깨면 그 지역은 통과 자체가 안 된다. 여기서부터는 검사다.
@@ -224,7 +226,7 @@ test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 2배)', () 
     [13, 10, 1.3],
     [10, 10, 1.0],
     [8, 10, 0.8],
-    [100, 10, 2.0], // 상한에 걸려야 한다
+    [100, 10, 3.0], // 상한에 걸려야 한다 (§4.2, T14에서 2.0 → 3.0)
   ]) {
     let playerActions = 0;
     let monsterActions = 0;
