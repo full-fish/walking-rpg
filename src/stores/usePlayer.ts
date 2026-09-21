@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 import { gearSetFor } from '@/content';
 import type { Outcome } from '@/game/battle';
+import { enterField, settleRun, drinkPotion, type RunResult } from '@/game/field';
 import {
   buyConsumable,
   buyEquipment,
@@ -45,6 +46,12 @@ type PlayerStore = {
   regen: () => void;
   /** 전투 하나를 정산한다. 화면이 결과를 보여줄 수 있게 정산 내역을 돌려준다 */
   settle: (outcome: Outcome, playerHp: number, reward: Reward) => Settlement;
+  /** 사냥터에 들어간다 (§4.4). WP가 모자라거나 이미 판 안이면 false */
+  enter: (fieldId: string) => boolean;
+  /** 전투 하나를 판에 반영한다. 클리어·소재·보너스까지 여기서 나온다 */
+  finishBattle: (outcome: Outcome, playerHp: number) => RunResult;
+  /** 사냥터 안에서 물약을 쓴다. 만피거나 없으면 false */
+  drink: (id: string) => boolean;
   /** 남은 포인트 1점을 스탯에 넣는다. 포인트가 없으면 false */
   allocate: (stat: StatKey) => boolean;
   /** 장비를 낀다. 레벨이 모자라거나 없는 개체면 false */
@@ -63,8 +70,6 @@ type PlayerStore = {
    * trade()와 달리 결과를 그대로 돌려준다. 골드가 모자라면 null.
    */
   enhance: (uid: string) => EnhanceResult | null;
-  /** 실기기 확인용 — 사냥터 소재를 3개 준다. 진짜 드랍은 T16 */
-  grantMaterial: (fieldId: string) => void;
   reset: () => void;
 };
 
@@ -109,6 +114,26 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     const result = settleBattle(get().save, outcome, playerHp, reward, Date.now());
     set({ save: persist(result.save) });
     return result;
+  },
+
+  enter: (fieldId) => {
+    const next = enterField(get().save, fieldId, Math.random);
+    if (!next) return false;
+    set({ save: persist(next) });
+    return true;
+  },
+
+  finishBattle: (outcome, playerHp) => {
+    const result = settleRun(get().save, outcome, playerHp, Math.random, Date.now());
+    set({ save: persist(result.save) });
+    return result;
+  },
+
+  drink: (id) => {
+    const next = drinkPotion(get().save, id);
+    if (!next) return false;
+    set({ save: persist(next) });
+    return true;
   },
 
   allocate: (stat) => {
@@ -162,12 +187,6 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     if (!result) return null;
     set({ save: persist(result.save) });
     return result;
-  },
-
-  grantMaterial: (fieldId) => {
-    const { save } = get();
-    const materials = { ...save.materials, [fieldId]: (save.materials[fieldId] ?? 0) + 3 };
-    set({ save: persist({ ...save, materials }) });
   },
 
   reset: () => set({ save: resetSave() }),

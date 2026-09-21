@@ -11,6 +11,7 @@ import {
   type Field,
 } from '@/content';
 import { depositNet, sellPrice } from '@/game/economy';
+import { inTown } from '@/game/field';
 import {
   ENHANCE_MAX,
   enhanceCost,
@@ -72,6 +73,22 @@ export default function Shop() {
   const region = regionById(save.regionProgress.current);
   const stats = statsOf(save);
   const gold = save.player.gold;
+
+  // 창고·여관·상점은 마을에서만이다 (§3.7). 아무 데서나 되면 사냥터 나올 때마다
+  // 예치 버튼을 누르는 게 최적 플레이가 되고, 그건 게임이 아니라 잡일이다.
+  if (!inTown(save)) {
+    return (
+      <SafeAreaView style={styles.screen} edges={['top']}>
+        <Text size="xl">{region.town.name}</Text>
+        <Panel>
+          <Text>사냥터 안에서는 이용할 수 없습니다.</Text>
+          <Text size="sm" dim>
+            물약은 들고 들어간 것만 쓸 수 있습니다 (§4.4).
+          </Text>
+        </Panel>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>

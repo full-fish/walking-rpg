@@ -12,6 +12,11 @@
     "maxHp": 10,
     "def": 1,
     "spd": 0.3,
+    "vs": [
+      "beast",
+      "insect",
+      "ooze"
+    ],
     "price": 2058
   },
   {
@@ -27,6 +32,12 @@
     "maxHp": 20,
     "def": 2,
     "spd": 1.1,
+    "vs": [
+      "dragonkin",
+      "fungus",
+      "insect",
+      "poison"
+    ],
     "price": 1097
   },
   {
@@ -42,6 +53,12 @@
     "maxHp": 69,
     "def": 5,
     "spd": 0.3,
+    "vs": [
+      "beast",
+      "dragonkin",
+      "flying",
+      "plant"
+    ],
     "price": 1646
   },
   {
@@ -57,6 +74,12 @@
     "maxHp": 39,
     "def": 3,
     "spd": 0.3,
+    "vs": [
+      "construct",
+      "ooze",
+      "plant",
+      "undead"
+    ],
     "price": 1235
   },
   {
@@ -72,6 +95,12 @@
     "maxHp": 30,
     "def": 1,
     "spd": 1.1,
+    "vs": [
+      "beast",
+      "humanoid",
+      "insect",
+      "undead"
+    ],
     "price": 1097
   },
   {
@@ -87,6 +116,13 @@
     "maxHp": 90,
     "def": 7,
     "spd": 5.3,
+    "vs": [
+      "beast",
+      "dragonkin",
+      "fungus",
+      "insect",
+      "poison"
+    ],
     "price": 1784
   },
   {
@@ -102,6 +138,12 @@
     "maxHp": 210,
     "def": 16,
     "spd": 0.6,
+    "vs": [
+      "beast",
+      "humanoid",
+      "plant",
+      "undead"
+    ],
     "price": 2676
   },
   {
@@ -117,6 +159,12 @@
     "maxHp": 30,
     "def": 2,
     "spd": 0.6,
+    "vs": [
+      "beast",
+      "insect",
+      "plant",
+      "spirit"
+    ],
     "price": 3345
   },
   {
@@ -132,6 +180,13 @@
     "maxHp": 120,
     "def": 9,
     "spd": 0.6,
+    "vs": [
+      "beast",
+      "construct",
+      "dragonkin",
+      "flying",
+      "insect"
+    ],
     "price": 2007
   },
   {
@@ -147,6 +202,13 @@
     "maxHp": 90,
     "def": 5,
     "spd": 2.4,
+    "vs": [
+      "beast",
+      "dragonkin",
+      "flying",
+      "spirit",
+      "undead"
+    ],
     "price": 1784
   },
   {
@@ -162,6 +224,12 @@
     "maxHp": 73,
     "def": 6,
     "spd": 0.9,
+    "vs": [
+      "construct",
+      "dragonkin",
+      "insect",
+      "ooze"
+    ],
     "price": 5369
   },
   {
@@ -177,6 +245,13 @@
     "maxHp": 220,
     "def": 17,
     "spd": 8.5,
+    "vs": [
+      "beast",
+      "flying",
+      "humanoid",
+      "plant",
+      "spirit"
+    ],
     "price": 2863
   },
   {
@@ -192,6 +267,13 @@
     "maxHp": 514,
     "def": 40,
     "spd": 0.9,
+    "vs": [
+      "construct",
+      "dragonkin",
+      "fungus",
+      "ooze",
+      "poison"
+    ],
     "price": 4295
   },
   {
@@ -207,6 +289,12 @@
     "maxHp": 147,
     "def": 17,
     "spd": 3.8,
+    "vs": [
+      "beast",
+      "flying",
+      "spirit",
+      "undead"
+    ],
     "price": 2863
   },
   {
@@ -222,6 +310,12 @@
     "maxHp": 220,
     "def": 11,
     "spd": 3.8,
+    "vs": [
+      "armored",
+      "humanoid",
+      "insect",
+      "undead"
+    ],
     "price": 2863
   },
   {
@@ -237,6 +331,13 @@
     "maxHp": 351,
     "def": 42,
     "spd": 5.4,
+    "vs": [
+      "beast",
+      "fungus",
+      "insect",
+      "poison",
+      "spirit"
+    ],
     "price": 4821
   },
   {
@@ -252,6 +353,13 @@
     "maxHp": 1229,
     "def": 98,
     "spd": 1.4,
+    "vs": [
+      "beast",
+      "dragonkin",
+      "flying",
+      "humanoid",
+      "undead"
+    ],
     "price": 7231
   },
   {
@@ -267,6 +375,13 @@
     "maxHp": 176,
     "def": 14,
     "spd": 1.4,
+    "vs": [
+      "construct",
+      "dragonkin",
+      "fungus",
+      "plant",
+      "poison"
+    ],
     "price": 9039
   },
   {
@@ -282,6 +397,14 @@
     "maxHp": 702,
     "def": 56,
     "spd": 1.4,
+    "vs": [
+      "armored",
+      "beast",
+      "flying",
+      "humanoid",
+      "insect",
+      "undead"
+    ],
     "price": 5424
   },
   {
@@ -297,6 +420,12 @@
     "maxHp": 527,
     "def": 42,
     "spd": 12.3,
+    "vs": [
+      "armored",
+      "humanoid",
+      "plant",
+      "undead"
+    ],
     "price": 4821
   },
   {
@@ -312,6 +441,13 @@
     "maxHp": 420,
     "def": 34,
     "spd": 1.9,
+    "vs": [
+      "beast",
+      "flying",
+      "insect",
+      "ooze",
+      "spirit"
+    ],
     "price": 16006
   },
   {
@@ -327,6 +463,14 @@
     "maxHp": 2937,
     "def": 237,
     "spd": 1.9,
+    "vs": [
+      "beast",
+      "construct",
+      "dragonkin",
+      "flying",
+      "fungus",
+      "poison"
+    ],
     "price": 12805
   },
   {
@@ -342,6 +486,13 @@
     "maxHp": 1259,
     "def": 101,
     "spd": 16.8,
+    "vs": [
+      "armored",
+      "humanoid",
+      "plant",
+      "spirit",
+      "undead"
+    ],
     "price": 8536
   },
   {
@@ -357,6 +508,13 @@
     "maxHp": 1259,
     "def": 68,
     "spd": 7.4,
+    "vs": [
+      "dragonkin",
+      "fungus",
+      "plant",
+      "poison",
+      "spirit"
+    ],
     "price": 8536
   },
   {
@@ -372,6 +530,12 @@
     "maxHp": 1678,
     "def": 135,
     "spd": 1.9,
+    "vs": [
+      "armored",
+      "humanoid",
+      "insect",
+      "undead"
+    ],
     "price": 9603
   }
 ]

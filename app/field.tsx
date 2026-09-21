@@ -1,0 +1,116 @@
+import { useRouter } from 'expo-router';
+import { StyleSheet, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { consumableById, fieldById, regionOfField } from '@/content';
+import { currentMonster } from '@/game/field';
+import { statsOf } from '@/game/progression';
+import { usePlayer } from '@/stores/usePlayer';
+import { Bar } from '@/ui/Bar';
+import { Button } from '@/ui/Button';
+import { Panel } from '@/ui/Panel';
+import { Text } from '@/ui/Text';
+import { colors, space } from '@/ui/theme';
+
+/**
+ * 사냥터 한 판의 진행 화면 (§4.4).
+ *
+ * **남은 마릿수를 절대 보여주지 않는다.** "N번째 처치"라는 누적 카운터만 뜬다 —
+ * 알면 도박이 아니라 계산이 되고, 그 비공개가 이 시스템의 전부다.
+ * 물약은 여기서만 쓴다. 전투 중에는 못 쓴다 (전투는 미리 계산된 재생이라, §4.2).
+ */
+export default function Field() {
+  const router = useRouter();
+  const save = usePlayer((s) => s.save);
+  const drink = usePlayer((s) => s.drink);
+  const finishBattle = usePlayer((s) => s.finishBattle);
+
+  const run = save.run;
+  if (!run) {
+    return (
+      <SafeAreaView style={styles.screen} edges={['top']}>
+        <Panel>
+          <Text>진행 중인 사냥이 없습니다.</Text>
+          <Button label="마을로" tone="gold" onPress={() => router.replace('/')} />
+        </Panel>
+      </SafeAreaView>
+    );
+  }
+
+  const field = fieldById(run.fieldId);
+  const region = regionOfField(run.fieldId);
+  const stats = statsOf(save);
+  const next = currentMonster(save);
+  const potions = Object.entries(run.potions).filter(([, n]) => n > 0);
+
+  return (
+    <SafeAreaView style={styles.screen} edges={['top']}>
+      <View style={styles.header}>
+        <Text size="xl">{field.name}</Text>
+        <Text size="sm" dim>
+          {region.name}
+        </Text>
+      </View>
+
+      <Panel title={run.killed === 0 ? '사냥터에 들어섰다' : `${run.killed}번째 처치`}>
+        <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
+        <Text size="sm" dim>
+          {run.killed === 0 ? '무언가 다가온다...' : '또 다른 기척이 느껴진다...'}
+        </Text>
+        {next && <Text>{next.name}</Text>}
+      </Panel>
+
+      <Panel title={`물약 ${potions.reduce((s, [, n]) => s + n, 0)}개`}>
+        {potions.length === 0 ? (
+          <Text size="sm" dim>
+            들고 온 물약이 없습니다. 사냥터 안에서는 살 수 없습니다.
+          </Text>
+        ) : (
+          potions.map(([id, n]) => {
+            const def = consumableById(id);
+            const heal = def.heal + Math.round(stats.maxHp * def.healRatio);
+            return (
+              <View key={id} style={styles.row}>
+                <View style={styles.name}>
+                  <Text>
+                    {def.name} × {n}
+                  </Text>
+                  <Text size="sm" dim>
+                    HP +{heal}
+                  </Text>
+                </View>
+                <Button
+                  label="사용"
+                  disabled={save.player.hp >= stats.maxHp}
+                  onPress={() => drink(id)}
+                />
+              </View>
+            );
+          })
+        )}
+      </Panel>
+
+      <View style={styles.row}>
+        <Button label="계속 싸운다" tone="gold" onPress={() => router.push('/battle')} />
+        {/* 나가면 개별 보상은 그대로 두고 클리어 보너스만 잃는다 (§4.4) */}
+        <Button
+          label="나가기"
+          onPress={() => {
+            finishBattle('flee', save.player.hp);
+            router.replace('/');
+          }}
+        />
+      </View>
+      <Text size="sm" dim>
+        나가면 지금까지 받은 보상은 그대로지만 **클리어 보너스**는 없습니다.
+      </Text>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  screen: { flex: 1, backgroundColor: colors.bg, padding: space.lg, gap: space.lg },
+  header: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
+  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.sm },
+  name: { gap: space.xs, flexShrink: 1 },
+});

@@ -7,7 +7,13 @@
  */
 import { equipmentById, type Equipment } from '../content';
 import type { ItemInstance, Save } from '../save/schema';
-import { GEAR_SLOTS, itemStat, rollQuality, type GearSlot } from './formulas';
+import {
+  GEAR_SLOTS,
+  itemStat,
+  rollQuality,
+  UNIQUE_TRAIT_BONUS,
+  type GearSlot,
+} from './formulas';
 
 export type GearBonus = { atk: number; maxHp: number; def: number; spd: number };
 
@@ -78,6 +84,20 @@ export function equippedStats(save: Save): GearBonus {
       spd: round1(sum.spd + s.spd),
     };
   }, NONE);
+}
+
+/**
+ * 낀 고유 장비들이 주는 특효 모음 (§4.5). 태그 → 추가 피해 비율.
+ * 같은 태그를 여러 부위가 덮어도 **제일 큰 것 하나만** 남긴다 — 곱해서 쌓이면 안 된다.
+ */
+export function equippedBonusVs(save: Save): Record<string, number> {
+  const bonus: Record<string, number> = {};
+  for (const inst of equippedItems(save)) {
+    for (const trait of itemDef(inst).vs ?? []) {
+      bonus[trait] = Math.max(bonus[trait] ?? 0, UNIQUE_TRAIT_BONUS);
+    }
+  }
+  return bonus;
 }
 
 /** 그 칸에 낀 것. 없으면 undefined. */

@@ -378,6 +378,19 @@ export const RUN_SIZE_WEIGHTS = [
 /** 클리어 보너스 = 그 판 개별 보상 합 × 0.2 × 마릿수 (§4.4). */
 export const CLEAR_BONUS_RATE = 0.2;
 
+/**
+ * 사냥터에 들고 들어갈 수 있는 물약 수 (§4.4). 엘릭서도 이 칸에 포함된다.
+ * 물약 하나가 maxHP의 30~40%를 회복하고 전투 1회에 약 20%를 깎이므로,
+ * 6마리 판(소모 ~120%)을 완주하려면 3개가 거의 딱 맞는다.
+ */
+export const POTION_CARRY_MAX = 3;
+
+/**
+ * 소재가 확정으로 떨어지는 마릿수 (§4.4). 이보다 적은 판은 LUK의 dropRate로만 나온다 —
+ * 행운을 찍으면 4마리 판에서도 가끔 나오게 해서, 안 쓰이던 스탯에 일을 준다 (§4.3).
+ */
+export const MATERIAL_GUARANTEED_SIZE = 6;
+
 /** 한 판의 마릿수를 뽑는다. 입장 시점에 정해지고 끝까지 안 보여준다 (§4.4). */
 export function rollRunSize(rng: () => number): number {
   let r = rng();
@@ -475,6 +488,15 @@ export const SLOT_PRICE: Record<GearSlot, number> = {
 /** 품질 범위 (§4.5). 삼각분포라 1.0 근처가 흔하고 양 끝이 드물다. */
 export const QUALITY_MIN = 0.8;
 export const QUALITY_MAX = 1.2;
+
+/**
+ * 사냥터 고유 장비가 **그 사냥터 몬스터에게** 더 주는 피해 (§4.5).
+ *
+ * 등급으로는 common과 rare 사이(1.25배)지만, 제자리에서는 rare를 넘는다 —
+ * "여기 전용"이라는 말이 숫자로 성립해야 소재를 모을 이유가 생긴다.
+ * 여러 부위가 같은 traits를 덮어도 **제일 큰 것 하나만** 적용한다. 곱해서 쌓이면 안 된다.
+ */
+export const UNIQUE_TRAIT_BONUS = 0.2;
 
 /** 인벤토리 상한. 차면 드랍만 건너뛰고 사냥은 계속된다 (§4.5). */
 export const INVENTORY_MAX = 60;

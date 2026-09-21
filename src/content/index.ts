@@ -114,6 +114,13 @@ export function fieldById(id: string): Field {
   return found;
 }
 
+/** 그 사냥터가 속한 지역. 입장료·여관비가 지역을 타므로 자주 쓴다 (§4.1). */
+export function regionOfField(fieldId: string): Region {
+  const found = REGIONS.find((r) => r.fields.some((f) => f.id === fieldId));
+  if (!found) throw new Error(`없는 사냥터: ${fieldId}`);
+  return found;
+}
+
 /** 부위 이름. 화면이 "weapon" 대신 "무기"를 보여주려고 쓴다. */
 export const GEAR_SLOT_LABELS = Object.fromEntries(
   EquipmentArchetypesSchema.parse(equipmentArchetypesRaw).slots.map((s) => [s.slot, s.label]),

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN, VAULT } from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 5;
+export const SAVE_VERSION = 6;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
@@ -66,8 +66,30 @@ export const SaveSchema = z.object({
   }),
   /** 사냥터 고유 소재 — fieldId → 개수 (§4.4). 실제 드랍은 T16 */
   materials: z.record(z.string(), z.int().min(0)),
-  /** 물약·엘릭서 — id → 개수 (§4.5). 휴대 상한 3개는 T16 입장 로직이 본다 */
+  /** 물약·엘릭서 — id → 개수 (§4.5). 사냥터에 들고 가는 건 최대 3개 (§4.4) */
   consumables: z.record(z.string(), z.int().min(0)),
+  /**
+   * 진행 중인 사냥터 한 판 (§4.4). **null이면 마을에 있다** —
+   * 창고·여관·상점이 이걸로 "마을에서만"을 판단한다.
+   */
+  run: z
+    .object({
+      fieldId: z.string().min(1),
+      /**
+       * 입장할 때 뽑은 마릿수 2~6 (§4.4).
+       * **화면에 절대 보여주지 않는다.** 알면 도박이 아니라 계산이 된다.
+       */
+      size: z.int().min(2).max(6),
+      /** 지금까지 잡은 수. 이건 보여준다 ("N번째 처치") */
+      killed: z.int().min(0),
+      /** 이 판에서 받은 개별 보상 합. 클리어 보너스를 여기에 비례해 준다 */
+      earned: z.object({ exp: z.int().min(0), gold: z.int().min(0) }),
+      /** 들고 들어온 물약 — id → 남은 개수. 안에서는 이것만 쓴다 */
+      potions: z.record(z.string(), z.int().min(0)),
+      /** 지금 상대할 몬스터. 세이브에 둬야 전투 중에 앱이 꺼져도 이어진다 */
+      monsterId: z.string().min(1),
+    })
+    .nullable(),
   /** 지역 진행도 (§4.1). 해금은 보스 클리어 + 해금 비용 — 실제 해금은 T17 이후 */
   regionProgress: z.object({
     /** 지금 있는 지역 */
@@ -91,6 +113,7 @@ export function defaultSave(): Save {
     vault: { gold: 0, capacity: VAULT.capacity, expansions: 0 },
     materials: {},
     consumables: {},
+    run: null,
     regionProgress: { current: 1, unlocked: 1 },
   };
 }

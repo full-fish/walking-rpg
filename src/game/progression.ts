@@ -1,4 +1,5 @@
-import type { Save } from '../save/schema';
+import { gearSetFor } from '../content';
+import { defaultSave, type Save } from '../save/schema';
 import type { Outcome } from './battle';
 import {
   combatStats,
@@ -16,7 +17,7 @@ import {
   type SpendableStat,
   type StatSpend,
 } from './formulas';
-import { equippedStats, itemByUid, itemDef } from './items';
+import { equippedBonusVs, equippedStats, itemByUid, itemDef } from './items';
 
 /** 몬스터 1마리를 잡고 받는 것. */
 export type Reward = { exp: number; gold: number };
@@ -40,6 +41,8 @@ export function statsOf(save: Save) {
     atk: base.atk + gear.atk,
     def: base.def + gear.def,
     spd: base.spd + gear.spd,
+    /** 고유 장비의 특효 (§4.5). battle.ts가 몬스터 traits와 맞춰 본다 */
+    bonusVs: equippedBonusVs(save),
   };
 }
 
@@ -265,3 +268,21 @@ export function equipAll(save: Save, uids: string[]): Save {
 
 /** 부위 순서대로 훑을 때 쓴다. GEAR_SLOTS를 화면이 직접 import하지 않게 한다. */
 export const SLOTS = GEAR_SLOTS;
+
+/**
+ * 새 게임 (§4.5). **티어 1 common 풀세트를 입고 시작한다.**
+ *
+ * 장비가 전투력의 3분의 1인데(GEAR_FLOOR) 첫날 소지금이 0이라, 안 주면 맨몸으로
+ * 지역 1을 도는 구간이 생긴다 — 회복비도 못 내고 하루 한두 판밖에 못 도는 구간이다.
+ * 지급품은 품질 100% 고정이다. 품질 도박은 상점에서 시작한다.
+ */
+export function newGame(): Save {
+  const base = defaultSave();
+  const inventory = gearSetFor(1).map((def, i) => ({
+    uid: String(i + 1),
+    defId: def.id,
+    quality: 1,
+    enhance: 0,
+  }));
+  return equipAll({ ...base, inventory }, inventory.map((i) => i.uid));
+}

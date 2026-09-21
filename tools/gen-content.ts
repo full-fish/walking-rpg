@@ -178,6 +178,14 @@ export function generateUniques(): Equipment[] {
           region: region.id,
           sprite: `uniq_${field.id}`,
           ...gearStats(gear.refLevel, field.reward.slot, UNIQUE_RARITY),
+          // 그 사냥터에 나오는 몬스터들의 성질 태그 — 여기에만 특효다 (§4.5)
+          vs: [
+            ...new Set(
+              field.pool.flatMap(
+                ([arch]) => ARCHETYPES.find((a) => a.id === arch)?.traits ?? [],
+              ),
+            ),
+          ].sort(),
           price: gearPrice(gear.refLevel, field.reward.slot, UNIQUE_RARITY),
         }),
       );

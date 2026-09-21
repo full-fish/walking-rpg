@@ -3,10 +3,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { monstersOfField, regionById } from '@/content';
+import { fieldById } from '@/content';
 import { makeRng, simulateBattle, type BattleEvent, type Combatant, type Outcome } from '@/game/battle';
+import { currentMonster, type RunResult } from '@/game/field';
 import { POINTS_PER_LEVEL } from '@/game/formulas';
-import { killReward, statsOf, type Settlement } from '@/game/progression';
+import { statsOf } from '@/game/progression';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
@@ -20,12 +21,6 @@ const STEP_MS = 600;
 const LOG_LINES = 5;
 
 const RESULT_LABEL = { win: '승리!', lose: '쓰러졌다...', flee: '도망쳤다' } as const;
-
-/**
- * T16이 사냥터 선택을 붙이기 전까지는 지역 1의 첫 사냥터로 직행한다.
- * 모험 탭도 같은 곳을 보여주므로 둘이 어긋나지 않는다.
- */
-const FIELD = regionById(1).fields[0];
 
 /** 마지막으로 actor가 때렸을 때 맞은 쪽의 HP. 아직 안 맞았으면 초기값. */
 function hpAfterLastHitBy(events: BattleEvent[], actor: BattleEvent['actor'], initial: number) {
@@ -47,14 +42,15 @@ function eventColor(event: BattleEvent) {
 }
 
 /**
- * 몬스터 1마리와의 전투 화면. 판 전체 진행은 T16의 app/field.tsx가 맡는다.
+ * 몬스터 1마리와의 전투 화면. 상대는 **진행 중인 판(save.run)이 정해 둔 한 마리**다.
+ * 판 전체(2~6마리)의 진행은 app/field.tsx가 맡는다 (§4.4).
  *
  * 여기서는 아무것도 계산하지 않는다 — 들어올 때 T7 엔진이 한 번에 계산해 둔
  * 이벤트 배열을 0.6초에 하나씩 재생만 한다 (§4.2).
  */
 export default function Battle() {
   const router = useRouter();
-  const settle = usePlayer((s) => s.settle);
+  const finishBattle = usePlayer((s) => s.finishBattle);
   const save = usePlayer((s) => s.save);
 
   // 전투는 화면에 들어올 때 딱 한 번 계산한다. 세이브에 남은 HP에서 이어서 싸운다 (§4.2).
@@ -65,36 +61,30 @@ export default function Battle() {
       hp: save.player.hp,
       ...stats,
     };
-    // 이 사냥터의 몬스터 풀에서 한 마리. 한 판(2~6마리) 진행은 T16이 맡는다.
-    const pool = monstersOfField(FIELD);
-    const picked = pool[Math.floor(Math.random() * pool.length)];
+    const picked = currentMonster(save);
+    if (!picked) return null;
     const monster: Combatant = { ...picked, hp: picked.maxHp };
-    return {
-      player,
-      monster,
-      reward: killReward(picked, stats.goldFind),
-      result: simulateBattle(player, monster, makeRng(Date.now())),
-    };
+    return { player, monster, result: simulateBattle(player, monster, makeRng(Date.now())) };
   });
 
   const [cursor, setCursor] = useState(0);
-  const [settled, setSettled] = useState<Settlement | null>(null);
+  const [settled, setSettled] = useState<RunResult | null>(null);
   /** 정산은 한 판에 딱 한 번. 재생 완료와 [도망]이 둘 다 여기로 들어온다. */
   const settledOnce = useRef(false);
 
-  const total = battle.result.events.length;
+  const total = battle?.result.events.length ?? 0;
 
   const finish = useCallback(
     (outcome: Outcome, hp: number) => {
       if (settledOnce.current) return;
       settledOnce.current = true;
-      setSettled(settle(outcome, hp, battle.reward));
+      setSettled(finishBattle(outcome, hp));
     },
-    [settle, battle.reward],
+    [finishBattle],
   );
 
   useEffect(() => {
-    if (cursor >= total || settledOnce.current) return;
+    if (!battle || cursor >= total || settledOnce.current) return;
     const timer = setTimeout(() => {
       const next = cursor + 1;
       setCursor(next);
@@ -102,7 +92,19 @@ export default function Battle() {
       if (next >= total) finish(battle.result.outcome, battle.result.playerHp);
     }, STEP_MS);
     return () => clearTimeout(timer);
-  }, [cursor, total, battle.result.outcome, battle.result.playerHp, finish]);
+  }, [battle, cursor, total, finish]);
+
+  // 판 밖에서 열릴 경로는 없지만, 세이브가 꼬였을 때 흰 화면 대신 돌아갈 길을 준다
+  if (!battle) {
+    return (
+      <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
+        <Panel>
+          <Text>진행 중인 사냥이 없습니다.</Text>
+          <Button label="돌아가기" tone="gold" onPress={() => router.replace('/')} />
+        </Panel>
+      </SafeAreaView>
+    );
+  }
 
   const played = battle.result.events.slice(0, cursor);
   const monsterHp = hpAfterLastHitBy(played, 'player', battle.monster.hp);
@@ -157,12 +159,28 @@ export default function Battle() {
               {settled.levelsGained * POINTS_PER_LEVEL})
             </Text>
           )}
+          {settled.cleared && (
+            <Text color={colors.gold}>
+              🏆 사냥터를 정리했다! 보너스 EXP +{settled.bonus.exp} · 골드 +{settled.bonus.gold}
+            </Text>
+          )}
+          {settled.material && (
+            <Text color={colors.gold}>
+              {fieldById(settled.material).material.name}을(를) 얻었다
+            </Text>
+          )}
           {settled.goldLost > 0 && (
             <Text size="sm" color={colors.hp}>
               골드 {settled.goldLost}를 잃었다
             </Text>
           )}
-          <Button label="돌아가기" tone="gold" onPress={() => router.back()} />
+          {/* 남은 마릿수는 끝까지 안 보여준다 (§4.4). "또 다른 기척"만 알린다 */}
+          {!settled.over && <Text size="sm">또 다른 기척이 느껴진다...</Text>}
+          <Button
+            label={settled.over ? '마을로' : '사냥터로'}
+            tone="gold"
+            onPress={() => (settled.over ? router.replace('/') : router.replace('/field'))}
+          />
         </Panel>
       ) : (
         // 도망은 재생을 멈추고 그 시점 HP로 정산한다. 항상 성공한다 (§4.2).

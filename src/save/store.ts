@@ -1,7 +1,8 @@
 import { createMMKV } from 'react-native-mmkv';
 
+import { newGame } from '../game/progression';
 import { migrate } from './migrations';
-import { defaultSave, SaveSchema, type Save } from './schema';
+import { SaveSchema, type Save } from './schema';
 
 const storage = createMMKV();
 const KEY = 'save';
@@ -11,13 +12,13 @@ const CORRUPT_KEY = 'save.corrupt';
 /** 저장된 세이브를 읽어 최신 스키마로 돌려준다. 없거나 깨졌으면 새 세이브. */
 export function loadSave(): Save {
   const raw = storage.getString(KEY);
-  if (!raw) return defaultSave();
+  if (!raw) return newGame();
   try {
     return SaveSchema.parse(migrate(JSON.parse(raw)));
   } catch (e) {
     storage.set(CORRUPT_KEY, raw);
     console.warn('[save] 불러오기 실패 — 새 세이브로 시작합니다.', e);
-    return defaultSave();
+    return newGame();
   }
 }
 
@@ -28,5 +29,5 @@ export function writeSave(save: Save): void {
 /** 세이브 삭제 후 새 세이브 반환. */
 export function resetSave(): Save {
   storage.remove(KEY);
-  return defaultSave();
+  return newGame();
 }

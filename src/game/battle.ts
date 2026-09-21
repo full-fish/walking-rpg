@@ -26,6 +26,10 @@ export type Combatant = {
    * 피해배율의 K를 같이 키워서 DEF의 감소율이 레벨을 타지 않게 한다.
    */
   scale?: number;
+  /** 몬스터의 성질 태그 (§7.2). 고유 장비의 특효가 이걸 본다 */
+  traits?: string[];
+  /** 그 traits 상대로 더 주는 피해 비율 (§4.5). 고유 장비를 꼈을 때만 있다 */
+  bonusVs?: Record<string, number>;
 };
 
 export type BattleEvent = {
@@ -67,12 +71,22 @@ export function makeRng(seed: number): () => number {
   };
 }
 
+/**
+ * 고유 장비의 특효 배율 (§4.5). 여러 부위가 같은 태그를 덮어도 **제일 큰 것 하나만** 쓴다 —
+ * 곱해서 쌓이면 한 사냥터만 전용 장비로 도배하는 게 최적이 된다.
+ */
+function specialty(attacker: Combatant, target: Combatant): number {
+  if (!attacker.bonusVs || !target.traits) return 1;
+  const best = Math.max(0, ...target.traits.map((t) => attacker.bonusVs![t] ?? 0));
+  return 1 + best;
+}
+
 /** 공격 한 번. 판정 순서는 회피 → 기본 대미지 → 크리 → 최소 1 보장 (§4.2). */
 function strike(attacker: Combatant, target: Combatant, rng: () => number) {
   if (rng() < target.eva) return { type: 'miss' as const, value: 0 };
 
   const roll = DAMAGE_ROLL_MIN + rng() * (DAMAGE_ROLL_MAX - DAMAGE_ROLL_MIN);
-  let damage = attacker.atk * damageMultiplier(target.def, target.scale) * roll;
+  let damage = attacker.atk * damageMultiplier(target.def, target.scale) * roll * specialty(attacker, target);
 
   const critical = rng() < attacker.cri;
   if (critical) damage *= attacker.crd;

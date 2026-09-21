@@ -16,25 +16,19 @@ import {
   type Region,
 } from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
+import { buyConsumable, stayInn } from '../src/game/economy';
+import { currentMonster, drinkPotion, enterField, settleRun } from '../src/game/field';
 import {
-  CLEAR_BONUS_RATE,
   expToNext,
   MIDNIGHT_WP,
-  rollRunSize,
+  POTION_CARRY_MAX,
   SPENDABLE_STATS,
   WP_COST,
   type SpendableStat,
 } from '../src/game/formulas';
 import { itemDef, makeItem } from '../src/game/items';
-import {
-  addItem,
-  equipItem,
-  killReward,
-  settleBattle,
-  statsOf,
-  type Reward,
-} from '../src/game/progression';
-import { defaultSave, type Save } from '../src/save/schema';
+import { addItem, applyRegen, equipItem, newGame, statsOf } from '../src/game/progression';
+import type { Save } from '../src/save/schema';
 
 type StatPoints = Save['statPoints'];
 
@@ -94,9 +88,16 @@ export function properLevel(region: Region, field: Field): number {
   return Math.round(loL + ((avgTier - loT) / (hiT - loT)) * (hiL - loL));
 }
 
-/** 지금 레벨로 갈 수 있는 사냥터 중 가장 센 곳. 플레이어는 보통 이렇게 고른다. */
-function pickField(region: Region, level: number): Field {
+/**
+ * 어디서 사냥할까. 보통은 **갈 수 있는 곳 중 제일 센 곳**이다 — 보상이 제일 크니까.
+ *
+ * `cautious`면 제일 쉬운 곳으로 내려간다. 회복할 돈이 없을 때 쓰는 길이다 —
+ * 안 넣으면 "돈이 없어 못 고치고, 못 고쳐서 못 버는" 악순환에 갇힌다
+ * (힘 몰빵이 시드 하나에서 Lv48에 400일을 갇혔다). 실제 플레이어는 내려간다.
+ */
+function pickField(region: Region, level: number, cautious = false): Field {
   const sorted = [...region.fields].sort((a, b) => properLevel(region, a) - properLevel(region, b));
+  if (cautious) return sorted[0];
   const unlocked = sorted.filter((f) => properLevel(region, f) <= level);
   return unlocked.at(-1) ?? sorted[0];
 }
@@ -104,24 +105,6 @@ function pickField(region: Region, level: number): Field {
 function regionOf(level: number): Region {
   return REGIONS.find((r) => level <= r.levelRange[1]) ?? REGIONS.at(-1)!;
 }
-
-/** §4.5 물약 — 그 지역에서 살 수 있는 가장 좋은 것. 휴대 3개 (§4.4). */
-function bestPotion(region: number) {
-  // 콘텐츠를 그대로 읽는다 — 여기에 표를 또 적으면 상점과 시뮬이 다른 물약을 쓴다
-  return CONSUMABLES.filter((c) => c.region <= region && c.heal > 0).at(-1)!;
-}
-const POTIONS_PER_RUN = 3;
-/** HP가 이 아래로 떨어지면 물약을 쓴다. */
-const POTION_THRESHOLD = 0.35;
-
-export type RunResult = {
-  reward: Reward;
-  kills: number;
-  cleared: boolean;
-  died: boolean;
-  /** 그 판에서 쓴 물약 값 (§4.5). 골드는 장비로 나가므로 공짜로 두면 안 된다 */
-  potionCost: number;
-};
 
 /**
  * 살 수 있는 가장 좋은 common 풀세트로 갈아입는다 (§4.5).
@@ -148,55 +131,49 @@ export function buyGear(save: Save, rng: () => number): Save {
   return next;
 }
 
-/**
- * 사냥터 한 판 (§4.4). 마릿수를 뽑고 그만큼 연속으로 싸운다.
- * 도망은 모델링하지 않는다 — "끝까지 간다"가 가장 불리한 경우라 하한을 본다.
- */
-export function simulateRun(save: Save, rng: () => number): RunResult {
-  const region = regionOf(save.player.level);
-  const field = pickField(region, save.player.level);
-  const pool = monstersOfField(field);
-  const potion = bestPotion(region.id);
+/** 그 지역에서 살 수 있는 가장 좋은 물약 (§4.5). 콘텐츠를 그대로 읽는다. */
+function bestPotion(region: number) {
+  return CONSUMABLES.filter((c) => c.region <= region && c.heal > 0).at(-1)!;
+}
 
-  const size = rollRunSize(rng);
-  const stats = statsOf(save);
-  let hp = save.player.hp;
-  let potions = POTIONS_PER_RUN;
-  let potionCost = 0;
-  const individual: Reward = { exp: 0, gold: 0 };
-  let kills = 0;
-
-  for (let i = 0; i < size; i++) {
-    if (hp < stats.maxHp * POTION_THRESHOLD && potions > 0) {
-      potions -= 1;
-      potionCost += potion.price;
-      hp = Math.min(stats.maxHp, hp + potion.heal);
-    }
-    const monster = pool[Math.floor(rng() * pool.length)];
-    const player: Combatant = { name: '', hp, ...stats };
-    const result = simulateBattle(player, { ...monster, hp: monster.maxHp }, rng);
-    if (result.outcome !== 'win')
-      return { reward: individual, kills, cleared: false, died: true, potionCost };
-
-    hp = result.playerHp;
-    kills += 1;
-    const got = killReward(monster, stats.goldFind);
-    individual.exp += got.exp;
-    individual.gold += got.gold;
+/** 들고 갈 물약을 3개까지 채운다 (§4.4). 돈이 모자라면 살 수 있는 만큼만. */
+function restock(save: Save, region: number): { save: Save; spent: number } {
+  const potion = bestPotion(region);
+  let next = save;
+  let spent = 0;
+  while (
+    Object.values(next.consumables).reduce((sum, n) => sum + n, 0) < POTION_CARRY_MAX &&
+    next.player.gold >= potion.price
+  ) {
+    next = buyConsumable(next, potion.id)!;
+    spent += potion.price;
   }
+  return { save: next, spent };
+}
 
-  // 다 잡았을 때만 붙는 보너스 (§4.4). 도망·사망하면 개별 보상만 남는다
-  const bonus = CLEAR_BONUS_RATE * size;
-  return {
-    reward: {
-      exp: Math.round(individual.exp * (1 + bonus)),
-      gold: Math.round(individual.gold * (1 + bonus)),
-    },
-    kills,
-    cleared: true,
-    died: false,
-    potionCost,
-  };
+/** HP가 이 아래면 여관에 묵는다. 반쯤 죽은 채로 들어가면 그 판을 통째로 버린다. */
+const INN_THRESHOLD = 0.5;
+/** 판 안에서 HP가 이 아래로 떨어지면 물약을 쓴다. */
+const POTION_THRESHOLD = 0.35;
+/**
+ * 이보다 다쳤는데 회복할 돈도 없으면 **오늘은 쉰다** (§4.1).
+ * WP는 상한이 없어서 내일로 넘어간다 — 자연회복이 그동안 채운다.
+ */
+const ENTER_THRESHOLD = 0.3;
+/**
+ * 물약이 다 떨어지고 이보다 다쳤으면 **도망친다** (§4.4).
+ * 개별 보상은 지키고 클리어 보너스만 버린다 — 이 판단이 몰이사냥의 전부다.
+ * 안 넣으면 "끝까지 간다"가 되어 후반 사망이 실제보다 훨씬 많이 나온다.
+ */
+const FLEE_THRESHOLD = 0.3;
+
+/** 다쳤으면 여관에 묵는다 (§4.5). 자연회복만으로는 하루 6~9판을 못 버틴다. */
+function rest(save: Save, region: Region, now: number): { save: Save; spent: number } {
+  const maxHp = statsOf(save).maxHp;
+  if (save.player.hp >= maxHp * INN_THRESHOLD) return { save, spent: 0 };
+
+  const rested = stayInn(save, region.town.inn, now);
+  return rested ? { save: rested, spent: region.town.inn } : { save, spent: 0 };
 }
 
 export type DayLog = {
@@ -204,8 +181,12 @@ export type DayLog = {
   level: number;
   /** 그날 번 골드. §6.3의 "하루 골드"는 수입이지 잔고 증감이 아니다 */
   gold: number;
-  /** 사망으로 잃은 골드. 창고에 넣어두면 면제되지만 창고는 T14다 (§4.5) */
+  /** 사망으로 잃은 골드. 창고를 쓰면 면제된다 — 시뮬은 안 쓴다(가장 불리한 경우) */
   goldLost: number;
+  /** 그날 물약에 쓴 골드 (§4.5 유지비) */
+  potionCost: number;
+  /** 그날 여관에 쓴 골드 (§4.5 유지비) */
+  innCost: number;
   exp: number;
   kills: number;
   entries: number;
@@ -221,70 +202,117 @@ export type SimOptions = { steps: number; build: Build; maxLevel: number; maxDay
  */
 export function simulate(opts: SimOptions, seed = 1) {
   const rng = makeRng(seed);
-  let save: Save = defaultSave();
-  let wp = 0;
+  let save: Save = newGame();
   let spentOnGates = 0;
   let spentOnPotions = 0;
+  let spentOnInn = 0;
   let spentOnGear = 0;
   const log: DayLog[] = [];
 
   for (let day = 1; day <= opts.maxDays && save.player.level < opts.maxLevel; day++) {
-    wp += opts.steps + MIDNIGHT_WP;
+    save = { ...save, wp: { ...save.wp, current: save.wp.current + opts.steps + MIDNIGHT_WP } };
 
     const region = regionOf(save.player.level);
     // 다음 지역 해금 — 레벨이 닿으면 관문 비용을 낸다 (§4.1)
     const next = REGIONS.find((r) => r.id === region.id + 1);
     if (next && save.player.level >= next.levelRange[0]) {
       const gate = WP_COST.regionUnlock(region.id) + WP_COST.bossFirst(region.id);
-      if (wp >= gate) {
-        wp -= gate;
+      if (save.wp.current >= gate) {
+        save = { ...save, wp: { ...save.wp, current: save.wp.current - gate } };
         spentOnGates += gate;
       }
     }
 
-    const entryCost = WP_COST.fieldEntry(regionOf(save.player.level).id);
-    let entries = 0;
-    let kills = 0;
-    let deaths = 0;
-    let cleared = 0;
-    let earned = 0;
-    let lost = 0;
+    const today = {
+      entries: 0,
+      kills: 0,
+      deaths: 0,
+      fled: 0,
+      cleared: 0,
+      gold: 0,
+      lost: 0,
+      potion: 0,
+      inn: 0,
+    };
     const before = { exp: save.player.exp, level: save.player.level };
+    const dayStart = day * 86_400_000;
 
-    while (wp >= entryCost) {
-      wp -= entryCost;
-      entries += 1;
-      const run = simulateRun(save, rng);
-      kills += run.kills;
-      if (run.cleared) cleared += 1;
-      if (run.died) deaths += 1;
+    for (;;) {
+      const here = regionOf(save.player.level);
+      if (save.wp.current < WP_COST.fieldEntry(here.id)) break;
 
-      const now = day * 86_400_000;
-      // 개별 보상은 죽어도 남는다 (§4.4). 잃는 건 클리어 보너스와 골드 10%다
-      save = settleBattle(save, 'win', statsOf(save).maxHp, run.reward, now).save;
-      earned += run.reward.gold;
-      save = {
-        ...save,
-        player: { ...save.player, gold: Math.max(0, save.player.gold - run.potionCost) },
-      };
-      spentOnPotions += run.potionCost;
-      if (run.died) {
-        const dead = settleBattle(save, 'lose', 0, { exp: 0, gold: 0 }, now);
-        lost += dead.goldLost;
-        save = dead.save;
-      }
-      // 레벨업으로 생긴 포인트는 빌드 비율대로 즉시 쓴다
-      if (save.statPoints.unspent > 0) {
-        save = { ...save, statPoints: allocate(save.statPoints, opts.build, save.statPoints.unspent) };
-      }
-      // 살 수 있는 장비가 생겼으면 바로 갈아입는다 (§4.5). 전투력의 대부분이 여기서 온다
-      const beforeGold = save.player.gold;
+      // 하루 안에서도 시간이 흐른다 — 입장 사이에 자연회복이 조금씩 붙는다 (§4.2).
+      // 하루 7판이면 판 사이가 3시간쯤이고 최대 HP의 20%가 찬다. 나머지는 돈으로 메운다.
+      const now = dayStart + Math.round((today.entries * 86_400_000) / 9);
+      save = applyRegen(save, now);
+
+      // 마을에서 할 일 — 장비 갈아입기, 물약 채우기, 너무 다쳤으면 여관
+      const goldBefore = save.player.gold;
       save = buyGear(save, rng);
-      spentOnGear += beforeGold - save.player.gold;
+      spentOnGear += goldBefore - save.player.gold;
 
-      // 판이 끝나면 마을에서 회복한다 (여관, §4.5). HP를 이어가는 건 판 안에서만이다
-      save = { ...save, player: { ...save.player, hp: statsOf(save).maxHp } };
+      const stocked = restock(save, here.id);
+      save = stocked.save;
+      today.potion += stocked.spent;
+
+      const rested = rest(save, here, now);
+      save = rested.save;
+      today.inn += rested.spent;
+
+      // 다쳤는데 여관도 못 가면 오늘은 접는다. WP는 내일로 넘어간다 (§4.1)
+      if (save.player.hp < statsOf(save).maxHp * ENTER_THRESHOLD) break;
+
+      // 회복할 돈이 없으면 쉬운 사냥터로 내려가 밑천을 다시 만든다
+      const broke = save.player.gold < here.town.inn;
+      const entered = enterField(save, pickField(here, save.player.level, broke).id, rng);
+      if (!entered) break;
+      save = entered;
+      today.entries += 1;
+
+      // 판 안 — 물약을 쓰고, 그래도 위험하면 도망친다 (§4.4)
+      for (;;) {
+        const stats = statsOf(save);
+        if (save.player.hp < stats.maxHp * POTION_THRESHOLD) {
+          const potion = Object.keys(save.run!.potions)[0];
+          if (potion) save = drinkPotion(save, potion) ?? save;
+        }
+
+        // 물약도 없고 반쯤 죽었으면 챙긴 것만 들고 나온다.
+        // 죽으면 소지 골드 10%까지 잃으니, 보너스를 포기하는 게 싸다
+        if (
+          save.player.hp < stats.maxHp * FLEE_THRESHOLD &&
+          Object.keys(save.run!.potions).length === 0
+        ) {
+          save = settleRun(save, 'flee', save.player.hp, rng, now).save;
+          today.fled += 1;
+          break;
+        }
+
+        const monster = currentMonster(save)!;
+        const player: Combatant = { name: '', hp: save.player.hp, ...statsOf(save) };
+        const battle = simulateBattle(player, { ...monster, hp: monster.maxHp }, rng);
+
+        const result = settleRun(save, battle.outcome, battle.playerHp, rng, now);
+        save = result.save;
+        today.gold += result.gained.gold;
+        today.lost += result.goldLost;
+        if (battle.outcome === 'win') today.kills += 1;
+        if (result.cleared) today.cleared += 1;
+        if (battle.outcome === 'lose') today.deaths += 1;
+
+        // 레벨업으로 생긴 포인트는 빌드 비율대로 즉시 쓴다
+        if (save.statPoints.unspent > 0) {
+          save = {
+            ...save,
+            statPoints: allocate(save.statPoints, opts.build, save.statPoints.unspent),
+          };
+        }
+        if (result.over) break;
+      }
     }
+
+    spentOnPotions += today.potion;
+    spentOnInn += today.inn;
 
     const gainedExp =
       save.player.level > before.level
@@ -294,17 +322,27 @@ export function simulate(opts: SimOptions, seed = 1) {
     log.push({
       day,
       level: save.player.level,
-      gold: earned,
-      goldLost: lost,
+      gold: today.gold,
+      goldLost: today.lost,
+      potionCost: today.potion,
+      innCost: today.inn,
       exp: gainedExp,
-      kills,
-      entries,
-      deaths,
-      clearRate: entries > 0 ? cleared / entries : 0,
+      kills: today.kills,
+      entries: today.entries,
+      deaths: today.deaths,
+      clearRate: today.entries > 0 ? today.cleared / today.entries : 0,
     });
   }
 
-  return { save, log, spentOnGates, spentOnPotions, spentOnGear, days: log.length };
+  return {
+    save,
+    log,
+    spentOnGates,
+    spentOnPotions,
+    spentOnInn,
+    spentOnGear,
+    days: log.length,
+  };
 }
 
 /** from레벨에서 to레벨까지 올리는 데 든 EXP 총합. 하루 EXP를 역산할 때 쓴다. */

@@ -67,6 +67,9 @@ export const migrations: Record<number, Migration> = {
     materials: {},
     consumables: {},
   }),
+
+  /** v5 → v6: 진행 중인 판 (§4.4). 업데이트한 순간 사냥터 밖이므로 null이다 */
+  5: (s) => ({ ...s, run: null }),
 };
 
 /**
