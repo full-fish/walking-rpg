@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 1;
+export const SAVE_VERSION = 2;
 
 export const SaveSchema = z.object({
   version: z.literal(SAVE_VERSION),
@@ -11,13 +11,16 @@ export const SaveSchema = z.object({
     gold: z.int().min(0),
     hp: z.int().min(0),
   }),
-  stamina: z.object({
-    /** 보유 기력 */
+  wp: z.object({
+    /** 보유 WP. 상한 없음 (§4.1) */
     current: z.int().min(0),
-    /** 마지막으로 기력으로 바꾼 '오늘 누적 걸음' (증가분만 지급하기 위한 기준선) */
-    lastStepTotal: z.int().min(0),
-    /** 자정 지급을 한 날짜 'YYYY-MM-DD' (하루 한 번만 주기 위함) */
-    lastGrantDate: z.string(),
+    /**
+     * 'YYYY-MM-DD' → 그날 이미 지급한 걸음 수. 중복 지급을 막는 기록 (§3.6).
+     * 최근 3일(오늘 포함)치만 남기고 grantWp()가 정리한다.
+     */
+    grantedByDate: z.record(z.string(), z.int().min(0)),
+    /** 자정 1,000을 마지막으로 지급한 날짜 'YYYY-MM-DD'. ''이면 설치 직후 */
+    lastMidnightGrantAt: z.string(),
   }),
 });
 
@@ -27,6 +30,6 @@ export function defaultSave(): Save {
   return {
     version: SAVE_VERSION,
     player: { level: 1, exp: 0, gold: 0, hp: 100 },
-    stamina: { current: 0, lastStepTotal: 0, lastGrantDate: '' },
+    wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
   };
 }

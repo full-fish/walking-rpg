@@ -5,9 +5,29 @@ type Migration = (save: Record<string, unknown>) => Record<string, unknown>;
 
 /**
  * 버전별 변환 체인. 스키마를 바꿀 때 SAVE_VERSION을 올리고 여기에 한 줄 추가한다.
- * 예) 1: (s) => ({ ...s, player: { ...(s.player as object), job: 'warrior' } }),
  */
-export const migrations: Record<number, Migration> = {};
+export const migrations: Record<number, Migration> = {
+  /** v1 stamina{current,lastStepTotal,lastGrantDate} → v2 wp{current,grantedByDate,lastMidnightGrantAt} */
+  1: (s) => {
+    const old = (s.stamina ?? {}) as {
+      current?: number;
+      lastStepTotal?: number;
+      lastGrantDate?: string;
+    };
+    const date = old.lastGrantDate ?? '';
+    const next: Record<string, unknown> = {
+      ...s,
+      wp: {
+        current: old.current ?? 0,
+        // 이미 기력으로 바꾼 걸음은 다시 주지 않는다
+        grantedByDate: date ? { [date]: old.lastStepTotal ?? 0 } : {},
+        lastMidnightGrantAt: date,
+      },
+    };
+    delete next.stamina;
+    return next;
+  },
+};
 
 /**
  * 옛 세이브를 최신 버전으로 끌어올린다.

@@ -34,3 +34,34 @@ test('version이 없으면 던진다', () => {
   expect(() => migrate({ player: {} })).toThrow(/version이 없습니다/);
   expect(() => migrate(null)).toThrow(/version이 없습니다/);
 });
+
+test('v1 stamina를 v2 wp로 옮기고 이미 지급한 걸음은 다시 주지 않는다', () => {
+  const v1 = {
+    version: 1,
+    player: { level: 3, exp: 120, gold: 500, hp: 80 },
+    stamina: { current: 4820, lastStepTotal: 7000, lastGrantDate: '2026-09-20' },
+  };
+  const v2 = SaveSchema.parse(migrate(v1));
+  expect(v2).toEqual({
+    version: 2,
+    player: { level: 3, exp: 120, gold: 500, hp: 80 },
+    wp: {
+      current: 4820,
+      grantedByDate: { '2026-09-20': 7000 },
+      lastMidnightGrantAt: '2026-09-20',
+    },
+  });
+});
+
+test('한 번도 안 켠 v1 세이브는 빈 지갑으로 간다(설치 기준선은 grantWp가 잡는다)', () => {
+  const v1 = {
+    version: 1,
+    player: { level: 1, exp: 0, gold: 0, hp: 100 },
+    stamina: { current: 0, lastStepTotal: 0, lastGrantDate: '' },
+  };
+  expect(SaveSchema.parse(migrate(v1)).wp).toEqual({
+    current: 0,
+    grantedByDate: {},
+    lastMidnightGrantAt: '',
+  });
+});
