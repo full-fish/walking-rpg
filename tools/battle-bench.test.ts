@@ -10,37 +10,16 @@
 import { expect, test } from 'vitest';
 
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
-import { BASE_STATS } from '../src/game/formulas';
+import { combatStats } from '../src/game/formulas';
 
 const RUNS = 1_000;
 /** §4.2 목표 행동 수 (지역 1, 적정 레벨) */
 const TARGET = { min: 20, max: 40 };
 
-/**
- * Lv L 전사. 직업 자동 성장 + 수동 3포인트를 STR/VIT/AGI에 1점씩 균등 배분한 것 (§4.3).
- *
- *   maxHP  +14(전사) +10(VIT)   = +24
- *   ATK    +2.0(전사) +2(STR)   = +4
- *   DEF    +1.5(전사) +0.5(VIT) = +2
- *   SPD    +0.8(전사) +1.5(AGI) = +2.3
- *   EVA               +0.15%p(AGI)
- *
- * T9의 progression.ts가 진짜 계산을 갖게 되면 그걸 쓴다. 여기서는 밸런스 감만 본다.
- */
+/** Lv L 전사. 스탯 계산은 화면과 같은 combatStats를 쓴다 — 여기서 따로 세면 둘이 어긋난다. */
 function warrior(level: number): Combatant {
-  const up = level - 1;
-  const maxHp = BASE_STATS.maxHp + 24 * up;
-  return {
-    name: `Lv${level} 전사`,
-    hp: maxHp,
-    maxHp,
-    atk: BASE_STATS.atk + 4 * up,
-    def: BASE_STATS.def + 2 * up,
-    spd: BASE_STATS.spd + 2.3 * up,
-    cri: BASE_STATS.cri,
-    crd: BASE_STATS.crd,
-    eva: BASE_STATS.eva + 0.0015 * up,
-  };
+  const stats = combatStats(level);
+  return { name: `Lv${level} 전사`, hp: stats.maxHp, ...stats };
 }
 
 /**

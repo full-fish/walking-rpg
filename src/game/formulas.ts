@@ -76,3 +76,46 @@ export function damageMultiplier(def: number): number {
 export function actionRatio(playerSpd: number, monsterSpd: number): number {
   return clamp(playerSpd / monsterSpd, SPD_RATIO_MIN, SPD_RATIO_MAX);
 }
+
+// ─────────────────────────────────────────────────────────────
+// 성장 (§4.3)
+// ─────────────────────────────────────────────────────────────
+
+/** 직업별 레벨당 자동 성장. 배분 불가 (§4.3). */
+export const JOB_GROWTH = {
+  warrior: { maxHp: 14, atk: 2.0, def: 1.5, spd: 0.8 },
+  rogue: { maxHp: 8, atk: 2.5, def: 0.8, spd: 1.6 },
+  mage: { maxHp: 7, atk: 3.0, def: 0.6, spd: 1.0 },
+} as const;
+
+export type JobId = keyof typeof JOB_GROWTH;
+
+/** 1차 스탯 1포인트당 효과 (§4.3). */
+export const STAT_PER_POINT = {
+  str: { atk: 2 },
+  vit: { maxHp: 10, def: 0.5 },
+  agi: { spd: 1.5, eva: 0.0015 },
+  luk: { cri: 0.0025, dropRate: 0.002 },
+} as const;
+
+/** 레벨업마다 받는 수동 배분 포인트 (§4.3). */
+export const POINTS_PER_LEVEL = 3;
+
+/**
+ * 레벨에 대응하는 전투 스탯 (§4.3).
+ * 직업 자동 성장 + 수동 3포인트를 STR/VIT/AGI에 1점씩 균등 배분한 것으로 계산한다.
+ * T9에서 유저가 직접 배분하게 되면 배분 결과를 인자로 받도록 확장한다.
+ */
+export function combatStats(level: number, job: JobId = 'warrior') {
+  const ups = Math.max(0, level - 1);
+  const growth = JOB_GROWTH[job];
+  return {
+    maxHp: BASE_STATS.maxHp + (growth.maxHp + STAT_PER_POINT.vit.maxHp) * ups,
+    atk: BASE_STATS.atk + (growth.atk + STAT_PER_POINT.str.atk) * ups,
+    def: BASE_STATS.def + (growth.def + STAT_PER_POINT.vit.def) * ups,
+    spd: BASE_STATS.spd + (growth.spd + STAT_PER_POINT.agi.spd) * ups,
+    cri: BASE_STATS.cri,
+    crd: BASE_STATS.crd,
+    eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * ups,
+  };
+}

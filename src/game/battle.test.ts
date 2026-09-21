@@ -3,6 +3,7 @@ import { expect, test, vi } from 'vitest';
 import {
   actionRatio,
   BASE_STATS,
+  combatStats,
   damageMultiplier,
   HARDCAP_ACTIONS,
   SPD_RATIO_MAX,
@@ -135,4 +136,20 @@ test('HP가 0인 채로 들어가면 바로 진다', () => {
   const r = simulateBattle(player({ hp: 0 }), monster(), makeRng(1));
   expect(r.outcome).toBe('lose');
   expect(r.events).toHaveLength(0);
+});
+
+test('레벨 스탯은 §4.3 표 그대로 — 직업 성장 + 3포인트 균등 배분', () => {
+  expect(combatStats(1)).toEqual({ ...BASE_STATS });
+
+  // 전사 Lv2: maxHP +14+10, ATK +2+2, DEF +1.5+0.5, SPD +0.8+1.5, EVA +0.15%p
+  expect(combatStats(2)).toMatchObject({ maxHp: 124, atk: 14, def: 7, spd: 12.3 });
+  expect(combatStats(2).eva).toBeCloseTo(0.0315, 6);
+
+  // 도적은 더 빠르고 덜 단단하다
+  const rogue = combatStats(2, 'rogue');
+  expect(rogue.spd).toBeGreaterThan(combatStats(2).spd);
+  expect(rogue.maxHp).toBeLessThan(combatStats(2).maxHp);
+
+  // Lv0/음수가 들어와도 기본값 아래로 내려가지 않는다
+  expect(combatStats(0)).toEqual(combatStats(1));
 });

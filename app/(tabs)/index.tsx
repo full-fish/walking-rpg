@@ -1,8 +1,9 @@
+import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BASE_STATS } from '@/game/formulas';
+import { combatStats } from '@/game/formulas';
 import { useSteps } from '@/health/useSteps';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
@@ -25,6 +26,7 @@ function Stat({ label, value, color }: { label: string; value: number; color?: s
 
 /** 모험 탭. 상단 HUD까지 (사냥터 진행은 S2~). */
 export default function Adventure() {
+  const router = useRouter();
   const steps = useSteps();
   const save = usePlayer((s) => s.save);
   const grantFromSteps = usePlayer((s) => s.grantFromSteps);
@@ -44,7 +46,12 @@ export default function Adventure() {
           <Stat label="WP" value={save.wp.current} color={colors.wp} />
           <Stat label="골드" value={save.player.gold} color={colors.gold} />
         </View>
-        <Bar label="HP" value={save.player.hp} max={BASE_STATS.maxHp} color={colors.hp} />
+        <Bar
+          label="HP"
+          value={save.player.hp}
+          max={combatStats(save.player.level).maxHp}
+          color={colors.hp}
+        />
         <View style={styles.row}>
           <Button label="새로고침" onPress={steps.refresh} />
           {steps.status !== 'connected' && steps.status !== 'unavailable' && (
@@ -63,7 +70,8 @@ export default function Adventure() {
       <Panel title="사냥터">
         <Text>시작의 들판</Text>
         <View style={styles.row}>
-          <Button label="사냥 시작" tone="gold" />
+          {/* T16이 사냥터 한 판(2~6마리)을 붙이면 /field로 바뀐다. 지금은 1마리 전투로 직행. */}
+          <Button label="사냥 시작" tone="gold" onPress={() => router.push('/battle')} />
           <Button label="이동" />
         </View>
       </Panel>
