@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { expToNext } from '@/game/formulas';
 import { usePlayer } from '@/stores/usePlayer';
 import { Button } from '@/ui/Button';
 import { Panel } from '@/ui/Panel';
@@ -10,6 +11,7 @@ import { colors, space } from '@/ui/theme';
 export default function Settings() {
   const save = usePlayer((s) => s.save);
   const addGold = usePlayer((s) => s.addGold);
+  const settle = usePlayer((s) => s.settle);
   const reset = usePlayer((s) => s.reset);
 
   return (
@@ -25,6 +27,16 @@ export default function Settings() {
         </Text>
         <View style={styles.row}>
           <Button label="골드 +100" tone="gold" onPress={() => addGold(100)} />
+          {/* 슬라임만으로 레벨업까지 42마리라 실기기 확인이 안 된다. 실제 정산 경로를 그대로 탄다. */}
+          <Button
+            label="레벨 +1"
+            onPress={() =>
+              settle('win', save.player.hp, {
+                exp: expToNext(save.player.level) - save.player.exp,
+                gold: 0,
+              })
+            }
+          />
           <Button label="초기화" onPress={reset} />
         </View>
         <Text size="sm" dim>
