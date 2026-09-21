@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { monstersOfField, regionById } from '@/content';
 import { makeRng, simulateBattle, type BattleEvent, type Combatant, type Outcome } from '@/game/battle';
 import { POINTS_PER_LEVEL } from '@/game/formulas';
 import { killReward, statsOf, type Settlement } from '@/game/progression';
@@ -20,32 +21,11 @@ const LOG_LINES = 5;
 
 const RESULT_LABEL = { win: '승리!', lose: '쓰러졌다...', flee: '도망쳤다' } as const;
 
-/** 데모 몬스터의 보상 — 지역 1, 티어 1, 슬라임 power 0.70 (§6.2, §6.3, §4.4). */
-const DEMO_REWARD = killReward(1, 1, 0.7);
-
 /**
- * ponytail: 데모용 몬스터 한 마리. T11 gen-content가 진짜 데이터를 만들면 지운다.
- *
- * §7.2④ 생성 공식에 §7.2의 arch_slime을 그대로 넣은 값이다 (티어 1, 지역 난이도 1.0):
- *   power 0.70, statBias { hp 1.30, atk 0.85, def 0.70, spd 0.75 }, cri 0.02, eva 0.03
- *   BASE_*는 T7 벤치가 역산한 { hp 110, atk 1.35, def 4.2, spd 9.4 }
- *   spd에는 power를 곱하지 않는다 (§7.2④)
- *
- * 처음엔 원형 bias를 전부 1.0으로 뒀다가 SPD가 9.96이 되어 플레이어(10)와 거의 같았고,
- * 그래서 행동 비율이 1.004 — 250라운드에 한 번만 연속 공격이 나와 눈에 안 보였다.
- * 진짜 슬라임 수치를 쓰면 1.34가 되어 서너 라운드마다 두 번 연속으로 때린다.
+ * T16이 사냥터 선택을 붙이기 전까지는 지역 1의 첫 사냥터로 직행한다.
+ * 모험 탭도 같은 곳을 보여주므로 둘이 어긋나지 않는다.
  */
-const DEMO_MONSTER: Combatant = {
-  name: '초록 슬라임',
-  hp: 120,
-  maxHp: 120,
-  atk: 0.96,
-  def: 2.47,
-  spd: 7.47,
-  cri: 0.02,
-  crd: 1.5,
-  eva: 0.03,
-};
+const FIELD = regionById(1).fields[0];
 
 /** 마지막으로 actor가 때렸을 때 맞은 쪽의 HP. 아직 안 맞았으면 초기값. */
 function hpAfterLastHitBy(events: BattleEvent[], actor: BattleEvent['actor'], initial: number) {
@@ -85,10 +65,15 @@ export default function Battle() {
       hp: save.player.hp,
       ...stats,
     };
+    // 이 사냥터의 몬스터 풀에서 한 마리. 한 판(2~6마리) 진행은 T16이 맡는다.
+    const pool = monstersOfField(FIELD);
+    const picked = pool[Math.floor(Math.random() * pool.length)];
+    const monster: Combatant = { ...picked, hp: picked.maxHp };
     return {
       player,
-      monster: DEMO_MONSTER,
-      result: simulateBattle(player, DEMO_MONSTER, makeRng(Date.now())),
+      monster,
+      reward: killReward(picked),
+      result: simulateBattle(player, monster, makeRng(Date.now())),
     };
   });
 
@@ -103,9 +88,9 @@ export default function Battle() {
     (outcome: Outcome, hp: number) => {
       if (settledOnce.current) return;
       settledOnce.current = true;
-      setSettled(settle(outcome, hp, DEMO_REWARD));
+      setSettled(settle(outcome, hp, battle.reward));
     },
-    [settle],
+    [settle, battle.reward],
   );
 
   useEffect(() => {

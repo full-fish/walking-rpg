@@ -2,6 +2,8 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "strict": true,
+    // tools/의 생성 스크립트가 node:fs를 쓴다. @types/node는 expo가 이미 끌고 온다.
+    "types": ["node"],
     "paths": {
       "@/*": [
         "./src/*"

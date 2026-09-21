@@ -1,0 +1,134 @@
+[
+  {
+    "id": 1,
+    "name": "바람의 초원",
+    "levelRange": [1, 8],
+    "tierBand": [1, 5],
+    "difficulty": 1.0,
+    "town": { "name": "초원 마을", "inn": 150 },
+    "fields": [
+      {
+        "id": "f_r1_meadow",
+        "name": "시작의 들판",
+        "pool": [["arch_beast", 1], ["arch_slime", 1], ["arch_insect", 2], ["arch_beast", 2]],
+        "material": { "id": "mat_r1_meadow", "name": "들판의 마른 풀" },
+        "reward": {
+          "id": "uniq_r1_meadow",
+          "name": "풀잎을 감은 단검",
+          "cost": { "material": 3, "gold": 1300 }
+        }
+      },
+      {
+        "id": "f_r1_mushroom",
+        "name": "버섯 골짜기",
+        "pool": [["arch_fungus", 1], ["arch_fungus", 4], ["arch_insect", 4], ["arch_lizard", 4]],
+        "material": { "id": "mat_r1_mushroom", "name": "마르지 않는 홀씨" },
+        "reward": {
+          "id": "uniq_r1_mushroom",
+          "name": "홀씨가 붙은 장갑",
+          "cost": { "material": 3, "gold": 1300 }
+        }
+      },
+      {
+        "id": "f_r1_bramble",
+        "name": "가시덤불 길",
+        "pool": [["arch_plant", 3], ["arch_bird", 3], ["arch_beast", 4], ["arch_lizard", 4]],
+        "material": { "id": "mat_r1_bramble", "name": "부러지지 않는 가시" },
+        "reward": {
+          "id": "uniq_r1_bramble",
+          "name": "가시를 엮은 갑옷",
+          "cost": { "material": 3, "gold": 1300 }
+        }
+      },
+      {
+        "id": "f_r1_tower",
+        "name": "무너진 돌탑",
+        "pool": [["arch_golem", 3], ["arch_slime", 3], ["arch_undead", 5], ["arch_plant", 5]],
+        "material": { "id": "mat_r1_tower", "name": "금이 간 초석" },
+        "reward": {
+          "id": "uniq_r1_tower",
+          "name": "초석을 깎은 둔기",
+          "cost": { "material": 3, "gold": 1300 }
+        }
+      },
+      {
+        "id": "f_r1_camp",
+        "name": "도적 야영지",
+        "pool": [["arch_bandit", 5], ["arch_beast", 4], ["arch_undead", 5], ["arch_insect", 2]],
+        "material": { "id": "mat_r1_camp", "name": "빼앗긴 인장" },
+        "reward": {
+          "id": "uniq_r1_camp",
+          "name": "인장이 박힌 반지",
+          "cost": { "material": 3, "gold": 1300 }
+        }
+      }
+    ],
+    "boss": { "arch": "arch_golem", "tier": 5, "name": "이끼 덮인 수호석" }
+  },
+  {
+    "id": 2,
+    "name": "속삭이는 숲",
+    "levelRange": [8, 16],
+    "tierBand": [6, 10],
+    "difficulty": 1.0,
+    "town": { "name": "숲가 마을", "inn": 330 },
+    "fields": [
+      {
+        "id": "f_r2_cave",
+        "name": "이끼 낀 동굴",
+        "pool": [["arch_beast", 6], ["arch_insect", 6], ["arch_fungus", 7], ["arch_lizard", 7]],
+        "material": { "id": "mat_r2_cave", "name": "빛나는 동굴 이끼" },
+        "reward": {
+          "id": "uniq_r2_cave",
+          "name": "이끼로 덮인 방패",
+          "cost": { "material": 3, "gold": 2700 }
+        }
+      },
+      {
+        "id": "f_r2_grave",
+        "name": "잊혀진 무덤가",
+        "pool": [["arch_undead", 7], ["arch_plant", 8], ["arch_beast", 8], ["arch_bandit", 8]],
+        "material": { "id": "mat_r2_grave", "name": "삭지 않은 수의 조각" },
+        "reward": {
+          "id": "uniq_r2_grave",
+          "name": "수의를 덧댄 외투",
+          "cost": { "material": 3, "gold": 2700 }
+        }
+      },
+      {
+        "id": "f_r2_logging",
+        "name": "버려진 벌목지",
+        "pool": [["arch_beast", 8], ["arch_insect", 9], ["arch_spirit", 9], ["arch_plant", 8]],
+        "material": { "id": "mat_r2_logging", "name": "타다 만 장작" },
+        "reward": {
+          "id": "uniq_r2_logging",
+          "name": "장작을 벼린 도끼",
+          "cost": { "material": 3, "gold": 2700 }
+        }
+      },
+      {
+        "id": "f_r2_quarry",
+        "name": "무너진 채석장",
+        "pool": [["arch_golem", 9], ["arch_lizard", 10], ["arch_bird", 10], ["arch_insect", 9]],
+        "material": { "id": "mat_r2_quarry", "name": "결이 고운 석재" },
+        "reward": {
+          "id": "uniq_r2_quarry",
+          "name": "석재를 물린 투구",
+          "cost": { "material": 3, "gold": 2700 }
+        }
+      },
+      {
+        "id": "f_r2_marsh",
+        "name": "안개 낀 늪",
+        "pool": [["arch_undead", 10], ["arch_lizard", 10], ["arch_bird", 6], ["arch_spirit", 9]],
+        "material": { "id": "mat_r2_marsh", "name": "걷히지 않는 늪안개" },
+        "reward": {
+          "id": "uniq_r2_marsh",
+          "name": "늪안개를 담은 목걸이",
+          "cost": { "material": 3, "gold": 2700 }
+        }
+      }
+    ],
+    "boss": { "arch": "arch_lizard", "tier": 10, "name": "늪을 삼킨 악어" }
+  }
+]

@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { regionById } from '@/content';
 import { statsOf } from '@/game/progression';
 import { useSteps } from '@/health/useSteps';
 import { usePlayer } from '@/stores/usePlayer';
@@ -23,6 +24,10 @@ function Stat({ label, value, color }: { label: string; value: number; color?: s
     </View>
   );
 }
+
+/** T16이 지역·사냥터 선택을 붙이기 전까지는 지역 1의 첫 사냥터를 보여준다. */
+const REGION = regionById(1);
+const FIELD = REGION.fields[0];
 
 /** 모험 탭. 상단 HUD까지 (사냥터 진행은 S2~). */
 export default function Adventure() {
@@ -66,8 +71,8 @@ export default function Adventure() {
         )}
       </Panel>
 
-      <Panel title="사냥터">
-        <Text>시작의 들판</Text>
+      <Panel title={REGION.name}>
+        <Text>{FIELD.name}</Text>
         <View style={styles.row}>
           {/* T16이 사냥터 한 판(2~6마리)을 붙이면 /field로 바뀐다. 지금은 1마리 전투로 직행. */}
           <Button

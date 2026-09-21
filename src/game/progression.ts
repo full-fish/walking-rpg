@@ -9,8 +9,6 @@ import {
   HP_REGEN_MAX_ELAPSED_MS,
   HP_REGEN_RATE,
   INDIVIDUAL_REWARD_RATE,
-  monsterExp,
-  monsterGold,
   POINTS_PER_LEVEL,
   type StatSpend,
 } from './formulas';
@@ -27,13 +25,16 @@ export function statsOf(save: Save) {
 }
 
 /**
- * 몬스터 1마리 처치 보상 = 기본값 × 0.54 (§4.4).
+ * 몬스터 1마리 처치 보상 = 그 몬스터의 기본값 × 0.54 (§4.4).
  * 나머지 몫은 한 판을 다 깼을 때 클리어 보너스로 나간다 — 그건 T16.
+ *
+ * 기본값은 gen-content가 §6.2·§6.3 공식으로 뽑아 몬스터에 박아둔 값이다.
+ * 여기서 다시 계산하면 JSON과 어긋날 수 있다.
  */
-export function killReward(region: number, tierInRegion: number, power = 1): Reward {
+export function killReward(base: Reward): Reward {
   return {
-    exp: Math.round(monsterExp(region, tierInRegion, power) * INDIVIDUAL_REWARD_RATE),
-    gold: Math.round(monsterGold(region, tierInRegion, power) * INDIVIDUAL_REWARD_RATE),
+    exp: Math.round(base.exp * INDIVIDUAL_REWARD_RATE),
+    gold: Math.round(base.gold * INDIVIDUAL_REWARD_RATE),
   };
 }
 

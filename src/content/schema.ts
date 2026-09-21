@@ -4,7 +4,7 @@
  */
 import { z } from 'zod';
 
-import { MAX_TIER } from '../game/formulas';
+import { FIELDS_PER_REGION, MAX_TIER, REGION_COUNT } from '../game/formulas';
 
 /** 원형에 곱하는 배율들. 1.0이 기준 (§7.2③). */
 const multiplier = z.number().positive().max(3);
@@ -40,3 +40,71 @@ export const MonsterArchetypeSchema = z
 export const MonsterArchetypesSchema = z.array(MonsterArchetypeSchema).nonempty();
 
 export type MonsterArchetype = z.infer<typeof MonsterArchetypeSchema>;
+
+const tier = z.int().min(1).max(MAX_TIER);
+
+/**
+ * 사냥터 하나 (§4.4, §7.2⑤).
+ *
+ * `pool`의 [원형, 티어]는 그 사냥터에서 나올 수 있는 몬스터다. 평균 power가 1.0에서
+ * 멀어지면 그 사냥터만 유독 짜거나 후해진다 — validate가 ±0.15로 본다 (§7.4 #6).
+ */
+export const FieldSchema = z.object({
+  id: z.string().regex(/^f_r\d_[a-z]+$/),
+  name: z.string().min(1),
+  pool: z.array(z.tuple([z.string(), tier])).min(2),
+  /** 6마리 완주 시 확정 드랍. 사냥터마다 다르다 (§4.4) */
+  material: z.object({ id: z.string().regex(/^mat_/), name: z.string().min(1) }),
+  /** 그 소재로만 바꿀 수 있는 전용 장비 (§4.5). 성능 계산은 T13 */
+  reward: z.object({
+    id: z.string().regex(/^uniq_/),
+    name: z.string().min(1),
+    cost: z.object({ material: z.int().min(1), gold: z.int().min(0) }),
+  }),
+});
+
+/** 지역 하나 (§7.2⑤). 티어 대역을 나눠 갖고, 사냥터 5개와 보스 1마리를 가진다. */
+export const RegionSchema = z.object({
+  id: z.int().min(1).max(REGION_COUNT),
+  name: z.string().min(1),
+  /** 이 지역을 도는 게 적정한 레벨 구간 */
+  levelRange: z.tuple([z.int().min(1), z.int().min(1)]),
+  tierBand: z.tuple([tier, tier]),
+  /** 지역 단위로 난이도를 한 줄만 고쳐 움직이는 손잡이. 기본 1.0 (§7.2④) */
+  difficulty: z.number().positive(),
+  town: z.object({ name: z.string().min(1), inn: z.int().min(0) }),
+  fields: z.array(FieldSchema).length(FIELDS_PER_REGION),
+  /** 다음 지역 해금 조건. 원형의 tiers에 없는 티어를 써도 된다 — 보스는 따로 뽑는다 */
+  boss: z.object({ arch: z.string(), tier, name: z.string().min(1) }),
+});
+
+export const RegionsSchema = z.array(RegionSchema).nonempty();
+
+export type Field = z.infer<typeof FieldSchema>;
+export type Region = z.infer<typeof RegionSchema>;
+
+/** gen-content.ts가 뽑아내는 몬스터 한 마리 (§7.2⑥). */
+export const MonsterSchema = z.object({
+  id: z.string().regex(/^mon_/),
+  name: z.string().min(1),
+  region: z.int().min(1).max(REGION_COUNT),
+  tier,
+  arch: z.string(),
+  power: z.number().positive(),
+  sprite: z.string().min(1),
+  maxHp: z.int().min(1),
+  atk: z.number().positive(),
+  def: z.number().min(0),
+  spd: z.number().positive(),
+  cri: z.number().min(0).max(1),
+  crd: z.number().positive(),
+  eva: z.number().min(0).max(1),
+  exp: z.int().min(1),
+  gold: z.int().min(1),
+  traits: z.array(z.string().min(1)).nonempty(),
+  boss: z.boolean().optional(),
+});
+
+export const MonstersSchema = z.array(MonsterSchema).nonempty();
+
+export type Monster = z.infer<typeof MonsterSchema>;

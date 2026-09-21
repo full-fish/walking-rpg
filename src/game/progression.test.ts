@@ -3,9 +3,11 @@ import { expect, test } from 'vitest';
 import { defaultSave, type Save } from '../save/schema';
 import {
   DEATH_GOLD_LOSS,
-  expToNext,
   HP_REGEN_INTERVAL_MS,
   POINTS_PER_LEVEL,
+  expToNext,
+  monsterExp,
+  monsterGold,
 } from './formulas';
 import {
   addExp,
@@ -32,11 +34,14 @@ test('필요 EXP가 §6.2 표와 맞는다', () => {
   expect(expToNext(49)).toBe(7_438);
 });
 
-test('개별 보상은 기본값의 54% (§4.4)', () => {
+test('개별 보상은 몬스터 기본값의 54% (§4.4)', () => {
+  // 기본값은 gen-content가 §6.2·§6.3 공식으로 뽑아 몬스터에 박아둔다.
   // 지역1 티어3 기본 골드는 §6.3 표에서 55
-  expect(killReward(1, 3).gold).toBe(Math.round(55.1 * 0.54));
+  expect(monsterGold(1, 3)).toBeCloseTo(55.1, 1);
+  expect(killReward({ exp: 100, gold: 55 })).toEqual({ exp: 54, gold: 30 });
+
   // 약한 원형은 보상도 비례해서 적다 (§7.2③)
-  expect(killReward(1, 1, 0.7).exp).toBeLessThan(killReward(1, 1, 1.0).exp);
+  expect(monsterExp(1, 1, 0.7)).toBeLessThan(monsterExp(1, 1, 1.0));
 });
 
 test('EXP가 넘치면 한 번에 여러 레벨이 오른다', () => {
@@ -149,9 +154,13 @@ test('스탯 배분 — 포인트가 있어야 쓰이고 VIT는 현재 HP도 올
 
 test('전투 → 보상 → 레벨업 → 저장 한 바퀴 (T9 완료 기준)', () => {
   let save = defaultSave();
-  const reward = killReward(1, 1, 0.7);
+  // 가장 약한 원형(슬라임 power 0.70) 티어1의 기본 보상
+  const reward = killReward({
+    exp: monsterExp(1, 1, 0.7),
+    gold: monsterGold(1, 1, 0.7),
+  });
 
-  // 가장 약한 원형(슬라임 power 0.70, 티어1)은 한 마리에 EXP 4 — 42마리에 레벨 하나다
+  // 한 마리에 EXP 4 — 42마리에 레벨 하나다
   const kills = 50;
   for (let i = 0; i < kills; i++) {
     save = settleBattle(save, 'win', statsOf(save).maxHp, reward, i * MIN).save;

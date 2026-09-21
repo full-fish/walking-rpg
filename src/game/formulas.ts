@@ -167,3 +167,48 @@ export const DEATH_HP_RATIO = 0.1;
 export const REGION_COUNT = 5;
 export const TIERS_PER_REGION = 5;
 export const MAX_TIER = REGION_COUNT * TIERS_PER_REGION;
+/** 지역마다 사냥터 5개 (§4.4). */
+export const FIELDS_PER_REGION = 5;
+
+/**
+ * 티어가 하나 오를 때 몬스터 스탯에 곱하는 값 (§7.2④).
+ *
+ * ★ 1.20은 초안이고 **T12 시뮬레이터가 확정한다.** 24티어 동안 79배가 되는데
+ * 플레이어는 49레벨 동안 11.5배(HP)/18.1배(ATK)라 곡선이 어긋난다 — 맞추려면 1.11~1.13.
+ * 여기 한 줄만 바꾸면 gen-content가 전부 다시 뽑는다.
+ */
+export const MONSTER_GROWTH = 1.2;
+/** SPD만 따로 완만하게 오른다. 행동 횟수가 SPD 비율에 직접 비례하기 때문 (§4.2). */
+export const MONSTER_SPD_GROWTH = 1.06;
+
+/**
+ * 티어 0 기준 몬스터 (§7.2④).
+ *
+ * T7이 벤치로 역산한 값이고, T11에서 실제 사냥터 풀로 다시 확인했다.
+ * 사냥터마다 적정 레벨(그 풀의 평균 티어로 정해지는)에서 한 마리에 HP 10~20%를 깎는다 —
+ * 한 판 평균 4마리(§4.4)가 빠듯하게 도는 값이다. 최종 확정은 T12 시뮬레이터가 한다.
+ */
+export const MONSTER_BASE = { hp: 110, atk: 1.35, def: 4.2, spd: 9.4 } as const;
+
+export type StatBias = { hp: number; atk: number; def: number; spd: number };
+
+/**
+ * 몬스터 한 마리의 스탯 (§7.2④). 원형 × 티어 × 지역 난이도.
+ *
+ * SPD에만 power를 곱하지 않는다 — 행동 횟수가 SPD 비율에 직접 비례하므로(§4.2)
+ * power까지 곱하면 센 원형이 2배 상한에 쉽게 닿는다.
+ */
+export function monsterStats(tier: number, difficulty: number, power: number, bias: StatBias) {
+  const scale = MONSTER_GROWTH ** tier * difficulty * power;
+  return {
+    maxHp: Math.round(MONSTER_BASE.hp * scale * bias.hp),
+    atk: round2(MONSTER_BASE.atk * scale * bias.atk),
+    def: round2(MONSTER_BASE.def * scale * bias.def),
+    spd: round2(MONSTER_BASE.spd * MONSTER_SPD_GROWTH ** tier * bias.spd),
+  };
+}
+
+/** 생성물 JSON에 끝없는 소수가 들어가지 않게 자른다. */
+function round2(v: number): number {
+  return Math.round(v * 100) / 100;
+}

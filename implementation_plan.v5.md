@@ -26,7 +26,7 @@ v5   사냥터 입장 1,200 WP → 몬스터 2~6마리(몇 마리인지 모름) 
 4. **§11** — 질문 (전부 확정됨)
 5. **§14** — v4→v5 변경 요약
 
-**현재 진행 상황: T1~T10 코드 완료(T4·T6·T8·T9는 실기기 확인 대기). 다음 작업은 T11.**
+**현재 진행 상황: T1~T11 코드 완료(T4·T6·T8·T9는 실기기 확인 대기). 다음 작업은 T12.**
 **§9의 태스크 블록은 T4~T29 전부 채워져 있습니다** (T21 던전·T29 길드는 기획 선행이라 의도적으로 비어 있음).
 
 ---
@@ -672,8 +672,8 @@ walking_rpg/
 │   ├── content/                # ★ 게임 데이터 (§7)
 │   │   ├── schema.ts           ✅ T10 zod — 원형 스키마
 │   │   ├── index.ts            ✅ T10 로더 + 런타임 검증 (import만 해도 검증)
-│   │   ├── archetypes/         ✅ T10 원형 12개 → 몬스터 75종
-│   │   └── data/               ⬜ T11 gen-content.ts 산출물 (커밋함)
+│   │   ├── archetypes/         ✅ T10 원형 12개 · ✅ T11 지역 1~2 + 사냥터 10개
+│   │   └── data/               ✅ T11 gen-content.ts 산출물 (커밋함)
 │   │
 │   ├── save/                   ✅ T3
 │   │   └── schema.ts · store.ts · migrations.ts · migrations.test.ts
@@ -689,7 +689,7 @@ walking_rpg/
 ├── tools/
 │   ├── battle-bench.test.ts    ✅ T7  npm run bench — 전투 1,000회 통계 + 목표 검사
 │   ├── validate-content.ts     ✅ T10 npm run validate — 중복·스키마 검사
-│   ├── gen-content.ts          ⬜ T11
+│   ├── gen-content.ts          ✅ T11 npm run gen
 │   └── simulate.ts             ⬜ T12
 │
 └── assets/sprites | bgm | sfx | fonts(✅ Galmuri11)
@@ -1109,8 +1109,8 @@ src/content/
 | | T8 전투 화면 (이벤트 재생) | ✅ **완료** |
 | | T9 보상 정산 / 레벨업 / 사망 | ✅ **완료** |
 | **S3 콘텐츠** | T10 content 스키마 + 원형 12개 + validate | ✅ **완료** |
-| | T11 gen-content + 지역 1~2 + 사냥터 10개 실제 데이터 | ⬜ **다음** |
-| | T12 밸런스 시뮬레이터 | ⬜ |
+| | T11 gen-content + 지역 1~2 + 사냥터 10개 실제 데이터 | ✅ **완료** |
+| | T12 밸런스 시뮬레이터 | ⬜ **다음** ★ |
 | **S4 성장·경제** | T13 인벤토리 + 장착 + 품질 | ⬜ |
 | | T14 상점 + 여관 + 창고 + 물약 + **고유 장비 교환** | ⬜ |
 | | T15 장비 강화 (복리 + 성공률 커브) | ⬜ |
@@ -1347,6 +1347,30 @@ src/content/
           지우고 다시 만들 수 있어야 한다.
           지역 3~5는 T12로 미룬다. 2개 지역으로 루프 전체를 먼저 검증한다.
           스프라이트가 아직 없으므로 §7.4 7번은 파일이 생긴 뒤에 켠다.
+결과      지역 1~2 + 사냥터 10개를 쓰고, 거기서 몬스터 34종(보스 2 포함)이 나왔다.
+          app/battle.tsx의 DEMO_MONSTER를 지우고 사냥터 풀에서 뽑도록 바꿨다.
+          §7.2④ 공식은 formulas.ts의 monsterStats()로 갔다 — gen-content와 벤치가 같은 걸 쓴다.
+          T8 회귀 테스트에 손으로 박아뒀던 슬라임(hp 120/atk 0.96/def 2.47/spd 7.47)이
+          생성 결과와 정확히 일치했다. 공식 구현이 맞다는 확인이다.
+          몬스터가 exp/gold를 들고 오므로 killReward(region, tier, power)를 killReward(base)로
+          바꿨다. 두 곳에서 같은 보상을 계산하던 것을 하나로 만든 것이다.
+          validate가 커밋된 JSON을 매번 새로 뽑아 통째로 대조한다. 밸런스가 조용히
+          어긋나는 게 제일 무서운데, 이러면 gen을 안 돌리고 넘어갈 수가 없다.
+          tsconfig에 types:["node"]를 넣었다 — 생성 스크립트가 node:fs를 쓴다.
+          @types/node는 expo가 이미 끌고 와서 package.json은 안 건드렸다.
+
+          ★ 벤치를 "티어=레벨"에서 **실제 사냥터 풀**로 바꾸니 큰 문제가 드러났다.
+          T7 벤치는 Lv8이 티어 8을 만난다고 가정했지만 실제로는 티어 5다(지역 1이
+          Lv1~8에 티어 1~5). 제대로 재니 한 판 4마리 완주율이 **지역에 들어갈 때 1~50%,
+          적정 레벨에는 100%** 였다 — 못 깨거나 거저거나 둘 중 하나다.
+          원인은 수치 하나가 아니라 모델이 서로 안 맞는 것이다. §4.3 플레이어 성장은
+          선형이라 초반이 가파르고(Lv1→8 HP 2.5배) 후반이 완만한데(Lv40→50 1.23배),
+          §7.2④ 몬스터 성장은 지수라 어디서나 같은 배율이다.
+          지역 1~2에 맞춰 1.26~1.32로 올려봤지만 그러면 지역 2 후반 사냥터가
+          한 마리에 HP 30~58%를 깎는다. **지수 하나로는 두 구간을 동시에 못 맞춘다.**
+          MONSTER_GROWTH는 1.2 그대로 두고 벤치의 콘텐츠 단언을 진단으로 내렸다
+          (하드캡 0%·SPD 비율 같은 엔진 단언은 그대로 검사한다).
+          §7.2④ 공식을 바꿀지가 T12의 첫 질문이고, 그건 기획 결정이라 물어봐야 한다.
 ```
 
 ### T12 — 밸런스 시뮬레이터
@@ -1591,6 +1615,7 @@ npm run typecheck   # tsc --noEmit
 npm run lint        # expo lint
 npm test            # vitest run --dir src
 npm run validate    # tools/validate-content.ts  ✅ T10
+npm run gen         # tools/gen-content.ts       ✅ T11
 npm run sim         # tools/simulate.ts          (T12부터)
 ```
 

@@ -8,7 +8,7 @@ import { expect, test } from 'vitest';
 
 import raw from '../src/content/archetypes/monsters.json';
 import { MAX_TIER } from '../src/game/formulas';
-import { validateContent } from './validate-content';
+import { validateContent, validateGenerated } from './validate-content';
 
 test('content — 원형 데이터가 §7.4 검증을 통과한다', () => {
   const monsters = raw.reduce((n, a) => n + a.tiers.length, 0);
@@ -22,6 +22,10 @@ test('content — 원형 데이터가 §7.4 검증을 통과한다', () => {
   );
 
   expect(validateContent()).toEqual([]);
+});
+
+test('content — 생성물이 창작물·공식과 맞는다 (§7.4 2·6번)', () => {
+  expect(validateGenerated()).toEqual([]);
 });
 
 test('content — 티어마다 최소 2종이 있어야 사냥터를 짤 수 있다 (§7.2⑤)', () => {

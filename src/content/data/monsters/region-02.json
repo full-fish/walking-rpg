@@ -1,0 +1,342 @@
+[
+  {
+    "id": "mon_t6_beast",
+    "name": "동굴 박쥐",
+    "region": 2,
+    "tier": 6,
+    "arch": "arch_beast",
+    "power": 1,
+    "sprite": "beast_6",
+    "maxHp": 328,
+    "atk": 4.64,
+    "def": 10.03,
+    "spd": 16.67,
+    "cri": 0.1,
+    "crd": 1.5,
+    "eva": 0.08,
+    "exp": 17,
+    "gold": 96,
+    "traits": [
+      "beast"
+    ]
+  },
+  {
+    "id": "mon_t6_bird",
+    "name": "매부리",
+    "region": 2,
+    "tier": 6,
+    "arch": "arch_bird",
+    "power": 0.9,
+    "sprite": "bird_6",
+    "maxHp": 222,
+    "atk": 3.63,
+    "def": 7.9,
+    "spd": 20.67,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.15,
+    "exp": 15,
+    "gold": 87,
+    "traits": [
+      "beast",
+      "flying"
+    ]
+  },
+  {
+    "id": "mon_t6_insect",
+    "name": "날개미 떼",
+    "region": 2,
+    "tier": 6,
+    "arch": "arch_insect",
+    "power": 0.95,
+    "sprite": "insect_6",
+    "maxHp": 265,
+    "atk": 4.02,
+    "def": 8.94,
+    "spd": 18,
+    "cri": 0.06,
+    "crd": 1.5,
+    "eva": 0.12,
+    "exp": 16,
+    "gold": 91,
+    "traits": [
+      "insect"
+    ]
+  },
+  {
+    "id": "mon_t7_fungus",
+    "name": "부패한 균사체",
+    "region": 2,
+    "tier": 7,
+    "arch": "arch_fungus",
+    "power": 0.75,
+    "sprite": "fungus_7",
+    "maxHp": 310,
+    "atk": 2.9,
+    "def": 10.16,
+    "spd": 12.72,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.04,
+    "exp": 14,
+    "gold": 82,
+    "traits": [
+      "fungus",
+      "poison"
+    ]
+  },
+  {
+    "id": "mon_t7_lizard",
+    "name": "도마뱀 전사",
+    "region": 2,
+    "tier": 7,
+    "arch": "arch_lizard",
+    "power": 1.15,
+    "sprite": "lizard_7",
+    "maxHp": 521,
+    "atk": 6.12,
+    "def": 19.04,
+    "spd": 12.01,
+    "cri": 0.05,
+    "crd": 1.5,
+    "eva": 0.04,
+    "exp": 22,
+    "gold": 125,
+    "traits": [
+      "dragonkin"
+    ]
+  },
+  {
+    "id": "mon_t7_undead",
+    "name": "무덤지기",
+    "region": 2,
+    "tier": 7,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_7",
+    "maxHp": 390,
+    "atk": 4.35,
+    "def": 11.51,
+    "spd": 11.31,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 17,
+    "gold": 98,
+    "traits": [
+      "undead"
+    ]
+  },
+  {
+    "id": "mon_t8_bandit",
+    "name": "산적 두목",
+    "region": 2,
+    "tier": 8,
+    "arch": "arch_bandit",
+    "power": 1.05,
+    "sprite": "bandit_8",
+    "maxHp": 472,
+    "atk": 6.7,
+    "def": 18.01,
+    "spd": 16.48,
+    "cri": 0.12,
+    "crd": 1.5,
+    "eva": 0.07,
+    "exp": 23,
+    "gold": 127,
+    "traits": [
+      "humanoid"
+    ]
+  },
+  {
+    "id": "mon_t8_beast",
+    "name": "검은 멧돼지",
+    "region": 2,
+    "tier": 8,
+    "arch": "arch_beast",
+    "power": 1,
+    "sprite": "beast_8",
+    "maxHp": 473,
+    "atk": 6.68,
+    "def": 14.45,
+    "spd": 18.73,
+    "cri": 0.1,
+    "crd": 1.5,
+    "eva": 0.08,
+    "exp": 22,
+    "gold": 121,
+    "traits": [
+      "beast"
+    ]
+  },
+  {
+    "id": "mon_t8_plant",
+    "name": "뒤틀린 고목",
+    "region": 2,
+    "tier": 8,
+    "arch": "arch_plant",
+    "power": 0.8,
+    "sprite": "plant_8",
+    "maxHp": 473,
+    "atk": 3.48,
+    "def": 18.78,
+    "spd": 7.49,
+    "cri": 0.01,
+    "crd": 1.5,
+    "eva": 0.02,
+    "exp": 17,
+    "gold": 97,
+    "traits": [
+      "plant"
+    ]
+  },
+  {
+    "id": "mon_t9_golem",
+    "name": "강철 조각상",
+    "region": 2,
+    "tier": 9,
+    "arch": "arch_golem",
+    "power": 1.4,
+    "sprite": "golem_9",
+    "maxHp": 1152,
+    "atk": 9.26,
+    "def": 42.48,
+    "spd": 9.53,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.01,
+    "exp": 34,
+    "gold": 187,
+    "traits": [
+      "construct"
+    ]
+  },
+  {
+    "id": "mon_t9_insect",
+    "name": "뿔풍뎅이",
+    "region": 2,
+    "tier": 9,
+    "arch": "arch_insect",
+    "power": 0.95,
+    "sprite": "insect_9",
+    "maxHp": 458,
+    "atk": 6.95,
+    "def": 15.44,
+    "spd": 21.44,
+    "cri": 0.06,
+    "crd": 1.5,
+    "eva": 0.12,
+    "exp": 23,
+    "gold": 127,
+    "traits": [
+      "insect"
+    ]
+  },
+  {
+    "id": "mon_t9_spirit",
+    "name": "불씨 정령",
+    "region": 2,
+    "tier": 9,
+    "arch": "arch_spirit",
+    "power": 1.1,
+    "sprite": "spirit_9",
+    "maxHp": 562,
+    "atk": 10.73,
+    "def": 15.49,
+    "spd": 16.68,
+    "cri": 0.07,
+    "crd": 1.5,
+    "eva": 0.1,
+    "exp": 26,
+    "gold": 147,
+    "traits": [
+      "spirit"
+    ]
+  },
+  {
+    "id": "mon_r2_boss",
+    "name": "늪을 삼킨 악어",
+    "region": 2,
+    "tier": 10,
+    "arch": "arch_lizard",
+    "power": 1.15,
+    "sprite": "lizard_10",
+    "maxHp": 901,
+    "atk": 10.57,
+    "def": 32.9,
+    "spd": 14.31,
+    "cri": 0.05,
+    "crd": 1.5,
+    "eva": 0.04,
+    "exp": 31,
+    "gold": 168,
+    "traits": [
+      "dragonkin"
+    ],
+    "boss": true
+  },
+  {
+    "id": "mon_t10_bird",
+    "name": "절벽 독수리",
+    "region": 2,
+    "tier": 10,
+    "arch": "arch_bird",
+    "power": 0.9,
+    "sprite": "bird_10",
+    "maxHp": 460,
+    "atk": 7.52,
+    "def": 16.38,
+    "spd": 26.09,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.15,
+    "exp": 24,
+    "gold": 132,
+    "traits": [
+      "beast",
+      "flying"
+    ]
+  },
+  {
+    "id": "mon_t10_lizard",
+    "name": "늪지 악어",
+    "region": 2,
+    "tier": 10,
+    "arch": "arch_lizard",
+    "power": 1.15,
+    "sprite": "lizard_10",
+    "maxHp": 901,
+    "atk": 10.57,
+    "def": 32.9,
+    "spd": 14.31,
+    "cri": 0.05,
+    "crd": 1.5,
+    "eva": 0.04,
+    "exp": 31,
+    "gold": 168,
+    "traits": [
+      "dragonkin"
+    ]
+  },
+  {
+    "id": "mon_t10_undead",
+    "name": "창백한 망령",
+    "region": 2,
+    "tier": 10,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_10",
+    "maxHp": 674,
+    "atk": 7.52,
+    "def": 19.89,
+    "spd": 13.47,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 24,
+    "gold": 132,
+    "traits": [
+      "undead"
+    ]
+  }
+]

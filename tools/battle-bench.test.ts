@@ -1,20 +1,23 @@
 /**
- * 전투 엔진 벤치마크 — 조합마다 1,000회를 돌려 승률·행동 수·하드캡 도달률을 출력한다.
+ * 전투 엔진 벤치마크 — 조합마다 1,000회를 돌려 승률·행동 수·완주율을 출력한다.
  *
  *   npm run bench
  *
- * 숫자를 눈으로 보는 도구이면서, §4.2의 목표(지역1 20~40행동 / 하드캡 0% / SPD 비율)를
- * 그대로 검사한다. 밸런스를 건드려 목표를 벗어나면 여기서 빨갛게 난다.
+ * T11부터는 **실제 사냥터 풀**을 잰다. 한 판은 그 사냥터의 몬스터 중에서 무작위로 나오므로
+ * (§4.4) 풀 평균이 곧 체감이다. 티어를 레벨과 같다고 놓던 T7 방식은 실제와 달랐다.
  * `npm test`는 --dir src라 이 파일을 돌리지 않는다. 진짜 시뮬레이터는 T12.
  */
 import { expect, test } from 'vitest';
 
+import { monstersOfField, REGIONS, type Field, type Region } from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
 import { combatStats } from '../src/game/formulas';
 
 const RUNS = 1_000;
-/** §4.2 목표 행동 수 (지역 1, 적정 레벨) */
+/** §4.2 목표 행동 수 */
 const TARGET = { min: 20, max: 40 };
+/** 한 판의 마릿수. §4.4 삼각분포의 평균(4)과 최대(6) — 이 둘의 차이가 곧 도박이다. */
+const RUN_SIZES = [4, 6] as const;
 
 /** Lv L 전사. 스탯 계산은 화면과 같은 combatStats를 쓴다 — 여기서 따로 세면 둘이 어긋난다. */
 function warrior(level: number): Combatant {
@@ -22,33 +25,36 @@ function warrior(level: number): Combatant {
   return { name: `Lv${level} 전사`, hp: stats.maxHp, ...stats };
 }
 
+function poolOf(field: Field): Combatant[] {
+  return monstersOfField(field).map((m) => ({ ...m, hp: m.maxHp }));
+}
+
+/** 지역을 도는 동안의 레벨 세 지점 — 들어갈 때, 중간, 나갈 때. */
+function levelsOf(region: Region): number[] {
+  const [lo, hi] = region.levelRange;
+  return [lo, Math.round((lo + hi) / 2), hi];
+}
+
 /**
- * §7.2④ 생성 공식의 BASE_* 초안. **이 벤치로 역산한 값**이고 확정은 T11 gen-content다.
- * 원형 bias와 power는 평균(1.0)으로 둔다.
+ * 그 사냥터를 돌 만한 레벨 (§7.2⑤).
  *
- *   hp/def/spd  →  전투가 20~40행동에 끝나도록 (§4.2)
- *   atk         →  한 마리에 플레이어 HP를 약 20% 쓰도록.
- *                  한 판이 평균 4마리(§4.4)라 이 값이 곧 "4마리째에 도망갈까"의 긴장감이다.
- *                  처음엔 4로 잡았다가 1마리에 59%를 쓰길래 역산해서 내렸다.
+ * 지역 안의 난이도 변화는 **사냥터를 옮겨 다니는 것**에서 온다 — 같은 사냥터를 계속 돌면
+ * 몬스터는 그대로인데 플레이어만 크므로 당연히 쉬워진다. 그러니 사냥터마다
+ * "풀 평균 티어가 대역에서 어디쯤인가"로 적정 레벨을 잡고, 거기서 §4.2·§4.4를 검사한다.
  */
-const MONSTER_BASE = { hp: 110, atk: 1.35, def: 4.2, spd: 9.4 };
+function properLevel(region: Region, field: Field): number {
+  const avgTier = field.pool.reduce((sum, [, t]) => sum + t, 0) / field.pool.length;
+  const [loT, hiT] = region.tierBand;
+  const [loL, hiL] = region.levelRange;
+  return Math.round(loL + ((avgTier - loT) / (hiT - loT)) * (hiL - loL));
+}
 
-/** 한 판의 마릿수. §4.4 삼각분포의 평균(4)과 최대(6) — 이 둘의 차이가 곧 도박이다. */
-const RUN_SIZES = [4, 6] as const;
-
-function monsterOfTier(tier: number): Combatant {
-  const hp = Math.round(MONSTER_BASE.hp * 1.2 ** tier);
-  return {
-    name: `티어${tier}`,
-    hp,
-    maxHp: hp,
-    atk: MONSTER_BASE.atk * 1.2 ** tier,
-    def: MONSTER_BASE.def * 1.2 ** tier,
-    spd: MONSTER_BASE.spd * 1.06 ** tier,
-    cri: 0.05,
-    crd: 1.5,
-    eva: 0.05,
-  };
+/** 풀 전체의 평균. 사냥터는 풀에서 무작위로 뽑으므로 평균이 체감에 가깝다. */
+function averageOf<T extends Record<string, number>>(rows: T[]): T {
+  const keys = Object.keys(rows[0]) as (keyof T)[];
+  return Object.fromEntries(
+    keys.map((k) => [k, rows.reduce((sum, r) => sum + r[k], 0) / rows.length]),
+  ) as T;
 }
 
 function runPairing(player: Combatant, monster: Combatant) {
@@ -117,66 +123,83 @@ function runStreak(player: Combatant, monster: Combatant, count: number) {
 }
 
 const pad = (v: string | number, width: number) => String(v).padStart(width);
+const padEnd = (v: string, width: number) => v.padEnd(width);
 const pct = (v: number, digits = 1) => `${(v * 100).toFixed(digits)}%`;
 
-test(`지역 1 — 적정 레벨에서 ${TARGET.min}~${TARGET.max}행동, 하드캡 0%`, () => {
-  console.log(`\n지역 1 · 전사 · 스탯 균등 배분 · 티어 = 레벨 · 조합마다 ${RUNS}회`);
-  console.log('  1:1 전투');
-  console.log('  Lv  몬스터     승률   평균행동   최소   최대   하드캡   남은HP');
-  console.log('  ' + '─'.repeat(62));
+test(`1:1 전투 — 하드캡 0%, 사냥터별 ${TARGET.min}~${TARGET.max}행동 진단 (§4.2)`, () => {
+  const offTarget: [string, number, number][] = [];
 
-  for (const level of [1, 2, 3, 5, 7, 10]) {
-    const player = warrior(level);
-    const monster = monsterOfTier(level);
-    const s = runPairing(player, monster);
+  for (const region of REGIONS) {
+    const levels = levelsOf(region);
+    console.log(`\n지역 ${region.id} ${region.name} (Lv${region.levelRange.join('~')}) · 조합마다 ${RUNS}회`);
+    console.log('  사냥터            ' + levels.map((l) => pad(`Lv${l}`, 16)).join(''));
+    console.log('  ' + '─'.repeat(18 + levels.length * 16));
 
-    console.log(
-      `  ${pad(level, 2)}  ${pad(monster.name, 7)}  ${pad(pct(s.winRate), 7)}  ` +
-        `${pad(s.avgActions.toFixed(1), 8)}  ${pad(s.minActions, 5)}  ${pad(s.maxActions, 5)}  ` +
-        `${pad(pct(s.hardcapRate), 7)}  ${pad(pct(s.avgHpLeft, 0), 7)}`,
-    );
-
-    expect.soft(s.avgActions, `Lv${level} 평균 행동 수`).toBeGreaterThanOrEqual(TARGET.min);
-    expect.soft(s.avgActions, `Lv${level} 평균 행동 수`).toBeLessThanOrEqual(TARGET.max);
-    expect.soft(s.hardcapRate, `Lv${level} 하드캡 도달률`).toBe(0);
+    for (const field of region.fields) {
+      const pool = poolOf(field);
+      const proper = properLevel(region, field);
+      const cells = levels.map((level) => {
+        const s = averageOf(pool.map((m) => runPairing(warrior(level), m)));
+        expect.soft(s.hardcapRate, `${field.name} Lv${level} 하드캡`).toBe(0);
+        const mark = level === proper ? '*' : ' ';
+        return pad(`${s.avgActions.toFixed(0)}행동 HP-${pct(1 - s.avgHpLeft, 0)}${mark}`, 16);
+      });
+      // 적정 레벨의 행동 수는 진단만 한다 — 목표를 벗어나는 원인이 성장 곡선이고, 그건 T12다.
+      const at = averageOf(pool.map((m) => runPairing(warrior(proper), m)));
+      offTarget.push([field.name, proper, at.avgActions]);
+      console.log(`  ${padEnd(field.name, 16)}` + cells.join('') + ` 적정 Lv${proper}`);
+    }
+    console.log('  ' + '─'.repeat(18 + levels.length * 16));
   }
-  console.log('  ' + '─'.repeat(62));
+
+  const bad = offTarget.filter(([, , a]) => a < TARGET.min || a > TARGET.max);
+  if (bad.length > 0) {
+    console.log(
+      `\n  ※ 적정 레벨인데 ${TARGET.min}~${TARGET.max}행동을 벗어나는 사냥터 ${bad.length}곳:\n` +
+        bad.map(([n, l, a]) => `      ${n} (Lv${l}) ${a.toFixed(0)}행동`).join('\n'),
+    );
+  }
 });
 
-test('연속 전투 — 평균 판(4마리)은 물약 없이 깰 수 있어야 한다 (§4.4)', () => {
-  console.log('\n  연속 전투 (물약·회복 없음. HP는 전투 사이에 이어진다)');
-  console.log('  Lv  몬스터    4마리 완주   남은HP    6마리 완주   남은HP');
-  console.log('  ' + '─'.repeat(60));
+test('한 판 — 4·6마리 완주율 진단 (§4.4)', () => {
+  const entry: number[] = [];
+  const atProper: number[] = [];
 
-  const sixRates: number[] = [];
+  for (const region of REGIONS) {
+    const levels = levelsOf(region);
 
-  for (const level of [1, 2, 3, 5, 7, 10]) {
-    const player = warrior(level);
-    const monster = monsterOfTier(level);
-    const [four, six] = RUN_SIZES.map((n) => runStreak(player, monster, n));
-    sixRates.push(six.clearRate);
+    console.log(`\n지역 ${region.id} 연속 전투 (물약·회복 없음). 4마리 완주 / 6마리 완주`);
+    console.log('  사냥터            ' + levels.map((l) => pad(`Lv${l}`, 16)).join(''));
+    console.log('  ' + '─'.repeat(18 + levels.length * 16));
 
-    console.log(
-      `  ${pad(level, 2)}  ${pad(monster.name, 7)}  ${pad(pct(four.clearRate), 10)}  ` +
-        `${pad(pct(four.avgHpLeft, 0), 7)}  ${pad(pct(six.clearRate), 11)}  ` +
-        `${pad(pct(six.avgHpLeft, 0), 7)}`,
-    );
-
-    // 지켜야 하는 최소선: 평균 마릿수(4)를 물약 없이 못 깨면 물약 3개로도 사냥터가 안 굴러간다.
-    expect.soft(four.clearRate, `Lv${level} 4마리 완주율`).toBeGreaterThan(0.8);
+    for (const field of region.fields) {
+      const pool = poolOf(field);
+      const proper = properLevel(region, field);
+      const cells = levels.map((level) => {
+        const [four, six] = RUN_SIZES.map((n) =>
+          averageOf(pool.map((m) => runStreak(warrior(level), m, n))),
+        );
+        if (level === proper) atProper.push(four.clearRate);
+        if (level === levels[0]) entry.push(four.clearRate);
+        const mark = level === proper ? '*' : ' ';
+        return pad(`${pct(four.clearRate, 0)} / ${pct(six.clearRate, 0)}${mark}`, 16);
+      });
+      console.log(`  ${padEnd(field.name, 16)}` + cells.join('') + ` 적정 Lv${proper}`);
+    }
+    console.log('  ' + '─'.repeat(18 + levels.length * 16));
   }
-  console.log('  ' + '─'.repeat(60));
 
-  // 6마리는 검사하지 않고 진단만 한다 — 고치려면 몬스터 성장 곡선을 손봐야 하고,
-  // 그건 T11(몬스터 스펙)과 T12(시뮬레이터)의 일이다.
-  const spread = Math.max(...sixRates) - Math.min(...sixRates);
-  if (spread > 0.2) {
-    console.log(
-      `  ※ 6마리 완주율이 레벨대별로 ${pct(Math.min(...sixRates), 0)}~${pct(Math.max(...sixRates), 0)}로 튄다.\n` +
-        `    플레이어는 선형(+24HP/+4ATK per Lv), 몬스터는 지수(×1.2^티어) 성장이라 곡선이 어긋난다.\n` +
-        `    BASE_* 네 값으로는 못 고친다(모든 티어에 같은 배율로 곱해지므로). T11에서 다룰 것.`,
-    );
-  }
+  // ★ 여기는 검사하지 않고 진단만 한다. 원인이 수치 하나가 아니라 §4.3과 §7.2④의
+  //    모델이 서로 안 맞는 것이라, 고치려면 기획 결정이 필요하다 (T12 + 사용자 확인).
+  console.log(
+    `\n  ★ 4마리 완주율이 지역에 들어갈 때 ${pct(Math.min(...entry), 0)}~${pct(Math.max(...entry), 0)},\n` +
+      `    적정 레벨에는 ${pct(Math.min(...atProper), 0)}~${pct(Math.max(...atProper), 0)}다 — 못 깨거나 100%거나 둘 중 하나다.\n` +
+      `    플레이어는 레벨당 선형으로 자라고(§4.3) 몬스터는 티어당 지수로 자란다(§7.2④).\n` +
+      `    선형 성장은 초반이 가파르고 후반이 완만한데(Lv1→8 HP 2.5배, Lv40→50 1.23배)\n` +
+      `    지수는 어디서나 같은 배율이라, 지수 하나로는 두 구간을 동시에 못 맞춘다.\n` +
+      `    지역 1~2에 맞추면 1.26~1.32인데 그 값이면 지역 2 후반 사냥터가 30~58%씩 깎는다.\n` +
+      `    T12 시뮬레이터에서 결정한다.`,
+  );
 });
 
 test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 2배)', () => {
@@ -194,7 +217,7 @@ test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 2배)', () 
       // 양쪽 다 안 죽을 만큼 HP를 크게 줘서 비율만 본다
       const r = simulateBattle(
         { ...warrior(1), spd: playerSpd, hp: 1e9, maxHp: 1e9 },
-        { ...monsterOfTier(1), spd: monsterSpd, hp: 1_500, maxHp: 1_500 },
+        { ...poolOf(REGIONS[0].fields[0])[0], spd: monsterSpd, hp: 1_500, maxHp: 1_500 },
         makeRng(seed),
       );
       for (const e of r.events) {

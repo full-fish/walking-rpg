@@ -1,14 +1,16 @@
 /**
  * 콘텐츠 검증 (§7.4). `npm run validate`
  *
- * 스키마는 원형 하나하나를 보고, 여기서는 **원형끼리의 관계**를 본다 — 중복이 그것이다.
+ * 스키마는 데이터 하나하나를 보고, 여기서는 **데이터끼리의 관계**를 본다 —
+ * 중복, 참조 무결성, 밸런스 불변식이 그것이다.
  * 오류를 던지지 않고 모아서 돌려준다. 하나 고치고 다시 돌리는 걸 12번 반복하지 않기 위해서다.
  *
- * T11이 여기에 §7.4의 2·6·7번(참조 무결성 / 밸런스 불변식 / 스프라이트 존재)을 더한다.
- * 그 검사들은 gen-content.ts 산출물이 있어야 볼 게 생기므로 지금은 넣지 않는다.
+ * §7.4 7번(스프라이트 파일 존재)은 아직 파일이 하나도 없어서 넣지 않았다.
  */
 import raw from '../src/content/archetypes/monsters.json';
-import { MonsterArchetypesSchema } from '../src/content/schema';
+import { MONSTERS, REGIONS } from '../src/content';
+import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
+import { generateAll, tierInRegion } from './gen-content';
 
 /** 두 번 이상 나온 값만 골라낸다. */
 function duplicates(values: string[]): string[] {
@@ -43,6 +45,97 @@ export function validateContent(data: unknown = raw): string[] {
   for (const name of duplicates(archetypes.flatMap((a) => a.namePool))) {
     errors.push(`[이름 중복] ${name}`);
   }
+
+  return errors;
+}
+
+/** 사냥터 평균 power 허용 오차 (§7.4 #6). 벗어나면 그 사냥터만 유독 짜거나 후해진다. */
+const POWER_TOLERANCE = 0.15;
+
+/**
+ * 생성물(data/)과 창작물(archetypes/)의 관계를 본다 — §7.4 2·6번.
+ *
+ * 커밋된 JSON이 공식과 어긋나는 경우가 제일 무섭다. 아무도 안 보는 사이에
+ * 밸런스가 조용히 달라지기 때문이다. 그래서 매번 새로 뽑아 통째로 대조한다.
+ */
+export function validateGenerated(): string[] {
+  const errors: string[] = [];
+  const fresh = generateAll();
+
+  for (const region of REGIONS) {
+    const committed = MONSTERS.filter((m) => m.region === region.id);
+    const expected = fresh.get(region.id) ?? [];
+    if (JSON.stringify(committed) !== JSON.stringify(expected)) {
+      errors.push(`[생성물 낡음] 지역 ${region.id} — npm run gen을 다시 돌려라`);
+    }
+
+    // §7.4 #2 — 사냥터 pool이 가리키는 몬스터가 실제로 있는가
+    for (const field of region.fields) {
+      for (const [arch, tier] of field.pool) {
+        const found = MONSTERS.some((m) => m.arch === arch && m.tier === tier && !m.boss);
+        if (!found) errors.push(`[참조 깨짐] ${field.id} → ${arch} 티어 ${tier}`);
+        const [lo, hi] = region.tierBand;
+        if (tier < lo || tier > hi) {
+          errors.push(`[티어 대역 밖] ${field.id} → 티어 ${tier} (지역 ${region.id}: ${lo}~${hi})`);
+        }
+      }
+
+      // §7.4 #6 — 사냥터 평균 power = 1.0 ± 0.15
+      const powers = field.pool.map(([arch]) => {
+        const m = MONSTERS.find((x) => x.arch === arch);
+        return m?.power ?? 0;
+      });
+      const avg = powers.reduce((a, b) => a + b, 0) / powers.length;
+      if (Math.abs(avg - 1) > POWER_TOLERANCE) {
+        errors.push(`[사냥터 power] ${field.id} 평균 ${avg.toFixed(3)} (1.0 ± ${POWER_TOLERANCE})`);
+      }
+    }
+
+    // §7.4 #6 — 보스 원형이 있는가
+    if (!MONSTERS.some((m) => m.boss && m.region === region.id)) {
+      errors.push(`[보스 없음] 지역 ${region.id}`);
+    }
+  }
+
+  // §7.4 #6 — 티어가 오르면 HP/ATK가 단조 증가한다 (같은 원형 안에서)
+  for (const arch of new Set(MONSTERS.map((m) => m.arch))) {
+    const line = MONSTERS.filter((m) => m.arch === arch && !m.boss).sort((a, b) => a.tier - b.tier);
+    for (let i = 1; i < line.length; i++) {
+      if (line[i].maxHp <= line[i - 1].maxHp || line[i].atk <= line[i - 1].atk) {
+        errors.push(`[단조 증가 깨짐] ${arch}: ${line[i - 1].name} → ${line[i].name}`);
+      }
+    }
+  }
+
+  // §7.4 #6 — 보상이 power에 비례한다 (§7.2④). 같은 (지역, 지역내 티어)면 exp ÷ power가 같아야 한다.
+  //
+  // exp는 정수로 반올림돼 있어서 그냥 나누면 power가 작을수록 크게 흔들린다.
+  // 그래서 몬스터마다 "원래 값이 이 구간 안이었다"는 [(exp-0.5)/power, (exp+0.5)/power]를 만들고,
+  // 같은 티어끼리 그 구간이 겹치는지 본다. 겹치지 않으면 비례가 아니다 — 임의의 오차값이 필요 없다.
+  const byTier = new Map<string, Monster[]>();
+  for (const m of MONSTERS) {
+    const key = `${m.region}-${tierInRegion(m.tier, m.region)}`;
+    byTier.set(key, [...(byTier.get(key) ?? []), m]);
+  }
+  for (const [key, group] of byTier) {
+    for (const field of ['exp', 'gold'] as const) {
+      const lo = Math.max(...group.map((m) => (m[field] - 0.5) / m.power));
+      const hi = Math.min(...group.map((m) => (m[field] + 0.5) / m.power));
+      if (lo > hi) {
+        const shown = group.map((m) => `${m.name} ${(m[field] / m.power).toFixed(1)}`).join(', ');
+        errors.push(`[${field}가 power에 비례하지 않음] 지역-티어 ${key}: ${shown}`);
+      }
+    }
+  }
+
+  // §7.4 #6 — 사냥터마다 고유 소재/장비가 1:1로 있는가 (#8)
+  const fields = REGIONS.flatMap((r) => r.fields);
+  const ids = [
+    ...fields.map((f) => f.id),
+    ...fields.map((f) => f.material.id),
+    ...fields.map((f) => f.reward.id),
+  ];
+  for (const id of duplicates(ids)) errors.push(`[사냥터 ID 중복] ${id}`);
 
   return errors;
 }

@@ -5,10 +5,65 @@
  * 즉시 죽는 게 낫다 — 원인이 몬스터 한 마리가 아니라 JSON 한 줄이기 때문이다.
  * 모든 오류를 한 번에 보고 싶으면 `npm run validate`를 쓴다.
  */
-import raw from './archetypes/monsters.json';
-import { MonsterArchetypesSchema, type MonsterArchetype } from './schema';
+import archetypesRaw from './archetypes/monsters.json';
+import regionsRaw from './archetypes/regions.json';
+import region01 from './data/monsters/region-01.json';
+import region02 from './data/monsters/region-02.json';
+import {
+  MonsterArchetypesSchema,
+  MonstersSchema,
+  RegionsSchema,
+  type Field,
+  type Monster,
+  type MonsterArchetype,
+  type Region,
+} from './schema';
 
-export type { MonsterArchetype };
+export type { Field, Monster, MonsterArchetype, Region };
 
-/** 몬스터 원형 12개 (§7.2). 여기서 몬스터 75종이 나온다 (T11). */
-export const MONSTER_ARCHETYPES = MonsterArchetypesSchema.parse(raw);
+/** 몬스터 원형 12개 (§7.2). */
+export const MONSTER_ARCHETYPES = MonsterArchetypesSchema.parse(archetypesRaw);
+
+/** 지역과 사냥터 (§7.2⑤). 지역 3~5는 T12에서 추가한다. */
+export const REGIONS = RegionsSchema.parse(regionsRaw);
+
+/** gen-content.ts가 뽑아둔 몬스터 전부. 보스도 여기 들어 있다. */
+export const MONSTERS = MonstersSchema.parse([...region01, ...region02]);
+
+export function regionById(id: number): Region {
+  const region = REGIONS.find((r) => r.id === id);
+  if (!region) throw new Error(`없는 지역: ${id}`);
+  return region;
+}
+
+/**
+ * 사냥터에 나올 수 있는 몬스터들 (§4.4).
+ * pool의 [원형, 티어]로 찾는다 — id 형식을 여기서 다시 조립하면 gen-content와 어긋난다.
+ */
+export function monstersOfField(field: Field): Monster[] {
+  return field.pool.map(([arch, tier]) => {
+    const monster = MONSTERS.find((m) => m.arch === arch && m.tier === tier && !m.boss);
+    if (!monster) throw new Error(`${field.id}의 [${arch}, ${tier}] 몬스터가 없다`);
+    return monster;
+  });
+}
+
+/**
+ * 그 레벨이 상대할 적정 티어 (§7.2①⑤).
+ *
+ * 지역이 레벨 구간과 티어 대역을 둘 다 가지고 있으므로 그 안에서 비례로 잡는다.
+ * 지역 1은 Lv1~8에 티어 1~5라 레벨 2개에 티어 1개꼴로 오른다 — 티어와 레벨은 같지 않다.
+ */
+export function tierForLevel(level: number): number {
+  const region =
+    REGIONS.find((r) => level >= r.levelRange[0] && level <= r.levelRange[1]) ?? REGIONS.at(-1)!;
+  const [loLv, hiLv] = region.levelRange;
+  const [loTier, hiTier] = region.tierBand;
+  const ratio = hiLv === loLv ? 0 : (level - loLv) / (hiLv - loLv);
+  return Math.round(loTier + ratio * (hiTier - loTier));
+}
+
+/** 그 티어의 일반 몬스터 전부 (보스 제외). 밸런스 벤치·시뮬레이터가 쓴다. */
+export function monstersOfTier(tier: number): Monster[] {
+  return MONSTERS.filter((m) => m.tier === tier && !m.boss);
+}
