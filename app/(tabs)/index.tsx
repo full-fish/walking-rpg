@@ -3,7 +3,7 @@ import { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { combatStats } from '@/game/formulas';
+import { statsOf } from '@/game/progression';
 import { useSteps } from '@/health/useSteps';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
@@ -30,11 +30,15 @@ export default function Adventure() {
   const steps = useSteps();
   const save = usePlayer((s) => s.save);
   const grantFromSteps = usePlayer((s) => s.grantFromSteps);
+  const regen = usePlayer((s) => s.regen);
+  const stats = statsOf(save);
 
-  // 걸음이 갱신될 때마다 지급을 시도한다. 이미 준 몫은 grantWp가 걸러낸다.
+  // 걸음이 갱신될 때마다(=60초 폴링/센서) 지급과 HP 회복을 함께 반영한다.
+  // 둘 다 받을 게 없으면 아무것도 저장하지 않으므로 그냥 매번 불러도 된다.
   useEffect(() => {
     grantFromSteps(steps.byDate);
-  }, [steps.byDate, grantFromSteps]);
+    regen();
+  }, [steps.byDate, grantFromSteps, regen]);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -46,12 +50,7 @@ export default function Adventure() {
           <Stat label="WP" value={save.wp.current} color={colors.wp} />
           <Stat label="골드" value={save.player.gold} color={colors.gold} />
         </View>
-        <Bar
-          label="HP"
-          value={save.player.hp}
-          max={combatStats(save.player.level).maxHp}
-          color={colors.hp}
-        />
+        <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
         <View style={styles.row}>
           <Button label="새로고침" onPress={steps.refresh} />
           {steps.status !== 'connected' && steps.status !== 'unavailable' && (
@@ -71,9 +70,19 @@ export default function Adventure() {
         <Text>시작의 들판</Text>
         <View style={styles.row}>
           {/* T16이 사냥터 한 판(2~6마리)을 붙이면 /field로 바뀐다. 지금은 1마리 전투로 직행. */}
-          <Button label="사냥 시작" tone="gold" onPress={() => router.push('/battle')} />
+          <Button
+            label="사냥 시작"
+            tone="gold"
+            disabled={save.player.hp <= 0}
+            onPress={() => router.push('/battle')}
+          />
           <Button label="이동" />
         </View>
+        {save.statPoints.unspent > 0 && (
+          <Text size="sm" color={colors.gold}>
+            쓰지 않은 스탯 포인트 {save.statPoints.unspent}점 — 캐릭터 탭에서 올리세요
+          </Text>
+        )}
       </Panel>
     </SafeAreaView>
   );

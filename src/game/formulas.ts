@@ -101,21 +101,60 @@ export const STAT_PER_POINT = {
 /** 레벨업마다 받는 수동 배분 포인트 (§4.3). */
 export const POINTS_PER_LEVEL = 3;
 
+/** 1차 스탯에 실제로 넣은 포인트 (§4.3). */
+export type StatSpend = { str: number; vit: number; agi: number; luk: number };
+
 /**
- * 레벨에 대응하는 전투 스탯 (§4.3).
- * 직업 자동 성장 + 수동 3포인트를 STR/VIT/AGI에 1점씩 균등 배분한 것으로 계산한다.
- * T9에서 유저가 직접 배분하게 되면 배분 결과를 인자로 받도록 확장한다.
+ * 레벨과 배분으로 전투 스탯을 만든다 (§4.3).
+ * 배분을 안 주면 STR/VIT/AGI에 1점씩 균등하게 넣은 것으로 친다 — 밸런스 기준선이다.
  */
-export function combatStats(level: number, job: JobId = 'warrior') {
+export function combatStats(level: number, job: JobId = 'warrior', spend?: StatSpend) {
   const ups = Math.max(0, level - 1);
   const growth = JOB_GROWTH[job];
+  const s = spend ?? { str: ups, vit: ups, agi: ups, luk: 0 };
   return {
-    maxHp: BASE_STATS.maxHp + (growth.maxHp + STAT_PER_POINT.vit.maxHp) * ups,
-    atk: BASE_STATS.atk + (growth.atk + STAT_PER_POINT.str.atk) * ups,
-    def: BASE_STATS.def + (growth.def + STAT_PER_POINT.vit.def) * ups,
-    spd: BASE_STATS.spd + (growth.spd + STAT_PER_POINT.agi.spd) * ups,
-    cri: BASE_STATS.cri,
+    maxHp: BASE_STATS.maxHp + growth.maxHp * ups + STAT_PER_POINT.vit.maxHp * s.vit,
+    atk: BASE_STATS.atk + growth.atk * ups + STAT_PER_POINT.str.atk * s.str,
+    def: BASE_STATS.def + growth.def * ups + STAT_PER_POINT.vit.def * s.vit,
+    spd: BASE_STATS.spd + growth.spd * ups + STAT_PER_POINT.agi.spd * s.agi,
+    cri: BASE_STATS.cri + STAT_PER_POINT.luk.cri * s.luk,
     crd: BASE_STATS.crd,
-    eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * ups,
+    eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * s.agi,
   };
 }
+
+// ─────────────────────────────────────────────────────────────
+// 보상과 회복 (§4.2, §6.2, §6.3)
+// ─────────────────────────────────────────────────────────────
+
+/** 레벨 L에서 L+1로 가는 데 필요한 EXP (§6.2). */
+export function expToNext(level: number): number {
+  return Math.round(150 + 17.5 * level ** 1.35 * 1.016 ** level);
+}
+
+/** 몬스터 1마리의 기본 EXP (§6.2). tier는 지역 안에서의 티어 1~5. */
+export function monsterExp(region: number, tierInRegion: number, power = 1): number {
+  return 10 * 1.4 ** (region - 1) * (1 + 0.18 * tierInRegion) * power;
+}
+
+/** 몬스터 1마리의 기본 골드 (§6.3). */
+export function monsterGold(region: number, tierInRegion: number, power = 1): number {
+  return 38 * region * 1.1 ** (region - 1) * (1 + 0.15 * tierInRegion) * power;
+}
+
+/**
+ * 개별 몬스터 보상에 곱하는 계수 (§4.4, §6.5).
+ * 나머지는 클리어 보너스로 간다 — 둘을 합쳐야 v4의 하루 총량과 맞는다. 보너스는 T16.
+ */
+export const INDIVIDUAL_REWARD_RATE = 0.54;
+
+/** HP 자연회복 — 10분당 최대 HP의 1% (§4.2). 앱이 꺼져 있어도 적용된다. */
+export const HP_REGEN_RATE = 0.01;
+export const HP_REGEN_INTERVAL_MS = 10 * 60 * 1000;
+/** 시계 조작 방어 — 한 번 계산에 인정하는 최대 경과 시간 (§4.2). */
+export const HP_REGEN_MAX_ELAPSED_MS = 24 * 60 * 60 * 1000;
+
+/** 사망 시 소지 골드 상실률. 창고 골드는 면제 (§4.2). */
+export const DEATH_GOLD_LOSS = 0.1;
+/** 사망 후 부활 HP 비율 (§4.2). */
+export const DEATH_HP_RATIO = 0.1;

@@ -1,3 +1,4 @@
+import { POINTS_PER_LEVEL } from '../game/formulas';
 import { SAVE_VERSION } from './schema';
 
 /** vN 세이브를 v(N+1) 모양으로 바꾼다. version 필드는 migrate()가 알아서 올린다. */
@@ -26,6 +27,25 @@ export const migrations: Record<number, Migration> = {
     };
     delete next.stamina;
     return next;
+  },
+
+  /** v2 → v3: HP 자연회복 기준 시각, 스탯 배분, 지역 진행도 추가 */
+  2: (s) => {
+    const level = ((s.player ?? {}) as { level?: number }).level ?? 1;
+    return {
+      ...s,
+      // 지금부터 회복을 센다. 0으로 두면 첫 로드에서 24시간치가 한 번에 들어온다.
+      hpUpdatedAt: Date.now(),
+      // 지금까지 올린 레벨만큼 배분 포인트를 소급해서 준다.
+      statPoints: {
+        unspent: Math.max(0, level - 1) * POINTS_PER_LEVEL,
+        str: 0,
+        vit: 0,
+        agi: 0,
+        luk: 0,
+      },
+      regionProgress: { current: 1, unlocked: 1 },
+    };
   },
 };
 

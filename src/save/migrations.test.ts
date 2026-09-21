@@ -41,9 +41,9 @@ test('v1 stamina를 v2 wp로 옮기고 이미 지급한 걸음은 다시 주지 
     player: { level: 3, exp: 120, gold: 500, hp: 80 },
     stamina: { current: 4820, lastStepTotal: 7000, lastGrantDate: '2026-09-20' },
   };
-  const v2 = SaveSchema.parse(migrate(v1));
-  expect(v2).toEqual({
-    version: 2,
+  const latest = SaveSchema.parse(migrate(v1));
+  expect(latest).toMatchObject({
+    version: SAVE_VERSION,
     player: { level: 3, exp: 120, gold: 500, hp: 80 },
     wp: {
       current: 4820,
@@ -51,6 +51,20 @@ test('v1 stamina를 v2 wp로 옮기고 이미 지급한 걸음은 다시 주지 
       lastMidnightGrantAt: '2026-09-20',
     },
   });
+});
+
+test('v2 → v3: 지금까지 올린 레벨만큼 배분 포인트를 소급해서 준다', () => {
+  const v2 = {
+    version: 2,
+    player: { level: 3, exp: 120, gold: 500, hp: 80 },
+    wp: { current: 4820, grantedByDate: {}, lastMidnightGrantAt: '2026-09-20' },
+  };
+  const v3 = SaveSchema.parse(migrate(v2));
+
+  expect(v3.statPoints).toEqual({ unspent: 2 * 3, str: 0, vit: 0, agi: 0, luk: 0 });
+  expect(v3.regionProgress).toEqual({ current: 1, unlocked: 1 });
+  // 0으로 두면 첫 로드에서 24시간치 회복이 한 번에 들어온다 — 지금부터 센다
+  expect(v3.hpUpdatedAt).toBeGreaterThan(0);
 });
 
 test('한 번도 안 켠 v1 세이브는 빈 지갑으로 간다(설치 기준선은 grantWp가 잡는다)', () => {

@@ -1,7 +1,17 @@
 import { create } from 'zustand';
 
-import type { DailySteps } from '@/health/steps';
+import type { Outcome } from '@/game/battle';
 import { grantWp, spendWp } from '@/game/wp';
+import {
+  applyRegen,
+  settleBattle,
+  spendPoint,
+  statsOf,
+  type Reward,
+  type Settlement,
+  type StatKey,
+} from '@/game/progression';
+import type { DailySteps } from '@/health/steps';
 import type { Save } from '@/save/schema';
 import { loadSave, resetSave, writeSave } from '@/save/store';
 
@@ -11,6 +21,12 @@ type PlayerStore = {
   grantFromSteps: (steps: DailySteps) => void;
   /** WP를 쓴다. 모자라면 아무것도 바꾸지 않고 false */
   spend: (cost: number) => boolean;
+  /** 안 켠 동안의 HP 자연회복을 반영한다. 회복할 게 없으면 아무것도 안 한다 */
+  regen: () => void;
+  /** 전투 하나를 정산한다. 화면이 결과를 보여줄 수 있게 정산 내역을 돌려준다 */
+  settle: (outcome: Outcome, playerHp: number, reward: Reward) => Settlement;
+  /** 남은 포인트 1점을 스탯에 넣는다. 포인트가 없으면 false */
+  allocate: (stat: StatKey) => boolean;
   addGold: (amount: number) => void;
   reset: () => void;
 };
@@ -26,7 +42,8 @@ function persist(save: Save): Save {
  * MMKV가 동기라 첫 렌더 전에 loadSave()로 채울 수 있다(로딩 상태 불필요).
  */
 export const usePlayer = create<PlayerStore>((set, get) => ({
-  save: loadSave(),
+  // 앱을 켠 순간, 꺼져 있던 동안의 HP 회복을 먼저 반영한다 (§4.2).
+  save: applyRegen(loadSave(), Date.now()),
 
   grantFromSteps: (steps) => {
     const { save } = get();
@@ -44,6 +61,26 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     return true;
   },
 
+  regen: () => {
+    const { save } = get();
+    const next = applyRegen(save, Date.now());
+    if (next === save) return;
+    set({ save: persist(next) });
+  },
+
+  settle: (outcome, playerHp, reward) => {
+    const result = settleBattle(get().save, outcome, playerHp, reward, Date.now());
+    set({ save: persist(result.save) });
+    return result;
+  },
+
+  allocate: (stat) => {
+    const next = spendPoint(get().save, stat);
+    if (!next) return false;
+    set({ save: persist(next) });
+    return true;
+  },
+
   addGold: (amount) => {
     const { save } = get();
     const gold = Math.max(0, save.player.gold + amount);
@@ -52,3 +89,6 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
 
   reset: () => set({ save: resetSave() }),
 }));
+
+/** 화면들이 전투 스탯을 볼 때 쓰는 선택자. 세이브가 바뀌면 같이 갱신된다. */
+export const selectStats = (s: PlayerStore) => statsOf(s.save);

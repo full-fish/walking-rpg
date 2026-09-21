@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 2;
+export const SAVE_VERSION = 3;
 
 export const SaveSchema = z.object({
   version: z.literal(SAVE_VERSION),
@@ -22,6 +22,23 @@ export const SaveSchema = z.object({
     /** 자정 1,000을 마지막으로 지급한 날짜 'YYYY-MM-DD'. ''이면 설치 직후 */
     lastMidnightGrantAt: z.string(),
   }),
+  /** HP 자연회복을 마지막으로 반영한 시각(epoch ms). 10분당 1% (§4.2) */
+  hpUpdatedAt: z.int().min(0),
+  /** 1차 스탯 배분. 레벨당 3포인트를 받아 unspent에 쌓인다 (§4.3) */
+  statPoints: z.object({
+    unspent: z.int().min(0),
+    str: z.int().min(0),
+    vit: z.int().min(0),
+    agi: z.int().min(0),
+    luk: z.int().min(0),
+  }),
+  /** 지역 진행도 (§4.1). 해금은 보스 클리어 + 해금 비용 — 실제 해금은 T17 이후 */
+  regionProgress: z.object({
+    /** 지금 있는 지역 */
+    current: z.int().min(1),
+    /** 해금된 가장 높은 지역 */
+    unlocked: z.int().min(1),
+  }),
 });
 
 export type Save = z.infer<typeof SaveSchema>;
@@ -31,5 +48,8 @@ export function defaultSave(): Save {
     version: SAVE_VERSION,
     player: { level: 1, exp: 0, gold: 0, hp: 100 },
     wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
+    hpUpdatedAt: 0,
+    statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0 },
+    regionProgress: { current: 1, unlocked: 1 },
   };
 }

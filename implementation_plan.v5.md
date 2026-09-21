@@ -26,7 +26,7 @@ v5   사냥터 입장 1,200 WP → 몬스터 2~6마리(몇 마리인지 모름) 
 4. **§11** — 답이 필요한 질문 (1개뿐)
 5. **§14** — v4→v5 변경 요약
 
-**현재 진행 상황: T1~T8 코드 완료(T4·T6·T8은 실기기 확인 대기). 다음 작업은 T9.**
+**현재 진행 상황: T1~T9 코드 완료(T4·T6·T8·T9는 실기기 확인 대기). 다음 작업은 T10.**
 
 ---
 
@@ -665,7 +665,7 @@ walking_rpg/
 │   │   ├── battle.ts           ✅ T7  ATB 전투 엔진 (이벤트 배열 반환)
 │   │   ├── field.ts            ⬜ T16 한 판 진행/보상 정산 (순수 함수)
 │   │   ├── wp.ts               ✅ T5  WP 지갑 (3일 소급 포함)
-│   │   ├── progression.ts      ⬜ T9  레벨/EXP/스탯/지역 해금
+│   │   ├── progression.ts      ✅ T9  레벨/EXP/스탯/HP회복/전투 정산
 │   │   └── economy.ts          ⬜ T14 골드/상점/강화/창고/드랍
 │   │
 │   ├── content/                # ★ 게임 데이터 (§7)
@@ -702,7 +702,7 @@ walking_rpg/
 | --- | --- | --- |
 | v1 | ✅ T3 | player(레벨/골드/HP), version |
 | v2 | ✅ T5 | `wp: { current, grantedByDate, lastMidnightGrantAt }` — v1 `stamina`를 대체 |
-| v3 | T9 | `hpUpdatedAt`, `statPoints`, `regionProgress` |
+| v3 | ✅ T9 | `hpUpdatedAt`, `statPoints`, `regionProgress` |
 | v4 | T13 | `inventory: ItemInstance[]`, `equipped` |
 | v5 | T14 | `vault: { gold, capacity, expansions }`, `materials: Record<fieldId, number>` |
 
@@ -1077,8 +1077,8 @@ src/content/
 | | T6 모험 탭 HUD | ✅ **완료** |
 | **S2 전투** | T7 `formulas.ts` + `battle.ts` ATB 엔진 | ✅ **완료** |
 | | T8 전투 화면 (이벤트 재생) | ✅ **완료** |
-| | T9 보상 정산 / 레벨업 / 사망 | ⬜ **다음** |
-| **S3 콘텐츠** | T10 content 스키마 + 원형 12개 + validate | ⬜ |
+| | T9 보상 정산 / 레벨업 / 사망 | ✅ **완료** |
+| **S3 콘텐츠** | T10 content 스키마 + 원형 12개 + validate | ⬜ **다음** |
 | | T11 gen-content + 지역 1~2 + 사냥터 10개 실제 데이터 | ⬜ |
 | | T12 밸런스 시뮬레이터 | ⬜ |
 | **S4 성장·경제** | T13 인벤토리 + 장착 + 품질 | ⬜ |
@@ -1253,6 +1253,15 @@ src/content/
 완료 기준 전투 → 보상 → 레벨업 → 저장 한 바퀴 완주. 앱 껐다 켜도 유지.
 주의      HP 자연회복(10분당 1%)은 여기서 계산. 경과 음수면 0, 1회 최대 24시간.
           개별 몬스터 보상은 "기본값 × 0.54" (§4.4). 클리어 보너스는 T16.
+결과      §6.2 EXP 곡선·§6.3 골드 곡선을 formulas.ts에 넣고 표 값과 대조하는 테스트를 박았다.
+          회복은 쓰고 남은 자투리 시간을 hpUpdatedAt에 남겨 다음 계산으로 넘긴다 —
+          매번 now로 리셋하면 10분이 안 될 때마다 경과가 버려져 영영 안 찬다.
+          레벨업 시 늘어난 최대 HP만큼 현재 HP도 올린다(다친 정도는 유지). VIT 배분도 동일.
+          combatStats가 실제 배분을 받도록 확장했다. 배분을 안 주면 기존처럼 균등 가정 —
+          그래서 T7 벤치 숫자는 그대로다.
+          스탯 배분 UI가 없으면 포인트가 쌓이기만 해서 캐릭터 탭에 +버튼 4개를 붙였다.
+          사망 시 부활 HP는 최소 1을 보장한다 — 0이면 영영 못 싸운다.
+          모험 탭 [사냥 시작]은 HP 0이면 비활성화. 회복 수단은 아직 자연회복뿐(여관은 T14).
 ```
 
 ### T16 — 사냥터 몰이사냥 ★
