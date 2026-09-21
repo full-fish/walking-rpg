@@ -1,0 +1,138 @@
+import { expect, test, vi } from 'vitest';
+
+import {
+  actionRatio,
+  BASE_STATS,
+  damageMultiplier,
+  HARDCAP_ACTIONS,
+  SPD_RATIO_MAX,
+} from './formulas';
+import { makeRng, simulateBattle, type Combatant } from './battle';
+
+const player = (over: Partial<Combatant> = {}): Combatant => ({
+  name: '플레이어',
+  hp: BASE_STATS.maxHp,
+  maxHp: BASE_STATS.maxHp,
+  atk: BASE_STATS.atk,
+  def: BASE_STATS.def,
+  spd: BASE_STATS.spd,
+  cri: BASE_STATS.cri,
+  crd: BASE_STATS.crd,
+  eva: BASE_STATS.eva,
+  ...over,
+});
+
+const monster = (over: Partial<Combatant> = {}): Combatant => ({
+  name: '초록 슬라임',
+  hp: 120,
+  maxHp: 120,
+  atk: 6,
+  def: 4,
+  spd: 9,
+  cri: 0.02,
+  crd: 1.5,
+  eva: 0.03,
+  ...over,
+});
+
+test('같은 시드면 같은 전투가 나온다', () => {
+  const a = simulateBattle(player(), monster(), makeRng(42));
+  const b = simulateBattle(player(), monster(), makeRng(42));
+  expect(a).toEqual(b);
+  // 시드가 다르면 달라야 난수가 실제로 도는 것
+  expect(simulateBattle(player(), monster(), makeRng(43))).not.toEqual(a);
+});
+
+test('SPD 13 vs 10 → 행동 횟수 비율이 1.30 ± 0.02', () => {
+  let playerActions = 0;
+  let monsterActions = 0;
+  for (let seed = 0; seed < 200; seed++) {
+    // 양쪽 다 안 죽을 만큼 HP를 크게 줘서 비율만 본다
+    const r = simulateBattle(
+      player({ spd: 13, hp: 1e9, maxHp: 1e9 }),
+      monster({ spd: 10, hp: 2_000, maxHp: 2_000 }),
+      makeRng(seed),
+    );
+    expect(r.outcome).toBe('win');
+    for (const e of r.events) {
+      if (e.actor === 'player') playerActions++;
+      else monsterActions++;
+    }
+  }
+  // toBeCloseTo(x, 2)는 허용 오차가 ±0.005다. §4.2 기준은 ±0.02라 직접 잰다.
+  expect(Math.abs(playerActions / monsterActions - 1.3)).toBeLessThanOrEqual(0.02);
+});
+
+test('행동 비율은 2배가 상한 — 민첩 몰빵도 그 이상은 못 간다', () => {
+  expect(actionRatio(100, 10)).toBe(SPD_RATIO_MAX);
+  expect(actionRatio(1, 100)).toBe(0.5);
+  expect(actionRatio(13, 10)).toBeCloseTo(1.3, 10);
+});
+
+test('피해배율 — DEF가 K와 같으면 정확히 절반', () => {
+  expect(damageMultiplier(0)).toBe(1);
+  expect(damageMultiplier(50)).toBe(0.5);
+  expect(damageMultiplier(5)).toBeCloseTo(0.909, 3);
+});
+
+test('무승부는 없다 — 항상 한쪽이 0이 되고 결과는 win 아니면 lose', () => {
+  for (let seed = 0; seed < 100; seed++) {
+    const r = simulateBattle(player(), monster(), makeRng(seed));
+    expect(['win', 'lose']).toContain(r.outcome);
+    expect(r.outcome === 'win' ? r.monsterHp : r.playerHp).toBe(0);
+    // 이긴 쪽은 살아 있어야 한다
+    expect(r.outcome === 'win' ? r.playerHp : r.monsterHp).toBeGreaterThan(0);
+  }
+});
+
+test('회피는 대미지 0, 그 외는 최소 1을 보장한다', () => {
+  // 절대 못 맞히는 몬스터 — 모든 몬스터 행동이 miss
+  const r = simulateBattle(player(), monster({ eva: 0 }), makeRng(7));
+  const byMonster = r.events.filter((e) => e.actor === 'monster');
+  expect(byMonster.length).toBeGreaterThan(0);
+
+  for (const e of r.events) {
+    if (e.type === 'miss') expect(e.value).toBe(0);
+    else expect(e.value).toBeGreaterThanOrEqual(1);
+  }
+
+  // ATK가 1이고 DEF가 터무니없이 높아도 1은 들어간다
+  const chip = simulateBattle(
+    player({ atk: 1, cri: 0, eva: 0 }),
+    monster({ def: 100_000, hp: 3, maxHp: 3, atk: 0, eva: 0 }),
+    makeRng(1),
+  );
+  expect(chip.outcome).toBe('win');
+  expect(chip.events.every((e) => e.value === 1)).toBe(true);
+});
+
+test('이벤트는 seq가 0부터 이어지고 hpAfter가 실제 HP를 따라간다', () => {
+  const r = simulateBattle(player(), monster(), makeRng(3));
+  r.events.forEach((e, i) => expect(e.seq).toBe(i));
+
+  // 맞는 쪽 HP는 줄기만 한다
+  for (const actor of ['player', 'monster'] as const) {
+    const hits = r.events.filter((e) => e.actor === actor).map((e) => e.hpAfter);
+    expect(hits).toEqual([...hits].sort((a, b) => b - a));
+  }
+  expect(r.events.at(-1)?.hpAfter).toBe(0);
+});
+
+test('서로 못 죽이면 하드캡에서 flee로 끊는다 (무한루프 방지)', () => {
+  const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+  const r = simulateBattle(
+    player({ atk: 1, def: 100_000, hp: 1e6, maxHp: 1e6 }),
+    monster({ atk: 1, def: 100_000, hp: 1e6, maxHp: 1e6 }),
+    makeRng(5),
+  );
+  expect(r.outcome).toBe('flee');
+  expect(r.events).toHaveLength(HARDCAP_ACTIONS);
+  expect(warn).toHaveBeenCalledOnce();
+  warn.mockRestore();
+});
+
+test('HP가 0인 채로 들어가면 바로 진다', () => {
+  const r = simulateBattle(player({ hp: 0 }), monster(), makeRng(1));
+  expect(r.outcome).toBe('lose');
+  expect(r.events).toHaveLength(0);
+});
