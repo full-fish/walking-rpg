@@ -10,8 +10,8 @@ type Props = {
   color?: string;
 };
 
-/** HP/기력/EXP 공용 게이지. 칸 없이 단순 채움. */
-export function Bar({ label, value, max, color = colors.stamina }: Props) {
+/** HP/WP/EXP 공용 게이지. 칸 없이 단순 채움. */
+export function Bar({ label, value, max, color = colors.wp }: Props) {
   const ratio = max > 0 ? Math.min(1, Math.max(0, value / max)) : 0;
   return (
     <View style={styles.wrap}>

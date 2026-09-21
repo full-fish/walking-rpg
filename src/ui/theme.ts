@@ -8,7 +8,7 @@ export const colors = {
   dim: '#8C7FA6',
   gold: '#E8B44A',
   hp: '#C8443C',
-  stamina: '#54B47A',
+  wp: '#54B47A',
   exp: '#4A8FD4',
 } as const;
 

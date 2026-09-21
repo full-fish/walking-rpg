@@ -1,5 +1,5 @@
 import { Pedometer } from 'expo-sensors';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { AppState, Platform } from 'react-native';
 import {
   aggregateGroupByPeriod,
@@ -29,7 +29,10 @@ export type StepsStatus =
 export type Steps = {
   /** 오늘 걸음. max(HC, 센서) — 절대 줄지 않는다 */
   today: number;
-  /** 'YYYY-MM-DD' → 그날 걸음. 오늘 포함 최근 3일. T5가 지급에 쓴다 */
+  /**
+   * 'YYYY-MM-DD' → 그날 걸음. 오늘 포함 최근 3일. WP 지급(T5)이 그대로 받아 쓴다.
+   * 오늘치는 센서 보정이 끝난 today로 덮어 내보낸다 — HC가 없어도 걸은 만큼 WP가 된다.
+   */
   byDate: DailySteps;
   status: StepsStatus;
   /** 보조 수단. 안 눌러도 자동으로 갱신된다 */
@@ -177,5 +180,9 @@ export function useSteps(): Steps {
     })();
   }, [refresh]);
 
-  return { today, byDate, status, refresh, connect };
+  // HC는 오늘치를 늦게 반영하고, 센서만 쓰는 폰은 아예 안 준다.
+  // 호출부가 매번 합치다 빠뜨리지 않도록 여기서 한 번만 덮어쓴다.
+  const merged = useMemo(() => ({ ...byDate, [dayKey(new Date())]: today }), [byDate, today]);
+
+  return { today, byDate: merged, status, refresh, connect };
 }

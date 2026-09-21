@@ -19,7 +19,7 @@ export const migrations: Record<number, Migration> = {
       ...s,
       wp: {
         current: old.current ?? 0,
-        // 이미 기력으로 바꾼 걸음은 다시 주지 않는다
+        // 이미 WP로 바꾼 걸음은 다시 주지 않는다
         grantedByDate: date ? { [date]: old.lastStepTotal ?? 0 } : {},
         lastMidnightGrantAt: date,
       },

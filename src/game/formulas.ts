@@ -8,6 +8,9 @@ export function regionScaled(base: number, region: number): number {
   return Math.round(base * 1.1 ** (region - 1));
 }
 
+/** 최대 HP. T9에서 레벨·스탯 기반 계산으로 대체된다 — 그때까지 HUD 게이지의 분모. */
+export const BASE_MAX_HP = 100;
+
 /** 자정 기본 지급. 한 발도 안 걸은 날에도 이만큼은 준다 (§4.1). */
 export const MIDNIGHT_WP = 1_000;
 
