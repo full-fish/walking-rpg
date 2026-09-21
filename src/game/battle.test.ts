@@ -153,3 +153,25 @@ test('레벨 스탯은 §4.3 표 그대로 — 직업 성장 + 3포인트 균등
   // Lv0/음수가 들어와도 기본값 아래로 내려가지 않는다
   expect(combatStats(0)).toEqual(combatStats(1));
 });
+
+test('SPD가 빠르면 연속으로 두 번 때린다 — 화면에서 보여야 하는 것 (T8 완료 기준)', () => {
+  // 플레이어 SPD 10 vs 슬라임 7.47 → 행동 비율 1.34. 서너 라운드마다 한 번 연속이 나온다.
+  const slime = monster({ hp: 120, maxHp: 120, atk: 0.96, def: 2.47, spd: 7.47, eva: 0.03 });
+  let battlesWithStreak = 0;
+
+  for (let seed = 0; seed < 50; seed++) {
+    const { events } = simulateBattle(player(), slime, makeRng(seed));
+    const hasStreak = events.some(
+      (e, i) => i > 0 && e.actor === 'player' && events[i - 1].actor === 'player',
+    );
+    if (hasStreak) battlesWithStreak++;
+  }
+  expect(battlesWithStreak).toBe(50);
+
+  // 비율이 1에 가까우면 전투 길이 안에서는 연속이 안 나온다 — 데모 몬스터가 이랬다.
+  const twin = monster({ hp: 120, maxHp: 120, atk: 0.96, def: 2.47, spd: 9.96 });
+  const { events } = simulateBattle(player(), twin, makeRng(0));
+  expect(
+    events.some((e, i) => i > 0 && e.actor === 'player' && events[i - 1].actor === 'player'),
+  ).toBe(false);
+});
