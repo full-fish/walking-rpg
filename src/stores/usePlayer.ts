@@ -1,12 +1,19 @@
 import { create } from 'zustand';
 
+import { gearSetFor } from '@/content';
 import type { Outcome } from '@/game/battle';
+import type { GearSlot } from '@/game/formulas';
+import { makeItem } from '@/game/items';
 import { grantWp, spendWp } from '@/game/wp';
 import {
+  addItem,
   applyRegen,
+  equipAll,
+  equipItem,
   settleBattle,
   spendPoint,
   statsOf,
+  unequipSlot,
   type Reward,
   type Settlement,
   type StatKey,
@@ -27,7 +34,12 @@ type PlayerStore = {
   settle: (outcome: Outcome, playerHp: number, reward: Reward) => Settlement;
   /** 남은 포인트 1점을 스탯에 넣는다. 포인트가 없으면 false */
   allocate: (stat: StatKey) => boolean;
+  /** 장비를 낀다. 레벨이 모자라거나 없는 개체면 false */
+  equip: (uid: string) => boolean;
+  unequip: (slot: GearSlot) => void;
   addGold: (amount: number) => void;
+  /** 실기기 확인용 — 지금 레벨의 common 풀세트를 공짜로 준다. T14 상점이 이 자리를 대체한다 */
+  grantGearSet: () => void;
   reset: () => void;
 };
 
@@ -81,10 +93,36 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     return true;
   },
 
+  equip: (uid) => {
+    const next = equipItem(get().save, uid);
+    if (!next) return false;
+    set({ save: persist(next) });
+    return true;
+  },
+
+  unequip: (slot) => {
+    const { save } = get();
+    const next = unequipSlot(save, slot);
+    if (next === save) return;
+    set({ save: persist(next) });
+  },
+
   addGold: (amount) => {
     const { save } = get();
     const gold = Math.max(0, save.player.gold + amount);
     set({ save: persist({ ...save, player: { ...save.player, gold } }) });
+  },
+
+  grantGearSet: () => {
+    let save = get().save;
+    const uids: string[] = [];
+    for (const def of gearSetFor(save.player.level)) {
+      // 품질은 여기서 굴린다 — 드랍이든 구매든 같은 함수를 지나야 개체차가 생긴다 (§4.5)
+      const item = makeItem(save.inventory, def.id, Math.random);
+      save = addItem(save, item);
+      uids.push(item.uid);
+    }
+    set({ save: persist(equipAll(save, uids)) });
   },
 
   reset: () => set({ save: resetSave() }),

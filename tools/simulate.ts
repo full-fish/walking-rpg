@@ -7,23 +7,32 @@
  * 한 판 진행(마릿수 뽑기 → 반복 전투 → 클리어 보너스)은 §4.4를 여기서 모델링한다.
  * T16이 app/field.tsx를 만들 때 src/game/field.ts로 옮겨가고, 여기는 그걸 부르게 된다.
  */
-import { monstersOfField, REGIONS, type Field, type Region } from '../src/content';
+import { gearSetFor, monstersOfField, REGIONS, type Field, type Region } from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
 import {
   CLEAR_BONUS_RATE,
   expToNext,
   MIDNIGHT_WP,
   rollRunSize,
+  SPENDABLE_STATS,
   WP_COST,
-  type StatSpend,
+  type SpendableStat,
 } from '../src/game/formulas';
-import { killReward, settleBattle, statsOf, type Reward } from '../src/game/progression';
+import { itemDef, makeItem } from '../src/game/items';
+import {
+  addItem,
+  equipItem,
+  killReward,
+  settleBattle,
+  statsOf,
+  type Reward,
+} from '../src/game/progression';
 import { defaultSave, type Save } from '../src/save/schema';
 
 type StatPoints = Save['statPoints'];
 
 /** 스탯 포인트를 어디에 넣는지. 가중치 비율대로 나눈다 (§4.3). */
-export type Build = { name: string; weights: Record<keyof StatSpend, number> };
+export type Build = { name: string; weights: Record<SpendableStat, number> };
 
 /** §4.3 스탯 4종을 여러 비율로 — 몰빵만이 아니라 편중·균형 배분까지 본다. */
 export const BUILDS: Build[] = [
@@ -40,7 +49,7 @@ export const BUILDS: Build[] = [
   { name: '전투 3종', weights: { str: 2, vit: 2, agi: 2, luk: 1 } },
 ];
 
-const STATS = ['str', 'vit', 'agi', 'luk'] as const;
+const STATS = SPENDABLE_STATS;
 
 /**
  * 남은 포인트를 가중치 비율대로 넣는다.
@@ -55,7 +64,7 @@ function allocate(spend: StatPoints, build: Build, points: number): StatPoints {
 
   for (let i = 0; i < points; i++) {
     const givenTotal = STATS.reduce((sum, k) => sum + next[k], 0) + 1;
-    let best: keyof StatSpend = STATS.find((k) => build.weights[k] > 0) ?? 'str';
+    let best: SpendableStat = STATS.find((k) => build.weights[k] > 0) ?? 'str';
     let bestGap = -Infinity;
     for (const k of STATS) {
       if (build.weights[k] === 0) continue;
@@ -101,7 +110,39 @@ const POTIONS_PER_RUN = 3;
 /** HP가 이 아래로 떨어지면 물약을 쓴다. */
 const POTION_THRESHOLD = 0.35;
 
-export type RunResult = { reward: Reward; kills: number; cleared: boolean; died: boolean };
+export type RunResult = {
+  reward: Reward;
+  kills: number;
+  cleared: boolean;
+  died: boolean;
+  /** 그 판에서 쓴 물약 값 (§4.5). 골드는 장비로 나가므로 공짜로 두면 안 된다 */
+  potionCost: number;
+};
+
+/**
+ * 살 수 있는 가장 좋은 common 풀세트로 갈아입는다 (§4.5).
+ *
+ * 밸런스 기준선은 **그 지역 common 풀세트**다 — 등급·품질·강화는 전부 그 위의 이득이라
+ * 시뮬은 기준선만 본다. 돈이 모자라면 중요한 부위부터 한 점씩 산다.
+ */
+export function buyGear(save: Save, rng: () => number): Save {
+  const set = gearSetFor(save.player.level);
+  const worn = save.equipped.weapon;
+  const wornTier = worn ? itemDef(save.inventory.find((i) => i.uid === worn)!).tier : 0;
+  if (set.length === 0 || set[0].tier <= wornTier) return save;
+
+  // 무기·갑옷이 스탯의 절반을 갖고 있다 (§4.5 SLOT_BIAS). 돈이 모자라면 이 순서로 산다
+  const order = ['weapon', 'armor', 'helm', 'gloves', 'boots', 'accessory'];
+  let next = save;
+  for (const def of [...set].sort((a, b) => order.indexOf(a.slot) - order.indexOf(b.slot))) {
+    if (next.player.gold < def.price) break;
+    const item = makeItem(next.inventory, def.id, rng);
+    next = addItem(next, item);
+    next = { ...next, player: { ...next.player, gold: next.player.gold - def.price } };
+    next = equipItem(next, item.uid) ?? next;
+  }
+  return next;
+}
 
 /**
  * 사냥터 한 판 (§4.4). 마릿수를 뽑고 그만큼 연속으로 싸운다.
@@ -117,18 +158,21 @@ export function simulateRun(save: Save, rng: () => number): RunResult {
   const stats = statsOf(save);
   let hp = save.player.hp;
   let potions = POTIONS_PER_RUN;
+  let potionCost = 0;
   const individual: Reward = { exp: 0, gold: 0 };
   let kills = 0;
 
   for (let i = 0; i < size; i++) {
     if (hp < stats.maxHp * POTION_THRESHOLD && potions > 0) {
       potions -= 1;
+      potionCost += potion.cost;
       hp = Math.min(stats.maxHp, hp + potion.heal);
     }
     const monster = pool[Math.floor(rng() * pool.length)];
     const player: Combatant = { name: '', hp, ...stats };
     const result = simulateBattle(player, { ...monster, hp: monster.maxHp }, rng);
-    if (result.outcome !== 'win') return { reward: individual, kills, cleared: false, died: true };
+    if (result.outcome !== 'win')
+      return { reward: individual, kills, cleared: false, died: true, potionCost };
 
     hp = result.playerHp;
     kills += 1;
@@ -147,6 +191,7 @@ export function simulateRun(save: Save, rng: () => number): RunResult {
     kills,
     cleared: true,
     died: false,
+    potionCost,
   };
 }
 
@@ -175,6 +220,8 @@ export function simulate(opts: SimOptions, seed = 1) {
   let save: Save = defaultSave();
   let wp = 0;
   let spentOnGates = 0;
+  let spentOnPotions = 0;
+  let spentOnGear = 0;
   const log: DayLog[] = [];
 
   for (let day = 1; day <= opts.maxDays && save.player.level < opts.maxLevel; day++) {
@@ -212,6 +259,11 @@ export function simulate(opts: SimOptions, seed = 1) {
       // 개별 보상은 죽어도 남는다 (§4.4). 잃는 건 클리어 보너스와 골드 10%다
       save = settleBattle(save, 'win', statsOf(save).maxHp, run.reward, now).save;
       earned += run.reward.gold;
+      save = {
+        ...save,
+        player: { ...save.player, gold: Math.max(0, save.player.gold - run.potionCost) },
+      };
+      spentOnPotions += run.potionCost;
       if (run.died) {
         const dead = settleBattle(save, 'lose', 0, { exp: 0, gold: 0 }, now);
         lost += dead.goldLost;
@@ -221,6 +273,11 @@ export function simulate(opts: SimOptions, seed = 1) {
       if (save.statPoints.unspent > 0) {
         save = { ...save, statPoints: allocate(save.statPoints, opts.build, save.statPoints.unspent) };
       }
+      // 살 수 있는 장비가 생겼으면 바로 갈아입는다 (§4.5). 전투력의 대부분이 여기서 온다
+      const beforeGold = save.player.gold;
+      save = buyGear(save, rng);
+      spentOnGear += beforeGold - save.player.gold;
+
       // 판이 끝나면 마을에서 회복한다 (여관, §4.5). HP를 이어가는 건 판 안에서만이다
       save = { ...save, player: { ...save.player, hp: statsOf(save).maxHp } };
     }
@@ -243,7 +300,7 @@ export function simulate(opts: SimOptions, seed = 1) {
     });
   }
 
-  return { save, log, spentOnGates, days: log.length };
+  return { save, log, spentOnGates, spentOnPotions, spentOnGear, days: log.length };
 }
 
 /** from레벨에서 to레벨까지 올리는 데 든 EXP 총합. 하루 EXP를 역산할 때 쓴다. */

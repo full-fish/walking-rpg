@@ -1,7 +1,24 @@
 import { z } from 'zod';
 
+import { ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN } from '../game/formulas';
+
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 3;
+export const SAVE_VERSION = 4;
+
+/**
+ * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
+ * 같은 "강철 대검"이라도 품질과 강화가 달라서 개체마다 스탯이 다르기 때문이다.
+ */
+export const ItemInstanceSchema = z.object({
+  /** 세이브 안에서만 유일하면 된다. items.ts가 1부터 세어 붙인다 */
+  uid: z.string().min(1),
+  /** data/items/equipment.json의 id */
+  defId: z.string().min(1),
+  quality: z.number().min(QUALITY_MIN).max(QUALITY_MAX),
+  enhance: z.int().min(0).max(ENHANCE_MAX),
+});
+
+export type ItemInstance = z.infer<typeof ItemInstanceSchema>;
 
 export const SaveSchema = z.object({
   version: z.literal(SAVE_VERSION),
@@ -31,7 +48,13 @@ export const SaveSchema = z.object({
     vit: z.int().min(0),
     agi: z.int().min(0),
     luk: z.int().min(0),
+    /** T18 전까지는 0에서 안 움직인다 — 배분 대상이 아니다 (§4.3) */
+    int: z.int().min(0),
   }),
+  /** 가진 장비 개체 전부 (§4.5) */
+  inventory: z.array(ItemInstanceSchema),
+  /** 부위별로 낀 개체의 uid. 빈 칸은 null (§4.5) */
+  equipped: z.record(z.enum(GEAR_SLOTS), z.string().nullable()),
   /** 지역 진행도 (§4.1). 해금은 보스 클리어 + 해금 비용 — 실제 해금은 T17 이후 */
   regionProgress: z.object({
     /** 지금 있는 지역 */
@@ -49,7 +72,9 @@ export function defaultSave(): Save {
     player: { level: 1, exp: 0, gold: 0, hp: 100 },
     wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
     hpUpdatedAt: 0,
-    statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0 },
+    statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0, int: 0 },
+    inventory: [],
+    equipped: Object.fromEntries(GEAR_SLOTS.map((s) => [s, null])) as Save['equipped'],
     regionProgress: { current: 1, unlocked: 1 },
   };
 }

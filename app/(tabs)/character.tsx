@@ -1,8 +1,11 @@
-import { StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { expToNext } from '@/game/formulas';
+import { GEAR_SLOT_LABELS } from '@/content';
+import { expToNext, GEAR_SLOTS } from '@/game/formulas';
+import { equippedStats, itemDef, itemLabel, itemStats } from '@/game/items';
 import { primaryStats, statsOf, type StatKey } from '@/game/progression';
+import type { ItemInstance } from '@/save/schema';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
@@ -10,7 +13,7 @@ import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
 
-/** 1차 스탯 4종과 그게 뭘 하는지 (§4.3). */
+/** 배분할 수 있는 1차 스탯 4종과 그게 뭘 하는지 (§4.3). */
 const STATS: { key: StatKey; label: string; effect: string }[] = [
   { key: 'str', label: '힘 STR', effect: 'ATK +2' },
   { key: 'vit', label: '체력 VIT', effect: 'HP +10 · DEF +0.5' },
@@ -18,63 +21,144 @@ const STATS: { key: StatKey; label: string; effect: string }[] = [
   { key: 'luk', label: '행운 LUK', effect: '치명 +0.25%p · 드랍 +0.2%p' },
 ];
 
+/** 장비가 얹어준 몫. 맨몸이 얼마인지 보여야 장비 값어치가 보인다 (§4.5). */
+function bonus(value: number): string {
+  return value > 0 ? ` (+${value})` : '';
+}
+
 export default function Character() {
   const save = usePlayer((s) => s.save);
   const allocate = usePlayer((s) => s.allocate);
+  const equip = usePlayer((s) => s.equip);
+  const unequip = usePlayer((s) => s.unequip);
   const stats = statsOf(save);
   const { unspent } = save.statPoints;
   const primary = primaryStats(save);
 
+  const gear = equippedStats(save);
+  const worn = new Set(Object.values(save.equipped));
+
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
-      <Text size="xl">캐릭터</Text>
+      <ScrollView contentContainerStyle={styles.body}>
+        <Text size="xl">캐릭터</Text>
 
-      <Panel title={`Lv ${save.player.level} 전사`}>
-        <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
-        <Bar
-          label="EXP"
-          value={save.player.exp}
-          max={expToNext(save.player.level)}
-          color={colors.exp}
-        />
-      </Panel>
+        <Panel title={`Lv ${save.player.level} 전사`}>
+          <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
+          {/* MP를 쓰는 건 스킬(T18)이라 지금은 늘 가득 차 있다 */}
+          <Bar label="MP" value={stats.maxMp} max={stats.maxMp} color={colors.exp} />
+          <Bar
+            label="EXP"
+            value={save.player.exp}
+            max={expToNext(save.player.level)}
+            color={colors.exp}
+          />
+        </Panel>
 
-      <Panel title={unspent > 0 ? `스탯 — 남은 포인트 ${unspent}` : '스탯'}>
-        {STATS.map(({ key, label, effect }) => (
-          <View key={key} style={styles.row}>
+        <Panel title={unspent > 0 ? `스탯 — 남은 포인트 ${unspent}` : '스탯'}>
+          {STATS.map(({ key, label, effect }) => (
+            <View key={key} style={styles.row}>
+              <View style={styles.name}>
+                <Text>
+                  {label} {primary[key]}
+                </Text>
+                <Text size="sm" dim>
+                  {effect}
+                </Text>
+              </View>
+              <Button label="+" disabled={unspent <= 0} onPress={() => allocate(key)} />
+            </View>
+          ))}
+          <View style={styles.row}>
             <View style={styles.name}>
-              <Text>
-                {label} {primary[key]}
-              </Text>
+              <Text dim>지능 INT {primary.int}</Text>
               <Text size="sm" dim>
-                {effect}
+                MP +10 · 마법공격 +2 — 스킬이 생기면 배분할 수 있습니다
               </Text>
             </View>
-            <Button label="+" disabled={unspent <= 0} onPress={() => allocate(key)} />
           </View>
-        ))}
-        {unspent === 0 && (
-          <Text size="sm" dim>
-            레벨이 오르면 포인트를 3점씩 받습니다.
-          </Text>
-        )}
-      </Panel>
+        </Panel>
 
-      <Panel title="전투력">
-        <Text size="sm" dim>
-          ATK {stats.atk} · DEF {stats.def} · SPD {stats.spd.toFixed(1)}
-        </Text>
-        <Text size="sm" dim>
-          치명 {(stats.cri * 100).toFixed(2)}% (×{stats.crd}) · 회피{' '}
-          {(stats.eva * 100).toFixed(2)}%
-        </Text>
-      </Panel>
+        <Panel title="전투력">
+          <Text size="sm" dim>
+            ATK {stats.atk}
+            {bonus(gear.atk)} · DEF {stats.def}
+            {bonus(gear.def)} · SPD {stats.spd.toFixed(1)}
+          </Text>
+          <Text size="sm" dim>
+            치명 {(stats.cri * 100).toFixed(2)}% (×{stats.crd}) · 회피{' '}
+            {(stats.eva * 100).toFixed(2)}% · 마법공격 {stats.matk.toFixed(1)}
+          </Text>
+        </Panel>
+
+        <Panel title="장비">
+          {GEAR_SLOTS.map((slot) => {
+            const uid = save.equipped[slot];
+            const item = uid === null ? undefined : save.inventory.find((i) => i.uid === uid);
+            return (
+              <View key={slot} style={styles.row}>
+                <View style={styles.name}>
+                  <Text>
+                    {GEAR_SLOT_LABELS[slot]} — {item ? itemLabel(item) : '비어 있음'}
+                  </Text>
+                  {item ? <Text size="sm" dim>{statLine(item)}</Text> : null}
+                </View>
+                {item ? <Button label="해제" onPress={() => unequip(slot)} /> : null}
+              </View>
+            );
+          })}
+        </Panel>
+
+        <Panel title={`가방 ${save.inventory.length}`}>
+          {save.inventory.length === 0 ? (
+            <Text size="sm" dim>
+              비어 있습니다.
+            </Text>
+          ) : (
+            save.inventory.map((item) => {
+              const def = itemDef(item);
+              const locked = save.player.level < def.level;
+              return (
+                <View key={item.uid} style={styles.row}>
+                  <View style={styles.name}>
+                    <Text color={worn.has(item.uid) ? colors.gold : colors.text}>
+                      {itemLabel(item)}
+                    </Text>
+                    <Text size="sm" dim>
+                      {GEAR_SLOT_LABELS[def.slot]} · {statLine(item)}
+                      {locked ? ` · 요구 Lv${def.level}` : ''}
+                    </Text>
+                  </View>
+                  {worn.has(item.uid) ? null : (
+                    <Button label="장착" disabled={locked} onPress={() => equip(item.uid)} />
+                  )}
+                </View>
+              );
+            })
+          )}
+        </Panel>
+      </ScrollView>
     </SafeAreaView>
   );
 }
 
+/** "ATK +12 HP +40 DEF +5" — 0인 항목은 뺀다. */
+function statLine(item: ItemInstance): string {
+  const s = itemStats(item);
+  return (
+    [
+      s.atk > 0 ? `ATK +${s.atk}` : '',
+      s.maxHp > 0 ? `HP +${s.maxHp}` : '',
+      s.def > 0 ? `DEF +${s.def}` : '',
+    ]
+      .filter(Boolean)
+      .join(' ') || '스탯 없음'
+  );
+}
+
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg, padding: space.lg, gap: space.lg },
+  screen: { flex: 1, backgroundColor: colors.bg },
+  body: { padding: space.lg, gap: space.lg },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  name: { gap: space.xs },
+  name: { gap: space.xs, flexShrink: 1 },
 });

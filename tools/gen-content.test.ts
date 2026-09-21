@@ -8,10 +8,11 @@
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { expect, test } from 'vitest';
 
-import { MonstersSchema } from '../src/content/schema';
-import { generateAll, REGIONS } from './gen-content';
+import { EquipmentsSchema, MonstersSchema } from '../src/content/schema';
+import { generateAll, generateEquipment, REGIONS } from './gen-content';
 
 const OUT = 'src/content/data/monsters';
+const ITEMS = 'src/content/data/items';
 
 test('gen — 지역별 몬스터 JSON을 쓴다', () => {
   mkdirSync(OUT, { recursive: true });
@@ -30,4 +31,22 @@ test('gen — 지역별 몬스터 JSON을 쓴다', () => {
   }
 
   expect(REGIONS).toHaveLength(5);
+});
+
+test('gen — 장비 정의 JSON을 쓴다 (§4.5)', () => {
+  mkdirSync(ITEMS, { recursive: true });
+
+  const equipment = generateEquipment();
+  expect(EquipmentsSchema.safeParse(equipment).success).toBe(true);
+
+  const file = `${ITEMS}/equipment.json`;
+  writeFileSync(file, JSON.stringify(equipment, null, 2) + '\n');
+
+  const set = equipment.filter((e) => e.tier === 10 && e.rarity === 'common');
+  console.log(
+    `${file}  ${equipment.length}종 (티어 1~10 × 부위 6 × 등급 5)` +
+      `  티어10 common 풀세트 ATK +${set.reduce((s, e) => s + e.atk, 0)}` +
+      ` HP +${set.reduce((s, e) => s + e.maxHp, 0)}` +
+      ` / ${set.reduce((s, e) => s + e.price, 0).toLocaleString()}골드`,
+  );
 });

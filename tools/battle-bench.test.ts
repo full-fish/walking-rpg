@@ -9,9 +9,10 @@
  */
 import { expect, test } from 'vitest';
 
-import { monstersOfField, REGIONS, type Field, type Region } from '../src/content';
+import { gearSetFor, monstersOfField, REGIONS, type Field, type Region } from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
 import { combatStats } from '../src/game/formulas';
+import { setBonus } from '../src/game/items';
 
 const RUNS = 1_000;
 /** §4.2 목표 행동 수 */
@@ -19,10 +20,23 @@ const TARGET = { min: 20, max: 40 };
 /** 한 판의 마릿수. §4.4 삼각분포의 평균(4)과 최대(6) — 이 둘의 차이가 곧 도박이다. */
 const RUN_SIZES = [4, 6] as const;
 
-/** Lv L 전사. 스탯 계산은 화면과 같은 combatStats를 쓴다 — 여기서 따로 세면 둘이 어긋난다. */
+/**
+ * Lv L 전사, **그 레벨 common 풀세트 착용** (§4.5).
+ *
+ * 맨몸으로 재면 후반이 전멸한다 — 전투력의 85%가 장비에서 오는 게 설계라서다.
+ * 기준선은 "그 지역에서 살 수 있는 common 한 벌"이고, 등급·품질·강화는 전부 그 위의 이득이다.
+ * 스탯 계산은 화면과 같은 combatStats·setBonus를 쓴다 — 여기서 따로 세면 둘이 어긋난다.
+ */
 function warrior(level: number): Combatant {
   const stats = combatStats(level);
-  return { name: `Lv${level} 전사`, hp: stats.maxHp, ...stats };
+  const gear = setBonus(gearSetFor(level));
+  const geared = {
+    ...stats,
+    maxHp: stats.maxHp + gear.maxHp,
+    atk: stats.atk + gear.atk,
+    def: stats.def + gear.def,
+  };
+  return { name: `Lv${level} 전사`, hp: geared.maxHp, ...geared };
 }
 
 function poolOf(field: Field): Combatant[] {
@@ -144,7 +158,7 @@ test(`1:1 전투 — 하드캡 0%, 사냥터별 ${TARGET.min}~${TARGET.max}행�
         const mark = level === proper ? '*' : ' ';
         return pad(`${s.avgActions.toFixed(0)}행동 HP-${pct(1 - s.avgHpLeft, 0)}${mark}`, 16);
       });
-      // 적정 레벨의 행동 수는 진단만 한다 — 목표를 벗어나는 원인이 성장 곡선이고, 그건 T12다.
+      // 적정 레벨의 행동 수는 진단만 한다 — 목표 자체가 낡았다. 아래 ※ 참고.
       const at = averageOf(pool.map((m) => runPairing(warrior(proper), m)));
       offTarget.push([field.name, proper, at.avgActions]);
       console.log(`  ${padEnd(field.name, 16)}` + cells.join('') + ` 적정 Lv${proper}`);
@@ -153,12 +167,14 @@ test(`1:1 전투 — 하드캡 0%, 사냥터별 ${TARGET.min}~${TARGET.max}행�
   }
 
   const bad = offTarget.filter(([, , a]) => a < TARGET.min || a > TARGET.max);
-  if (bad.length > 0) {
-    console.log(
-      `\n  ※ 적정 레벨인데 ${TARGET.min}~${TARGET.max}행동을 벗어나는 사냥터 ${bad.length}곳:\n` +
-        bad.map(([n, l, a]) => `      ${n} (Lv${l}) ${a.toFixed(0)}행동`).join('\n'),
-    );
-  }
+  const avg = offTarget.reduce((s, [, , a]) => s + a, 0) / offTarget.length;
+  console.log(
+    `\n  ※ 적정 레벨 1:1은 평균 ${avg.toFixed(0)}행동이다. §4.2 목표(${TARGET.min}~${TARGET.max})를\n` +
+      `    ${bad.length}/${offTarget.length}곳이 벗어나는데, **목표 쪽이 낡았다.**\n` +
+      `    §4.2는 "입장 = 전투 1회"이던 v4 기준이고, v5는 한 판에 2~6마리다 (§4.4).\n` +
+      `    판 단위로 보면 평균 4마리 × ${avg.toFixed(0)}행동 = ${(avg * 4).toFixed(0)}행동으로 원래 의도한 길이다.\n` +
+      `    §4.2의 목표를 판 단위로 다시 쓸지는 기획 결정이라 여기서 안 고친다.`,
+  );
 });
 
 test('한 판 — 4·6마리 완주율 진단 (§4.4)', () => {
@@ -189,17 +205,16 @@ test('한 판 — 4·6마리 완주율 진단 (§4.4)', () => {
     console.log('  ' + '─'.repeat(18 + levels.length * 16));
   }
 
-  // ★ 여기는 검사하지 않고 진단만 한다. 원인이 수치 하나가 아니라 §4.3과 §7.2④의
-  //    모델이 서로 안 맞는 것이라, 고치려면 기획 결정이 필요하다 (T12 + 사용자 확인).
   console.log(
-    `\n  ★ 4마리 완주율이 지역에 들어갈 때 ${pct(Math.min(...entry), 0)}~${pct(Math.max(...entry), 0)},\n` +
-      `    적정 레벨에는 ${pct(Math.min(...atProper), 0)}~${pct(Math.max(...atProper), 0)}다 — 못 깨거나 100%거나 둘 중 하나다.\n` +
-      `    플레이어는 레벨당 선형으로 자라고(§4.3) 몬스터는 티어당 지수로 자란다(§7.2④).\n` +
-      `    선형 성장은 초반이 가파르고 후반이 완만한데(Lv1→8 HP 2.5배, Lv40→50 1.23배)\n` +
-      `    지수는 어디서나 같은 배율이라, 지수 하나로는 두 구간을 동시에 못 맞춘다.\n` +
-      `    지역 1~2에 맞추면 1.26~1.32인데 그 값이면 지역 2 후반 사냥터가 30~58%씩 깎는다.\n` +
-      `    T12 시뮬레이터에서 결정한다.`,
+    `\n  ★ 4마리 완주율 — 지역에 막 들어갈 때 ${pct(Math.min(...entry), 0)}~${pct(Math.max(...entry), 0)},\n` +
+      `    적정 레벨에는 ${pct(Math.min(...atProper), 0)}~${pct(Math.max(...atProper), 0)}.\n` +
+      `    T11의 "못 깨거나 100%거나"는 T13에서 닫혔다 — 맨몸은 레벨에 선형으로 자라고(§4.3)\n` +
+      `    몬스터와의 격차는 장비가 메운다(§4.5). 위 숫자는 그 레벨 common 풀세트 기준이다.\n` +
+      `    들어갈 때 낮은 건 정상이다. 지역 안에서도 쉬운 사냥터부터 도는 게 설계다 (§4.4).`,
   );
+
+  // 적정 레벨에서 절반도 못 깨면 그 지역은 통과 자체가 안 된다. 여기서부터는 검사다.
+  expect(Math.min(...atProper), '적정 레벨 4마리 완주율 최저').toBeGreaterThanOrEqual(0.5);
 });
 
 test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 2배)', () => {

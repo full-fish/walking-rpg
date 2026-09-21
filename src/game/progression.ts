@@ -2,6 +2,7 @@ import type { Save } from '../save/schema';
 import type { Outcome } from './battle';
 import {
   combatStats,
+  GEAR_SLOTS,
   DEATH_GOLD_LOSS,
   DEATH_HP_RATIO,
   expToNext,
@@ -11,18 +12,34 @@ import {
   INDIVIDUAL_REWARD_RATE,
   POINTS_PER_LEVEL,
   STARTING_STATS,
+  type GearSlot,
+  type SpendableStat,
   type StatSpend,
 } from './formulas';
+import { equippedStats, itemByUid, itemDef } from './items';
 
 /** 몬스터 1마리를 잡고 받는 것. */
 export type Reward = { exp: number; gold: number };
 
-/** 배분할 수 있는 1차 스탯 (§4.3). */
-export type StatKey = keyof StatSpend;
+/** 배분할 수 있는 1차 스탯 (§4.3). INT는 T18에 합류한다. */
+export type StatKey = SpendableStat;
 
-/** 세이브의 레벨·배분으로 전투 스탯을 만든다. 화면과 전투가 반드시 이걸 거쳐 같은 값을 본다. */
+/**
+ * 세이브의 레벨·배분·**장비**로 전투 스탯을 만든다 (§4.3, §4.5).
+ * 화면과 전투가 반드시 이걸 거쳐 같은 값을 본다.
+ *
+ * 맨몸은 레벨에 선형으로 자라고, 몬스터와의 격차는 장비가 메운다 —
+ * Lv50 기준 전투력의 85%가 장비 몫이다. 맨몸으로 후반 사냥터에 가면 그래서 안 된다.
+ */
 export function statsOf(save: Save) {
-  return combatStats(save.player.level, 'warrior', save.statPoints);
+  const base = combatStats(save.player.level, 'warrior', save.statPoints);
+  const gear = equippedStats(save);
+  return {
+    ...base,
+    maxHp: base.maxHp + gear.maxHp,
+    atk: base.atk + gear.atk,
+    def: base.def + gear.def,
+  };
 }
 
 /**
@@ -36,6 +53,7 @@ export function primaryStats(save: Save): StatSpend {
     vit: start.vit + save.statPoints.vit,
     agi: start.agi + save.statPoints.agi,
     luk: start.luk + save.statPoints.luk,
+    int: start.int + save.statPoints.int,
   };
 }
 
@@ -196,3 +214,49 @@ export function spendPoint(save: Save, stat: StatKey): Save | null {
 
   return next;
 }
+
+/**
+ * 장비를 낀다 (§4.5). 같은 부위에 있던 건 인벤토리로 돌아간다 — 버리지 않는다.
+ * 없는 uid거나 요구 레벨이 모자라면 null을 준다. 호출부가 확인하게 강제한다.
+ */
+export function equipItem(save: Save, uid: string): Save | null {
+  const inst = itemByUid(save, uid);
+  if (!inst) return null;
+
+  const def = itemDef(inst);
+  if (save.player.level < def.level) return null;
+  if (save.equipped[def.slot] === uid) return save;
+
+  return withGear(save, { ...save.equipped, [def.slot]: uid });
+}
+
+/** 그 칸을 비운다. 벗은 건 인벤토리에 그대로 남아 있다. */
+export function unequipSlot(save: Save, slot: GearSlot): Save {
+  if (save.equipped[slot] === null) return save;
+  return withGear(save, { ...save.equipped, [slot]: null });
+}
+
+/**
+ * 장착을 바꾸고 HP를 정리한다.
+ * 최대 HP가 늘면 그만큼 현재 HP도 올리고(레벨업과 같은 규칙), 줄면 넘치지 않게 자른다.
+ */
+function withGear(save: Save, equipped: Save['equipped']): Save {
+  const before = statsOf(save).maxHp;
+  const next: Save = { ...save, equipped };
+  const after = statsOf(next).maxHp;
+  const hp = after > before ? save.player.hp + (after - before) : Math.min(save.player.hp, after);
+  return { ...next, player: { ...next.player, hp: Math.max(1, hp) } };
+}
+
+/** 인벤토리에 넣는다. 상한은 호출부(드랍은 T16)가 본다. */
+export function addItem(save: Save, item: Save['inventory'][number]): Save {
+  return { ...save, inventory: [...save.inventory, item] };
+}
+
+/** 빈 칸에 알아서 끼워 넣는다 — 상점·드랍 직후 "바로 착용" 용도 (§4.5). */
+export function equipAll(save: Save, uids: string[]): Save {
+  return uids.reduce<Save>((acc, uid) => equipItem(acc, uid) ?? acc, save);
+}
+
+/** 부위 순서대로 훑을 때 쓴다. GEAR_SLOTS를 화면이 직접 import하지 않게 한다. */
+export const SLOTS = GEAR_SLOTS;

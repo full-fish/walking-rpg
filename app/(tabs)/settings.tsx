@@ -12,6 +12,7 @@ export default function Settings() {
   const save = usePlayer((s) => s.save);
   const addGold = usePlayer((s) => s.addGold);
   const settle = usePlayer((s) => s.settle);
+  const grantGearSet = usePlayer((s) => s.grantGearSet);
   const reset = usePlayer((s) => s.reset);
 
   return (
@@ -37,10 +38,14 @@ export default function Settings() {
               })
             }
           />
+          <Button label="장비 한 벌" onPress={grantGearSet} />
           <Button label="초기화" onPress={reset} />
         </View>
         <Text size="sm" dim>
           앱을 완전히 끄고 다시 켜도 값이 남아 있어야 합니다.
+        </Text>
+        <Text size="sm" dim>
+          [장비 한 벌]은 지금 레벨의 common 풀세트를 공짜로 줍니다. 상점은 T14입니다.
         </Text>
       </Panel>
     </SafeAreaView>

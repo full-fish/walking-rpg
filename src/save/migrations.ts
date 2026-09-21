@@ -1,4 +1,4 @@
-import { POINTS_PER_LEVEL } from '../game/formulas';
+import { GEAR_SLOTS, POINTS_PER_LEVEL } from '../game/formulas';
 import { SAVE_VERSION } from './schema';
 
 /** vN 세이브를 v(N+1) 모양으로 바꾼다. version 필드는 migrate()가 알아서 올린다. */
@@ -45,6 +45,18 @@ export const migrations: Record<number, Migration> = {
         luk: 0,
       },
       regionProgress: { current: 1, unlocked: 1 },
+    };
+  },
+
+  /** v3 → v4: 인벤토리·장착 칸, 그리고 INT (§4.5, §4.3) */
+  3: (s) => {
+    const points = (s.statPoints ?? {}) as Record<string, number>;
+    return {
+      ...s,
+      // INT는 직업 시작값으로만 들어오므로 배분분은 0에서 시작한다
+      statPoints: { ...points, int: 0 },
+      inventory: [],
+      equipped: Object.fromEntries(GEAR_SLOTS.map((slot) => [slot, null])),
     };
   },
 };

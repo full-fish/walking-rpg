@@ -4,7 +4,14 @@
  */
 import { z } from 'zod';
 
-import { FIELDS_PER_REGION, MAX_TIER, REGION_COUNT } from '../game/formulas';
+import {
+  FIELDS_PER_REGION,
+  GEAR_SLOTS,
+  GEAR_TIERS,
+  MAX_TIER,
+  RARITIES,
+  REGION_COUNT,
+} from '../game/formulas';
 
 /** 원형에 곱하는 배율들. 1.0이 기준 (§7.2③). */
 const multiplier = z.number().positive().max(3);
@@ -109,3 +116,52 @@ export const MonsterSchema = z.object({
 export const MonstersSchema = z.array(MonsterSchema).nonempty();
 
 export type Monster = z.infer<typeof MonsterSchema>;
+
+// ─────────────────────────────────────────────────────────────
+// 장비 (§4.5, §7.2)
+// ─────────────────────────────────────────────────────────────
+
+const slot = z.enum(GEAR_SLOTS);
+const rarity = z.enum(RARITIES);
+
+/**
+ * 장비 원형 — 부위 하나. 수치는 하나도 없다.
+ *
+ * 스탯은 §4.5 공식(gearStats)이 전부 뽑고, 여기 있는 건 **이름과 스프라이트뿐**이다.
+ * 이름 = `tierNames[티어-1] + namePool[등급]` — 10티어 × 6부위 × 5등급 = 300종이 겹치지 않는다.
+ */
+export const EquipmentArchetypeSchema = z.object({
+  slot,
+  label: z.string().min(1),
+  spriteTag: z.string().min(1),
+  namePool: z.record(rarity, z.string().min(1)),
+});
+
+export const EquipmentArchetypesSchema = z.object({
+  /** 티어 10단계의 재질 이름. 앞에 붙는다 */
+  tierNames: z.array(z.string().min(1)).length(GEAR_TIERS),
+  slots: z.array(EquipmentArchetypeSchema).length(GEAR_SLOTS.length),
+});
+
+/** gen-content.ts가 뽑아내는 장비 정의 하나. 인스턴스가 아니라 **정의**다 (§4.5). */
+export const EquipmentSchema = z.object({
+  id: z.string().regex(/^eq_t\d+_[a-z]+_[a-z]+$/),
+  name: z.string().min(1),
+  /** 장비 티어 1~10 */
+  tier: z.int().min(1).max(GEAR_TIERS),
+  slot,
+  rarity,
+  /** 착용 요구 레벨 */
+  level: z.int().min(1),
+  region: z.int().min(1).max(REGION_COUNT),
+  sprite: z.string().min(1),
+  atk: z.int().min(0),
+  maxHp: z.int().min(0),
+  def: z.int().min(0),
+  price: z.int().min(1),
+});
+
+export const EquipmentsSchema = z.array(EquipmentSchema).nonempty();
+
+export type EquipmentArchetype = z.infer<typeof EquipmentArchetypeSchema>;
+export type Equipment = z.infer<typeof EquipmentSchema>;

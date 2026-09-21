@@ -6,6 +6,9 @@
  */
 import { expect, test } from 'vitest';
 
+import { gearSetFor } from '../src/content';
+import { combatStats } from '../src/game/formulas';
+import { setBonus } from '../src/game/items';
 import { BUILDS, dayAtLevel, simulate, type Build, type DayLog } from './simulate';
 
 /** §6.1 기준선 — 하루 10,000보. */
@@ -131,4 +134,31 @@ test('빌드별 편차 — 배분을 어떻게 하든 굴러가야 한다 (§4.3
 
   const done = reached.filter((r) => r.day !== undefined);
   expect(done.length, '레벨 50에 닿은 빌드').toBeGreaterThan(0);
+});
+
+test('장비가 전투력의 85%를 댄다 (§4.5) — 맨몸 성장은 선형으로 남는다', () => {
+  console.log('\n■ 맨몸 vs 장비 (그 레벨 common 풀세트)');
+  console.log('  레벨   맨몸HP   +장비HP   맨몸ATK  +장비ATK   장비 몫');
+  console.log('  ' + '─'.repeat(52));
+
+  const shares: number[] = [];
+  for (const level of [1, 10, 20, 30, 40, 50]) {
+    const naked = combatStats(level);
+    const gear = setBonus(gearSetFor(level));
+    const hp = naked.maxHp + gear.maxHp;
+    const atk = naked.atk + gear.atk;
+    const share = gear.atk / atk;
+    if (level >= 10) shares.push(share);
+
+    console.log(
+      `  Lv${pad(level, 2)} ${pad(naked.maxHp, 8)} ${pad(hp, 8)} ${pad(naked.atk, 9)} ${pad(atk, 9)}` +
+        ` ${pad((share * 100).toFixed(0) + '%', 8)}`,
+    );
+  }
+  console.log('  ' + '─'.repeat(52));
+
+  // Lv50에서 85% 근처여야 한다. 이게 무너지면 §4.5의 "장비를 모으는 재미"가 사라진다
+  expect(shares.at(-1), 'Lv50 장비 몫').toBeGreaterThan(0.8);
+  // 레벨이 오를수록 장비 비중이 커진다 — 뒤로 갈수록 노가다가 의미를 갖는다
+  expect(shares, '장비 몫은 단조 증가').toEqual([...shares].sort((a, b) => a - b));
 });

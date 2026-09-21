@@ -61,7 +61,7 @@ test('v2 → v3: 지금까지 올린 레벨만큼 배분 포인트를 소급해�
   };
   const v3 = SaveSchema.parse(migrate(v2));
 
-  expect(v3.statPoints).toEqual({ unspent: 2 * 3, str: 0, vit: 0, agi: 0, luk: 0 });
+  expect(v3.statPoints).toEqual({ unspent: 2 * 3, str: 0, vit: 0, agi: 0, luk: 0, int: 0 });
   expect(v3.regionProgress).toEqual({ current: 1, unlocked: 1 });
   // 0으로 두면 첫 로드에서 24시간치 회복이 한 번에 들어온다 — 지금부터 센다
   expect(v3.hpUpdatedAt).toBeGreaterThan(0);
@@ -78,4 +78,22 @@ test('한 번도 안 켠 v1 세이브는 빈 지갑으로 간다(설치 기준�
     grantedByDate: {},
     lastMidnightGrantAt: '',
   });
+});
+
+test('v3 → v4: 인벤토리 칸이 생기고 INT는 0에서 시작한다 (§4.5, §4.3)', () => {
+  const v3 = {
+    version: 3,
+    player: { level: 12, exp: 40, gold: 900, hp: 200 },
+    wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
+    hpUpdatedAt: 1,
+    statPoints: { unspent: 5, str: 10, vit: 10, agi: 8, luk: 0 },
+    regionProgress: { current: 2, unlocked: 2 },
+  };
+  const v4 = SaveSchema.parse(migrate(v3));
+
+  // 배분해 둔 건 그대로 남는다 — 옛 세이브의 포인트를 회수하지 않는다
+  expect(v4.statPoints).toEqual({ unspent: 5, str: 10, vit: 10, agi: 8, luk: 0, int: 0 });
+  expect(v4.inventory).toEqual([]);
+  // 여섯 칸이 전부 있어야 한다. 하나라도 없으면 장착 화면이 undefined를 만난다
+  expect(Object.values(v4.equipped)).toEqual([null, null, null, null, null, null]);
 });

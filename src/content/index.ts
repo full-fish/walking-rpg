@@ -5,24 +5,29 @@
  * 즉시 죽는 게 낫다 — 원인이 몬스터 한 마리가 아니라 JSON 한 줄이기 때문이다.
  * 모든 오류를 한 번에 보고 싶으면 `npm run validate`를 쓴다.
  */
+import equipmentArchetypesRaw from './archetypes/equipment.json';
 import archetypesRaw from './archetypes/monsters.json';
 import regionsRaw from './archetypes/regions.json';
+import equipmentRaw from './data/items/equipment.json';
 import region01 from './data/monsters/region-01.json';
 import region02 from './data/monsters/region-02.json';
 import region03 from './data/monsters/region-03.json';
 import region04 from './data/monsters/region-04.json';
 import region05 from './data/monsters/region-05.json';
 import {
+  EquipmentArchetypesSchema,
+  EquipmentsSchema,
   MonsterArchetypesSchema,
   MonstersSchema,
   RegionsSchema,
+  type Equipment,
   type Field,
   type Monster,
   type MonsterArchetype,
   type Region,
 } from './schema';
 
-export type { Field, Monster, MonsterArchetype, Region };
+export type { Equipment, Field, Monster, MonsterArchetype, Region };
 
 /** 몬스터 원형 12개 (§7.2). */
 export const MONSTER_ARCHETYPES = MonsterArchetypesSchema.parse(archetypesRaw);
@@ -75,4 +80,33 @@ export function tierForLevel(level: number): number {
 /** 그 티어의 일반 몬스터 전부 (보스 제외). 밸런스 벤치·시뮬레이터가 쓴다. */
 export function monstersOfTier(tier: number): Monster[] {
   return MONSTERS.filter((m) => m.tier === tier && !m.boss);
+}
+
+// ─────────────────────────────────────────────────────────────
+// 장비 (§4.5)
+// ─────────────────────────────────────────────────────────────
+
+/** 장비 정의 300종. 인스턴스가 아니라 정의다 — 개체는 세이브에 들어 있다. */
+export const EQUIPMENT = EquipmentsSchema.parse(equipmentRaw);
+
+/** 부위 이름. 화면이 "weapon" 대신 "무기"를 보여주려고 쓴다. */
+export const GEAR_SLOT_LABELS = Object.fromEntries(
+  EquipmentArchetypesSchema.parse(equipmentArchetypesRaw).slots.map((s) => [s.slot, s.label]),
+) as Record<Equipment['slot'], string>;
+
+const EQUIPMENT_BY_ID = new Map(EQUIPMENT.map((e) => [e.id, e]));
+
+export function equipmentById(id: string): Equipment {
+  const found = EQUIPMENT_BY_ID.get(id);
+  if (!found) throw new Error(`없는 장비: ${id}`);
+  return found;
+}
+
+/**
+ * 그 레벨에서 낄 수 있는 **가장 높은 티어**의 한 벌 (§4.5).
+ * 상점 진열(T14)과 밸런스 기준선이 같은 걸 봐야 해서 여기 둔다.
+ */
+export function gearSetFor(level: number, rarity: Equipment['rarity'] = 'common'): Equipment[] {
+  const tier = Math.max(...EQUIPMENT.filter((e) => e.level <= level).map((e) => e.tier));
+  return EQUIPMENT.filter((e) => e.tier === tier && e.rarity === rarity);
 }

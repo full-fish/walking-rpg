@@ -8,9 +8,11 @@
  * §7.4 7번(스프라이트 파일 존재)은 아직 파일이 하나도 없어서 넣지 않았다.
  */
 import raw from '../src/content/archetypes/monsters.json';
-import { MONSTERS, REGIONS } from '../src/content';
+import { EQUIPMENT, MONSTERS, REGIONS } from '../src/content';
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
-import { generateAll, tierInRegion } from './gen-content';
+import { combatStats, gearSetPrice, GEAR_SLOTS, powerScale } from '../src/game/formulas';
+import { setBonus } from '../src/game/items';
+import { generateAll, generateEquipment, gearTierLevels, tierInRegion } from './gen-content';
 
 /** 키 순서에 안 흔들리게 비교한다 — zod parse는 스키마 순서로 키를 다시 깐다. */
 function canonical(value: unknown): string {
@@ -145,6 +147,81 @@ export function validateGenerated(): string[] {
     ...fields.map((f) => f.reward.id),
   ];
   for (const id of duplicates(ids)) errors.push(`[사냥터 ID 중복] ${id}`);
+
+  errors.push(...validateEquipment());
+  return errors;
+}
+
+/** 장비 스탯 기준선 허용 오차. 반올림 말고 다른 이유로 벗어나면 공식이 어긋난 것이다. */
+const GEAR_TOLERANCE = 0.05;
+/** 풀세트 값이 "그 지역 하루 수입 1일치"에서 얼마나 떨어져도 되는가 (§4.5). */
+const PRICE_TOLERANCE = 0.02;
+
+/**
+ * 장비 (§4.5, §7.4 #6).
+ *
+ * 제일 중요한 건 **기준선**이다 — 그 티어 common 풀세트를 입으면 전투력이
+ * 정확히 powerScale(레벨)배가 되어야 한다. 이게 어긋나면 몬스터 곡선과 다시 벌어진다.
+ */
+function validateEquipment(): string[] {
+  const errors: string[] = [];
+
+  if (canonical(EQUIPMENT) !== canonical(generateEquipment())) {
+    errors.push('[생성물 낡음] 장비 — npm run gen을 다시 돌려라');
+  }
+
+  for (const id of duplicates(EQUIPMENT.map((e) => e.id))) errors.push(`[장비 ID 중복] ${id}`);
+  for (const name of duplicates(EQUIPMENT.map((e) => e.name))) {
+    errors.push(`[장비 이름 중복] ${name}`);
+  }
+
+  for (const { tier, refLevel } of gearTierLevels()) {
+    const set = EQUIPMENT.filter((e) => e.tier === tier && e.rarity === 'common');
+    if (set.length !== GEAR_SLOTS.length) {
+      errors.push(`[장비 부위 빠짐] 티어 ${tier} — ${set.length}/${GEAR_SLOTS.length}부위`);
+      continue;
+    }
+
+    // 기준선: 맨몸 + common 풀세트 = 맨몸 × powerScale
+    const naked = combatStats(refLevel);
+    const gear = setBonus(set);
+    const target = powerScale(refLevel);
+    for (const [label, got, base] of [
+      ['ATK', naked.atk + gear.atk, naked.atk],
+      ['HP', naked.maxHp + gear.maxHp, naked.maxHp],
+      ['DEF', naked.def + gear.def, naked.def],
+    ] as const) {
+      const want = base * target;
+      // 부위마다 정수로 반올림하므로 최악이 6칸 × 0.5 = 3이다. 그만큼은 봐준다 —
+      // 티어 1 DEF처럼 몫 자체가 1도 안 되는 칸이 여기 걸린다
+      const slack = Math.max(GEAR_SLOTS.length / 2, want * GEAR_TOLERANCE);
+      if (Math.abs(got - want) > slack) {
+        errors.push(
+          `[장비 기준선] 티어 ${tier} ${label} — Lv${refLevel}에서 ${(got / base).toFixed(2)}배 (목표 ${target.toFixed(2)}배)`,
+        );
+      }
+    }
+
+    // §4.5 — common 6부위 풀세트 가격 ≈ 그 지역 하루 수입 1일치
+    const price = set.reduce((sum, e) => sum + e.price, 0);
+    const want = gearSetPrice(tier);
+    if (Math.abs(price - want) / want > PRICE_TOLERANCE) {
+      errors.push(`[풀세트 가격] 티어 ${tier} — ${price}골드 (목표 ${Math.round(want)})`);
+    }
+  }
+
+  // §7.4 #6 — 티어가 오르면 장비가 세진다. 같은 부위·등급 안에서 단조 증가
+  for (const slot of GEAR_SLOTS) {
+    const line = EQUIPMENT.filter((e) => e.slot === slot && e.rarity === 'common').sort(
+      (a, b) => a.tier - b.tier,
+    );
+    for (let i = 1; i < line.length; i++) {
+      const sum = (e: (typeof line)[number]) => e.atk + e.maxHp + e.def;
+      if (sum(line[i]) <= sum(line[i - 1])) {
+        errors.push(`[장비 단조 증가 깨짐] ${line[i - 1].name} → ${line[i].name}`);
+      }
+    }
+  }
 
   return errors;
 }

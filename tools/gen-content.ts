@@ -5,19 +5,32 @@
  * 산출물을 커밋하는 이유는 **밸런스를 건드렸을 때 숫자가 diff로 보이게** 하려는 것이다.
  * 커밋된 파일이 공식과 어긋나지 않는지는 validate가 매번 대조한다.
  */
+import equipmentRaw from '../src/content/archetypes/equipment.json';
 import archetypesRaw from '../src/content/archetypes/monsters.json';
 import regionsRaw from '../src/content/archetypes/regions.json';
 import {
+  EquipmentArchetypesSchema,
   MonsterArchetypesSchema,
   RegionsSchema,
+  type Equipment,
   type Monster,
   type MonsterArchetype,
   type Region,
 } from '../src/content/schema';
-import { monsterExp, monsterGold, monsterStats, TIERS_PER_REGION } from '../src/game/formulas';
+import {
+  GEAR_TIERS_PER_REGION,
+  gearPrice,
+  gearStats,
+  monsterExp,
+  monsterGold,
+  monsterStats,
+  RARITIES,
+  TIERS_PER_REGION,
+} from '../src/game/formulas';
 
 export const ARCHETYPES = MonsterArchetypesSchema.parse(archetypesRaw);
 export const REGIONS = RegionsSchema.parse(regionsRaw);
+export const EQUIPMENT_ARCHETYPES = EquipmentArchetypesSchema.parse(equipmentRaw);
 
 /** 지역 안에서 몇 번째 티어인가 (1~5). 보상 공식이 이 값을 쓴다 (§6.2, §6.3). */
 export function tierInRegion(tier: number, region: number): number {
@@ -78,4 +91,61 @@ export function generateRegion(region: Region): Monster[] {
 /** 지역번호 → 그 지역 몬스터. data/monsters/region-0N.json이 될 내용 그대로다. */
 export function generateAll(): Map<number, Monster[]> {
   return new Map(REGIONS.map((r) => [r.id, generateRegion(r)]));
+}
+
+// ─────────────────────────────────────────────────────────────
+// 장비 (§4.5)
+// ─────────────────────────────────────────────────────────────
+
+export type GearTier = { tier: number; region: number; reqLevel: number; refLevel: number };
+
+/**
+ * 장비 티어 10단계가 덮는 레벨 구간 (§4.5).
+ *
+ * 지역마다 레벨 구간을 반으로 잘라 2단계씩 가져간다 — 지역에 들어갈 때 한 벌,
+ * 중간에서 한 벌. `refLevel`은 **그 구간의 한가운데**이고 스탯은 이 레벨 기준으로 뽑는다.
+ * 살 때는 조금 넘치고 구간 끝에서는 조금 모자라게 되는데, 그 톱니가 "슬슬 갈아야겠다"다.
+ */
+export function gearTierLevels(): GearTier[] {
+  const regions = [...REGIONS].sort((a, b) => a.id - b.id);
+  const reqs = regions.flatMap((r) => {
+    const [lo, hi] = r.levelRange;
+    const first = (r.id - 1) * GEAR_TIERS_PER_REGION + 1;
+    return [
+      { tier: first, region: r.id, reqLevel: lo },
+      { tier: first + 1, region: r.id, reqLevel: Math.round((lo + hi) / 2) },
+    ];
+  });
+
+  const maxLevel = regions.at(-1)!.levelRange[1];
+  return reqs.map((x, i) => {
+    const end = i + 1 < reqs.length ? reqs[i + 1].reqLevel - 1 : maxLevel;
+    return { ...x, refLevel: Math.round((x.reqLevel + end) / 2) };
+  });
+}
+
+/** 장비 정의 300종 = 티어 10 × 부위 6 × 등급 5 (§7.2). */
+export function generateEquipment(): Equipment[] {
+  const { tierNames, slots } = EQUIPMENT_ARCHETYPES;
+  const out: Equipment[] = [];
+
+  for (const { tier, region, reqLevel, refLevel } of gearTierLevels()) {
+    for (const arch of slots) {
+      for (const rarity of RARITIES) {
+        out.push({
+          id: `eq_t${tier}_${arch.slot}_${rarity}`,
+          name: `${tierNames[tier - 1]} ${arch.namePool[rarity]}`,
+          tier,
+          slot: arch.slot,
+          rarity,
+          level: reqLevel,
+          region,
+          sprite: `${arch.spriteTag}_${tier}`,
+          ...gearStats(refLevel, arch.slot, rarity),
+          price: gearPrice(tier, arch.slot, rarity),
+        });
+      }
+    }
+  }
+  return out;
 }

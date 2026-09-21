@@ -5,7 +5,6 @@ import {
   combatStats,
   damageMultiplier,
   HARDCAP_ACTIONS,
-  LEVEL_GROWTH,
   SPD_RATIO_MAX,
 } from './formulas';
 import { makeRng, simulateBattle, type Combatant } from './battle';
@@ -141,10 +140,8 @@ test('레벨 스탯은 §4.3 표 그대로 — 시작 스탯 + 직업 성장 + 3
   expect(combatStats(1).cri).toBeCloseTo(0.05, 6);
   expect(combatStats(1).eva).toBeCloseTo(0.03, 6);
 
-  // 전사 Lv2: (maxHP +14+10, ATK +2+2, DEF +1.5+0.5, SPD +0.8+1.5) × 레벨 배수 1.04
-  expect(combatStats(2).maxHp).toBe(Math.round(124 * LEVEL_GROWTH));
-  expect(combatStats(2).atk).toBeCloseTo(14 * LEVEL_GROWTH, 6);
-  expect(combatStats(2).spd).toBeCloseTo(12.3 * LEVEL_GROWTH, 6);
+  // 전사 Lv2 = maxHP +14+10, ATK +2+2, DEF +1.5+0.5, SPD +0.8+1.5. 숨은 배수는 없다
+  expect(combatStats(2)).toMatchObject({ maxHp: 124, atk: 14, def: 7, spd: 12.3 });
   expect(combatStats(2).eva).toBeCloseTo(0.0315, 6);
 
   // 도적은 더 빠르고 덜 단단하다

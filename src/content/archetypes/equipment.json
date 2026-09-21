@@ -1,0 +1,77 @@
+{
+  "tierNames": ["낡은", "무쇠", "강철", "은빛", "흑철", "용린", "수정", "흑요석", "월광", "심연"],
+  "slots": [
+    {
+      "slot": "weapon",
+      "label": "무기",
+      "spriteTag": "sword",
+      "namePool": {
+        "common": "검",
+        "uncommon": "장검",
+        "rare": "대검",
+        "epic": "마검",
+        "legendary": "성검"
+      }
+    },
+    {
+      "slot": "helm",
+      "label": "투구",
+      "spriteTag": "helm",
+      "namePool": {
+        "common": "두건",
+        "uncommon": "투구",
+        "rare": "중투구",
+        "epic": "마투구",
+        "legendary": "성투구"
+      }
+    },
+    {
+      "slot": "armor",
+      "label": "갑옷",
+      "spriteTag": "armor",
+      "namePool": {
+        "common": "옷",
+        "uncommon": "갑옷",
+        "rare": "중갑",
+        "epic": "마갑",
+        "legendary": "성갑"
+      }
+    },
+    {
+      "slot": "gloves",
+      "label": "장갑",
+      "spriteTag": "gloves",
+      "namePool": {
+        "common": "손싸개",
+        "uncommon": "장갑",
+        "rare": "건틀릿",
+        "epic": "마장갑",
+        "legendary": "성장갑"
+      }
+    },
+    {
+      "slot": "boots",
+      "label": "신발",
+      "spriteTag": "boots",
+      "namePool": {
+        "common": "신",
+        "uncommon": "장화",
+        "rare": "각반",
+        "epic": "마장화",
+        "legendary": "성각반"
+      }
+    },
+    {
+      "slot": "accessory",
+      "label": "장신구",
+      "spriteTag": "accessory",
+      "namePool": {
+        "common": "부적",
+        "uncommon": "반지",
+        "rare": "목걸이",
+        "epic": "마정석",
+        "legendary": "성표"
+      }
+    }
+  ]
+}
