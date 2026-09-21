@@ -5,21 +5,25 @@
  * 즉시 죽는 게 낫다 — 원인이 몬스터 한 마리가 아니라 JSON 한 줄이기 때문이다.
  * 모든 오류를 한 번에 보고 싶으면 `npm run validate`를 쓴다.
  */
+import consumablesRaw from './archetypes/consumables.json';
 import equipmentArchetypesRaw from './archetypes/equipment.json';
 import archetypesRaw from './archetypes/monsters.json';
 import regionsRaw from './archetypes/regions.json';
 import equipmentRaw from './data/items/equipment.json';
+import uniquesRaw from './data/items/unique.json';
 import region01 from './data/monsters/region-01.json';
 import region02 from './data/monsters/region-02.json';
 import region03 from './data/monsters/region-03.json';
 import region04 from './data/monsters/region-04.json';
 import region05 from './data/monsters/region-05.json';
 import {
+  ConsumablesSchema,
   EquipmentArchetypesSchema,
   EquipmentsSchema,
   MonsterArchetypesSchema,
   MonstersSchema,
   RegionsSchema,
+  type Consumable,
   type Equipment,
   type Field,
   type Monster,
@@ -27,7 +31,7 @@ import {
   type Region,
 } from './schema';
 
-export type { Equipment, Field, Monster, MonsterArchetype, Region };
+export type { Consumable, Equipment, Field, Monster, MonsterArchetype, Region };
 
 /** 몬스터 원형 12개 (§7.2). */
 export const MONSTER_ARCHETYPES = MonsterArchetypesSchema.parse(archetypesRaw);
@@ -86,8 +90,29 @@ export function monstersOfTier(tier: number): Monster[] {
 // 장비 (§4.5)
 // ─────────────────────────────────────────────────────────────
 
-/** 장비 정의 300종. 인스턴스가 아니라 정의다 — 개체는 세이브에 들어 있다. */
-export const EQUIPMENT = EquipmentsSchema.parse(equipmentRaw);
+/** 사냥터 고유 장비 25종 (§4.4). 상점에 안 뜨고 소재로만 바꾼다. */
+export const UNIQUES = EquipmentsSchema.parse(uniquesRaw);
+
+/** 장비 정의 325종 = 등급 그리드 300 + 고유 25. 인스턴스가 아니라 정의다. */
+export const EQUIPMENT = [...EquipmentsSchema.parse(equipmentRaw), ...UNIQUES];
+
+/** 물약·엘릭서 (§4.5). 공식이 없어서 생성물이 아니라 창작물을 그대로 읽는다. */
+export const CONSUMABLES = ConsumablesSchema.parse(consumablesRaw);
+
+export function consumableById(id: string): Consumable {
+  const found = CONSUMABLES.find((c) => c.id === id);
+  if (!found) throw new Error(`없는 소모품: ${id}`);
+  return found;
+}
+
+/** 사냥터 25곳을 한 줄로. 상점 교환 탭과 검증이 쓴다. */
+export const FIELDS = REGIONS.flatMap((r) => r.fields);
+
+export function fieldById(id: string): Field {
+  const found = FIELDS.find((f) => f.id === id);
+  if (!found) throw new Error(`없는 사냥터: ${id}`);
+  return found;
+}
 
 /** 부위 이름. 화면이 "weapon" 대신 "무기"를 보여주려고 쓴다. */
 export const GEAR_SLOT_LABELS = Object.fromEntries(
@@ -107,6 +132,19 @@ export function equipmentById(id: string): Equipment {
  * 상점 진열(T14)과 밸런스 기준선이 같은 걸 봐야 해서 여기 둔다.
  */
 export function gearSetFor(level: number, rarity: Equipment['rarity'] = 'common'): Equipment[] {
-  const tier = Math.max(...EQUIPMENT.filter((e) => e.level <= level).map((e) => e.tier));
-  return EQUIPMENT.filter((e) => e.tier === tier && e.rarity === rarity);
+  const grid = EQUIPMENT.filter((e) => e.rarity !== 'unique');
+  const tier = Math.max(...grid.filter((e) => e.level <= level).map((e) => e.tier));
+  return grid.filter((e) => e.tier === tier && e.rarity === rarity);
+}
+
+/** 상점 진열 — 그 레벨에 낄 수 있는 등급 그리드 장비 전부 (§4.5). 고유는 안 판다. */
+export function shopGear(level: number): Equipment[] {
+  return EQUIPMENT.filter((e) => e.rarity !== 'unique' && e.level <= level).sort(
+    (a, b) => b.tier - a.tier || a.slot.localeCompare(b.slot),
+  );
+}
+
+/** 그 지역에서 파는 소모품 (§4.5). 아래 지역 것도 계속 판다. */
+export function shopConsumables(region: number): Consumable[] {
+  return CONSUMABLES.filter((c) => c.region <= region);
 }

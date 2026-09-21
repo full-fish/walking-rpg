@@ -26,6 +26,7 @@ import {
   monsterStats,
   RARITIES,
   TIERS_PER_REGION,
+  UNIQUE_RARITY,
 } from '../src/game/formulas';
 
 export const ARCHETYPES = MonsterArchetypesSchema.parse(archetypesRaw);
@@ -149,4 +150,36 @@ export function generateEquipment(): Equipment[] {
     }
   }
   return out;
+}
+
+/**
+ * 사냥터 고유 장비 25종 (§4.4, §4.5).
+ *
+ * 그리드(티어 × 부위 × 등급) 밖이다 — **사냥터 한 곳에 하나씩** 붙는다.
+ * 티어는 그 지역의 뒷단 장비 티어고, 성능은 같은 티어 common과 rare 사이(1.25배)다.
+ * 골드로는 못 산다. 소재 3개 + 골드로만 바꾼다.
+ */
+export function generateUniques(): Equipment[] {
+  const byRegion = new Map(gearTierLevels().map((g) => [g.region, g]));
+
+  return [...REGIONS]
+    .sort((a, b) => a.id - b.id)
+    .flatMap((region) => {
+      // Map이 지역마다 마지막 것을 남기므로 **뒷단 티어**다 — 그 지역을 다 돌 때쯤 맞추는 물건
+      const gear = byRegion.get(region.id)!;
+      return region.fields.map(
+        (field): Equipment => ({
+          id: field.reward.id,
+          name: field.reward.name,
+          tier: gear.tier,
+          slot: field.reward.slot,
+          rarity: UNIQUE_RARITY,
+          level: gear.reqLevel,
+          region: region.id,
+          sprite: `uniq_${field.id}`,
+          ...gearStats(gear.refLevel, field.reward.slot, UNIQUE_RARITY),
+          price: gearPrice(gear.refLevel, field.reward.slot, UNIQUE_RARITY),
+        }),
+      );
+    });
 }

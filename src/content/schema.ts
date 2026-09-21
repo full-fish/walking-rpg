@@ -5,6 +5,7 @@
 import { z } from 'zod';
 
 import {
+  ALL_RARITIES,
   FIELDS_PER_REGION,
   GEAR_SLOTS,
   GEAR_TIERS,
@@ -62,10 +63,14 @@ export const FieldSchema = z.object({
   pool: z.array(z.tuple([z.string(), tier])).min(2),
   /** 6마리 완주 시 확정 드랍. 사냥터마다 다르다 (§4.4) */
   material: z.object({ id: z.string().regex(/^mat_/), name: z.string().min(1) }),
-  /** 그 소재로만 바꿀 수 있는 전용 장비 (§4.5). 성능 계산은 T13 */
+  /**
+   * 그 소재로만 바꿀 수 있는 전용 장비 (§4.5).
+   * 지역마다 사냥터 5곳이 **서로 다른 부위**를 준다 — 한 지역만 돌아도 부위가 안 겹친다.
+   */
   reward: z.object({
     id: z.string().regex(/^uniq_/),
     name: z.string().min(1),
+    slot: z.enum(GEAR_SLOTS),
     cost: z.object({ material: z.int().min(1), gold: z.int().min(0) }),
   }),
 });
@@ -122,7 +127,7 @@ export type Monster = z.infer<typeof MonsterSchema>;
 // ─────────────────────────────────────────────────────────────
 
 const slot = z.enum(GEAR_SLOTS);
-const rarity = z.enum(RARITIES);
+const rarity = z.enum(ALL_RARITIES);
 
 /**
  * 장비 원형 — 부위 하나. 수치는 하나도 없다.
@@ -134,7 +139,7 @@ export const EquipmentArchetypeSchema = z.object({
   slot,
   label: z.string().min(1),
   spriteTag: z.string().min(1),
-  namePool: z.record(rarity, z.string().min(1)),
+  namePool: z.record(z.enum(RARITIES), z.string().min(1)),
 });
 
 export const EquipmentArchetypesSchema = z.object({
@@ -145,7 +150,7 @@ export const EquipmentArchetypesSchema = z.object({
 
 /** gen-content.ts가 뽑아내는 장비 정의 하나. 인스턴스가 아니라 **정의**다 (§4.5). */
 export const EquipmentSchema = z.object({
-  id: z.string().regex(/^eq_t\d+_[a-z]+_[a-z]+$/),
+  id: z.string().regex(/^(eq_t\d+_[a-z]+_[a-z]+|uniq_r\d_[a-z]+)$/),
   name: z.string().min(1),
   /** 장비 티어 1~10 */
   tier: z.int().min(1).max(GEAR_TIERS),
@@ -167,3 +172,19 @@ export const EquipmentsSchema = z.array(EquipmentSchema).nonempty();
 
 export type EquipmentArchetype = z.infer<typeof EquipmentArchetypeSchema>;
 export type Equipment = z.infer<typeof EquipmentSchema>;
+
+/** 물약·엘릭서 (§4.5). 공식이 없는 6줄이라 생성기를 안 만들고 창작물을 그대로 읽는다. */
+export const ConsumableSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1),
+  /** 절대값 회복 */
+  heal: z.int().min(0),
+  /** 최대 HP 대비 회복 (엘릭서). heal과 둘 중 하나만 0이 아니다 */
+  healRatio: z.number().min(0).max(1),
+  price: z.int().min(1),
+  /** 이 지역부터 판다 */
+  region: z.int().min(1).max(REGION_COUNT),
+});
+
+export const ConsumablesSchema = z.array(ConsumableSchema).nonempty();
+export type Consumable = z.infer<typeof ConsumableSchema>;

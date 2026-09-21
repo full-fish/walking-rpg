@@ -47,7 +47,8 @@
           "cost": {
             "material": 3,
             "gold": 1300
-          }
+          },
+          "slot": "weapon"
         }
       },
       {
@@ -81,7 +82,8 @@
           "cost": {
             "material": 3,
             "gold": 1300
-          }
+          },
+          "slot": "gloves"
         }
       },
       {
@@ -115,7 +117,8 @@
           "cost": {
             "material": 3,
             "gold": 1300
-          }
+          },
+          "slot": "armor"
         }
       },
       {
@@ -145,11 +148,12 @@
         },
         "reward": {
           "id": "uniq_r1_tower",
-          "name": "초석을 깎은 둔기",
+          "name": "초석을 얹은 투구",
           "cost": {
             "material": 3,
             "gold": 1300
-          }
+          },
+          "slot": "helm"
         }
       },
       {
@@ -183,7 +187,8 @@
           "cost": {
             "material": 3,
             "gold": 1300
-          }
+          },
+          "slot": "accessory"
         }
       }
     ],
@@ -237,11 +242,12 @@
         },
         "reward": {
           "id": "uniq_r2_cave",
-          "name": "이끼로 덮인 방패",
+          "name": "이끼로 덮인 장화",
           "cost": {
             "material": 3,
             "gold": 2700
-          }
+          },
+          "slot": "boots"
         }
       },
       {
@@ -275,7 +281,8 @@
           "cost": {
             "material": 3,
             "gold": 2700
-          }
+          },
+          "slot": "armor"
         }
       },
       {
@@ -309,7 +316,8 @@
           "cost": {
             "material": 3,
             "gold": 2700
-          }
+          },
+          "slot": "weapon"
         }
       },
       {
@@ -343,7 +351,8 @@
           "cost": {
             "material": 3,
             "gold": 2700
-          }
+          },
+          "slot": "helm"
         }
       },
       {
@@ -377,7 +386,8 @@
           "cost": {
             "material": 3,
             "gold": 2700
-          }
+          },
+          "slot": "accessory"
         }
       }
     ],
@@ -435,7 +445,8 @@
           "cost": {
             "material": 3,
             "gold": 4000
-          }
+          },
+          "slot": "weapon"
         }
       },
       {
@@ -469,7 +480,8 @@
           "cost": {
             "material": 3,
             "gold": 4000
-          }
+          },
+          "slot": "boots"
         }
       },
       {
@@ -503,7 +515,8 @@
           "cost": {
             "material": 3,
             "gold": 4000
-          }
+          },
+          "slot": "armor"
         }
       },
       {
@@ -533,11 +546,12 @@
         },
         "reward": {
           "id": "uniq_r3_ridge",
-          "name": "바람을 가르는 활",
+          "name": "바람을 가르는 손아귀",
           "cost": {
             "material": 3,
             "gold": 4000
-          }
+          },
+          "slot": "gloves"
         }
       },
       {
@@ -571,7 +585,8 @@
           "cost": {
             "material": 3,
             "gold": 4000
-          }
+          },
+          "slot": "accessory"
         }
       }
     ],
@@ -629,7 +644,8 @@
           "cost": {
             "material": 3,
             "gold": 5300
-          }
+          },
+          "slot": "gloves"
         }
       },
       {
@@ -663,7 +679,8 @@
           "cost": {
             "material": 3,
             "gold": 5300
-          }
+          },
+          "slot": "armor"
         }
       },
       {
@@ -697,7 +714,8 @@
           "cost": {
             "material": 3,
             "gold": 5300
-          }
+          },
+          "slot": "weapon"
         }
       },
       {
@@ -727,11 +745,12 @@
         },
         "reward": {
           "id": "uniq_r4_obsidian",
-          "name": "흑요석을 박은 방패",
+          "name": "흑요석을 박은 투구",
           "cost": {
             "material": 3,
             "gold": 5300
-          }
+          },
+          "slot": "helm"
         }
       },
       {
@@ -761,11 +780,12 @@
         },
         "reward": {
           "id": "uniq_r4_forge",
-          "name": "대장장이의 마지막 망치",
+          "name": "대장장이의 무쇠 장화",
           "cost": {
             "material": 3,
             "gold": 5300
-          }
+          },
+          "slot": "boots"
         }
       }
     ],
@@ -823,7 +843,8 @@
           "cost": {
             "material": 3,
             "gold": 6700
-          }
+          },
+          "slot": "weapon"
         }
       },
       {
@@ -857,7 +878,8 @@
           "cost": {
             "material": 3,
             "gold": 6700
-          }
+          },
+          "slot": "armor"
         }
       },
       {
@@ -887,11 +909,12 @@
         },
         "reward": {
           "id": "uniq_r5_hall",
-          "name": "대전을 지킨 창",
+          "name": "대전을 지킨 각반",
           "cost": {
             "material": 3,
             "gold": 6700
-          }
+          },
+          "slot": "boots"
         }
       },
       {
@@ -921,11 +944,12 @@
         },
         "reward": {
           "id": "uniq_r5_root",
-          "name": "뿌리를 엮은 지팡이",
+          "name": "뿌리를 엮은 팔찌",
           "cost": {
             "material": 3,
             "gold": 6700
-          }
+          },
+          "slot": "accessory"
         }
       },
       {
@@ -959,7 +983,8 @@
           "cost": {
             "material": 3,
             "gold": 6700
-          }
+          },
+          "slot": "helm"
         }
       }
     ],

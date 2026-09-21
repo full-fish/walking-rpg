@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN } from '../game/formulas';
+import { ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN, VAULT } from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 4;
+export const SAVE_VERSION = 5;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
@@ -55,6 +55,19 @@ export const SaveSchema = z.object({
   inventory: z.array(ItemInstanceSchema),
   /** 부위별로 낀 개체의 uid. 빈 칸은 null (§4.5) */
   equipped: z.record(z.enum(GEAR_SLOTS), z.string().nullable()),
+  /**
+   * 창고 (§3.7). **한도가 진짜 제약**이라 넘치는 만큼은 들고 다녀야 하고,
+   * 죽으면 그중 10%를 잃는다. 여기 넣은 골드는 사망해도 면제다.
+   */
+  vault: z.object({
+    gold: z.int().min(0),
+    capacity: z.int().min(0),
+    expansions: z.int().min(0).max(VAULT.maxExpansions),
+  }),
+  /** 사냥터 고유 소재 — fieldId → 개수 (§4.4). 실제 드랍은 T16 */
+  materials: z.record(z.string(), z.int().min(0)),
+  /** 물약·엘릭서 — id → 개수 (§4.5). 휴대 상한 3개는 T16 입장 로직이 본다 */
+  consumables: z.record(z.string(), z.int().min(0)),
   /** 지역 진행도 (§4.1). 해금은 보스 클리어 + 해금 비용 — 실제 해금은 T17 이후 */
   regionProgress: z.object({
     /** 지금 있는 지역 */
@@ -75,6 +88,9 @@ export function defaultSave(): Save {
     statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0, int: 0 },
     inventory: [],
     equipped: Object.fromEntries(GEAR_SLOTS.map((s) => [s, null])) as Save['equipped'],
+    vault: { gold: 0, capacity: VAULT.capacity, expansions: 0 },
+    materials: {},
+    consumables: {},
     regionProgress: { current: 1, unlocked: 1 },
   };
 }

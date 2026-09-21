@@ -1,6 +1,7 @@
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { regionById } from '@/content';
 import { expToNext } from '@/game/formulas';
 import { usePlayer } from '@/stores/usePlayer';
 import { Button } from '@/ui/Button';
@@ -13,6 +14,7 @@ export default function Settings() {
   const addGold = usePlayer((s) => s.addGold);
   const settle = usePlayer((s) => s.settle);
   const grantGearSet = usePlayer((s) => s.grantGearSet);
+  const grantMaterial = usePlayer((s) => s.grantMaterial);
   const reset = usePlayer((s) => s.reset);
 
   return (
@@ -39,13 +41,21 @@ export default function Settings() {
             }
           />
           <Button label="장비 한 벌" onPress={grantGearSet} />
+          {/* 소재는 한 판 완주 드랍이라 T16 전까지 얻을 길이 없다 (§4.4) */}
+          <Button
+            label="소재 +3"
+            onPress={() => grantMaterial(regionById(save.regionProgress.current).fields[0].id)}
+          />
           <Button label="초기화" onPress={reset} />
         </View>
         <Text size="sm" dim>
           앱을 완전히 끄고 다시 켜도 값이 남아 있어야 합니다.
         </Text>
         <Text size="sm" dim>
-          [장비 한 벌]은 지금 레벨의 common 풀세트를 공짜로 줍니다. 상점은 T14입니다.
+          [장비 한 벌]은 지금 레벨의 common 풀세트를 공짜로 줍니다.
+        </Text>
+        <Text size="sm" dim>
+          [소재 +3]은 지금 지역 첫 사냥터의 소재를 줍니다 — 상점 → 특별 교환에서 씁니다.
         </Text>
       </Panel>
     </SafeAreaView>

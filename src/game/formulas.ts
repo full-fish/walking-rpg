@@ -390,8 +390,15 @@ export type GearSlot = (typeof GEAR_SLOTS)[number];
 export const GEAR_TIERS = 10;
 export const GEAR_TIERS_PER_REGION = GEAR_TIERS / REGION_COUNT;
 
+/** 상점·드랍이 쓰는 등급 그리드 5종. 티어 × 부위 × 등급으로 300종이 나온다 (§7.2). */
 export const RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as const;
-export type Rarity = (typeof RARITIES)[number];
+/**
+ * 사냥터 고유 장비 (§4.4, §4.5). 그리드 밖이라 따로 둔다 —
+ * 티어 × 부위로 뽑는 게 아니라 **사냥터 25곳에 1:1로 붙는다.**
+ */
+export const UNIQUE_RARITY = 'unique';
+export const ALL_RARITIES = [...RARITIES, UNIQUE_RARITY] as const;
+export type Rarity = (typeof ALL_RARITIES)[number];
 
 /**
  * 등급 배율 (§4.5). common이 밸런스 기준선이다 —
@@ -403,6 +410,8 @@ export const RARITY_MULT: Record<Rarity, number> = {
   rare: 1.35,
   epic: 1.6,
   legendary: 1.9,
+  // §4.5 — "같은 tier common보다 높고 rare보다 낮다". 소재를 모아야 얻는 대신 확정이다
+  unique: 1.25,
 };
 
 /** 등급별 가격 배율. 위 등급은 드랍으로 먹는 것이지 사는 게 아니라 가파르다. */
@@ -412,6 +421,8 @@ export const RARITY_PRICE: Record<Rarity, number> = {
   rare: 5,
   epic: 12,
   legendary: 30,
+  // 고유 장비는 골드로 못 산다. 이 값은 **판매가 계산에만** 쓰인다
+  unique: 6,
 };
 
 /**
@@ -529,4 +540,38 @@ export function gearPrice(refLevel: number, slot: GearSlot, rarity: Rarity): num
   return Math.round(
     (gearSetPrice(refLevel) / GEAR_SLOTS.length) * SLOT_PRICE[slot] * RARITY_PRICE[rarity],
   );
+}
+
+// ─────────────────────────────────────────────────────────────
+// 경제 (§4.5, §3.7) — T14
+// ─────────────────────────────────────────────────────────────
+
+/** 장비를 되팔 때 받는 비율 (§4.5). 정가 × 품질 × 이 값. */
+export const SELL_RATE = 0.25;
+
+/** 창고 (§3.7). 한도가 진짜 제약이고, 넘치는 만큼은 들고 다녀야 한다. */
+export const VAULT = {
+  /** 초기 한도 — 지역 1 하루 수입의 약 2.5일치 */
+  capacity: 5_000,
+  /** 입금 수수료. 출금은 무료 */
+  fee: 0.02,
+  /** 확장마다 한도 2배 */
+  step: 2,
+  /** 확장 상한 8회 → 최대 1,280,000골드 */
+  maxExpansions: 8,
+  /** 확장 비용 = 현재 한도 × 0.6 */
+  costRate: 0.6,
+} as const;
+
+/** 다음 확장에 드는 골드 (§3.7). 5,000 →(3,000)→ 10,000 →(6,000)→ 20,000 … */
+export function vaultExpandCost(capacity: number): number {
+  return Math.round(capacity * VAULT.costRate);
+}
+
+/**
+ * 여관비 (§4.5). `150 × r × 1.1^(r-1)` — 150 / 330 / 545 / 799 / 1,098.
+ * regions.json의 town.inn에 박혀 있고 validate가 이 식과 대조한다.
+ */
+export function innCost(region: number): number {
+  return Math.round(150 * region * 1.1 ** (region - 1));
 }

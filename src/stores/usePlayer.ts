@@ -2,6 +2,17 @@ import { create } from 'zustand';
 
 import { gearSetFor } from '@/content';
 import type { Outcome } from '@/game/battle';
+import {
+  buyConsumable,
+  buyEquipment,
+  exchangeUnique,
+  sellItem,
+  stayInn,
+  consumeItem,
+  vaultDeposit,
+  vaultExpand,
+  vaultWithdraw,
+} from '@/game/economy';
 import type { GearSlot } from '@/game/formulas';
 import { makeItem } from '@/game/items';
 import { grantWp, spendWp } from '@/game/wp';
@@ -38,8 +49,15 @@ type PlayerStore = {
   equip: (uid: string) => boolean;
   unequip: (slot: GearSlot) => void;
   addGold: (amount: number) => void;
-  /** 실기기 확인용 — 지금 레벨의 common 풀세트를 공짜로 준다. T14 상점이 이 자리를 대체한다 */
+  /**
+   * 경제 동작 하나 (§4.5). economy.ts가 null을 주면 아무것도 안 바꾸고 false.
+   * 상점·여관·창고·교환이 전부 이 하나를 지난다 — 화면마다 저장 코드를 두지 않는다.
+   */
+  trade: (change: (save: Save) => Save | null) => boolean;
+  /** 실기기 확인용 — 지금 레벨의 common 풀세트를 공짜로 준다 */
   grantGearSet: () => void;
+  /** 실기기 확인용 — 사냥터 소재를 3개 준다. 진짜 드랍은 T16 */
+  grantMaterial: (fieldId: string) => void;
   reset: () => void;
 };
 
@@ -107,6 +125,13 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     set({ save: persist(next) });
   },
 
+  trade: (change) => {
+    const next = change(get().save);
+    if (!next) return false;
+    set({ save: persist(next) });
+    return true;
+  },
+
   addGold: (amount) => {
     const { save } = get();
     const gold = Math.max(0, save.player.gold + amount);
@@ -125,8 +150,27 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     set({ save: persist(equipAll(save, uids)) });
   },
 
+  grantMaterial: (fieldId) => {
+    const { save } = get();
+    const materials = { ...save.materials, [fieldId]: (save.materials[fieldId] ?? 0) + 3 };
+    set({ save: persist({ ...save, materials }) });
+  },
+
   reset: () => set({ save: resetSave() }),
 }));
 
 /** 화면들이 전투 스탯을 볼 때 쓰는 선택자. 세이브가 바뀌면 같이 갱신된다. */
 export const selectStats = (s: PlayerStore) => statsOf(s.save);
+
+/** 화면이 economy.ts를 직접 부르지 않게 묶어둔 것. 전부 trade()를 지난다. */
+export const trades = {
+  buyEquipment: (defId: string) => (save: Save) => buyEquipment(save, defId, Math.random),
+  sellItem: (uid: string) => (save: Save) => sellItem(save, uid),
+  buyConsumable: (id: string) => (save: Save) => buyConsumable(save, id),
+  consumeItem: (id: string) => (save: Save) => consumeItem(save, id),
+  stayInn: (cost: number) => (save: Save) => stayInn(save, cost, Date.now()),
+  deposit: (amount: number) => (save: Save) => vaultDeposit(save, amount),
+  withdraw: (amount: number) => (save: Save) => vaultWithdraw(save, amount),
+  expand: () => (save: Save) => vaultExpand(save),
+  exchange: (fieldId: string) => (save: Save) => exchangeUnique(save, fieldId, Math.random),
+};

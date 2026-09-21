@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
 
+import { VAULT } from '../game/formulas';
 import { migrate } from './migrations';
 import { defaultSave, SAVE_VERSION, SaveSchema } from './schema';
 
@@ -96,4 +97,25 @@ test('v3 → v4: 인벤토리 칸이 생기고 INT는 0에서 시작한다 (§4.
   expect(v4.inventory).toEqual([]);
   // 여섯 칸이 전부 있어야 한다. 하나라도 없으면 장착 화면이 undefined를 만난다
   expect(Object.values(v4.equipped)).toEqual([null, null, null, null, null, null]);
+});
+
+test('v4 → v5: 창고·소재·소모품이 생긴다 (§3.7, §4.5)', () => {
+  const v4 = {
+    version: 4,
+    player: { level: 20, exp: 0, gold: 7_000, hp: 300 },
+    wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
+    hpUpdatedAt: 1,
+    statPoints: { unspent: 0, str: 19, vit: 19, agi: 19, luk: 0, int: 0 },
+    inventory: [{ uid: '1', defId: 'eq_t5_weapon_common', quality: 1.02, enhance: 0 }],
+    equipped: { weapon: '1', helm: null, armor: null, gloves: null, boots: null, accessory: null },
+    regionProgress: { current: 3, unlocked: 3 },
+  };
+  const v5 = SaveSchema.parse(migrate(v4));
+
+  // 끼고 있던 장비는 그대로 남는다 — 새 필드만 채운다
+  expect(v5.inventory).toHaveLength(1);
+  expect(v5.equipped.weapon).toBe('1');
+  expect(v5.vault).toEqual({ gold: 0, capacity: VAULT.capacity, expansions: 0 });
+  expect(v5.materials).toEqual({});
+  expect(v5.consumables).toEqual({});
 });

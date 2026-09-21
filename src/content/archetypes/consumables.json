@@ -1,0 +1,8 @@
+[
+  { "id": "pot_small", "name": "물약(소)", "heal": 100, "healRatio": 0, "price": 100, "region": 1 },
+  { "id": "pot_mid", "name": "물약(중)", "heal": 180, "healRatio": 0, "price": 200, "region": 2 },
+  { "id": "pot_large", "name": "물약(대)", "heal": 300, "healRatio": 0, "price": 320, "region": 3 },
+  { "id": "pot_super", "name": "물약(특)", "heal": 450, "healRatio": 0, "price": 450, "region": 4 },
+  { "id": "pot_best", "name": "물약(최상급)", "heal": 650, "healRatio": 0, "price": 600, "region": 5 },
+  { "id": "elixir", "name": "엘릭서", "heal": 0, "healRatio": 0.5, "price": 1500, "region": 5 }
+]

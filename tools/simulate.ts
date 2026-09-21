@@ -7,7 +7,14 @@
  * 한 판 진행(마릿수 뽑기 → 반복 전투 → 클리어 보너스)은 §4.4를 여기서 모델링한다.
  * T16이 app/field.tsx를 만들 때 src/game/field.ts로 옮겨가고, 여기는 그걸 부르게 된다.
  */
-import { gearSetFor, monstersOfField, REGIONS, type Field, type Region } from '../src/content';
+import {
+  CONSUMABLES,
+  gearSetFor,
+  monstersOfField,
+  REGIONS,
+  type Field,
+  type Region,
+} from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
 import {
   CLEAR_BONUS_RATE,
@@ -99,13 +106,10 @@ function regionOf(level: number): Region {
 }
 
 /** §4.5 물약 — 그 지역에서 살 수 있는 가장 좋은 것. 휴대 3개 (§4.4). */
-const POTIONS = [
-  { region: 1, heal: 100, cost: 100 },
-  { region: 2, heal: 180, cost: 200 },
-  { region: 3, heal: 300, cost: 320 },
-  { region: 4, heal: 450, cost: 450 },
-  { region: 5, heal: 650, cost: 600 },
-];
+function bestPotion(region: number) {
+  // 콘텐츠를 그대로 읽는다 — 여기에 표를 또 적으면 상점과 시뮬이 다른 물약을 쓴다
+  return CONSUMABLES.filter((c) => c.region <= region && c.heal > 0).at(-1)!;
+}
 const POTIONS_PER_RUN = 3;
 /** HP가 이 아래로 떨어지면 물약을 쓴다. */
 const POTION_THRESHOLD = 0.35;
@@ -152,7 +156,7 @@ export function simulateRun(save: Save, rng: () => number): RunResult {
   const region = regionOf(save.player.level);
   const field = pickField(region, save.player.level);
   const pool = monstersOfField(field);
-  const potion = POTIONS[region.id - 1];
+  const potion = bestPotion(region.id);
 
   const size = rollRunSize(rng);
   const stats = statsOf(save);
@@ -165,7 +169,7 @@ export function simulateRun(save: Save, rng: () => number): RunResult {
   for (let i = 0; i < size; i++) {
     if (hp < stats.maxHp * POTION_THRESHOLD && potions > 0) {
       potions -= 1;
-      potionCost += potion.cost;
+      potionCost += potion.price;
       hp = Math.min(stats.maxHp, hp + potion.heal);
     }
     const monster = pool[Math.floor(rng() * pool.length)];

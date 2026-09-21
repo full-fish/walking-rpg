@@ -1,4 +1,4 @@
-import { GEAR_SLOTS, POINTS_PER_LEVEL } from '../game/formulas';
+import { GEAR_SLOTS, POINTS_PER_LEVEL, VAULT } from '../game/formulas';
 import { SAVE_VERSION } from './schema';
 
 /** vN 세이브를 v(N+1) 모양으로 바꾼다. version 필드는 migrate()가 알아서 올린다. */
@@ -59,6 +59,14 @@ export const migrations: Record<number, Migration> = {
       equipped: Object.fromEntries(GEAR_SLOTS.map((slot) => [slot, null])),
     };
   },
+
+  /** v4 → v5: 창고·소재·소모품 (§3.7, §4.5) */
+  4: (s) => ({
+    ...s,
+    vault: { gold: 0, capacity: VAULT.capacity, expansions: 0 },
+    materials: {},
+    consumables: {},
+  }),
 };
 
 /**
