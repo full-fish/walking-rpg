@@ -13,6 +13,7 @@ import {
   INDIVIDUAL_REWARD_RATE,
   POINTS_PER_LEVEL,
   STARTING_STATS,
+  STAT_PER_POINT,
   type GearSlot,
   type SpendableStat,
   type StatSpend,
@@ -41,6 +42,11 @@ export function statsOf(save: Save) {
     atk: base.atk + gear.atk,
     def: base.def + gear.def,
     spd: base.spd + gear.spd,
+    // 장신구가 주는 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3, T16_1)
+    cri: base.cri + STAT_PER_POINT.luk.cri * gear.luk,
+    crd: base.crd + STAT_PER_POINT.luk.crd * gear.luk,
+    dropRate: base.dropRate + STAT_PER_POINT.luk.dropRate * gear.luk,
+    goldFind: base.goldFind + STAT_PER_POINT.luk.goldFind * gear.luk,
     /** 고유 장비의 특효 (§4.5). battle.ts가 몬스터 traits와 맞춰 본다 */
     bonusVs: equippedBonusVs(save),
   };

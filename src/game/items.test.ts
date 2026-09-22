@@ -20,6 +20,29 @@ function geared(level: number, seed = 1): Save {
   return equipAll(save, uids);
 }
 
+test('부위마다 성격이 다르다 — 무기는 ATK만, 장신구는 LUK만 (§4.5, T16_1)', () => {
+  const set = gearSetFor(30);
+  const bySlot = (slot: string) => set.find((e) => e.slot === slot)!;
+
+  expect(bySlot('weapon').maxHp, '무기는 HP를 안 준다').toBe(0);
+  expect(bySlot('weapon').def).toBe(0);
+  expect(bySlot('boots').spd, '신발이 장비 SPD를 전부 갖는다').toBeGreaterThan(0);
+  for (const slot of GEAR_SLOTS) {
+    if (slot === 'boots') continue;
+    expect(bySlot(slot).spd, `${slot}은 SPD를 안 준다`).toBe(0);
+    if (slot !== 'accessory') expect(bySlot(slot).luk, `${slot}은 LUK을 안 준다`).toBe(0);
+  }
+  expect(bySlot('accessory').luk, '장신구가 LUK을 전부 갖는다').toBeGreaterThan(0);
+
+  // 장신구의 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3)
+  const naked = statsOf({ ...defaultSave(), player: { ...defaultSave().player, level: 30 } });
+  const full = statsOf(geared(30));
+  expect(full.dropRate).toBeGreaterThan(naked.dropRate);
+  expect(full.goldFind).toBeGreaterThan(naked.goldFind);
+  expect(full.cri).toBeGreaterThan(naked.cri);
+  expect(full.crd).toBeGreaterThan(naked.crd);
+});
+
 test('uid는 세이브 안에서만 안 겹치면 된다 — 가진 것 중 가장 큰 번호 + 1', () => {
   expect(nextUid([])).toBe('1');
   const rng = makeRng(1);

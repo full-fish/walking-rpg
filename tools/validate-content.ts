@@ -15,6 +15,7 @@ import {
   gearSetPrice,
   gearShare,
   GEAR_SLOTS,
+  GEAR_LUK_BASE,
   GEAR_SPD_RATE,
   FIELDS_PER_REGION,
   innCost,
@@ -277,6 +278,8 @@ function validateEquipment(): string[] {
       ['HP', naked.maxHp + gear.maxHp, naked.maxHp, naked.maxHp * target],
       ['DEF', naked.def + gear.def, naked.def, naked.def * target],
       ['SPD', naked.spd + gear.spd, naked.spd, naked.spd * (1 + GEAR_SPD_RATE)],
+      // LUK은 맨몸에 비례하지 않는다 — 절대값 기준이라 base를 1로 둔다 (§4.5)
+      ['LUK', gear.luk, 1, GEAR_LUK_BASE * gearShare(refLevel)],
     ] as const) {
       // 부위마다 정수로 반올림하므로 최악이 6칸 × 0.5 = 3이다. 그만큼은 봐준다 —
       // 티어 1 DEF처럼 몫 자체가 1도 안 되는 칸이 여기 걸린다
@@ -302,7 +305,7 @@ function validateEquipment(): string[] {
       (a, b) => a.tier - b.tier,
     );
     for (let i = 1; i < line.length; i++) {
-      const sum = (e: (typeof line)[number]) => e.atk + e.maxHp + e.def + e.spd;
+      const sum = (e: (typeof line)[number]) => e.atk + e.maxHp + e.def + e.spd + e.luk;
       if (sum(line[i]) <= sum(line[i - 1])) {
         errors.push(`[장비 단조 증가 깨짐] ${line[i - 1].name} → ${line[i].name}`);
       }

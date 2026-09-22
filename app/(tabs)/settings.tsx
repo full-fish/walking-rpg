@@ -11,6 +11,7 @@ import { colors, space } from '@/ui/theme';
 export default function Settings() {
   const save = usePlayer((s) => s.save);
   const addGold = usePlayer((s) => s.addGold);
+  const addWp = usePlayer((s) => s.addWp);
   const settle = usePlayer((s) => s.settle);
   const grantGearSet = usePlayer((s) => s.grantGearSet);
   const reset = usePlayer((s) => s.reset);
@@ -28,6 +29,7 @@ export default function Settings() {
         </Text>
         <View style={styles.row}>
           <Button label="골드 +100" tone="gold" onPress={() => addGold(100)} />
+          <Button label="WP +1000" tone="gold" onPress={() => addWp(1000)} />
           {/* 슬라임만으로 레벨업까지 42마리라 실기기 확인이 안 된다. 실제 정산 경로를 그대로 탄다. */}
           <Button
             label="레벨 +1"

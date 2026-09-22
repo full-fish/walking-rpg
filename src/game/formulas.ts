@@ -450,18 +450,26 @@ export const RARITY_PRICE: Record<Rarity, number> = {
 
 /**
  * 부위가 가져가는 몫 (§4.5). **스탯마다 합이 1.0**이라 6부위 풀세트가 곧 그 티어의 몫이다.
- * 무기는 ATK, 갑옷·투구는 HP/DEF — 부위마다 성격이 다르게만 나눠 갖는다.
+ *
+ * T16_1에서 부위마다 **성격을 뾰족하게** 다시 갈랐다. 전에는 무기만 빼면 여섯 칸이
+ * 다 비슷해서, 어느 부위를 갈든 같은 물건을 하나 더 끼는 느낌이었다.
+ * 0이 많은 건 실수가 아니라 정체성이다 — 신발을 안 끼면 장비 SPD가 통째로 없고,
+ * 장신구를 안 끼면 LUK이 통째로 없다.
+ *
+ *   무기   공격력만            장갑   셋 다 조금씩
+ *   투구   HP 많이 · DEF 조금   신발   SPD 전부 · DEF 조금
+ *   갑옷   DEF 많이 · HP 조금   장신구 LUK 전부
  */
 export const SLOT_BIAS: Record<
   GearSlot,
-  { atk: number; maxHp: number; def: number; spd: number }
+  { atk: number; maxHp: number; def: number; spd: number; luk: number }
 > = {
-  weapon: { atk: 0.55, maxHp: 0.05, def: 0.05, spd: 0.05 },
-  helm: { atk: 0.05, maxHp: 0.2, def: 0.2, spd: 0.05 },
-  armor: { atk: 0.05, maxHp: 0.35, def: 0.35, spd: 0.05 },
-  gloves: { atk: 0.15, maxHp: 0.1, def: 0.15, spd: 0.2 },
-  boots: { atk: 0.05, maxHp: 0.15, def: 0.15, spd: 0.45 },
-  accessory: { atk: 0.15, maxHp: 0.15, def: 0.1, spd: 0.2 },
+  weapon: { atk: 0.75, maxHp: 0, def: 0, spd: 0, luk: 0 },
+  helm: { atk: 0, maxHp: 0.5, def: 0.15, spd: 0, luk: 0 },
+  armor: { atk: 0, maxHp: 0.3, def: 0.45, spd: 0, luk: 0 },
+  gloves: { atk: 0.25, maxHp: 0.2, def: 0.15, spd: 0, luk: 0 },
+  boots: { atk: 0, maxHp: 0, def: 0.25, spd: 1, luk: 0 },
+  accessory: { atk: 0, maxHp: 0, def: 0, spd: 0, luk: 1 },
 };
 
 /**
@@ -474,6 +482,18 @@ export const SLOT_BIAS: Record<
  * SPD의 주인은 AGI고 장비는 거드는 정도여야 한다.
  */
 export const GEAR_SPD_RATE = 0.15;
+
+/**
+ * 풀 장신구가 주는 LUK의 기준값 (§4.5, T16_1). gearShare에 비례한다.
+ *
+ * LUK은 배분 포인트라 다른 스탯처럼 "맨몸의 몇 배"로 못 잡는다 — 행운을 안 찍은
+ * 캐릭터는 맨몸 LUK이 4에서 멈춰 있어 비례시킬 바닥이 없다. 그래서 절대값을 놓고
+ * 장비 몫(gearShare)만큼 키운다: 티어 1 +1.7 → 티어 10 +16.7.
+ *
+ * 3인 이유는 **Lv50 행운 몰빵이 151**이기 때문이다. 풀세트가 17이면 몰빵의 11%라,
+ * 장신구가 행운을 거들되 배분을 대신하지는 않는다. 더 키우면 LUK 배분이 죽는다.
+ */
+export const GEAR_LUK_BASE = 3;
 
 /** 부위별 가격 몫. 합이 6.0이라 "풀세트 = 세트 가격"이 그대로 성립한다. */
 export const SLOT_PRICE: Record<GearSlot, number> = {
@@ -565,8 +585,8 @@ export function itemStat(base: number, quality: number, enhance: number): number
  *
  * 기준은 **그 레벨의 맨몸 스탯**이다. gearShare(level)만큼을 6부위가 나눠 가지므로
  * common 풀세트를 갖춰 입으면 ATK·HP·DEF가 정확히 powerScale(level)배가 된다.
- * SPD만 GEAR_SPD_RATE를 한 번 더 곱해 완만하게 준다. 크리·회피는 안 준다 —
- * 확률 스탯까지 장비가 주면 LUK·AGI 배분이 할 일이 없어진다.
+ * SPD와 LUK만 계산이 다르다 — 둘 다 맨몸이 선형(또는 고정)이라 비례시킬 바닥이 없다.
+ * 회피는 여전히 안 준다. AGI가 SPD와 회피를 다 잃으면 배분할 이유가 없어진다.
  */
 export function gearStats(level: number, slot: GearSlot, rarity: Rarity) {
   const naked = combatStats(level);
@@ -579,6 +599,10 @@ export function gearStats(level: number, slot: GearSlot, rarity: Rarity) {
     // SPD는 gearShare를 안 쓴다 — 레벨이 올라도 "풀세트 = +15%"로 일정하다.
     // 소수 한 자리로 두는 건 정수로 자르면 낮은 티어 신발이 통째로 +0이 되기 때문이다
     spd: round1(naked.spd * GEAR_SPD_RATE * RARITY_MULT[rarity] * bias.spd),
+    // LUK도 맨몸에 비례시키지 않는다 — 행운 0점이면 곱할 바닥이 4뿐이다.
+    // SPD와 같은 이유로 소수 한 자리다: 정수로 반올림하면 티어 1~2가 둘 다 +2가 되어
+    // 부적을 갈아도 아무 일이 안 일어난다
+    luk: round1(GEAR_LUK_BASE * share * bias.luk),
   };
 }
 

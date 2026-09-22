@@ -2,7 +2,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GEAR_SLOT_LABELS } from '@/content';
-import { expToNext, GEAR_SLOTS } from '@/game/formulas';
+import { expToNext, GEAR_SLOTS, STAT_PER_POINT } from '@/game/formulas';
 import { equippedStats, itemDef, itemLabel, itemStats } from '@/game/items';
 import { primaryStats, statsOf, type StatKey } from '@/game/progression';
 import type { ItemInstance } from '@/save/schema';
@@ -13,12 +13,33 @@ import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
 
-/** 배분할 수 있는 1차 스탯 4종과 그게 뭘 하는지 (§4.3). */
+/** 확률 계수를 "%p"로. 0.0025 → "0.25%p" */
+const pp = (v: number) => `${+(v * 100).toFixed(2)}%p`;
+
+/**
+ * 배분할 수 있는 1차 스탯 4종과 그게 뭘 하는지 (§4.3).
+ * 문구를 STAT_PER_POINT에서 만든다 — 손으로 적어두니 LUK이 4종이 된 뒤에도
+ * 2종만 적혀 있었다 (T16_1).
+ */
 const STATS: { key: StatKey; label: string; effect: string }[] = [
-  { key: 'str', label: '힘 STR', effect: 'ATK +2' },
-  { key: 'vit', label: '체력 VIT', effect: 'HP +10 · DEF +0.5' },
-  { key: 'agi', label: '민첩 AGI', effect: 'SPD +1.5 · 회피 +0.15%p' },
-  { key: 'luk', label: '행운 LUK', effect: '치명 +0.25%p · 드랍 +0.2%p' },
+  { key: 'str', label: '힘 STR', effect: `ATK +${STAT_PER_POINT.str.atk}` },
+  {
+    key: 'vit',
+    label: '체력 VIT',
+    effect: `HP +${STAT_PER_POINT.vit.maxHp} · DEF +${STAT_PER_POINT.vit.def}`,
+  },
+  {
+    key: 'agi',
+    label: '민첩 AGI',
+    effect: `SPD +${STAT_PER_POINT.agi.spd} · 회피 +${pp(STAT_PER_POINT.agi.eva)}`,
+  },
+  {
+    key: 'luk',
+    label: '행운 LUK',
+    effect:
+      `치명 +${pp(STAT_PER_POINT.luk.cri)} · 치명피해 +${pp(STAT_PER_POINT.luk.crd)}` +
+      ` · 드랍 +${pp(STAT_PER_POINT.luk.dropRate)} · 골드 +${pp(STAT_PER_POINT.luk.goldFind)}`,
+  },
 ];
 
 /** 장비가 얹어준 몫. 맨몸이 얼마인지 보여야 장비 값어치가 보인다 (§4.5). */
@@ -81,13 +102,17 @@ export default function Character() {
 
         <Panel title="전투력">
           <Text size="sm" dim>
-            ATK {stats.atk}
-            {bonus(gear.atk)} · DEF {stats.def}
+            ATK {stats.atk.toFixed(1)}
+            {bonus(gear.atk)} · DEF {stats.def.toFixed(1)}
             {bonus(gear.def)} · SPD {stats.spd.toFixed(1)}
           </Text>
           <Text size="sm" dim>
-            치명 {(stats.cri * 100).toFixed(2)}% (×{stats.crd}) · 회피{' '}
-            {(stats.eva * 100).toFixed(2)}% · 마법공격 {stats.matk.toFixed(1)}
+            치명 {(stats.cri * 100).toFixed(1)}% (×{stats.crd.toFixed(2)}) · 회피{' '}
+            {(stats.eva * 100).toFixed(1)}% · 마법공격 {stats.matk.toFixed(1)}
+          </Text>
+          <Text size="sm" dim>
+            드랍 {(stats.dropRate * 100).toFixed(1)}% · 골드 +
+            {(stats.goldFind * 100).toFixed(1)}%
           </Text>
         </Panel>
 

@@ -50,14 +50,18 @@ type PlayerStore = {
   enter: (fieldId: string) => boolean;
   /** 전투 하나를 판에 반영한다. 클리어·소재·보너스까지 여기서 나온다 */
   finishBattle: (outcome: Outcome, playerHp: number) => RunResult;
-  /** 사냥터 안에서 물약을 쓴다. 만피거나 없으면 false */
-  drink: (id: string) => boolean;
+  /**
+   * 사냥터 안에서 물약을 쓴다. 만피거나 없으면 false.
+   * atHp는 전투 재생 중의 현재 HP — 세이브의 HP는 전투가 끝나야 갱신된다 (§4.2).
+   */
+  drink: (id: string, atHp?: number) => boolean;
   /** 남은 포인트 1점을 스탯에 넣는다. 포인트가 없으면 false */
   allocate: (stat: StatKey) => boolean;
   /** 장비를 낀다. 레벨이 모자라거나 없는 개체면 false */
   equip: (uid: string) => boolean;
   unequip: (slot: GearSlot) => void;
   addGold: (amount: number) => void;
+  addWp: (amount: number) => void;
   /**
    * 경제 동작 하나 (§4.5). economy.ts가 null을 주면 아무것도 안 바꾸고 false.
    * 상점·여관·창고·교환이 전부 이 하나를 지난다 — 화면마다 저장 코드를 두지 않는다.
@@ -129,8 +133,8 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     return result;
   },
 
-  drink: (id) => {
-    const next = drinkPotion(get().save, id);
+  drink: (id, atHp) => {
+    const next = drinkPotion(get().save, id, atHp);
     if (!next) return false;
     set({ save: persist(next) });
     return true;
@@ -168,6 +172,12 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     const { save } = get();
     const gold = Math.max(0, save.player.gold + amount);
     set({ save: persist({ ...save, player: { ...save.player, gold } }) });
+  },
+
+  addWp: (amount) => {
+    const { save } = get();
+    const current = Math.max(0, save.wp.current + amount);
+    set({ save: persist({ ...save, wp: { ...save.wp, current } }) });
   },
 
   grantGearSet: () => {

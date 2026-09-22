@@ -56,12 +56,12 @@ export default function Adventure() {
           <Stat label="골드" value={save.player.gold} color={colors.gold} />
         </View>
         <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
-        <View style={styles.row}>
-          <Button label="새로고침" onPress={steps.refresh} />
-          {steps.status !== 'connected' && steps.status !== 'unavailable' && (
+        {/* 새로고침 버튼은 없앴다 (T16_1) — 60초 폴링과 앱 복귀가 알아서 당긴다 (§3.3) */}
+        {steps.status !== 'connected' && steps.status !== 'unavailable' && (
+          <View style={styles.row}>
             <Button label="Health Connect 연결" onPress={steps.connect} />
-          )}
-        </View>
+          </View>
+        )}
         {steps.status !== 'connected' && (
           <Text size="sm" dim>
             {steps.status === 'unavailable'

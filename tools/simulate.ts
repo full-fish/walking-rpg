@@ -114,15 +114,17 @@ function regionOf(level: number): Region {
  */
 export function buyGear(save: Save, rng: () => number): Save {
   const set = gearSetFor(save.player.level);
-  const worn = save.equipped.weapon;
-  const wornTier = worn ? itemDef(save.inventory.find((i) => i.uid === worn)!).tier : 0;
-  if (set.length === 0 || set[0].tier <= wornTier) return save;
 
-  // 무기·갑옷이 스탯의 절반을 갖고 있다 (§4.5 SLOT_BIAS). 돈이 모자라면 이 순서로 산다
-  const order = ['weapon', 'armor', 'helm', 'gloves', 'boots', 'accessory'];
+  // **사는 순서가 의미를 갖는다** (T16_1). 부위마다 성격이 갈린 뒤로 무기는 ATK만 주므로,
+  // 무기부터 사면 더 세게 때리면서 더 빨리 죽는다. 버티는 부위를 먼저 산다.
+  const order = ['armor', 'helm', 'boots', 'weapon', 'gloves', 'accessory'];
   let next = save;
   for (const def of [...set].sort((a, b) => order.indexOf(a.slot) - order.indexOf(b.slot))) {
-    if (next.player.gold < def.price) break;
+    const worn = next.equipped[def.slot];
+    const wornTier = worn ? itemDef(next.inventory.find((i) => i.uid === worn)!).tier : 0;
+    // 못 산 부위는 다음 날 다시 본다. 하루 돈이 모자랐다고 다음 티어까지 그 칸을 비워두면
+    // 실제 플레이와 다르다 — 사람은 이틀에 걸쳐 갖춰 입는다
+    if (def.tier <= wornTier || next.player.gold < def.price) continue;
     const item = makeItem(next.inventory, def.id, rng);
     next = addItem(next, item);
     next = { ...next, player: { ...next.player, gold: next.player.gold - def.price } };

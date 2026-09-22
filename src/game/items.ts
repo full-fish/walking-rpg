@@ -15,9 +15,9 @@ import {
   type GearSlot,
 } from './formulas';
 
-export type GearBonus = { atk: number; maxHp: number; def: number; spd: number };
+export type GearBonus = { atk: number; maxHp: number; def: number; spd: number; luk: number };
 
-const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0, spd: 0 };
+const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0, spd: 0, luk: 0 };
 
 /** 세이브 안에서만 유일하면 된다. 가진 것 중 가장 큰 번호 + 1. */
 export function nextUid(inventory: ItemInstance[]): string {
@@ -52,6 +52,7 @@ export function itemStats(inst: ItemInstance): GearBonus {
     def: scaled(def.def),
     // SPD만 소수 한 자리를 남긴다. 반올림하면 낮은 티어에서 전부 0이 된다
     spd: Math.round(itemStat(def.spd, inst.quality, inst.enhance) * 10) / 10,
+    luk: Math.round(itemStat(def.luk, inst.quality, inst.enhance) * 10) / 10,
   };
 }
 
@@ -82,6 +83,7 @@ export function equippedStats(save: Save): GearBonus {
       maxHp: sum.maxHp + s.maxHp,
       def: sum.def + s.def,
       spd: round1(sum.spd + s.spd),
+      luk: round1(sum.luk + s.luk),
     };
   }, NONE);
 }
@@ -114,6 +116,7 @@ export function setBonus(defs: Equipment[]): GearBonus {
       maxHp: sum.maxHp + e.maxHp,
       def: sum.def + e.def,
       spd: round1(sum.spd + e.spd),
+      luk: round1(sum.luk + e.luk),
     }),
     NONE,
   );

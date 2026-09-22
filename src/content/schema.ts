@@ -165,6 +165,8 @@ export const EquipmentSchema = z.object({
   def: z.int().min(0),
   /** 소수 한 자리. 정수로 자르면 낮은 티어 신발이 통째로 0이 된다 (§4.5) */
   spd: z.number().min(0),
+  /** 장신구만 준다 (§4.5). 소수 한 자리 — spd와 같은 이유다. 치명·드랍·골드가 같이 오른다 */
+  luk: z.number().min(0),
   /** 이 traits를 가진 몬스터에게 특효 (§4.5). 고유 장비만 가진다 */
   vs: z.array(z.string().min(1)).optional(),
   price: z.int().min(1),

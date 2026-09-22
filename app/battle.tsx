@@ -3,11 +3,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { fieldById } from '@/content';
+import { consumableById, fieldById } from '@/content';
 import { makeRng, simulateBattle, type BattleEvent, type Combatant, type Outcome } from '@/game/battle';
 import { currentMonster, type RunResult } from '@/game/field';
 import { POINTS_PER_LEVEL } from '@/game/formulas';
 import { statsOf } from '@/game/progression';
+import type { Save } from '@/save/schema';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
@@ -42,6 +43,24 @@ function eventColor(event: BattleEvent) {
 }
 
 /**
+ * 한 번에 계산해 둘 전투 하나. `monsterHp`를 주면 그 체력에서 이어서 싸운다.
+ *
+ * 물약을 마시면 여기를 **다시** 부른다 — 전투가 미리 계산된 재생이라(§4.2)
+ * 도중에 회복을 끼워 넣을 자리가 없고, 남은 싸움을 새 HP로 다시 뽑는 수밖에 없다.
+ */
+function buildBattle(save: Save, monsterHp?: number) {
+  const picked = currentMonster(save);
+  if (!picked) return null;
+  const player: Combatant = {
+    name: `Lv${save.player.level} 전사`,
+    hp: save.player.hp,
+    ...statsOf(save),
+  };
+  const monster: Combatant = { ...picked, hp: monsterHp ?? picked.maxHp };
+  return { player, monster, result: simulateBattle(player, monster, makeRng(Date.now())) };
+}
+
+/**
  * 몬스터 1마리와의 전투 화면. 상대는 **진행 중인 판(save.run)이 정해 둔 한 마리**다.
  * 판 전체(2~6마리)의 진행은 app/field.tsx가 맡는다 (§4.4).
  *
@@ -51,21 +70,11 @@ function eventColor(event: BattleEvent) {
 export default function Battle() {
   const router = useRouter();
   const finishBattle = usePlayer((s) => s.finishBattle);
+  const drink = usePlayer((s) => s.drink);
   const save = usePlayer((s) => s.save);
 
-  // 전투는 화면에 들어올 때 딱 한 번 계산한다. 세이브에 남은 HP에서 이어서 싸운다 (§4.2).
-  const [battle] = useState(() => {
-    const stats = statsOf(save);
-    const player: Combatant = {
-      name: `Lv${save.player.level} 전사`,
-      hp: save.player.hp,
-      ...stats,
-    };
-    const picked = currentMonster(save);
-    if (!picked) return null;
-    const monster: Combatant = { ...picked, hp: picked.maxHp };
-    return { player, monster, result: simulateBattle(player, monster, makeRng(Date.now())) };
-  });
+  // 전투는 화면에 들어올 때 계산한다. 세이브에 남은 HP에서 이어서 싸운다 (§4.2).
+  const [battle, setBattle] = useState(() => buildBattle(save));
 
   const [cursor, setCursor] = useState(0);
   const [settled, setSettled] = useState<RunResult | null>(null);
@@ -110,6 +119,14 @@ export default function Battle() {
   const monsterHp = hpAfterLastHitBy(played, 'player', battle.monster.hp);
   const playerHp = hpAfterLastHitBy(played, 'monster', battle.player.hp);
   const last = played.at(-1);
+  const potions = Object.entries(save.run?.potions ?? {}).filter(([, n]) => n > 0);
+
+  /** 재생을 멈추고 지금 HP에서 회복한 뒤, 남은 싸움을 다시 뽑는다. */
+  const onDrink = (id: string) => {
+    if (!drink(id, playerHp)) return;
+    setBattle(buildBattle(usePlayer.getState().save, monsterHp));
+    setCursor(0);
+  };
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
@@ -183,8 +200,19 @@ export default function Battle() {
           />
         </Panel>
       ) : (
-        // 도망은 재생을 멈추고 그 시점 HP로 정산한다. 항상 성공한다 (§4.2).
-        <Button label="도망" onPress={() => finish('flee', playerHp)} />
+        <View style={styles.actions}>
+          {potions.map(([id, n]) => (
+            <Button
+              key={id}
+              label={`${consumableById(id).name} ×${n}`}
+              tone="gold"
+              disabled={playerHp >= battle.player.maxHp}
+              onPress={() => onDrink(id)}
+            />
+          ))}
+          {/* 도망은 재생을 멈추고 그 시점 HP로 정산한다. 항상 성공한다 (§4.2). */}
+          <Button label="도망" onPress={() => finish('flee', playerHp)} />
+        </View>
       )}
     </SafeAreaView>
   );
@@ -196,4 +224,5 @@ const styles = StyleSheet.create({
   popup: { height: 32, justifyContent: 'center' },
   // 로그가 채워지는 동안 패널 높이가 커지지 않게 미리 자리를 잡아둔다.
   log: { minHeight: LOG_LINES * 18, gap: space.xs },
+  actions: { flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' },
 });

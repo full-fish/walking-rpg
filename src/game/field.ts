@@ -114,14 +114,19 @@ export function currentMonster(save: Save): Monster | null {
 
 /**
  * 사냥터 안에서 물약을 쓴다 (§4.4). 만피거나 없으면 null.
- * 이름이 drinkPotion이 아닌 건 lint가 React 훅으로 오해하기 때문이다.
+ *
+ * `atHp`는 **전투 재생 중의 현재 HP**다. 전투는 화면에 들어올 때 한 번에 계산해 두고
+ * 0.6초마다 재생만 하므로(§4.2), 재생이 끝날 때까지 세이브의 HP는 전투 시작 시점에
+ * 멈춰 있다. 전투 화면은 지금 보이는 HP를 넘겨주고, 그 값부터 회복한다.
+ *
+ * 이름이 usePotion이 아닌 건 lint가 React 훅으로 오해하기 때문이다.
  */
-export function drinkPotion(save: Save, id: string): Save | null {
+export function drinkPotion(save: Save, id: string, atHp = save.player.hp): Save | null {
   const run = save.run;
   if (!run || (run.potions[id] ?? 0) <= 0) return null;
 
   const maxHp = statsOf(save).maxHp;
-  if (save.player.hp >= maxHp) return null;
+  if (atHp >= maxHp) return null;
 
   const def = consumableById(id);
   const healed = def.heal + Math.round(maxHp * def.healRatio);
@@ -130,7 +135,7 @@ export function drinkPotion(save: Save, id: string): Save | null {
 
   return {
     ...save,
-    player: { ...save.player, hp: Math.min(maxHp, save.player.hp + healed) },
+    player: { ...save.player, hp: Math.min(maxHp, atHp + healed) },
     run: { ...run, potions },
   };
 }

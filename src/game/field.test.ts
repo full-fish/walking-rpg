@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { equipmentById, fieldById, monstersOfField } from '../content';
+import { consumableById, equipmentById, fieldById, monstersOfField } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import { makeRng, simulateBattle, type Combatant } from './battle';
 import {
@@ -76,6 +76,21 @@ test('사냥터 안에서만 물약을 쓴다. 만피면 안 쓴다', () => {
   const hurt = { ...entered, player: { ...entered.player, hp: 10 } };
   const healed = drinkPotion(hurt, 'pot_small')!;
   expect(healed.player.hp).toBe(statsOf(hurt).maxHp);
+  expect(carriedPotions(healed.run!)).toBe(POTION_CARRY_MAX - 1);
+});
+
+test('전투 중 물약은 세이브가 아니라 지금 보이는 HP부터 회복한다 (§4.2)', () => {
+  const entered = enterField(ready({ consumables: { pot_small: 3 } }), FIELD, makeRng(1))!;
+  const maxHp = statsOf(entered).maxHp;
+  const def = consumableById('pot_small');
+  const heal = def.heal + Math.round(maxHp * def.healRatio);
+
+  // 전투가 재생되는 동안 세이브의 HP는 전투 시작 시점에 멈춰 있다 — 여기서는 만피다
+  expect(entered.player.hp).toBe(maxHp);
+  expect(drinkPotion(entered, 'pot_small'), 'atHp가 없으면 만피라 거절한다').toBeNull();
+
+  const healed = drinkPotion(entered, 'pot_small', 1)!;
+  expect(healed.player.hp, '만피가 아니라 1에서 회복한다').toBe(Math.min(maxHp, 1 + heal));
   expect(carriedPotions(healed.run!)).toBe(POTION_CARRY_MAX - 1);
 });
 
