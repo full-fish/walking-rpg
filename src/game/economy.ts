@@ -11,12 +11,13 @@ import {
   ENHANCE_MAX,
   enhanceCost,
   enhanceRate,
-  INVENTORY_MAX,
+  BAG,
+  bagExpandCost,
   SELL_RATE,
   VAULT,
   vaultExpandCost,
 } from './formulas';
-import { itemDef, makeItem } from './items';
+import { bagFull, itemDef, makeItem } from './items';
 import { addItem, statsOf, withStatChange } from './progression';
 
 /** 골드를 더하고 뺀다. 음수 잔고는 여기서 막는다. */
@@ -48,7 +49,7 @@ export function buyEquipment(save: Save, defId: string, rng: () => number): Save
   const def = equipmentById(defId);
   // 고유 장비는 골드로 못 산다. 소재로만 바꾼다 (§4.4)
   if (def.rarity === 'unique') return null;
-  if (save.inventory.length >= INVENTORY_MAX) return null;
+  if (bagFull(save)) return null;
 
   const paid = withGold(save, -def.price);
   if (!paid) return null;
@@ -168,6 +169,18 @@ export function vaultExpand(save: Save): Save | null {
   };
 }
 
+/** 가방을 BAG.step칸 늘린다 (§4.5, T17_2). 값은 확장 횟수를 따라 1.6배씩 오른다. */
+export function bagExpand(save: Save): Save | null {
+  if (save.bag.expansions >= BAG.maxExpansions) return null;
+
+  const paid = withGold(save, -bagExpandCost(save.bag.expansions));
+  if (!paid) return null;
+  return {
+    ...paid,
+    bag: { capacity: paid.bag.capacity + BAG.step, expansions: paid.bag.expansions + 1 },
+  };
+}
+
 // ─────────────────────────────────────────────────────────────
 // 고유 장비 교환 (§4.4, §4.5)
 // ─────────────────────────────────────────────────────────────
@@ -181,7 +194,7 @@ export function exchangeUnique(save: Save, fieldId: string, rng: () => number): 
   const field = fieldById(fieldId);
   const { material, gold } = field.reward.cost;
   if (count(save.materials, fieldId) < material) return null;
-  if (save.inventory.length >= INVENTORY_MAX) return null;
+  if (bagFull(save)) return null;
 
   const paid = withGold(save, -gold);
   if (!paid) return null;

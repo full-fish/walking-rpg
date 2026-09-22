@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
-import { ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN, VAULT } from '../game/formulas';
+import { BAG, ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN, VAULT } from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 6;
+export const SAVE_VERSION = 7;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
@@ -64,6 +64,11 @@ export const SaveSchema = z.object({
     capacity: z.int().min(0),
     expansions: z.int().min(0).max(VAULT.maxExpansions),
   }),
+  /** 가방 칸 수 (§4.5, T17_2). **낀 장비는 안 센다.** 상점에서 늘린다 */
+  bag: z.object({
+    capacity: z.int().min(1),
+    expansions: z.int().min(0).max(BAG.maxExpansions),
+  }),
   /** 사냥터 고유 소재 — fieldId → 개수 (§4.4). 실제 드랍은 T16 */
   materials: z.record(z.string(), z.int().min(0)),
   /** 물약·엘릭서 — id → 개수 (§4.5). 사냥터에 들고 가는 건 최대 3개 (§4.4) */
@@ -111,6 +116,7 @@ export function defaultSave(): Save {
     inventory: [],
     equipped: Object.fromEntries(GEAR_SLOTS.map((s) => [s, null])) as Save['equipped'],
     vault: { gold: 0, capacity: VAULT.capacity, expansions: 0 },
+    bag: { capacity: BAG.capacity, expansions: 0 },
     materials: {},
     consumables: {},
     run: null,

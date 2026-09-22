@@ -4,6 +4,7 @@ import { equipmentById, fieldById, regionById } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import { makeRng } from './battle';
 import {
+  bagExpand,
   buyConsumable,
   buyEquipment,
   depositNet,
@@ -18,6 +19,8 @@ import {
   vaultWithdraw,
 } from './economy';
 import {
+  BAG,
+  bagExpandCost,
   DEATH_GOLD_LOSS,
   ENHANCE_MAX,
   enhanceCost,
@@ -26,8 +29,8 @@ import {
   VAULT,
   vaultExpandCost,
 } from './formulas';
-import { itemStats } from './items';
-import { equipItem, settleBattle, statsOf } from './progression';
+import { bagFull, bagItems, itemStats } from './items';
+import { addItem, equipItem, settleBattle, sortInventory, statsOf, unequipSlot } from './progression';
 
 const rng = () => 0.5;
 
@@ -251,4 +254,72 @@ test('낀 장비를 강화하면 현재 HP도 같이 오른다 (장착과 같은
   const after = enhanceItem(save, uid, () => 0)!.save;
   expect(statsOf(after).maxHp).toBeGreaterThan(before);
   expect(after.player.hp).toBe(statsOf(after).maxHp);
+});
+
+test('가방 — 낀 장비는 칸을 안 쓴다 (§4.5, T17_2)', () => {
+  let save = rich(1_000_000);
+  expect(save.bag.capacity).toBe(BAG.capacity);
+
+  // 기본 20칸을 꽉 채운다
+  for (let i = 0; i < BAG.capacity; i++) {
+    save = buyEquipment(save, 'eq_t1_weapon_common', rng)!;
+  }
+  expect(bagItems(save)).toHaveLength(BAG.capacity);
+  expect(bagFull(save)).toBe(true);
+  expect(buyEquipment(save, 'eq_t1_weapon_common', rng), '차면 안 판다').toBeNull();
+
+  // 하나 끼면 가방에서 빠진다 — 낀 건 몸에 있지 가방에 있는 게 아니다
+  const equipped = equipItem(save, save.inventory[0].uid)!;
+  expect(bagItems(equipped)).toHaveLength(BAG.capacity - 1);
+  expect(bagFull(equipped)).toBe(false);
+  expect(buyEquipment(equipped, 'eq_t1_weapon_common', rng), '자리가 생겼다').not.toBeNull();
+});
+
+test('가방이 차 있으면 장비를 못 벗는다 (T17_2)', () => {
+  let save = rich(1_000_000);
+  save = buyEquipment(save, 'eq_t1_weapon_common', rng)!;
+  save = equipItem(save, save.inventory[0].uid)!;
+
+  // 낀 것 하나 + 가방 20칸이 꽉 찬 상태
+  for (let i = 0; i < BAG.capacity; i++) {
+    save = buyEquipment(save, 'eq_t1_helm_common', rng)!;
+  }
+  expect(bagFull(save)).toBe(true);
+  expect(unequipSlot(save, 'weapon'), '벗을 자리가 없다').toBe(save);
+
+  // 한 칸 비우면 벗어진다
+  const sold = sellItem(save, bagItems(save)[0].uid)!;
+  expect(unequipSlot(sold, 'weapon').equipped.weapon).toBeNull();
+});
+
+test('가방 확장 — 값이 1.6배씩 오르고 8회가 상한이다 (§4.5, T17_2)', () => {
+  let save = rich(10_000_000);
+  const first = bagExpandCost(0);
+  expect(bagExpand(rich(first - 1)), '골드가 모자라면 null').toBeNull();
+
+  for (let i = 0; i < BAG.maxExpansions; i++) {
+    const before = save.player.gold;
+    save = bagExpand(save)!;
+    expect(before - save.player.gold).toBe(bagExpandCost(i));
+  }
+  expect(save.bag.capacity).toBe(BAG.capacity + BAG.step * BAG.maxExpansions);
+  expect(bagExpand(save), '9회째는 거부').toBeNull();
+});
+
+test('성능순 정렬 — 누른 그 시점 기준이고, 뒤에 얻은 건 맨 뒤로 간다 (T17_2)', () => {
+  const base = rich(0);
+  const item = (uid: string, defId: string) => ({ uid, defId, quality: 1, enhance: 0 });
+  // 일부러 약한 것부터가 아닌 순서로 넣는다
+  let save: Save = { ...base, inventory: [] };
+  save = addItem(save, item('1', 'eq_t3_weapon_common'));
+  save = addItem(save, item('2', 'eq_t9_weapon_common'));
+  save = addItem(save, item('3', 'eq_t6_weapon_common'));
+
+  const sorted = sortInventory(save);
+  expect(sorted.inventory.map((i) => i.uid)).toEqual(['2', '3', '1']);
+
+  // 정렬 뒤에 얻은 건 성능과 상관없이 맨 뒤다 — 정렬은 상태가 아니라 한 번의 동작이다
+  const later = addItem(sorted, item('4', 'eq_t10_weapon_common'));
+  expect(later.inventory.map((i) => i.uid)).toEqual(['2', '3', '1', '4']);
+  expect(sortInventory(later).inventory.map((i) => i.uid)).toEqual(['4', '2', '3', '1']);
 });

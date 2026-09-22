@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GEAR_SLOT_LABELS } from '@/content';
 import { expToNext, GEAR_SLOTS, STAT_PER_POINT, type GearSlot } from '@/game/formulas';
-import { equippedStats, itemDef, itemPower, itemStats } from '@/game/items';
+import { bagItems, equippedStats, itemDef, itemPower, itemStats } from '@/game/items';
 import {
   primaryStats,
   respecCost,
@@ -75,14 +75,13 @@ export default function Character() {
   const respec = usePlayer((s) => s.respec);
   const equip = usePlayer((s) => s.equip);
   const unequip = usePlayer((s) => s.unequip);
+  const sortBag = usePlayer((s) => s.sortBag);
 
   const [tab, setTab] = useState<Tab>('캐릭터');
   /** 장비·가방 모두 보기 방식을 고를 수 있다 (T17_1). 취향이라 기본은 그림 쪽으로 둔다 */
   const [doll, setDoll] = useState(true);
   const [grid, setGrid] = useState(true);
   const [filter, setFilter] = useState<GearSlot | null>(null);
-  /** 한 번 누르면 성능순으로 굳는다 (T17_2). 획득순으로 되돌릴 일이 없다 */
-  const [byPower, setByPower] = useState(false);
   /** 빈 칸을 누르면 그 부위에 낄 수 있는 것들을 편다 (T17_2) */
   const [picking, setPicking] = useState<GearSlot | null>(null);
 
@@ -93,7 +92,6 @@ export default function Character() {
   const spent = STATS.reduce((sum, { key }) => sum + save.statPoints[key], 0);
 
   const gear = equippedStats(save);
-  const worn = new Set(Object.values(save.equipped));
 
   const equippedIn = (slot: GearSlot) => {
     const uid = save.equipped[slot];
@@ -104,10 +102,8 @@ export default function Character() {
    * 가방에는 **안 낀 것만** 들어 있다 (T17_2). 낀 물건까지 같이 두면 같은 물건이
    * 두 군데 보여서, 어느 쪽을 눌러야 하는지가 매번 헷갈린다.
    */
-  const unworn = save.inventory.filter((i) => !worn.has(i.uid));
-  const bag = unworn
-    .filter((i) => filter === null || itemDef(i).slot === filter)
-    .sort((a, b) => (byPower ? itemPower(b) - itemPower(a) : 0));
+  const unworn = bagItems(save);
+  const bag = unworn.filter((i) => filter === null || itemDef(i).slot === filter);
 
   /** 낀 칸은 벗고, 빈 칸은 후보를 편다 (T17_2). */
   const onSlot = (slot: GearSlot) => {
@@ -325,11 +321,8 @@ export default function Character() {
             <View style={styles.tabs}>
               <Button label="격자" tone={grid ? 'gold' : 'normal'} onPress={() => setGrid(true)} />
               <Button label="목록" tone={grid ? 'normal' : 'gold'} onPress={() => setGrid(false)} />
-              <Button
-                label="성능순"
-                tone={byPower ? 'gold' : 'normal'}
-                onPress={() => setByPower(true)}
-              />
+              {/* 누를 때마다 그 시점 기준으로 다시 줄 세운다. 뒤에 얻는 건 다시 맨 뒤로 */}
+              <Button label="성능순 정렬" onPress={sortBag} />
             </View>
 
             <View style={styles.tabs}>
@@ -348,7 +341,7 @@ export default function Character() {
               ))}
             </View>
 
-            <Panel title={`가방 ${bag.length} / ${unworn.length}`}>
+            <Panel title={`가방 ${unworn.length} / ${save.bag.capacity}`}>
               {bag.length === 0 ? (
                 <Text size="sm" dim>
                   비어 있습니다.

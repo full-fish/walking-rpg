@@ -1,4 +1,4 @@
-import { GEAR_SLOTS, POINTS_PER_LEVEL, VAULT } from '../game/formulas';
+import { BAG, GEAR_SLOTS, POINTS_PER_LEVEL, VAULT } from '../game/formulas';
 import { SAVE_VERSION } from './schema';
 
 /** vN 세이브를 v(N+1) 모양으로 바꾼다. version 필드는 migrate()가 알아서 올린다. */
@@ -70,6 +70,16 @@ export const migrations: Record<number, Migration> = {
 
   /** v5 → v6: 진행 중인 판 (§4.4). 업데이트한 순간 사냥터 밖이므로 null이다 */
   5: (s) => ({ ...s, run: null }),
+
+  /**
+   * v6 → v7: 가방 칸 수 (§4.5, T17_2).
+   * 전에는 60칸이 공짜였으니 **이미 가진 것은 그대로 들고 있게** 기본 20과 비교해 큰 쪽을 준다 —
+   * 업데이트했다고 남의 장비를 버릴 수는 없다. 확장 횟수는 0이라 값은 처음부터 낸다.
+   */
+  6: (s) => {
+    const owned = Array.isArray(s.inventory) ? s.inventory.length : 0;
+    return { ...s, bag: { capacity: Math.max(BAG.capacity, owned), expansions: 0 } };
+  },
 };
 
 /**

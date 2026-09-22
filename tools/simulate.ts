@@ -16,7 +16,7 @@ import {
   type Region,
 } from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
-import { buyConsumable, stayInn } from '../src/game/economy';
+import { buyConsumable, sellItem, stayInn } from '../src/game/economy';
 import { currentMonster, drinkPotion, enterField, settleRun } from '../src/game/field';
 import {
   expToNext,
@@ -129,6 +129,9 @@ export function buyGear(save: Save, rng: () => number): Save {
     next = addItem(next, item);
     next = { ...next, player: { ...next.player, gold: next.player.gold - def.price } };
     next = equipItem(next, item.uid) ?? next;
+    // 갈아입은 구 장비는 판다 (§4.5). 안 팔면 가방 20칸이 열 티어를 못 버틴다 —
+    // 실제로도 가방을 늘리거나 파는 것 중 하나는 해야 한다 (T17_2)
+    if (worn) next = sellItem(next, worn) ?? next;
   }
   return next;
 }

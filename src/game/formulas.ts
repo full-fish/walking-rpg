@@ -524,9 +524,6 @@ export const QUALITY_MAX = 1.2;
  */
 export const UNIQUE_TRAIT_BONUS = 0.2;
 
-/** 인벤토리 상한. 차면 드랍만 건너뛰고 사냥은 계속된다 (§4.5). */
-export const INVENTORY_MAX = 60;
-
 /** 강화 (§4.5). 최종 스탯 = 기본 × quality × 1.1^강화. */
 export const ENHANCE_MAX = 10;
 export const ENHANCE_MULT = 1.1;
@@ -654,6 +651,31 @@ export function gearPrice(refLevel: number, slot: GearSlot, rarity: Rarity): num
 
 /** 장비를 되팔 때 받는 비율 (§4.5). 정가 × 품질 × 이 값. */
 export const SELL_RATE = 0.25;
+
+/**
+ * 가방 (§4.5, T17_2). **낀 장비는 안 센다** — 몸에 있는 것이지 가방에 있는 게 아니다.
+ *
+ * 20에서 시작해 8번 늘리면 60이다. 60은 T13부터 쓰던 상한이고, 이제 공짜가 아니라
+ * 사야 하는 것이 됐다. 차면 드랍만 건너뛰고 사냥은 계속된다.
+ */
+export const BAG = {
+  capacity: 20,
+  /** 확장 한 번에 늘어나는 칸 */
+  step: 5,
+  /** 8회 → 60칸 */
+  maxExpansions: 8,
+  /** 확장마다 값이 1.6배 */
+  growth: 1.6,
+} as const;
+
+/**
+ * 다음 확장에 드는 골드 (§4.5). 첫 번째가 **지역 1 하루 수입의 반나절치**고
+ * 거기서 1.6배씩 오른다 — 1,010 → 1,616 → … → 27,112, 8번 다 하면 약 70,600이다.
+ * 평생 수입(약 95만)의 7% 정도라, 강화·창고와 나란히 놓을 만한 크기다.
+ */
+export function bagExpandCost(expansions: number): number {
+  return Math.round(REGION_DAILY_GOLD[0] * 0.5 * BAG.growth ** expansions);
+}
 
 /** 창고 (§3.7). 한도가 진짜 제약이고, 넘치는 만큼은 들고 다녀야 한다. */
 export const VAULT = {

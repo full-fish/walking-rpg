@@ -122,6 +122,20 @@ export function equippedBonusVs(save: Save): Record<string, number> {
   return bonus;
 }
 
+/**
+ * 가방에 실제로 들어 있는 것 = **안 낀 것** (§4.5, T17_2).
+ * 낀 장비까지 세면 같은 물건이 장비 칸과 가방에 두 번 보여서 어느 쪽을 눌러야 할지 헷갈린다.
+ */
+export function bagItems(save: Save): ItemInstance[] {
+  const worn = new Set(GEAR_SLOTS.map((slot) => save.equipped[slot]));
+  return save.inventory.filter((i) => !worn.has(i.uid));
+}
+
+/** 가방이 꽉 찼나. 드랍·구매·해제가 이걸 본다. */
+export function bagFull(save: Save): boolean {
+  return bagItems(save).length >= save.bag.capacity;
+}
+
 /** 그 칸에 낀 것. 없으면 undefined. */
 export function equippedIn(save: Save, slot: GearSlot): ItemInstance | undefined {
   const uid = save.equipped[slot];

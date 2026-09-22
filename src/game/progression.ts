@@ -20,7 +20,7 @@ import {
   type SpendableStat,
   type StatSpend,
 } from './formulas';
-import { equippedBonusVs, equippedStats, itemByUid, itemDef } from './items';
+import { bagFull, equippedBonusVs, equippedStats, itemByUid, itemDef, itemPower } from './items';
 import { spendWp } from './wp';
 
 /** 몬스터 1마리를 잡고 받는 것. */
@@ -282,10 +282,22 @@ export function equipItem(save: Save, uid: string): Save | null {
   return withGear(save, { ...save.equipped, [def.slot]: uid });
 }
 
-/** 그 칸을 비운다. 벗은 건 인벤토리에 그대로 남아 있다. */
+/**
+ * 그 칸을 비운다. 벗은 건 가방으로 간다 — **가방이 차 있으면 못 벗는다** (T17_2).
+ * 낀 장비는 가방 칸을 안 쓰므로, 벗는 순간 한 칸이 필요해진다.
+ */
 export function unequipSlot(save: Save, slot: GearSlot): Save {
-  if (save.equipped[slot] === null) return save;
+  if (save.equipped[slot] === null || bagFull(save)) return save;
   return withGear(save, { ...save.equipped, [slot]: null });
+}
+
+/**
+ * 가방을 성능순으로 다시 늘어놓는다 (T17_2).
+ * **상태가 아니라 한 번의 동작이다** — 누른 그 시점 기준으로 줄을 세우고,
+ * 그 뒤에 얻는 것은 다시 맨 뒤에 붙는다. 또 정리하고 싶으면 다시 누른다.
+ */
+export function sortInventory(save: Save): Save {
+  return { ...save, inventory: [...save.inventory].sort((a, b) => itemPower(b) - itemPower(a)) };
 }
 
 /**

@@ -5,6 +5,7 @@ import type { Outcome } from '@/game/battle';
 import { enterField, settleRun, drinkPotion, type RunResult } from '@/game/field';
 import {
   buyConsumable,
+  bagExpand,
   buyEquipment,
   enhanceItem,
   exchangeUnique,
@@ -26,6 +27,7 @@ import {
   equipItem,
   settleBattle,
   respec,
+  sortInventory,
   spendPoint,
   statsOf,
   unequipSlot,
@@ -63,6 +65,8 @@ type PlayerStore = {
   /** 장비를 낀다. 레벨이 모자라거나 없는 개체면 false */
   equip: (uid: string) => boolean;
   unequip: (slot: GearSlot) => void;
+  /** 가방을 지금 기준으로 성능순 정렬한다 (T17_2) */
+  sortBag: () => void;
   addGold: (amount: number) => void;
   addWp: (amount: number) => void;
   /**
@@ -171,6 +175,8 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     set({ save: persist(next) });
   },
 
+  sortBag: () => set({ save: persist(sortInventory(get().save)) }),
+
   trade: (change) => {
     const next = change(get().save);
     if (!next) return false;
@@ -225,5 +231,6 @@ export const trades = {
   deposit: (amount: number) => (save: Save) => vaultDeposit(save, amount),
   withdraw: (amount: number) => (save: Save) => vaultWithdraw(save, amount),
   expand: () => (save: Save) => vaultExpand(save),
+  expandBag: () => (save: Save) => bagExpand(save),
   exchange: (fieldId: string) => (save: Save) => exchangeUnique(save, fieldId, Math.random),
 };

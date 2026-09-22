@@ -13,6 +13,8 @@ import {
 import { depositNet, sellPrice } from '@/game/economy';
 import { inTown } from '@/game/field';
 import {
+  BAG,
+  bagExpandCost,
   ENHANCE_MAX,
   enhanceCost,
   enhanceExpected,
@@ -20,7 +22,7 @@ import {
   VAULT,
   vaultExpandCost,
 } from '@/game/formulas';
-import { itemLabel } from '@/game/items';
+import { bagItems, itemLabel } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
@@ -135,6 +137,26 @@ export default function Shop() {
                     onPress={() => trade(trades.buyEquipment(e.id))}
                   />
                 ))}
+            </Panel>
+
+            <Panel title={`가방 — ${bagItems(save).length} / ${save.bag.capacity}칸`}>
+              <Row
+                title={`가방 ${BAG.step}칸 늘리기`}
+                detail={
+                  save.bag.expansions >= BAG.maxExpansions
+                    ? `더 못 늘립니다 (${BAG.maxExpansions}회 상한)`
+                    : `${bagExpandCost(save.bag.expansions).toLocaleString()}G · ${save.bag.capacity} → ${save.bag.capacity + BAG.step}칸`
+                }
+                action="확장"
+                disabled={
+                  save.bag.expansions >= BAG.maxExpansions ||
+                  gold < bagExpandCost(save.bag.expansions)
+                }
+                onPress={() => trade(trades.expandBag())}
+              />
+              <Text size="sm" dim>
+                낀 장비는 칸을 안 씁니다. 가방이 차면 드랍을 못 줍고 장비도 못 벗습니다.
+              </Text>
             </Panel>
 
             <Panel title="팔기 — 낀 것은 안 팝니다">

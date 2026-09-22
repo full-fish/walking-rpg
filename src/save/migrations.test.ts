@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { VAULT } from '../game/formulas';
+import { BAG, VAULT } from '../game/formulas';
 import { migrate } from './migrations';
 import { defaultSave, SAVE_VERSION, SaveSchema } from './schema';
 
@@ -118,4 +118,38 @@ test('v4 → v5: 창고·소재·소모품이 생긴다 (§3.7, §4.5)', () => {
   expect(v5.vault).toEqual({ gold: 0, capacity: VAULT.capacity, expansions: 0 });
   expect(v5.materials).toEqual({});
   expect(v5.consumables).toEqual({});
+});
+
+test('v6 → v7: 가방 칸이 생기고, 이미 가진 건 안 버린다 (§4.5, T17_2)', () => {
+  const base = {
+    version: 6,
+    player: { level: 30, exp: 0, gold: 1_000, hp: 500 },
+    wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
+    hpUpdatedAt: 1,
+    statPoints: { unspent: 0, str: 29, vit: 29, agi: 29, luk: 0, int: 0 },
+    equipped: { weapon: null, helm: null, armor: null, gloves: null, boots: null, accessory: null },
+    vault: { gold: 0, capacity: VAULT.capacity, expansions: 0 },
+    materials: {},
+    consumables: {},
+    run: null,
+    regionProgress: { current: 3, unlocked: 3 },
+  };
+  const item = (uid: number) => ({
+    uid: String(uid),
+    defId: 'eq_t5_weapon_common',
+    quality: 1,
+    enhance: 0,
+  });
+
+  // 가진 게 적으면 기본 20칸
+  const small = SaveSchema.parse(migrate({ ...base, inventory: [item(1), item(2)] }));
+  expect(small.bag).toEqual({ capacity: BAG.capacity, expansions: 0 });
+
+  // 60칸이 공짜이던 시절에 꽉 채워둔 세이브는 그만큼 들고 있게 둔다.
+  // 업데이트했다고 남의 장비를 버릴 수는 없다
+  const full = SaveSchema.parse(
+    migrate({ ...base, inventory: Array.from({ length: 45 }, (_, i) => item(i + 1)) }),
+  );
+  expect(full.bag.capacity).toBe(45);
+  expect(full.inventory).toHaveLength(45);
 });
