@@ -146,10 +146,15 @@ export const STAT_PER_POINT = {
   agi: { spd: 1.5, eva: 0.0015 },
   /**
    * 치명 확률만으로는 너무 얇아서 몰빵이 Lv50에 못 갔다 (T13 시뮬 400일 미달).
-   * 확률과 배율을 같이 올리고 골드 획득률까지 준다 — 기댓값을 증폭하는 스탯이라는 성격 그대로,
-   * 대신 실제로 증폭되게 한다. dropRate는 드랍이 붙는 T16부터 일한다.
+   * 확률과 배율을 같이 올리고 골드·드랍까지 준다 — 기댓값을 증폭하는 스탯이라는 성격 그대로,
+   * 대신 실제로 증폭되게 한다.
+   *
+   * **cri·crd는 가산, dropRate·goldFind는 곱산이다** (T17). 뒤의 둘은 1점당 ×1.01이라
+   * 151점(Lv50 몰빵)이면 4.45배가 된다 — 행운이 후반에 급격히 붙는 건 의도다.
+   * dropRate는 **장비 드랍에만** 곱한다(T19). 사냥터 소재는 6마리 완주 확정이라
+   * 확률이 끼어들 자리가 없다 (§4.4).
    */
-  luk: { cri: 0.0025, crd: 0.005, dropRate: 0.002, goldFind: 0.002 },
+  luk: { cri: 0.0025, crd: 0.005, dropRate: 0.01, goldFind: 0.01 },
   /** 마법사용. 쓸 데가 생기는 건 스킬이 들어오는 T18이라 아직 배분 대상이 아니다 */
   int: { maxMp: 10, matk: 2 },
 } as const;
@@ -240,10 +245,10 @@ export function combatStats(level: number, job: JobId = 'warrior', spend?: StatS
     cri: BASE_STATS.cri + STAT_PER_POINT.luk.cri * s.luk,
     crd: BASE_STATS.crd + STAT_PER_POINT.luk.crd * s.luk,
     eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * s.agi,
-    /** 드랍률 가산. 쓰는 건 T16 */
-    dropRate: STAT_PER_POINT.luk.dropRate * s.luk,
-    /** 골드 획득률 가산. killReward가 골드에만 곱한다 (EXP는 안 건드린다) */
-    goldFind: STAT_PER_POINT.luk.goldFind * s.luk,
+    /** 장비 드랍 배율 (T19). 소재에는 안 붙는다 — 6마리 완주 확정이다 (§4.4) */
+    dropMult: (1 + STAT_PER_POINT.luk.dropRate) ** s.luk,
+    /** 골드 배율. killReward가 골드에만 곱한다 (EXP는 안 건드린다) */
+    goldMult: (1 + STAT_PER_POINT.luk.goldFind) ** s.luk,
     /** 피해배율 K의 기준선 — 스탯에 곱하는 값이 아니다 (§4.2) */
     scale: powerScale(level),
   };
@@ -386,8 +391,9 @@ export const CLEAR_BONUS_RATE = 0.2;
 export const POTION_CARRY_MAX = 3;
 
 /**
- * 소재가 확정으로 떨어지는 마릿수 (§4.4). 이보다 적은 판은 LUK의 dropRate로만 나온다 —
- * 행운을 찍으면 4마리 판에서도 가끔 나오게 해서, 안 쓰이던 스탯에 일을 준다 (§4.3).
+ * 소재가 떨어지는 마릿수 (§4.4). **이 미만은 아예 안 나온다** — 확률이 아니라 0이다.
+ * 마릿수 뽑기 자체가 이미 도박이라(10%가 6마리) 그 위에 드랍 확률을 한 겹 더 얹으면
+ * "6마리를 뽑았나"라는 단 하나의 질문이 흐려진다 (T17).
  */
 export const MATERIAL_GUARANTEED_SIZE = 6;
 

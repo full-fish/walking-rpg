@@ -5,6 +5,7 @@ import {
   DEATH_GOLD_LOSS,
   HP_REGEN_INTERVAL_MS,
   POINTS_PER_LEVEL,
+  WP_COST,
   expToNext,
   monsterExp,
   monsterGold,
@@ -14,6 +15,8 @@ import {
   applyRegen,
   killReward,
   regenHp,
+  respec,
+  RESPEC_FREE_BELOW,
   settleBattle,
   spendPoint,
   statsOf,
@@ -171,4 +174,53 @@ test('전투 → 보상 → 레벨업 → 저장 한 바퀴 (T9 완료 기준)',
   expect(save.player.gold).toBe(reward.gold * kills);
   expect(save.statPoints.unspent).toBe((save.player.level - 1) * POINTS_PER_LEVEL);
   expect(save.player.exp).toBeLessThan(expToNext(save.player.level));
+});
+
+test('재분배 — 배분을 전부 되돌리고 WP를 낸다 (§4.3, T17)', () => {
+  const rich = (level: number): Save => {
+    const base = at(level);
+    return {
+      ...base,
+      wp: { ...base.wp, current: 100_000 },
+      statPoints: { unspent: 2, str: 10, vit: 20, agi: 5, luk: 0, int: 0 },
+    };
+  };
+
+  // Lv10 이전은 무료 — WP가 한 점도 안 나간다
+  const young = rich(RESPEC_FREE_BELOW - 1);
+  const freed = respec(young)!;
+  expect(freed.wp.current, '무료').toBe(young.wp.current);
+  expect(freed.statPoints.unspent, '쓴 35점 + 남아 있던 2점').toBe(37);
+  expect(freed.statPoints.vit).toBe(0);
+  expect(freed.statPoints.int, 'INT는 배분 대상이 아니라 안 건드린다').toBe(0);
+
+  // Lv10부터는 돈을 낸다
+  const old = rich(RESPEC_FREE_BELOW);
+  const paid = respec(old)!;
+  expect(old.wp.current - paid.wp.current).toBe(WP_COST.statRespec);
+
+  // WP가 모자라면 아무것도 안 바꾸고 null
+  const broke: Save = { ...old, wp: { ...old.wp, current: WP_COST.statRespec - 1 } };
+  expect(respec(broke)).toBeNull();
+});
+
+test('재분배로 HP를 채울 수 없다 — 최대치로 자르기만 한다 (§4.3, T17)', () => {
+  const base = at(30);
+  const build: Save = {
+    ...base,
+    wp: { ...base.wp, current: 100_000 },
+    statPoints: { unspent: 0, str: 0, vit: 87, agi: 0, luk: 0, int: 0 },
+  };
+  const hurt: Save = { ...build, player: { ...build.player, hp: 50 } };
+
+  // VIT를 다 빼면 최대 HP가 확 준다
+  const after = respec(hurt)!;
+  expect(statsOf(after).maxHp).toBeLessThan(statsOf(hurt).maxHp);
+  expect(after.player.hp, '다친 채로 재분배하면 그대로 다쳐 있다').toBe(50);
+
+  // 만피였더라도 새 최대치까지만 남는다 — 비율을 되돌려 주지 않는다
+  const full: Save = { ...build, player: { ...build.player, hp: statsOf(build).maxHp } };
+  const cut = respec(full)!;
+  expect(cut.player.hp).toBe(statsOf(cut).maxHp);
+  expect(cut.player.hp).toBeLessThan(full.player.hp);
 });

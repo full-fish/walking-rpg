@@ -4,7 +4,13 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { GEAR_SLOT_LABELS } from '@/content';
 import { expToNext, GEAR_SLOTS, STAT_PER_POINT } from '@/game/formulas';
 import { equippedStats, itemDef, itemLabel, itemStats } from '@/game/items';
-import { primaryStats, statsOf, type StatKey } from '@/game/progression';
+import {
+  primaryStats,
+  respecCost,
+  RESPEC_FREE_BELOW,
+  statsOf,
+  type StatKey,
+} from '@/game/progression';
 import type { ItemInstance } from '@/save/schema';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
@@ -38,7 +44,7 @@ const STATS: { key: StatKey; label: string; effect: string }[] = [
     label: '행운 LUK',
     effect:
       `치명 +${pp(STAT_PER_POINT.luk.cri)} · 치명피해 +${pp(STAT_PER_POINT.luk.crd)}` +
-      ` · 드랍 +${pp(STAT_PER_POINT.luk.dropRate)} · 골드 +${pp(STAT_PER_POINT.luk.goldFind)}`,
+      ` · 장비 드랍 ×${1 + STAT_PER_POINT.luk.dropRate} · 골드 ×${1 + STAT_PER_POINT.luk.goldFind} (곱)`,
   },
 ];
 
@@ -50,11 +56,14 @@ function bonus(value: number): string {
 export default function Character() {
   const save = usePlayer((s) => s.save);
   const allocate = usePlayer((s) => s.allocate);
+  const respec = usePlayer((s) => s.respec);
   const equip = usePlayer((s) => s.equip);
   const unequip = usePlayer((s) => s.unequip);
   const stats = statsOf(save);
   const { unspent } = save.statPoints;
   const primary = primaryStats(save);
+  const cost = respecCost(save.player.level);
+  const spent = STATS.reduce((sum, { key }) => sum + save.statPoints[key], 0);
 
   const gear = equippedStats(save);
   const worn = new Set(Object.values(save.equipped));
@@ -98,6 +107,25 @@ export default function Character() {
               </Text>
             </View>
           </View>
+
+          {/* 재분배 (§4.3). 되돌리면 현재 HP가 새 최대치로 잘린다 — 비율은 안 지킨다 */}
+          <View style={styles.row}>
+            <View style={styles.name}>
+              <Text size="sm" dim>
+                {cost === 0
+                  ? `Lv${RESPEC_FREE_BELOW} 전까지는 재분배가 무료입니다`
+                  : `재분배 ${cost.toLocaleString()} WP · 지금 ${save.wp.current.toLocaleString()} WP`}
+              </Text>
+              <Text size="sm" dim>
+                되돌리면 HP가 새 최대치까지 잘립니다
+              </Text>
+            </View>
+            <Button
+              label="재분배"
+              disabled={spent === 0 || save.wp.current < cost}
+              onPress={respec}
+            />
+          </View>
         </Panel>
 
         <Panel title="전투력">
@@ -111,8 +139,7 @@ export default function Character() {
             {(stats.eva * 100).toFixed(1)}% · 마법공격 {stats.matk.toFixed(1)}
           </Text>
           <Text size="sm" dim>
-            드랍 {(stats.dropRate * 100).toFixed(1)}% · 골드 +
-            {(stats.goldFind * 100).toFixed(1)}%
+            장비 드랍 ×{stats.dropMult.toFixed(2)} · 골드 ×{stats.goldMult.toFixed(2)}
           </Text>
         </Panel>
 
@@ -167,7 +194,10 @@ export default function Character() {
   );
 }
 
-/** "ATK +12 HP +40 DEF +5" — 0인 항목은 뺀다. */
+/**
+ * "ATK +12 HP +40 DEF +5" — 0인 항목은 뺀다.
+ * SPD·LUK을 빠뜨렸던 탓에 신발과 장신구가 "스탯 없음"으로 보였다 (T17).
+ */
 function statLine(item: ItemInstance): string {
   const s = itemStats(item);
   return (
@@ -175,6 +205,8 @@ function statLine(item: ItemInstance): string {
       s.atk > 0 ? `ATK +${s.atk}` : '',
       s.maxHp > 0 ? `HP +${s.maxHp}` : '',
       s.def > 0 ? `DEF +${s.def}` : '',
+      s.spd > 0 ? `SPD +${s.spd}` : '',
+      s.luk > 0 ? `LUK +${s.luk}` : '',
     ]
       .filter(Boolean)
       .join(' ') || '스탯 없음'

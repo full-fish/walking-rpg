@@ -25,6 +25,7 @@ import {
   equipAll,
   equipItem,
   settleBattle,
+  respec,
   spendPoint,
   statsOf,
   unequipSlot,
@@ -57,6 +58,8 @@ type PlayerStore = {
   drink: (id: string, atHp?: number) => boolean;
   /** 남은 포인트 1점을 스탯에 넣는다. 포인트가 없으면 false */
   allocate: (stat: StatKey) => boolean;
+  /** 배분을 전부 되돌린다 (§4.3). WP가 모자라면 false */
+  respec: () => boolean;
   /** 장비를 낀다. 레벨이 모자라거나 없는 개체면 false */
   equip: (uid: string) => boolean;
   unequip: (slot: GearSlot) => void;
@@ -142,6 +145,13 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
 
   allocate: (stat) => {
     const next = spendPoint(get().save, stat);
+    if (!next) return false;
+    set({ save: persist(next) });
+    return true;
+  },
+
+  respec: () => {
+    const next = respec(get().save);
     if (!next) return false;
     set({ save: persist(next) });
     return true;

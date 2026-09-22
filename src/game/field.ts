@@ -194,7 +194,7 @@ export function settleRun(
   }
 
   const stats = statsOf(save);
-  const gained = killReward(monster, stats.goldFind);
+  const gained = killReward(monster, stats.goldMult);
   const settled = settleBattle(save, 'win', playerHp, gained, now);
   const killed = run.killed + 1;
   const earned = { exp: run.earned.exp + gained.exp, gold: run.earned.gold + gained.gold };
@@ -219,9 +219,9 @@ export function settleRun(
   };
   const withBonus = settleBattle(settled.save, 'win', playerHp, bonus, now);
 
-  // 6마리는 확정, 그 아래는 행운(dropRate)으로만 나온다 (§4.3, §4.4)
-  const lucky = run.size >= MATERIAL_GUARANTEED_SIZE || rng() < stats.dropRate;
-  const material = lucky ? run.fieldId : null;
+  // **6마리 완주만 소재를 준다** (§4.4, T17). 확률을 섞으면 "6마리를 뽑았나"가 흐려진다 —
+  // 마릿수 자체가 이미 도박이라 그 위에 확률을 한 겹 더 얹을 자리가 없다
+  const material = run.size >= MATERIAL_GUARANTEED_SIZE ? run.fieldId : null;
   const materials = material
     ? { ...withBonus.save.materials, [material]: (withBonus.save.materials[material] ?? 0) + 1 }
     : withBonus.save.materials;

@@ -4,7 +4,14 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { consumableById, fieldById } from '@/content';
-import { makeRng, simulateBattle, type BattleEvent, type Combatant, type Outcome } from '@/game/battle';
+import {
+  makeRng,
+  simulateBattle,
+  type BattleEvent,
+  type BattleResult,
+  type Combatant,
+  type Outcome,
+} from '@/game/battle';
 import { currentMonster, type RunResult } from '@/game/field';
 import { POINTS_PER_LEVEL } from '@/game/formulas';
 import { statsOf } from '@/game/progression';
@@ -43,12 +50,25 @@ function eventColor(event: BattleEvent) {
 }
 
 /**
- * 한 번에 계산해 둘 전투 하나. `monsterHp`를 주면 그 체력에서 이어서 싸운다.
+ * 재생 중인 전투 하나.
  *
- * 물약을 마시면 여기를 **다시** 부른다 — 전투가 미리 계산된 재생이라(§4.2)
- * 도중에 회복을 끼워 넣을 자리가 없고, 남은 싸움을 새 HP로 다시 뽑는 수밖에 없다.
+ * 전투는 미리 계산된 이벤트 배열이라(§4.2) 도중에 회복을 끼워 넣을 자리가 없다.
+ * 물약을 마시면 **남은 싸움만 다시 뽑아 뒤에 잇는다** — 이미 재생한 이벤트는 그대로 두고
+ * 커서도 안 되돌린다. 그래서 로그가 안 지워지고 재생이 끊기지 않는다 (T17).
  */
-function buildBattle(save: Save, monsterHp?: number) {
+type Playback = {
+  player: Combatant;
+  monster: Combatant;
+  /** 여러 구간을 이어 붙인 것. 인덱스가 곧 재생 순서다 */
+  events: BattleEvent[];
+  /** 마지막 구간의 결과. 정산은 이걸로 한다 */
+  result: BattleResult;
+  /** 물약을 마신 지점 — events 인덱스 → 그 순간 내 HP. 회복은 이벤트가 아니라서 따로 센다 */
+  heals: { at: number; hp: number }[];
+};
+
+/** 지금 세이브 상태로 전투 한 구간을 뽑는다. `monsterHp`를 주면 그 체력에서 이어 싸운다. */
+function simulateFrom(save: Save, monsterHp?: number) {
   const picked = currentMonster(save);
   if (!picked) return null;
   const player: Combatant = {
@@ -58,6 +78,11 @@ function buildBattle(save: Save, monsterHp?: number) {
   };
   const monster: Combatant = { ...picked, hp: monsterHp ?? picked.maxHp };
   return { player, monster, result: simulateBattle(player, monster, makeRng(Date.now())) };
+}
+
+function startPlayback(save: Save): Playback | null {
+  const seg = simulateFrom(save);
+  return seg && { ...seg, events: seg.result.events, heals: [] };
 }
 
 /**
@@ -74,14 +99,14 @@ export default function Battle() {
   const save = usePlayer((s) => s.save);
 
   // 전투는 화면에 들어올 때 계산한다. 세이브에 남은 HP에서 이어서 싸운다 (§4.2).
-  const [battle, setBattle] = useState(() => buildBattle(save));
+  const [battle, setBattle] = useState(() => startPlayback(save));
 
   const [cursor, setCursor] = useState(0);
   const [settled, setSettled] = useState<RunResult | null>(null);
   /** 정산은 한 판에 딱 한 번. 재생 완료와 [도망]이 둘 다 여기로 들어온다. */
   const settledOnce = useRef(false);
 
-  const total = battle?.result.events.length ?? 0;
+  const total = battle?.events.length ?? 0;
 
   const finish = useCallback(
     (outcome: Outcome, hp: number) => {
@@ -115,18 +140,50 @@ export default function Battle() {
     );
   }
 
-  const played = battle.result.events.slice(0, cursor);
+  const played = battle.events.slice(0, cursor);
+  // 몬스터 HP는 이벤트의 hpAfter가 절대값이라 구간이 나뉘어도 그냥 마지막 것을 보면 된다
   const monsterHp = hpAfterLastHitBy(played, 'player', battle.monster.hp);
-  const playerHp = hpAfterLastHitBy(played, 'monster', battle.player.hp);
+  // 내 HP는 회복이 이벤트 밖에서 일어나므로, 마지막 물약 지점부터 다시 센다
+  const lastHeal = battle.heals.filter((h) => h.at <= cursor).at(-1);
+  const playerHp = hpAfterLastHitBy(
+    played.slice(lastHeal?.at ?? 0),
+    'monster',
+    lastHeal?.hp ?? battle.player.hp,
+  );
   const last = played.at(-1);
   const potions = Object.entries(save.run?.potions ?? {}).filter(([, n]) => n > 0);
 
-  /** 재생을 멈추고 지금 HP에서 회복한 뒤, 남은 싸움을 다시 뽑는다. */
+  /** 지금 HP에서 회복하고, 남은 싸움을 새로 뽑아 **뒤에 잇는다**. 커서는 안 건드린다. */
   const onDrink = (id: string) => {
     if (!drink(id, playerHp)) return;
-    setBattle(buildBattle(usePlayer.getState().save, monsterHp));
-    setCursor(0);
+    const healed = usePlayer.getState().save;
+    const seg = simulateFrom(healed, monsterHp);
+    if (!seg) return;
+    const kept = battle.events.slice(0, cursor);
+    setBattle({
+      player: battle.player,
+      monster: battle.monster,
+      events: [...kept, ...seg.result.events],
+      result: seg.result,
+      heals: [
+        ...battle.heals.filter((h) => h.at <= kept.length),
+        { at: kept.length, hp: healed.player.hp },
+      ],
+    });
   };
+
+  /** 로그 한 줄씩. 물약은 이벤트가 아니라서 여기서 끼워 넣는다 */
+  const lines = played.flatMap((e, i) => {
+    const heal = battle.heals.find((h) => h.at === i);
+    const hit = {
+      key: `e${i}`,
+      text: `${e.actor === 'player' ? '내 공격' : battle.monster.name} → ${damageText(e)}`,
+      color: eventColor(e),
+    };
+    return heal
+      ? [{ key: `h${i}`, text: `물약을 마셨다 — HP ${heal.hp}`, color: colors.gold }, hit]
+      : [hit];
+  });
 
   return (
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
@@ -154,9 +211,9 @@ export default function Battle() {
 
       <Panel title="전투 기록">
         <View style={styles.log}>
-          {played.slice(-LOG_LINES).map((e) => (
-            <Text key={e.seq} size="sm" color={eventColor(e)}>
-              {e.actor === 'player' ? '내 공격' : battle.monster.name} → {damageText(e)}
+          {lines.slice(-LOG_LINES).map((l) => (
+            <Text key={l.key} size="sm" color={l.color}>
+              {l.text}
             </Text>
           ))}
         </View>

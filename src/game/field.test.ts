@@ -175,31 +175,38 @@ test('상대 몬스터는 그 사냥터 풀에서만 나온다', () => {
   }
 });
 
-test('행운을 찍으면 6마리가 아니어도 소재가 가끔 나온다 (§4.3 dropRate)', () => {
-  // 행운 몰빵 Lv50 — dropRate가 최대치에 가깝다
+test('소재는 6마리 완주만 준다 — 그 아래는 행운을 몰빵해도 0 (§4.4, T17)', () => {
   const lucky: Save = {
     ...ready(),
     player: { ...ready().player, level: 50 },
     statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 147, int: 0 },
   };
-  expect(statsOf(lucky).dropRate).toBeGreaterThan(0.25);
+  // 행운은 골드·장비 드랍만 증폭한다. 소재에는 손을 못 댄다
+  expect(statsOf(lucky).goldMult).toBeGreaterThan(4);
 
-  let got = 0;
-  let runs = 0;
+  let sub6 = 0;
+  let sub6Material = 0;
+  let six = 0;
+  let sixMaterial = 0;
   for (let seed = 1; seed <= 200; seed++) {
     const rng = makeRng(seed);
-    let save = enterField(lucky, FIELD, rng)!;
-    if (save.run!.size >= 6) continue; // 6마리는 확정이라 세지 않는다
-    runs += 1;
+    const save = enterField(lucky, FIELD, rng)!;
+    const six6 = save.run!.size >= 6;
     let result = settleRun(save, 'win', 1e6, rng, 0);
     while (!result.over) result = settleRun(result.save, 'win', 1e6, rng, 0);
-    if (result.material) got += 1;
+    if (six6) {
+      six += 1;
+      if (result.material) sixMaterial += 1;
+    } else {
+      sub6 += 1;
+      if (result.material) sub6Material += 1;
+    }
   }
 
-  // 확률이 25~30%대라 200판이면 한 자릿수로 안 떨어진다
-  expect(runs).toBeGreaterThan(100);
-  expect(got / runs, '소재 드랍률').toBeGreaterThan(0.15);
-  expect(got / runs, '확정은 아니다').toBeLessThan(0.5);
+  expect(sub6).toBeGreaterThan(100);
+  expect(sub6Material, '5마리 이하는 한 번도 안 나온다').toBe(0);
+  expect(six).toBeGreaterThan(0);
+  expect(sixMaterial, '6마리는 전부 나온다').toBe(six);
 });
 
 test('고유 장비는 그 사냥터 몬스터에게만 특효다 (§4.5)', () => {

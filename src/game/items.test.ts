@@ -37,8 +37,8 @@ test('부위마다 성격이 다르다 — 무기는 ATK만, 장신구는 LUK만
   // 장신구의 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3)
   const naked = statsOf({ ...defaultSave(), player: { ...defaultSave().player, level: 30 } });
   const full = statsOf(geared(30));
-  expect(full.dropRate).toBeGreaterThan(naked.dropRate);
-  expect(full.goldFind).toBeGreaterThan(naked.goldFind);
+  expect(full.dropMult).toBeGreaterThan(naked.dropMult);
+  expect(full.goldMult).toBeGreaterThan(naked.goldMult);
   expect(full.cri).toBeGreaterThan(naked.cri);
   expect(full.crd).toBeGreaterThan(naked.crd);
 });

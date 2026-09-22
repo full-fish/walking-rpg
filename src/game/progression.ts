@@ -12,13 +12,16 @@ import {
   HP_REGEN_RATE,
   INDIVIDUAL_REWARD_RATE,
   POINTS_PER_LEVEL,
+  SPENDABLE_STATS,
   STARTING_STATS,
   STAT_PER_POINT,
+  WP_COST,
   type GearSlot,
   type SpendableStat,
   type StatSpend,
 } from './formulas';
 import { equippedBonusVs, equippedStats, itemByUid, itemDef } from './items';
+import { spendWp } from './wp';
 
 /** 몬스터 1마리를 잡고 받는 것. */
 export type Reward = { exp: number; gold: number };
@@ -45,8 +48,8 @@ export function statsOf(save: Save) {
     // 장신구가 주는 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3, T16_1)
     cri: base.cri + STAT_PER_POINT.luk.cri * gear.luk,
     crd: base.crd + STAT_PER_POINT.luk.crd * gear.luk,
-    dropRate: base.dropRate + STAT_PER_POINT.luk.dropRate * gear.luk,
-    goldFind: base.goldFind + STAT_PER_POINT.luk.goldFind * gear.luk,
+    dropMult: base.dropMult * (1 + STAT_PER_POINT.luk.dropRate) ** gear.luk,
+    goldMult: base.goldMult * (1 + STAT_PER_POINT.luk.goldFind) ** gear.luk,
     /** 고유 장비의 특효 (§4.5). battle.ts가 몬스터 traits와 맞춰 본다 */
     bonusVs: equippedBonusVs(save),
   };
@@ -74,11 +77,11 @@ export function primaryStats(save: Save): StatSpend {
  * 기본값은 gen-content가 §6.2·§6.3 공식으로 뽑아 몬스터에 박아둔 값이다.
  * 여기서 다시 계산하면 JSON과 어긋날 수 있다.
  */
-export function killReward(base: Reward, goldFind = 0): Reward {
+export function killReward(base: Reward, goldMult = 1): Reward {
   return {
     exp: Math.round(base.exp * INDIVIDUAL_REWARD_RATE),
     // 행운은 골드에만 붙는다 (§4.3). EXP까지 늘리면 LUK이 성장 속도까지 사는 스탯이 된다
-    gold: Math.round(base.gold * INDIVIDUAL_REWARD_RATE * (1 + goldFind)),
+    gold: Math.round(base.gold * INDIVIDUAL_REWARD_RATE * goldMult),
   };
 }
 
@@ -203,6 +206,44 @@ export function settleBattle(
     levelsGained: leveled.levelsGained,
     goldLost: 0,
   };
+}
+
+/** 재분배가 공짜인 레벨 (§4.3). 이 아래는 아직 실수할 여유를 준다. */
+export const RESPEC_FREE_BELOW = 10;
+
+/** 재분배에 드는 WP. Lv10 미만은 0 (§4.3). */
+export function respecCost(level: number): number {
+  return level < RESPEC_FREE_BELOW ? 0 : WP_COST.statRespec;
+}
+
+/**
+ * 배분한 포인트를 전부 되돌린다 (§4.3, T17). WP가 모자라면 null.
+ *
+ * **현재 HP는 새 최대치로 자르기만 하고 비율을 유지하지 않는다.** VIT를 빼면 최대 HP가
+ * 줄고 현재 HP도 같이 잘리는데, 여기서 비율을 되돌려주면 "VIT를 뺐다 다시 넣어"
+ * 만피를 만드는 우회가 생긴다 — 회복은 물약과 여관이 파는 것이다 (§4.5).
+ *
+ * INT는 건드리지 않는다. 배분 대상이 아니라 직업이 주는 값이다 (T18).
+ */
+export function respec(save: Save): Save | null {
+  const wp = spendWp(save.wp, respecCost(save.player.level));
+  if (!wp) return null;
+
+  const spent = SPENDABLE_STATS.reduce((sum, k) => sum + save.statPoints[k], 0);
+  const next: Save = {
+    ...save,
+    wp,
+    statPoints: {
+      ...save.statPoints,
+      unspent: save.statPoints.unspent + spent,
+      str: 0,
+      vit: 0,
+      agi: 0,
+      luk: 0,
+    },
+  };
+
+  return { ...next, player: { ...next.player, hp: Math.min(next.player.hp, statsOf(next).maxHp) } };
 }
 
 /** 남은 포인트 1점을 스탯에 넣는다. 포인트가 없으면 null — 호출부가 확인하게 강제한다. */
