@@ -81,7 +81,7 @@
   },
   {
     "id": "eq_t1_helm_common",
-    "name": "낡은 헬멧",
+    "name": "낡은 두건",
     "tier": 1,
     "slot": "helm",
     "rarity": "common",
@@ -241,7 +241,7 @@
   },
   {
     "id": "eq_t1_gloves_common",
-    "name": "낡은 장갑",
+    "name": "낡은 손싸개",
     "tier": 1,
     "slot": "gloves",
     "rarity": "common",
@@ -257,7 +257,7 @@
   },
   {
     "id": "eq_t1_gloves_uncommon",
-    "name": "낡은 완갑",
+    "name": "낡은 장갑",
     "tier": 1,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -561,7 +561,7 @@
   },
   {
     "id": "eq_t2_helm_common",
-    "name": "무쇠 헬멧",
+    "name": "무쇠 두건",
     "tier": 2,
     "slot": "helm",
     "rarity": "common",
@@ -721,7 +721,7 @@
   },
   {
     "id": "eq_t2_gloves_common",
-    "name": "무쇠 장갑",
+    "name": "무쇠 손싸개",
     "tier": 2,
     "slot": "gloves",
     "rarity": "common",
@@ -737,7 +737,7 @@
   },
   {
     "id": "eq_t2_gloves_uncommon",
-    "name": "무쇠 완갑",
+    "name": "무쇠 장갑",
     "tier": 2,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -1041,7 +1041,7 @@
   },
   {
     "id": "eq_t3_helm_common",
-    "name": "강철 헬멧",
+    "name": "강철 두건",
     "tier": 3,
     "slot": "helm",
     "rarity": "common",
@@ -1201,7 +1201,7 @@
   },
   {
     "id": "eq_t3_gloves_common",
-    "name": "강철 장갑",
+    "name": "강철 손싸개",
     "tier": 3,
     "slot": "gloves",
     "rarity": "common",
@@ -1217,7 +1217,7 @@
   },
   {
     "id": "eq_t3_gloves_uncommon",
-    "name": "강철 완갑",
+    "name": "강철 장갑",
     "tier": 3,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -1521,7 +1521,7 @@
   },
   {
     "id": "eq_t4_helm_common",
-    "name": "은빛 헬멧",
+    "name": "은빛 두건",
     "tier": 4,
     "slot": "helm",
     "rarity": "common",
@@ -1681,7 +1681,7 @@
   },
   {
     "id": "eq_t4_gloves_common",
-    "name": "은빛 장갑",
+    "name": "은빛 손싸개",
     "tier": 4,
     "slot": "gloves",
     "rarity": "common",
@@ -1697,7 +1697,7 @@
   },
   {
     "id": "eq_t4_gloves_uncommon",
-    "name": "은빛 완갑",
+    "name": "은빛 장갑",
     "tier": 4,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -2001,7 +2001,7 @@
   },
   {
     "id": "eq_t5_helm_common",
-    "name": "흑철 헬멧",
+    "name": "흑철 두건",
     "tier": 5,
     "slot": "helm",
     "rarity": "common",
@@ -2161,7 +2161,7 @@
   },
   {
     "id": "eq_t5_gloves_common",
-    "name": "흑철 장갑",
+    "name": "흑철 손싸개",
     "tier": 5,
     "slot": "gloves",
     "rarity": "common",
@@ -2177,7 +2177,7 @@
   },
   {
     "id": "eq_t5_gloves_uncommon",
-    "name": "흑철 완갑",
+    "name": "흑철 장갑",
     "tier": 5,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -2481,7 +2481,7 @@
   },
   {
     "id": "eq_t6_helm_common",
-    "name": "용린 헬멧",
+    "name": "용린 두건",
     "tier": 6,
     "slot": "helm",
     "rarity": "common",
@@ -2641,7 +2641,7 @@
   },
   {
     "id": "eq_t6_gloves_common",
-    "name": "용린 장갑",
+    "name": "용린 손싸개",
     "tier": 6,
     "slot": "gloves",
     "rarity": "common",
@@ -2657,7 +2657,7 @@
   },
   {
     "id": "eq_t6_gloves_uncommon",
-    "name": "용린 완갑",
+    "name": "용린 장갑",
     "tier": 6,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -2961,7 +2961,7 @@
   },
   {
     "id": "eq_t7_helm_common",
-    "name": "수정 헬멧",
+    "name": "수정 두건",
     "tier": 7,
     "slot": "helm",
     "rarity": "common",
@@ -3121,7 +3121,7 @@
   },
   {
     "id": "eq_t7_gloves_common",
-    "name": "수정 장갑",
+    "name": "수정 손싸개",
     "tier": 7,
     "slot": "gloves",
     "rarity": "common",
@@ -3137,7 +3137,7 @@
   },
   {
     "id": "eq_t7_gloves_uncommon",
-    "name": "수정 완갑",
+    "name": "수정 장갑",
     "tier": 7,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -3441,7 +3441,7 @@
   },
   {
     "id": "eq_t8_helm_common",
-    "name": "흑요석 헬멧",
+    "name": "흑요석 두건",
     "tier": 8,
     "slot": "helm",
     "rarity": "common",
@@ -3601,7 +3601,7 @@
   },
   {
     "id": "eq_t8_gloves_common",
-    "name": "흑요석 장갑",
+    "name": "흑요석 손싸개",
     "tier": 8,
     "slot": "gloves",
     "rarity": "common",
@@ -3617,7 +3617,7 @@
   },
   {
     "id": "eq_t8_gloves_uncommon",
-    "name": "흑요석 완갑",
+    "name": "흑요석 장갑",
     "tier": 8,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -3921,7 +3921,7 @@
   },
   {
     "id": "eq_t9_helm_common",
-    "name": "월광 헬멧",
+    "name": "월광 두건",
     "tier": 9,
     "slot": "helm",
     "rarity": "common",
@@ -4081,7 +4081,7 @@
   },
   {
     "id": "eq_t9_gloves_common",
-    "name": "월광 장갑",
+    "name": "월광 손싸개",
     "tier": 9,
     "slot": "gloves",
     "rarity": "common",
@@ -4097,7 +4097,7 @@
   },
   {
     "id": "eq_t9_gloves_uncommon",
-    "name": "월광 완갑",
+    "name": "월광 장갑",
     "tier": 9,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -4401,7 +4401,7 @@
   },
   {
     "id": "eq_t10_helm_common",
-    "name": "심연 헬멧",
+    "name": "심연 두건",
     "tier": 10,
     "slot": "helm",
     "rarity": "common",
@@ -4561,7 +4561,7 @@
   },
   {
     "id": "eq_t10_gloves_common",
-    "name": "심연 장갑",
+    "name": "심연 손싸개",
     "tier": 10,
     "slot": "gloves",
     "rarity": "common",
@@ -4577,7 +4577,7 @@
   },
   {
     "id": "eq_t10_gloves_uncommon",
-    "name": "심연 완갑",
+    "name": "심연 장갑",
     "tier": 10,
     "slot": "gloves",
     "rarity": "uncommon",

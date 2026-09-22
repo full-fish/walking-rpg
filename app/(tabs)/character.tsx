@@ -81,7 +81,10 @@ export default function Character() {
   const [doll, setDoll] = useState(true);
   const [grid, setGrid] = useState(true);
   const [filter, setFilter] = useState<GearSlot | null>(null);
+  /** 한 번 누르면 성능순으로 굳는다 (T17_2). 획득순으로 되돌릴 일이 없다 */
   const [byPower, setByPower] = useState(false);
+  /** 빈 칸을 누르면 그 부위에 낄 수 있는 것들을 편다 (T17_2) */
+  const [picking, setPicking] = useState<GearSlot | null>(null);
 
   const stats = statsOf(save);
   const { unspent } = save.statPoints;
@@ -97,10 +100,30 @@ export default function Character() {
     return uid === null ? undefined : save.inventory.find((i) => i.uid === uid);
   };
 
-  // 기본은 얻은 순서(인벤토리 순서)다. 성능순은 큰 것부터 — 갈아입을 걸 찾는 화면이라서다
-  const bag = save.inventory
+  /**
+   * 가방에는 **안 낀 것만** 들어 있다 (T17_2). 낀 물건까지 같이 두면 같은 물건이
+   * 두 군데 보여서, 어느 쪽을 눌러야 하는지가 매번 헷갈린다.
+   */
+  const unworn = save.inventory.filter((i) => !worn.has(i.uid));
+  const bag = unworn
     .filter((i) => filter === null || itemDef(i).slot === filter)
     .sort((a, b) => (byPower ? itemPower(b) - itemPower(a) : 0));
+
+  /** 낀 칸은 벗고, 빈 칸은 후보를 편다 (T17_2). */
+  const onSlot = (slot: GearSlot) => {
+    if (equippedIn(slot)) {
+      unequip(slot);
+      setPicking(null);
+    } else {
+      setPicking((cur) => (cur === slot ? null : slot));
+    }
+  };
+
+  /** 그 부위에 지금 낄 수 있는 것들. 센 것부터 — 고르려고 여는 목록이라서다 */
+  const candidates = (slot: GearSlot) =>
+    unworn
+      .filter((i) => itemDef(i).slot === slot && save.player.level >= itemDef(i).level)
+      .sort((a, b) => itemPower(b) - itemPower(a));
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -200,7 +223,7 @@ export default function Character() {
             </View>
 
             {doll ? (
-              <Panel title="장비 — 칸을 누르면 벗습니다">
+              <Panel title="장비 — 낀 칸은 벗고, 빈 칸은 후보를 엽니다">
                 <View style={styles.doll}>
                   {/* 실루엣. 칸 뒤에 깔아 사람 모양만 잡아준다 — 캐릭터 그림은 아직 없다 */}
                   <View style={styles.silhouette} pointerEvents="none">
@@ -218,7 +241,7 @@ export default function Character() {
                             key={j}
                             label={GEAR_SLOT_LABELS[slot]}
                             item={equippedIn(slot)}
-                            onPress={() => unequip(slot)}
+                            onPress={() => onSlot(slot)}
                           />
                         ),
                       )}
@@ -246,10 +269,52 @@ export default function Character() {
                           ) : null}
                         </View>
                       </View>
-                      {item ? <Button label="해제" onPress={() => unequip(slot)} /> : null}
+                      <Button
+                        label={item ? '해제' : '고르기'}
+                        disabled={!item && candidates(slot).length === 0}
+                        onPress={() => onSlot(slot)}
+                      />
                     </View>
                   );
                 })}
+              </Panel>
+            )}
+
+            {/* 빈 칸을 눌렀을 때만 뜬다. 낄 수 있는 것만, 센 것부터 (T17_2) */}
+            {picking && (
+              <Panel title={`${GEAR_SLOT_LABELS[picking]} — 낄 수 있는 것`}>
+                {candidates(picking).length === 0 ? (
+                  <Text size="sm" dim>
+                    가진 게 없습니다. 상점에서 사거나 사냥터에서 얻으세요.
+                  </Text>
+                ) : (
+                  candidates(picking).map((item) => (
+                    <View key={item.uid} style={styles.row}>
+                      <View style={styles.itemRow}>
+                        <Icon item={item} size={36} />
+                        <View style={styles.name}>
+                          <Text color={rarity[itemDef(item).rarity]}>
+                            {itemDef(item).name}
+                            {item.enhance > 0 ? ` +${item.enhance}` : ''} (
+                            {Math.round(item.quality * 100)}%)
+                          </Text>
+                          <Text size="sm" dim>
+                            {statLine(item)}
+                          </Text>
+                        </View>
+                      </View>
+                      <Button
+                        label="장착"
+                        tone="gold"
+                        onPress={() => {
+                          equip(item.uid);
+                          setPicking(null);
+                        }}
+                      />
+                    </View>
+                  ))
+                )}
+                <Button label="닫기" onPress={() => setPicking(null)} />
               </Panel>
             )}
           </>
@@ -261,8 +326,9 @@ export default function Character() {
               <Button label="격자" tone={grid ? 'gold' : 'normal'} onPress={() => setGrid(true)} />
               <Button label="목록" tone={grid ? 'normal' : 'gold'} onPress={() => setGrid(false)} />
               <Button
-                label={byPower ? '성능순' : '획득순'}
-                onPress={() => setByPower((v) => !v)}
+                label="성능순"
+                tone={byPower ? 'gold' : 'normal'}
+                onPress={() => setByPower(true)}
               />
             </View>
 
@@ -282,7 +348,7 @@ export default function Character() {
               ))}
             </View>
 
-            <Panel title={`가방 ${bag.length} / ${save.inventory.length}`}>
+            <Panel title={`가방 ${bag.length} / ${unworn.length}`}>
               {bag.length === 0 ? (
                 <Text size="sm" dim>
                   비어 있습니다.
@@ -290,17 +356,13 @@ export default function Character() {
               ) : grid ? (
                 <View style={styles.grid}>
                   {bag.map((item) => {
-                    const def = itemDef(item);
-                    const locked = save.player.level < def.level;
+                    const locked = save.player.level < itemDef(item).level;
                     return (
                       <Slot
                         key={item.uid}
                         item={item}
-                        equipped={worn.has(item.uid)}
                         dim={locked}
-                        onPress={() =>
-                          worn.has(item.uid) ? unequip(def.slot) : !locked && equip(item.uid)
-                        }
+                        onPress={() => !locked && equip(item.uid)}
                       />
                     );
                   })}
@@ -314,7 +376,7 @@ export default function Character() {
                       <View style={styles.itemRow}>
                         <Icon item={item} size={36} />
                         <View style={styles.name}>
-                          <Text color={worn.has(item.uid) ? colors.gold : rarity[def.rarity]}>
+                          <Text color={rarity[def.rarity]}>
                             {def.name}
                             {item.enhance > 0 ? ` +${item.enhance}` : ''} (
                             {Math.round(item.quality * 100)}%)
@@ -325,9 +387,7 @@ export default function Character() {
                           </Text>
                         </View>
                       </View>
-                      {worn.has(item.uid) ? null : (
-                        <Button label="장착" disabled={locked} onPress={() => equip(item.uid)} />
-                      )}
+                      <Button label="장착" disabled={locked} onPress={() => equip(item.uid)} />
                     </View>
                   );
                 })
@@ -349,36 +409,41 @@ function Icon({ item, size }: { item?: ItemInstance; size: number }) {
 }
 
 /**
- * 격자 한 칸 (T17_1). **테두리 색이 등급**이고, 아래 줄이 품질과 강화다.
- * 낀 물건은 금색으로 한 번 더 표시한다 — 등급색만으로는 낀 건지 아닌지 모른다.
+ * 격자 한 칸 (T17_1, T17_2). **테두리 색이 등급**이고,
+ * 그림이 칸을 꽉 채운 위에 품질·강화를 아래쪽에 겹쳐 박는다 — 그림이 커야 뭘 주웠는지 보인다.
+ * 가방에는 안 낀 것만 들어오므로 "낀 물건" 표시는 없다.
  */
 function Slot({
   item,
   label,
-  equipped,
   dim,
   onPress,
 }: {
   item?: ItemInstance;
   label?: string;
-  equipped?: boolean;
   dim?: boolean;
   onPress?: () => void;
 }) {
   const def = item && itemDef(item);
-  const edge = equipped ? colors.gold : def ? rarity[def.rarity] : colors.edge;
 
   return (
-    <Pressable onPress={item ? onPress : undefined} style={[styles.cell, { borderColor: edge }]}>
-      <Icon item={item} size={48} />
+    <Pressable
+      onPress={onPress}
+      style={[styles.cell, { borderColor: def ? rarity[def.rarity] : colors.edge }]}
+    >
+      <Icon item={item} size={CELL - border * 2} />
       {item ? (
-        <Text size="sm" dim={dim}>
-          {Math.round(item.quality * 100)}%{item.enhance > 0 ? ` +${item.enhance}` : ''}
-        </Text>
+        <View style={styles.tag}>
+          <Text size="sm" dim={dim}>
+            {Math.round(item.quality * 100)}%{item.enhance > 0 ? ` +${item.enhance}` : ''}
+          </Text>
+        </View>
       ) : (
-        <Text size="sm" dim>
-          {label ?? ''}
-        </Text>
+        <View style={styles.tag}>
+          <Text size="sm" dim>
+            {label ?? ''}
+          </Text>
+        </View>
       )}
     </Pressable>
   );
@@ -403,7 +468,7 @@ function statLine(item: ItemInstance): string {
   );
 }
 
-const CELL = 76;
+const CELL = 84;
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
@@ -435,7 +500,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bg,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: space.xs,
+  },
+  // 그림 위에 겹쳐 박는다. 반투명 바탕이 없으면 밝은 그림에서 글씨가 안 보인다
+  tag: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    backgroundColor: 'rgba(26, 22, 38, 0.75)',
   },
 
   doll: { gap: space.sm, alignItems: 'center' },

@@ -31,16 +31,16 @@
 
 | sprite id | 파일명 | 이름(참고) |
 |---|---|---|
-| helm_1 | helm_1.png | 낡은 헬멧 |
-| helm_2 | helm_2.png | 무쇠 헬멧 |
-| helm_3 | helm_3.png | 강철 헬멧 |
-| helm_4 | helm_4.png | 은빛 헬멧 |
-| helm_5 | helm_5.png | 흑철 헬멧 |
-| helm_6 | helm_6.png | 용린 헬멧 |
-| helm_7 | helm_7.png | 수정 헬멧 |
-| helm_8 | helm_8.png | 흑요석 헬멧 |
-| helm_9 | helm_9.png | 월광 헬멧 |
-| helm_10 | helm_10.png | 심연 헬멧 |
+| helm_1 | helm_1.png | 낡은 두건 |
+| helm_2 | helm_2.png | 무쇠 두건 |
+| helm_3 | helm_3.png | 강철 두건 |
+| helm_4 | helm_4.png | 은빛 두건 |
+| helm_5 | helm_5.png | 흑철 두건 |
+| helm_6 | helm_6.png | 용린 두건 |
+| helm_7 | helm_7.png | 수정 두건 |
+| helm_8 | helm_8.png | 흑요석 두건 |
+| helm_9 | helm_9.png | 월광 두건 |
+| helm_10 | helm_10.png | 심연 두건 |
 
 ### armor
 
@@ -101,6 +101,20 @@
 | accessory_8 | accessory_8.png | 흑요석 부적 |
 | accessory_9 | accessory_9.png | 월광 부적 |
 | accessory_10 | accessory_10.png | 심연 부적 |
+
+---
+
+## 1-1. 캐릭터 (1개, assets/images/character/)
+
+캐릭터 탭 → 장비 → [인형]의 **배경 실루엣**입니다. 지금은 네모 세 개로 자리만 잡아뒀고,
+이 그림이 들어오면 그 자리를 그대로 대체합니다.
+
+장비 칸이 머리·가슴·양손·발 위에 겹쳐 놓이므로 **정면을 보고 팔을 살짝 벌린 자세**여야 하고,
+**장비를 입지 않은 맨몸**(속옷 차림)이어야 합니다. 세로로 길쭉한 비율이 좋습니다.
+
+| sprite id | 파일명 | 프롬프트 |
+|---|---|---|
+| character_base | character_base.png | `flat 2D pixel art, 96x160, transparent background, front-facing humanoid adventurer standing with arms slightly out, plain undergarments only, no weapons or armor, no gradient shading, consistent light source from top-left` |
 
 ---
 
