@@ -18,7 +18,7 @@
       "label": "투구",
       "spriteTag": "helm",
       "namePool": {
-        "common": "두건",
+        "common": "헬멧",
         "uncommon": "투구",
         "rare": "중투구",
         "epic": "마투구",
@@ -42,8 +42,8 @@
       "label": "장갑",
       "spriteTag": "gloves",
       "namePool": {
-        "common": "손싸개",
-        "uncommon": "장갑",
+        "common": "장갑",
+        "uncommon": "완갑",
         "rare": "건틀릿",
         "epic": "마장갑",
         "legendary": "성장갑"

@@ -4,7 +4,15 @@ import { gearSetFor } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import { makeRng } from './battle';
 import { GEAR_SLOTS } from './formulas';
-import { equippedStats, itemLabel, itemStats, makeItem, nextUid, setBonus } from './items';
+import {
+  equippedStats,
+  itemLabel,
+  itemPower,
+  itemStats,
+  makeItem,
+  nextUid,
+  setBonus,
+} from './items';
 import { addItem, equipAll, equipItem, statsOf, unequipSlot } from './progression';
 
 /** 그 레벨 common 풀세트를 다 껴 입은 세이브. 밸런스 기준선과 같은 상태다 (§4.5). */
@@ -108,4 +116,19 @@ test('같은 부위를 갈아 끼우면 칸이 하나로 유지된다', () => {
   const swapped = equipItem(save, better.uid)!;
   expect(swapped.equipped.weapon).toBe(better.uid);
   expect(statsOf(swapped).atk).toBeGreaterThan(statsOf(save).atk);
+});
+
+test('itemPower — 품질·강화가 붙은 순서대로 정렬된다 (T17_1)', () => {
+  const base = { uid: '1', defId: 'eq_t5_weapon_common', enhance: 0 };
+  const plain = { ...base, quality: 1 };
+  const good = { ...base, quality: 1.2 };
+  const forged = { ...base, quality: 1, enhance: 3 };
+
+  expect(itemPower(good)).toBeGreaterThan(itemPower(plain));
+  expect(itemPower(forged)).toBeGreaterThan(itemPower(plain));
+
+  // 부위가 달라도 비교가 선다 — 값이 실제로 주는 몫에 비례하기 때문이다 (§4.5)
+  const highTier = { uid: '2', defId: 'eq_t8_helm_common', quality: 1, enhance: 0 };
+  const lowTier = { uid: '3', defId: 'eq_t2_weapon_legendary', quality: 1, enhance: 0 };
+  expect(itemPower(highTier)).toBeGreaterThan(itemPower(lowTier));
 });

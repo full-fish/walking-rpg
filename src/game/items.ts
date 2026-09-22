@@ -8,8 +8,11 @@
 import { equipmentById, type Equipment } from '../content';
 import type { ItemInstance, Save } from '../save/schema';
 import {
+  ENHANCE_MULT,
   GEAR_SLOTS,
+  gearShare,
   itemStat,
+  RARITY_MULT,
   rollQuality,
   UNIQUE_TRAIT_BONUS,
   type GearSlot,
@@ -54,6 +57,23 @@ export function itemStats(inst: ItemInstance): GearBonus {
     spd: Math.round(itemStat(def.spd, inst.quality, inst.enhance) * 10) / 10,
     luk: Math.round(itemStat(def.luk, inst.quality, inst.enhance) * 10) / 10,
   };
+}
+
+/**
+ * 정렬용 한 숫자 (T17_1) — **그 개체가 만들어진 배율**이다.
+ *
+ * `gearStats`가 `맨몸 × gearShare(레벨) × 등급배율 × 부위몫`으로 뽑으므로(§4.5),
+ * 거기서 부위몫만 뺀 게 이 값이다. 부위몫은 애초에 부위끼리 비교가 안 되는 부분이라
+ * (무기의 ATK 0.75와 투구의 HP 0.5는 같은 눈금이 아니다) 빼는 게 맞다.
+ *
+ * **값(price)으로는 못 잰다** — 전설은 값이 30배인데 스탯은 1.9배라, 값으로 줄 세우면
+ * 티어 2 전설이 티어 8 일반보다 위로 온다.
+ */
+export function itemPower(inst: ItemInstance): number {
+  const def = itemDef(inst);
+  return (
+    gearShare(def.level) * RARITY_MULT[def.rarity] * inst.quality * ENHANCE_MULT ** inst.enhance
+  );
 }
 
 /** 인벤토리 표시용 — "강철 대검 (114%)", 강화했으면 "+3" (§4.5). */
