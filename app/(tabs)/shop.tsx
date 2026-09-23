@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, type ReactElement } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,6 +8,7 @@ import {
   regionById,
   shopConsumables,
   shopGear,
+  type Equipment,
   type Field,
 } from '@/content';
 import { depositNet, sellPrice } from '@/game/economy';
@@ -19,14 +20,18 @@ import {
   enhanceCost,
   enhanceExpected,
   enhanceRate,
+  GEAR_SLOTS,
   VAULT,
   vaultExpandCost,
+  type GearSlot,
 } from '@/game/formulas';
-import { bagFull, bagItems, itemLabel, statText } from '@/game/items';
+import { bagFull, bagItems, itemDef, itemLabel, statText } from '@/game/items';
+import type { ItemInstance } from '@/save/schema';
 import { statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
+import { ItemCell, ItemGrid, ItemIcon, qualityTag } from '@/ui/ItemCell';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
@@ -34,7 +39,7 @@ import { colors, space } from '@/ui/theme';
 const TABS = ['상점', '강화', '여관', '창고', '특별 교환'] as const;
 type Tab = (typeof TABS)[number];
 
-/** 한 줄 = 이름·설명 + 버튼. 상점 전체가 이 모양이라 화면 안에 둔다. */
+/** 한 줄 = (그림) 이름·설명 + 버튼. 상점 전체가 이 모양이라 화면 안에 둔다. */
 function Row({
   title,
   detail,
@@ -42,6 +47,7 @@ function Row({
   disabled,
   onPress,
   tone,
+  icon,
 }: {
   title: string;
   detail: string;
@@ -49,17 +55,86 @@ function Row({
   disabled?: boolean;
   onPress: () => void;
   tone?: 'normal' | 'gold';
+  /** 장비면 그림을 앞에 붙인다 (T17_6). 물약·여관 줄은 그림이 없다 */
+  icon?: Equipment;
 }) {
   return (
     <View style={styles.row}>
-      <View style={styles.name}>
-        <Text>{title}</Text>
-        <Text size="sm" dim>
-          {detail}
-        </Text>
+      <View style={styles.itemRow}>
+        {icon && <ItemIcon def={icon} size={36} />}
+        <View style={styles.name}>
+          <Text>{title}</Text>
+          <Text size="sm" dim>
+            {detail}
+          </Text>
+        </View>
       </View>
       <Button label={action} disabled={disabled} tone={tone} onPress={onPress} />
     </View>
+  );
+}
+
+/**
+ * 장비 목록을 격자나 줄로 편다 (T17_6) — 가방 탭과 같은 칸(ItemCell)을 쓴다.
+ * 격자는 **눌러서 고르고, 고른 것의 줄이 아래에 뜬다.** 칸을 누르자마자 사거나 팔면
+ * 스크롤하다 잘못 건드린 한 번이 골드로 나간다.
+ */
+function ItemList<T>({
+  items,
+  grid,
+  keyOf,
+  defOf,
+  tagOf,
+  row,
+  empty,
+}: {
+  items: T[];
+  grid: boolean;
+  keyOf: (item: T) => string;
+  defOf: (item: T) => Equipment;
+  tagOf: (item: T) => string;
+  row: (item: T) => ReactElement;
+  empty: string;
+}) {
+  const [picked, setPicked] = useState<string | null>(null);
+  if (items.length === 0) {
+    return (
+      <Text size="sm" dim>
+        {empty}
+      </Text>
+    );
+  }
+  if (!grid)
+    return (
+      <>
+        {items.map((item) => (
+          <View key={keyOf(item)}>{row(item)}</View>
+        ))}
+      </>
+    );
+
+  const chosen = items.find((item) => keyOf(item) === picked);
+  return (
+    <>
+      <ItemGrid>
+        {items.map((item) => (
+          <ItemCell
+            key={keyOf(item)}
+            def={defOf(item)}
+            tag={tagOf(item)}
+            selected={keyOf(item) === picked}
+            onPress={() => setPicked(keyOf(item))}
+          />
+        ))}
+      </ItemGrid>
+      {chosen ? (
+        row(chosen)
+      ) : (
+        <Text size="sm" dim>
+          칸을 누르면 여기에 뜹니다.
+        </Text>
+      )}
+    </>
   );
 }
 
@@ -71,10 +146,79 @@ export default function Shop() {
   const [amount, setAmount] = useState(1_000);
   /** 마지막 강화 결과. 성공·실패를 한 줄로 보여주려고 들고 있는다 */
   const [lastEnhance, setLastEnhance] = useState<string | null>(null);
+  /** 장비 목록을 격자로 볼지 (T17_6). 가방 탭처럼 그림 쪽이 기본이다 */
+  const [grid, setGrid] = useState(true);
+  const [slot, setSlot] = useState<GearSlot | null>(null);
 
   const region = regionById(save.regionProgress.current);
   const stats = statsOf(save);
   const gold = save.player.gold;
+  const bySlot = (s: GearSlot) => slot === null || s === slot;
+  const equipped = new Set(Object.values(save.equipped));
+
+  // 낄 수 있는 것 중 **최근 두 티어**만 편다. 그 아래는 이미 지나온 물건이다 —
+  // 전에는 앞 12개만 잘라 보여서 부위 이름순으로 뒤에 있는 하의가 통째로 안 보였다
+  const wearable = shopGear(save.player.level);
+  const topTier = Math.max(0, ...wearable.map((e) => e.tier));
+  const onSale = wearable.filter((e) => e.tier >= topTier - 1 && bySlot(e.slot));
+  const sellable = save.inventory.filter((i) => !equipped.has(i.uid) && bySlot(itemDef(i).slot));
+  const upgradable = save.inventory.filter((i) => bySlot(itemDef(i).slot));
+
+  /** 격자·목록 전환과 부위 필터. 상점과 강화 탭이 같이 쓴다 */
+  const viewBar = (
+    <>
+      <View style={styles.tabs}>
+        <Button label="격자" tone={grid ? 'gold' : 'normal'} onPress={() => setGrid(true)} />
+        <Button label="목록" tone={grid ? 'normal' : 'gold'} onPress={() => setGrid(false)} />
+      </View>
+      <View style={styles.tabs}>
+        <Button
+          label="전체"
+          tone={slot === null ? 'gold' : 'normal'}
+          onPress={() => setSlot(null)}
+        />
+        {GEAR_SLOTS.map((s) => (
+          <Button
+            key={s}
+            label={GEAR_SLOT_LABELS[s]}
+            tone={slot === s ? 'gold' : 'normal'}
+            onPress={() => setSlot(s)}
+          />
+        ))}
+      </View>
+    </>
+  );
+
+  const enhanceRow = (item: ItemInstance) => {
+    const def = itemDef(item);
+    const next = item.enhance + 1;
+    const maxed = item.enhance >= ENHANCE_MAX;
+    const cost = maxed ? 0 : enhanceCost(def.price, next);
+    return (
+      <Row
+        icon={def}
+        title={`${equipped.has(item.uid) ? '[착용] ' : ''}${itemLabel(item)}`}
+        detail={
+          maxed
+            ? '최대 단계입니다'
+            : `+${next} 성공률 ${(enhanceRate(next) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
+              ` · +10까지 기대 ${enhanceExpected(def.price).gold.toLocaleString()}G`
+        }
+        action={maxed ? '완료' : '강화'}
+        tone={equipped.has(item.uid) ? 'gold' : 'normal'}
+        disabled={maxed || gold < cost}
+        onPress={() => {
+          const r = enhance(item.uid);
+          if (!r) return;
+          setLastEnhance(
+            r.success
+              ? `성공! ${def.name} +${r.step} (${r.cost.toLocaleString()}G)`
+              : `실패… +${r.step} 못 붙었습니다 (${r.cost.toLocaleString()}G)`,
+          );
+        }}
+      />
+    );
+  };
   // 가방이 차면 사도 들어갈 데가 없다. 버튼만 안 먹으면 왜 안 되는지 모른다 (T17_3)
   const full = bagFull(save);
   const fullNote = full && (
@@ -109,7 +253,12 @@ export default function Shop() {
 
       <View style={styles.tabs}>
         {TABS.map((t) => (
-          <Button key={t} label={t} tone={t === tab ? 'gold' : 'normal'} onPress={() => setTab(t)} />
+          <Button
+            key={t}
+            label={t}
+            tone={t === tab ? 'gold' : 'normal'}
+            onPress={() => setTab(t)}
+          />
         ))}
       </View>
 
@@ -132,20 +281,33 @@ export default function Shop() {
               </Text>
             </Panel>
 
-            <Panel title={`장비 — 낄 수 있는 것만 (Lv${save.player.level})`}>
+            {viewBar}
+
+            <Panel
+              title={`장비 — 티어 ${Math.max(1, topTier - 1)}~${topTier} (Lv${save.player.level})`}
+            >
+              <Text size="sm" dim>
+                전설은 팔지 않습니다 — 몬스터에게서만 나옵니다.
+              </Text>
               {fullNote}
-              {shopGear(save.player.level)
-                .slice(0, 12)
-                .map((e) => (
+              <ItemList
+                items={onSale}
+                grid={grid}
+                keyOf={(e) => e.id}
+                defOf={(e) => e}
+                tagOf={(e) => `${e.price.toLocaleString()}G`}
+                empty="이 부위는 파는 게 없습니다."
+                row={(e) => (
                   <Row
-                    key={e.id}
+                    icon={e}
                     title={e.name}
                     detail={`${GEAR_SLOT_LABELS[e.slot]} · ${statText(e)} · ${e.price.toLocaleString()}G`}
                     action="구매"
                     disabled={full || gold < e.price}
                     onPress={() => trade(trades.buyEquipment(e.id))}
                   />
-                ))}
+                )}
+              />
             </Panel>
 
             <Panel title={`가방 — ${bagItems(save).length} / ${save.bag.capacity}칸`}>
@@ -169,71 +331,47 @@ export default function Shop() {
             </Panel>
 
             <Panel title="팔기 — 낀 것은 안 팝니다">
-              {save.inventory.filter((i) => !Object.values(save.equipped).includes(i.uid)).length ===
-              0 ? (
-                <Text size="sm" dim>
-                  팔 게 없습니다.
-                </Text>
-              ) : (
-                save.inventory
-                  .filter((i) => !Object.values(save.equipped).includes(i.uid))
-                  .map((item) => (
-                    <Row
-                      key={item.uid}
-                      title={itemLabel(item)}
-                      detail={`${GEAR_SLOT_LABELS[equipmentById(item.defId).slot]} · ${sellPrice(item).toLocaleString()}G`}
-                      action="팔기"
-                      onPress={() => trade(trades.sellItem(item.uid))}
-                    />
-                  ))
-              )}
+              <ItemList
+                items={sellable}
+                grid={grid}
+                keyOf={(i) => i.uid}
+                defOf={itemDef}
+                tagOf={(i) => `${sellPrice(i).toLocaleString()}G`}
+                empty="팔 게 없습니다."
+                row={(item) => (
+                  <Row
+                    icon={itemDef(item)}
+                    title={itemLabel(item)}
+                    detail={`${GEAR_SLOT_LABELS[equipmentById(item.defId).slot]} · ${sellPrice(item).toLocaleString()}G`}
+                    action="팔기"
+                    onPress={() => trade(trades.sellItem(item.uid))}
+                  />
+                )}
+              />
             </Panel>
           </>
         )}
 
         {tab === '강화' && (
-          <Panel title="강화 — 실패해도 단계는 안 내려갑니다">
-            {lastEnhance && <Text color={colors.gold}>{lastEnhance}</Text>}
-            <Text size="sm" dim>
-              골드만 사라집니다. 장비가 깨지거나 단계가 떨어지지는 않습니다.
-            </Text>
-            {save.inventory.length === 0 ? (
+          <>
+            {viewBar}
+            <Panel title="강화 — 실패해도 단계는 안 내려갑니다">
+              {lastEnhance && <Text color={colors.gold}>{lastEnhance}</Text>}
               <Text size="sm" dim>
-                강화할 장비가 없습니다.
+                골드만 사라집니다. 장비가 깨지거나 단계가 떨어지지는 않습니다. 금색 버튼이 낀
+                장비입니다.
               </Text>
-            ) : (
-              save.inventory.map((item) => {
-                const def = equipmentById(item.defId);
-                const next = item.enhance + 1;
-                const maxed = item.enhance >= ENHANCE_MAX;
-                const cost = maxed ? 0 : enhanceCost(def.price, next);
-                return (
-                  <Row
-                    key={item.uid}
-                    title={itemLabel(item)}
-                    detail={
-                      maxed
-                        ? '최대 단계입니다'
-                        : `+${next} 성공률 ${(enhanceRate(next) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
-                          ` · +10까지 기대 ${enhanceExpected(def.price).gold.toLocaleString()}G`
-                    }
-                    action={maxed ? '완료' : '강화'}
-                    tone={Object.values(save.equipped).includes(item.uid) ? 'gold' : 'normal'}
-                    disabled={maxed || gold < cost}
-                    onPress={() => {
-                      const r = enhance(item.uid);
-                      if (!r) return;
-                      setLastEnhance(
-                        r.success
-                          ? `성공! ${def.name} +${r.step} (${r.cost.toLocaleString()}G)`
-                          : `실패… +${r.step} 못 붙었습니다 (${r.cost.toLocaleString()}G)`,
-                      );
-                    }}
-                  />
-                );
-              })
-            )}
-          </Panel>
+              <ItemList
+                items={upgradable}
+                grid={grid}
+                keyOf={(i) => i.uid}
+                defOf={itemDef}
+                tagOf={(i) => `${equipped.has(i.uid) ? '착용 ' : ''}${qualityTag(i)}`}
+                empty="강화할 장비가 없습니다."
+                row={enhanceRow}
+              />
+            </Panel>
+          </>
         )}
 
         {tab === '여관' && (
@@ -343,6 +481,12 @@ const styles = StyleSheet.create({
   header: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
   tabs: { flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' },
   body: { gap: space.lg, paddingBottom: space.lg },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.sm,
+  },
+  itemRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexShrink: 1 },
   name: { gap: space.xs, flexShrink: 1 },
 });

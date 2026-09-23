@@ -45,9 +45,13 @@ export default function Settings() {
           <Button label="장비 한 벌" onPress={grantGearSet} />
           <Button label="초기화" onPress={reset} />
         </View>
-        {/* 아이콘 전수 확인용 — 그림 70종(하의 포함)이 가방에 다 들어가게 칸부터 늘린다 */}
+        {/* 아이콘 전수 확인용 — 그림 70종 + 고유 35종이 가방에 다 들어가게 칸부터 늘린다 */}
         <View style={styles.row}>
-          <Button label="가방 80칸" onPress={() => setBagCapacity(80)} />
+          <Button label="골드 +1000" tone="gold" onPress={() => addGold(1_000)} />
+          <Button label="WP +10000" tone="gold" onPress={() => addWp(10_000)} />
+        </View>
+        <View style={styles.row}>
+          <Button label="가방 300칸" onPress={() => setBagCapacity(300)} />
           <Button label="그림별 장비 1개씩" onPress={grantAllSprites} />
         </View>
         <Text size="sm" dim>

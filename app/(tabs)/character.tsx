@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image, Pressable, ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GEAR_SLOT_LABELS } from '@/content';
@@ -24,10 +24,10 @@ import type { ItemInstance } from '@/save/schema';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
-import { itemIcons } from '@/ui/itemIcons';
+import { EmptyCell, ItemCell, ItemGrid, ItemIcon, qualityTag } from '@/ui/ItemCell';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
-import { border, colors, rarity, space } from '@/ui/theme';
+import { colors, rarity, space } from '@/ui/theme';
 
 const TABS = ['캐릭터', '장비', '가방'] as const;
 type Tab = (typeof TABS)[number];
@@ -249,7 +249,7 @@ export default function Character() {
                     <View key={i} style={styles.dollRow}>
                       {line.map((slot, j) =>
                         slot === null ? (
-                          <View key={j} style={styles.cell} />
+                          <EmptyCell key={j} />
                         ) : (
                           <Slot
                             key={j}
@@ -372,7 +372,7 @@ export default function Character() {
                   비어 있습니다.
                 </Text>
               ) : grid ? (
-                <View style={styles.grid}>
+                <ItemGrid>
                   {bag.map((item) => {
                     const locked = save.player.level < itemDef(item).level;
                     return (
@@ -384,7 +384,7 @@ export default function Character() {
                       />
                     );
                   })}
-                </View>
+                </ItemGrid>
               ) : (
                 bag.map((item) => {
                   const def = itemDef(item);
@@ -418,17 +418,13 @@ export default function Character() {
   );
 }
 
-/** 아이콘. 아직 1차분만 넣어서 없는 sprite가 많다 — 없으면 빈 칸으로 자리만 잡는다. */
+/** 개체 아이콘. 그림은 정의(sprite)를 따른다. */
 function Icon({ item, size }: { item?: ItemInstance; size: number }) {
-  const source = item ? itemIcons[itemDef(item).sprite] : undefined;
-  const box = { width: size, height: size };
-  if (!source) return <View style={box} />;
-  return <Image source={source} style={box} resizeMode="contain" />;
+  return <ItemIcon def={item && itemDef(item)} size={size} />;
 }
 
 /**
- * 격자 한 칸 (T17_1, T17_2). **테두리 색이 등급**이고,
- * 그림이 칸을 꽉 채운 위에 품질·강화를 아래쪽에 겹쳐 박는다 — 그림이 커야 뭘 주웠는지 보인다.
+ * 개체 한 칸 — 그림 위에 품질·강화를 박는다 (T17_2). 칸 모양은 ItemCell이 정한다.
  * 가방에는 안 낀 것만 들어오므로 "낀 물건" 표시는 없다.
  */
 function Slot({
@@ -442,36 +438,20 @@ function Slot({
   dim?: boolean;
   onPress?: () => void;
 }) {
-  const def = item && itemDef(item);
-
   return (
-    <Pressable
+    <ItemCell
+      def={item && itemDef(item)}
+      tag={item && qualityTag(item)}
+      label={label}
+      dim={dim}
       onPress={onPress}
-      style={[styles.cell, { borderColor: def ? rarity[def.rarity] : colors.edge }]}
-    >
-      <Icon item={item} size={CELL - border * 2} />
-      {item ? (
-        <View style={styles.tag}>
-          <Text size="sm" dim={dim}>
-            {Math.round(item.quality * 100)}%{item.enhance > 0 ? ` +${item.enhance}` : ''}
-          </Text>
-        </View>
-      ) : (
-        <View style={styles.tag}>
-          <Text size="sm" dim>
-            {label ?? ''}
-          </Text>
-        </View>
-      )}
-    </Pressable>
+    />
   );
 }
 
 function statLine(item: ItemInstance): string {
   return statText(itemStats(item));
 }
-
-const CELL = 84;
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
@@ -493,26 +473,6 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexShrink: 1 },
   name: { gap: space.xs, flexShrink: 1 },
-
-  grid: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
-  cell: {
-    width: CELL,
-    height: CELL,
-    borderWidth: border,
-    borderColor: colors.edge,
-    backgroundColor: colors.bg,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  // 그림 위에 겹쳐 박는다. 반투명 바탕이 없으면 밝은 그림에서 글씨가 안 보인다
-  tag: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    backgroundColor: 'rgba(26, 22, 38, 0.75)',
-  },
 
   doll: { gap: space.sm, alignItems: 'center' },
   dollRow: { flexDirection: 'row', gap: space.sm },
