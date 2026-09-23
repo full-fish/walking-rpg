@@ -76,6 +76,25 @@ export function itemPower(inst: ItemInstance): number {
   );
 }
 
+/**
+ * "ATK +12 HP +40 SPD +1.2" — 0인 항목은 뺀다. 정의(상점)든 개체(가방)든 같은 모양을 받는다.
+ * **한 곳에서만 만든다** — 화면마다 따로 적었더니 SPD·LUK을 빠뜨린 곳이 두 번 나왔고
+ * (T17 가방, T17_3 상점), 장신구가 "ATK +0 HP +0 DEF +0"으로 보였다.
+ */
+export function statText(s: GearBonus): string {
+  return (
+    [
+      s.atk > 0 ? `ATK +${s.atk}` : '',
+      s.maxHp > 0 ? `HP +${s.maxHp}` : '',
+      s.def > 0 ? `DEF +${s.def}` : '',
+      s.spd > 0 ? `SPD +${s.spd}` : '',
+      s.luk > 0 ? `LUK +${s.luk}` : '',
+    ]
+      .filter(Boolean)
+      .join(' ') || '스탯 없음'
+  );
+}
+
 /** 인벤토리 표시용 — "강철 대검 (114%)", 강화했으면 "+3" (§4.5). */
 export function itemLabel(inst: ItemInstance): string {
   const enhance = inst.enhance > 0 ? ` +${inst.enhance}` : '';

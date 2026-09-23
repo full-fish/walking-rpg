@@ -2,15 +2,30 @@
 
 이미지 생성 AI에 하나씩 넣을 프롬프트용 목록. 파일명 = sprite id 그대로 써서 assets/images/ 밑에 저장.
 
-## 프롬프트 템플릿
+## 프롬프트 쓰는 법 (나노바나나)
 
-`flat 2D pixel art game icon, 64x64, transparent background, single [설명], no gradient shading, consistent light source from top-left`
+**실제로 뽑아서 마음에 든 방식을 기준으로 삼았습니다** — 검 1·2번이 그 문장 그대로입니다.
+
+- **부위마다 1번은 완전한 프롬프트**, 2~10번은 `Same art style as before, now …`로 잇습니다.
+  같은 대화창에서 1번부터 차례로 붙여 넣으면 그림체가 맞춰집니다.
+- 대화가 길어져 그림체가 흔들리면 **그 부위의 1번부터 새 대화**로 다시 시작하세요.
+  1번은 혼자서도 완결된 문장이라 새 대화에서도 됩니다.
+- **배경은 마젠타(#FF00FF)** 입니다. 잘라낼 때 이 색을 지우므로, 아이템 쪽에는
+  **보라·분홍을 일부러 안 썼습니다** — 같이 지워집니다. 수정·흑요석·심연을 파랑·청록으로 잡은 이유입니다.
+- 한 장이 **같은 티어의 5등급 전부**에 쓰입니다(아래 "등급과 그림"). 그래서 이름보다 **재질**을 묘사합니다.
 
 ---
 
 ## 1. 장비 (60개, assets/images/items/)
 
 슬롯 6종 × 티어 10단계. 파일명: `<sprite>.png`
+
+> **등급과 그림.** 60장이 **장비 300종 전부**를 덮습니다. sprite id에 등급이 없어서(`sword_3`),
+> 강철 검·강철 장검·강철 대검·강철 마검·강철 성검이 **같은 그림**을 씁니다. 등급은 게임 안에서
+> **테두리 색**으로 구분합니다. 표의 이름은 common 기준입니다.
+>
+> **고유 장비 25종은 여기 없습니다.** sprite id가 따로(`uniq_<사냥터 id>`)라 60장에 안 들어갑니다.
+> 지금은 그림 없이 빈 칸으로 보입니다.
 
 ### sword
 
@@ -27,6 +42,68 @@
 | sword_9 | sword_9.png | 월광 검 |
 | sword_10 | sword_10.png | 심연 검 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`sword_1.png` ✅ 뽑음
+
+```
+Flat 2D pixel art game icon of a worn old sword, simple fantasy RPG weapon icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, side view.
+```
+
+`sword_2.png` ✅ 뽑음
+
+```
+Same art style as before, now an iron sword (slightly better quality/shinier).
+```
+
+`sword_3.png`
+
+```
+Same art style as before, now a steel sword (polished steel blade, sturdier crossguard).
+```
+
+`sword_4.png`
+
+```
+Same art style as before, now a silver sword (bright silver blade with a small engraved pattern).
+```
+
+`sword_5.png`
+
+```
+Same art style as before, now a black iron sword (dark blackened blade, heavier and more menacing).
+```
+
+`sword_6.png`
+
+```
+Same art style as before, now a dragon-scale sword (deep red scale-textured blade, claw-shaped crossguard).
+```
+
+`sword_7.png`
+
+```
+Same art style as before, now a crystal sword (translucent pale blue crystal blade, faint glow).
+```
+
+`sword_8.png`
+
+```
+Same art style as before, now an obsidian sword (glossy black volcanic glass blade with a dark blue sheen).
+```
+
+`sword_9.png`
+
+```
+Same art style as before, now a moonlight sword (pale silver-blue blade, crescent moon hilt, soft white glow).
+```
+
+`sword_10.png`
+
+```
+Same art style as before, now an abyss sword (near-black blade with glowing teal cracks, ominous).
+```
+
 ### helm
 
 | sprite id | 파일명 | 이름(참고) |
@@ -41,6 +118,68 @@
 | helm_8 | helm_8.png | 흑요석 두건 |
 | helm_9 | helm_9.png | 월광 두건 |
 | helm_10 | helm_10.png | 심연 두건 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`helm_1.png`
+
+```
+Flat 2D pixel art game icon of a worn old cloth hood, simple fantasy RPG headgear icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, front view.
+```
+
+`helm_2.png`
+
+```
+Same art style as before, now an iron cap helmet (simple iron headgear, slightly better quality/shinier).
+```
+
+`helm_3.png`
+
+```
+Same art style as before, now a steel helmet (polished steel with a nose guard, sturdier).
+```
+
+`helm_4.png`
+
+```
+Same art style as before, now a silver helmet (bright silver with a small engraved pattern).
+```
+
+`helm_5.png`
+
+```
+Same art style as before, now a black iron helmet (dark blackened metal, heavier and more menacing).
+```
+
+`helm_6.png`
+
+```
+Same art style as before, now a dragon-scale helmet (deep red scale plating with two small horn crests).
+```
+
+`helm_7.png`
+
+```
+Same art style as before, now a crystal helmet (translucent pale blue crystal, faint glow).
+```
+
+`helm_8.png`
+
+```
+Same art style as before, now an obsidian helmet (glossy black volcanic glass with a dark blue sheen).
+```
+
+`helm_9.png`
+
+```
+Same art style as before, now a moonlight helmet (pale silver-blue with a crescent moon crest, soft white glow).
+```
+
+`helm_10.png`
+
+```
+Same art style as before, now an abyss helmet (near-black with glowing teal cracks, ominous).
+```
 
 ### armor
 
@@ -57,6 +196,68 @@
 | armor_9 | armor_9.png | 월광 옷 |
 | armor_10 | armor_10.png | 심연 옷 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`armor_1.png`
+
+```
+Flat 2D pixel art game icon of a worn old cloth tunic, simple fantasy RPG body armor icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, front view.
+```
+
+`armor_2.png`
+
+```
+Same art style as before, now an iron chainmail shirt (slightly better quality/shinier).
+```
+
+`armor_3.png`
+
+```
+Same art style as before, now a steel breastplate (polished steel plates, sturdier).
+```
+
+`armor_4.png`
+
+```
+Same art style as before, now a silver breastplate (bright silver with a small engraved pattern).
+```
+
+`armor_5.png`
+
+```
+Same art style as before, now a black iron plate armor (dark blackened metal, heavier and more menacing).
+```
+
+`armor_6.png`
+
+```
+Same art style as before, now a dragon-scale armor (deep red overlapping scales).
+```
+
+`armor_7.png`
+
+```
+Same art style as before, now a crystal armor (translucent pale blue crystal plates, faint glow).
+```
+
+`armor_8.png`
+
+```
+Same art style as before, now an obsidian armor (glossy black volcanic glass plates with a dark blue sheen).
+```
+
+`armor_9.png`
+
+```
+Same art style as before, now a moonlight armor (pale silver-blue with a crescent moon emblem, soft white glow).
+```
+
+`armor_10.png`
+
+```
+Same art style as before, now an abyss armor (near-black plates with glowing teal cracks, ominous).
+```
+
 ### gloves
 
 | sprite id | 파일명 | 이름(참고) |
@@ -71,6 +272,68 @@
 | gloves_8 | gloves_8.png | 흑요석 장갑 |
 | gloves_9 | gloves_9.png | 월광 장갑 |
 | gloves_10 | gloves_10.png | 심연 장갑 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`gloves_1.png`
+
+```
+Flat 2D pixel art game icon of a single worn old cloth hand-wrap glove, simple fantasy RPG glove icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, front view.
+```
+
+`gloves_2.png`
+
+```
+Same art style as before, now a single iron-plated glove (slightly better quality/shinier).
+```
+
+`gloves_3.png`
+
+```
+Same art style as before, now a single steel gauntlet (polished steel, sturdier knuckle plates).
+```
+
+`gloves_4.png`
+
+```
+Same art style as before, now a single silver gauntlet (bright silver with a small engraved pattern).
+```
+
+`gloves_5.png`
+
+```
+Same art style as before, now a single black iron gauntlet (dark blackened metal, heavier and more menacing).
+```
+
+`gloves_6.png`
+
+```
+Same art style as before, now a single dragon-scale gauntlet (deep red scales, claw-tipped fingers).
+```
+
+`gloves_7.png`
+
+```
+Same art style as before, now a single crystal gauntlet (translucent pale blue crystal, faint glow).
+```
+
+`gloves_8.png`
+
+```
+Same art style as before, now a single obsidian gauntlet (glossy black volcanic glass with a dark blue sheen).
+```
+
+`gloves_9.png`
+
+```
+Same art style as before, now a single moonlight gauntlet (pale silver-blue with a crescent moon emblem, soft white glow).
+```
+
+`gloves_10.png`
+
+```
+Same art style as before, now a single abyss gauntlet (near-black with glowing teal cracks, ominous).
+```
 
 ### boots
 
@@ -87,6 +350,68 @@
 | boots_9 | boots_9.png | 월광 신 |
 | boots_10 | boots_10.png | 심연 신 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`boots_1.png`
+
+```
+Flat 2D pixel art game icon of a pair of worn old leather shoes, simple fantasy RPG footwear icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, side view.
+```
+
+`boots_2.png`
+
+```
+Same art style as before, now a pair of iron-toed boots (slightly better quality/shinier).
+```
+
+`boots_3.png`
+
+```
+Same art style as before, now a pair of steel boots (polished steel plates, sturdier).
+```
+
+`boots_4.png`
+
+```
+Same art style as before, now a pair of silver boots (bright silver with a small engraved pattern).
+```
+
+`boots_5.png`
+
+```
+Same art style as before, now a pair of black iron boots (dark blackened metal, heavier and more menacing).
+```
+
+`boots_6.png`
+
+```
+Same art style as before, now a pair of dragon-scale boots (deep red scales).
+```
+
+`boots_7.png`
+
+```
+Same art style as before, now a pair of crystal boots (translucent pale blue crystal, faint glow).
+```
+
+`boots_8.png`
+
+```
+Same art style as before, now a pair of obsidian boots (glossy black volcanic glass with a dark blue sheen).
+```
+
+`boots_9.png`
+
+```
+Same art style as before, now a pair of moonlight boots (pale silver-blue with small crescent wings, soft white glow).
+```
+
+`boots_10.png`
+
+```
+Same art style as before, now a pair of abyss boots (near-black with glowing teal cracks, ominous).
+```
+
 ### accessory
 
 | sprite id | 파일명 | 이름(참고) |
@@ -101,6 +426,68 @@
 | accessory_8 | accessory_8.png | 흑요석 부적 |
 | accessory_9 | accessory_9.png | 월광 부적 |
 | accessory_10 | accessory_10.png | 심연 부적 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`accessory_1.png`
+
+```
+Flat 2D pixel art game icon of a worn old paper talisman with a faded red symbol, simple fantasy RPG accessory icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, front view.
+```
+
+`accessory_2.png`
+
+```
+Same art style as before, now an iron amulet (a small iron charm on a chain, slightly better quality/shinier).
+```
+
+`accessory_3.png`
+
+```
+Same art style as before, now a steel amulet (polished steel charm with a small round stone).
+```
+
+`accessory_4.png`
+
+```
+Same art style as before, now a silver amulet (bright silver charm with a small engraved pattern).
+```
+
+`accessory_5.png`
+
+```
+Same art style as before, now a black iron amulet (dark blackened charm, heavier and more menacing).
+```
+
+`accessory_6.png`
+
+```
+Same art style as before, now a dragon-scale amulet (a deep red dragon scale set in gold).
+```
+
+`accessory_7.png`
+
+```
+Same art style as before, now a crystal amulet (translucent pale blue crystal pendant, faint glow).
+```
+
+`accessory_8.png`
+
+```
+Same art style as before, now an obsidian amulet (glossy black volcanic glass pendant with a dark blue sheen).
+```
+
+`accessory_9.png`
+
+```
+Same art style as before, now a moonlight amulet (pale silver-blue crescent moon pendant, soft white glow).
+```
+
+`accessory_10.png`
+
+```
+Same art style as before, now an abyss amulet (near-black pendant with glowing teal cracks, ominous).
+```
 
 ---
 

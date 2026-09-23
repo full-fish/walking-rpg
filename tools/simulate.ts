@@ -15,7 +15,13 @@ import {
   type Field,
   type Region,
 } from '../src/content';
-import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
+import {
+  hpAfterLastHitBy,
+  makeRng,
+  simulateBattle,
+  type Combatant,
+  type Outcome,
+} from '../src/game/battle';
 import { buyConsumable, sellItem, stayInn } from '../src/game/economy';
 import { currentMonster, drinkPotion, enterField, settleRun } from '../src/game/field';
 import {
@@ -181,6 +187,36 @@ function rest(save: Save, region: Region, now: number): { save: Save; spent: num
   return rested ? { save: rested, spent: region.town.inn } : { save, spent: 0 };
 }
 
+/**
+ * 한 마리와 싸운다. HP가 POTION_THRESHOLD 아래로 떨어지면 **전투 중에도** 마신다 (T17_3).
+ *
+ * 전투 화면과 같은 방법이다 — 미리 계산한 전투를 그 지점에서 끊고, 마시고, 남은 싸움을
+ * 새 HP로 다시 뽑는다(app/battle.tsx의 onDrink). 한 방에 0이 되면 마실 틈이 없다.
+ * 물약은 매번 하나씩 줄어드니 많아야 세 번 돈다.
+ */
+function fight(save: Save, rng: () => number): { save: Save; outcome: Outcome; playerHp: number } {
+  const monster = currentMonster(save)!;
+  let monsterHp = monster.maxHp;
+  for (;;) {
+    const stats = statsOf(save);
+    const player: Combatant = { name: '', hp: save.player.hp, ...stats };
+    const battle = simulateBattle(player, { ...monster, hp: monsterHp }, rng);
+
+    const potion = Object.keys(save.run!.potions)[0];
+    const cut = potion
+      ? battle.events.findIndex(
+          (e) =>
+            e.actor === 'monster' && e.hpAfter > 0 && e.hpAfter < stats.maxHp * POTION_THRESHOLD,
+        )
+      : -1;
+    const drunk = cut < 0 ? null : drinkPotion(save, potion, battle.events[cut].hpAfter);
+    if (!drunk) return { save, outcome: battle.outcome, playerHp: battle.playerHp };
+
+    monsterHp = hpAfterLastHitBy(battle.events.slice(0, cut + 1), 'player', monsterHp);
+    save = drunk;
+  }
+}
+
 export type DayLog = {
   day: number;
   level: number;
@@ -293,10 +329,8 @@ export function simulate(opts: SimOptions, seed = 1) {
           break;
         }
 
-        const monster = currentMonster(save)!;
-        const player: Combatant = { name: '', hp: save.player.hp, ...statsOf(save) };
-        const battle = simulateBattle(player, { ...monster, hp: monster.maxHp }, rng);
-
+        const battle = fight(save, rng);
+        save = battle.save;
         const result = settleRun(save, battle.outcome, battle.playerHp, rng, now);
         save = result.save;
         today.gold += result.gained.gold;

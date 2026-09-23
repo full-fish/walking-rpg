@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { consumableById, fieldById } from '@/content';
 import {
+  hpAfterLastHitBy,
   makeRng,
   simulateBattle,
   type BattleEvent,
@@ -29,14 +30,6 @@ const STEP_MS = 600;
 const LOG_LINES = 5;
 
 const RESULT_LABEL = { win: '승리!', lose: '쓰러졌다...', flee: '도망쳤다' } as const;
-
-/** 마지막으로 actor가 때렸을 때 맞은 쪽의 HP. 아직 안 맞았으면 초기값. */
-function hpAfterLastHitBy(events: BattleEvent[], actor: BattleEvent['actor'], initial: number) {
-  for (let i = events.length - 1; i >= 0; i--) {
-    if (events[i].actor === actor) return events[i].hpAfter;
-  }
-  return initial;
-}
 
 function damageText(event: BattleEvent) {
   if (event.type === 'miss') return '빗나갔다';

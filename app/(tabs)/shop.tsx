@@ -22,7 +22,7 @@ import {
   VAULT,
   vaultExpandCost,
 } from '@/game/formulas';
-import { bagItems, itemLabel } from '@/game/items';
+import { bagFull, bagItems, itemLabel, statText } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
@@ -75,6 +75,14 @@ export default function Shop() {
   const region = regionById(save.regionProgress.current);
   const stats = statsOf(save);
   const gold = save.player.gold;
+  // 가방이 차면 사도 들어갈 데가 없다. 버튼만 안 먹으면 왜 안 되는지 모른다 (T17_3)
+  const full = bagFull(save);
+  const fullNote = full && (
+    <Text size="sm" color={colors.hp}>
+      가방이 꽉 찼습니다 ({bagItems(save).length}/{save.bag.capacity}) — 상점 탭의 [가방]에서
+      늘리거나 [팔기]로 비우세요.
+    </Text>
+  );
 
   // 창고·여관·상점은 마을에서만이다 (§3.7). 아무 데서나 되면 사냥터 나올 때마다
   // 예치 버튼을 누르는 게 최적 플레이가 되고, 그건 게임이 아니라 잡일이다.
@@ -125,15 +133,16 @@ export default function Shop() {
             </Panel>
 
             <Panel title={`장비 — 낄 수 있는 것만 (Lv${save.player.level})`}>
+              {fullNote}
               {shopGear(save.player.level)
                 .slice(0, 12)
                 .map((e) => (
                   <Row
                     key={e.id}
                     title={e.name}
-                    detail={`${GEAR_SLOT_LABELS[e.slot]} · ATK +${e.atk} HP +${e.maxHp} DEF +${e.def}${e.spd > 0 ? ` SPD +${e.spd}` : ''} · ${e.price.toLocaleString()}G`}
+                    detail={`${GEAR_SLOT_LABELS[e.slot]} · ${statText(e)} · ${e.price.toLocaleString()}G`}
                     action="구매"
-                    disabled={gold < e.price}
+                    disabled={full || gold < e.price}
                     onPress={() => trade(trades.buyEquipment(e.id))}
                   />
                 ))}
@@ -304,8 +313,9 @@ export default function Shop() {
         {tab === '특별 교환' && (
           <Panel title={`${region.name}의 사냥터 전용 장비`}>
             <Text size="sm" dim>
-              소재는 한 판을 끝까지 깨면 나옵니다 (T16). 지금은 설정 탭에서 받을 수 있습니다.
+              소재는 6마리 판을 끝까지 깨면 하나 나옵니다.
             </Text>
+            {fullNote}
             {region.fields.map((field: Field) => {
               const have = save.materials[field.id] ?? 0;
               const { material, gold: cost } = field.reward.cost;
@@ -314,9 +324,9 @@ export default function Shop() {
                 <Row
                   key={field.id}
                   title={`${field.reward.name} (${GEAR_SLOT_LABELS[item.slot]})`}
-                  detail={`${field.material.name} ${have}/${material} + ${cost.toLocaleString()}G · ATK +${item.atk} HP +${item.maxHp} DEF +${item.def}`}
+                  detail={`${field.material.name} ${have}/${material} + ${cost.toLocaleString()}G · ${statText(item)}`}
                   action="교환"
-                  disabled={have < material || gold < cost}
+                  disabled={full || have < material || gold < cost}
                   onPress={() => trade(trades.exchange(field.id))}
                 />
               );

@@ -104,6 +104,23 @@ function strike(attacker: Combatant, target: Combatant, rng: () => number) {
  * ATB: 몬스터를 기준 시계(1)로 삼고 플레이어는 SPD 비율만큼 빠르게/느리게 행동한다.
  * ratio > 1이면 tPlayer가 tMonster보다 작게 시작해 자연히 선공이 된다 (§4.2).
  */
+/**
+ * 마지막으로 actor가 때렸을 때 맞은 쪽의 HP. 아직 안 맞았으면 초기값.
+ *
+ * 미리 계산한 전투를 **중간에서 끊을 때** 그 순간의 HP를 구한다 — 물약을 마시고 남은
+ * 싸움을 다시 뽑는 전투 화면과 시뮬레이터가 둘 다 이걸로 끊는다 (T17_3).
+ */
+export function hpAfterLastHitBy(
+  events: BattleEvent[],
+  actor: BattleEvent['actor'],
+  initial: number,
+): number {
+  for (let i = events.length - 1; i >= 0; i--) {
+    if (events[i].actor === actor) return events[i].hpAfter;
+  }
+  return initial;
+}
+
 export function simulateBattle(
   player: Combatant,
   monster: Combatant,

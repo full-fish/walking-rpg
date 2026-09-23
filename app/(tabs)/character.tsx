@@ -4,7 +4,15 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GEAR_SLOT_LABELS } from '@/content';
 import { expToNext, GEAR_SLOTS, STAT_PER_POINT, type GearSlot } from '@/game/formulas';
-import { bagItems, equippedStats, itemDef, itemPower, itemStats } from '@/game/items';
+import {
+  bagFull,
+  bagItems,
+  equippedStats,
+  itemDef,
+  itemPower,
+  itemStats,
+  statText,
+} from '@/game/items';
 import {
   primaryStats,
   respecCost,
@@ -103,6 +111,8 @@ export default function Character() {
    * 두 군데 보여서, 어느 쪽을 눌러야 하는지가 매번 헷갈린다.
    */
   const unworn = bagItems(save);
+  /** 차 있으면 못 벗는다 — 벗는 순간 한 칸이 필요해서다 (T17_3) */
+  const full = bagFull(save);
   const bag = unworn.filter((i) => filter === null || itemDef(i).slot === filter);
 
   /** 낀 칸은 벗고, 빈 칸은 후보를 편다 (T17_2). */
@@ -267,13 +277,20 @@ export default function Character() {
                       </View>
                       <Button
                         label={item ? '해제' : '고르기'}
-                        disabled={!item && candidates(slot).length === 0}
+                        disabled={item ? full : candidates(slot).length === 0}
                         onPress={() => onSlot(slot)}
                       />
                     </View>
                   );
                 })}
               </Panel>
+            )}
+
+            {full && (
+              <Text size="sm" color={colors.hp}>
+                가방이 꽉 차서 벗을 수 없습니다 ({unworn.length}/{save.bag.capacity}) — 상점에서
+                팔거나 가방을 늘리세요.
+              </Text>
             )}
 
             {/* 빈 칸을 눌렀을 때만 뜬다. 낄 수 있는 것만, 센 것부터 (T17_2) */}
@@ -442,23 +459,8 @@ function Slot({
   );
 }
 
-/**
- * "ATK +12 HP +40 DEF +5" — 0인 항목은 뺀다.
- * SPD·LUK을 빠뜨렸던 탓에 신발과 장신구가 "스탯 없음"으로 보였다 (T17).
- */
 function statLine(item: ItemInstance): string {
-  const s = itemStats(item);
-  return (
-    [
-      s.atk > 0 ? `ATK +${s.atk}` : '',
-      s.maxHp > 0 ? `HP +${s.maxHp}` : '',
-      s.def > 0 ? `DEF +${s.def}` : '',
-      s.spd > 0 ? `SPD +${s.spd}` : '',
-      s.luk > 0 ? `LUK +${s.luk}` : '',
-    ]
-      .filter(Boolean)
-      .join(' ') || '스탯 없음'
-  );
+  return statText(itemStats(item));
 }
 
 const CELL = 84;

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { gearSetFor } from '../content';
+import { equipmentById, gearSetFor } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import { makeRng } from './battle';
 import { GEAR_SLOTS } from './formulas';
@@ -12,6 +12,7 @@ import {
   makeItem,
   nextUid,
   setBonus,
+  statText,
 } from './items';
 import { addItem, equipAll, equipItem, statsOf, unequipSlot } from './progression';
 
@@ -131,4 +132,11 @@ test('itemPower — 품질·강화가 붙은 순서대로 정렬된다 (T17_1)',
   const highTier = { uid: '2', defId: 'eq_t8_helm_common', quality: 1, enhance: 0 };
   const lowTier = { uid: '3', defId: 'eq_t2_weapon_legendary', quality: 1, enhance: 0 };
   expect(itemPower(highTier)).toBeGreaterThan(itemPower(lowTier));
+});
+
+test('statText — 장신구가 "ATK +0 HP +0 DEF +0"으로 보이지 않는다 (T17_3)', () => {
+  // 장신구는 LUK만, 신발은 SPD·DEF만 준다. 0인 칸을 찍으면 거짓말이 된다
+  expect(statText(equipmentById('eq_t7_accessory_common'))).toMatch(/^LUK \+[\d.]+$/);
+  expect(statText(equipmentById('eq_t7_boots_common'))).toMatch(/^DEF \+\d+ SPD \+[\d.]+$/);
+  expect(statText({ atk: 0, maxHp: 0, def: 0, spd: 0, luk: 0 })).toBe('스탯 없음');
 });
