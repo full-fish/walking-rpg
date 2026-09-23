@@ -14,6 +14,8 @@ export default function Settings() {
   const addWp = usePlayer((s) => s.addWp);
   const settle = usePlayer((s) => s.settle);
   const grantGearSet = usePlayer((s) => s.grantGearSet);
+  const grantAllSprites = usePlayer((s) => s.grantAllSprites);
+  const setBagCapacity = usePlayer((s) => s.setBagCapacity);
   const reset = usePlayer((s) => s.reset);
 
   return (
@@ -42,6 +44,11 @@ export default function Settings() {
           />
           <Button label="장비 한 벌" onPress={grantGearSet} />
           <Button label="초기화" onPress={reset} />
+        </View>
+        {/* 아이콘 전수 확인용 — 그림 60종이 가방에 다 들어가게 칸부터 늘린다 */}
+        <View style={styles.row}>
+          <Button label="가방 80칸" onPress={() => setBagCapacity(80)} />
+          <Button label="그림별 장비 1개씩" onPress={grantAllSprites} />
         </View>
         <Text size="sm" dim>
           앱을 완전히 끄고 다시 켜도 값이 남아 있어야 합니다.

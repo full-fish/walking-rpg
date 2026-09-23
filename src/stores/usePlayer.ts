@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { gearSetFor } from '@/content';
+import { EQUIPMENT, gearSetFor } from '@/content';
 import type { Outcome } from '@/game/battle';
 import { enterField, settleRun, drinkPotion, type RunResult } from '@/game/field';
 import {
@@ -76,6 +76,10 @@ type PlayerStore = {
   trade: (change: (save: Save) => Save | null) => boolean;
   /** 실기기 확인용 — 지금 레벨의 common 풀세트를 공짜로 준다 */
   grantGearSet: () => void;
+  /** 실기기 확인용 — 그림(sprite)마다 장비 하나씩 가방에 넣는다. 아이콘 전수 확인용 */
+  grantAllSprites: () => void;
+  /** 실기기 확인용 — 가방 칸 수를 바로 정한다 */
+  setBagCapacity: (capacity: number) => void;
   /**
    * 장비 한 점을 한 단계 올려 본다 (§4.5). 성공·실패를 화면이 보여줘야 해서
    * trade()와 달리 결과를 그대로 돌려준다. 골드가 모자라면 null.
@@ -206,6 +210,23 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
       uids.push(item.uid);
     }
     set({ save: persist(equipAll(save, uids)) });
+  },
+
+  grantAllSprites: () => {
+    let save = get().save;
+    const seen = new Set<string>();
+    for (const def of EQUIPMENT) {
+      // 고유 장비는 그림이 따로(uniq_…)고 아직 없다. 넣으면 80칸도 넘친다
+      if (def.rarity === 'unique' || seen.has(def.sprite)) continue;
+      seen.add(def.sprite);
+      save = addItem(save, makeItem(save.inventory, def.id, Math.random));
+    }
+    set({ save: persist(save) });
+  },
+
+  setBagCapacity: (capacity) => {
+    const { save } = get();
+    set({ save: persist({ ...save, bag: { ...save.bag, capacity } }) });
   },
 
   enhance: (uid) => {
