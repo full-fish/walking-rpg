@@ -13,7 +13,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 278
+    "price": 239
   },
   {
     "id": "eq_t1_weapon_uncommon",
@@ -29,7 +29,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 612
+    "price": 525
   },
   {
     "id": "eq_t1_weapon_rare",
@@ -45,7 +45,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1392
+    "price": 1193
   },
   {
     "id": "eq_t1_weapon_epic",
@@ -61,7 +61,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 3340
+    "price": 2863
   },
   {
     "id": "eq_t1_weapon_legendary",
@@ -77,7 +77,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 8349
+    "price": 7156
   },
   {
     "id": "eq_t1_helm_common",
@@ -89,11 +89,11 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 43,
+    "maxHp": 34,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 167
+    "price": 143
   },
   {
     "id": "eq_t1_helm_uncommon",
@@ -105,11 +105,11 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 49,
+    "maxHp": 40,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 367
+    "price": 315
   },
   {
     "id": "eq_t1_helm_rare",
@@ -121,11 +121,11 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 58,
+    "maxHp": 46,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 835
+    "price": 716
   },
   {
     "id": "eq_t1_helm_epic",
@@ -137,11 +137,11 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 69,
+    "maxHp": 55,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 2004
+    "price": 1718
   },
   {
     "id": "eq_t1_helm_legendary",
@@ -153,11 +153,11 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 82,
+    "maxHp": 65,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 5009
+    "price": 4294
   },
   {
     "id": "eq_t1_armor_common",
@@ -169,11 +169,11 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 26,
+    "maxHp": 22,
     "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 223
+    "price": 191
   },
   {
     "id": "eq_t1_armor_uncommon",
@@ -185,11 +185,11 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 30,
-    "def": 3,
+    "maxHp": 25,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 490
+    "price": 420
   },
   {
     "id": "eq_t1_armor_rare",
@@ -201,11 +201,11 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 35,
-    "def": 3,
+    "maxHp": 29,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1113
+    "price": 954
   },
   {
     "id": "eq_t1_armor_epic",
@@ -217,11 +217,11 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 41,
-    "def": 4,
+    "maxHp": 34,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 2672
+    "price": 2290
   },
   {
     "id": "eq_t1_armor_legendary",
@@ -233,11 +233,91 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 49,
-    "def": 4,
+    "maxHp": 41,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 6679
+    "price": 5725
+  },
+  {
+    "id": "eq_t1_pants_common",
+    "name": "낡은 바지",
+    "tier": 1,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 1,
+    "region": 1,
+    "sprite": "pants_1",
+    "atk": 0,
+    "maxHp": 17,
+    "def": 1,
+    "spd": 0,
+    "luk": 0,
+    "price": 159
+  },
+  {
+    "id": "eq_t1_pants_uncommon",
+    "name": "낡은 하갑",
+    "tier": 1,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 1,
+    "region": 1,
+    "sprite": "pants_1",
+    "atk": 0,
+    "maxHp": 20,
+    "def": 1,
+    "spd": 0,
+    "luk": 0,
+    "price": 350
+  },
+  {
+    "id": "eq_t1_pants_rare",
+    "name": "낡은 중하갑",
+    "tier": 1,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 1,
+    "region": 1,
+    "sprite": "pants_1",
+    "atk": 0,
+    "maxHp": 23,
+    "def": 1,
+    "spd": 0,
+    "luk": 0,
+    "price": 795
+  },
+  {
+    "id": "eq_t1_pants_epic",
+    "name": "낡은 마하갑",
+    "tier": 1,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 1,
+    "region": 1,
+    "sprite": "pants_1",
+    "atk": 0,
+    "maxHp": 28,
+    "def": 2,
+    "spd": 0,
+    "luk": 0,
+    "price": 1908
+  },
+  {
+    "id": "eq_t1_pants_legendary",
+    "name": "낡은 성하갑",
+    "tier": 1,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 1,
+    "region": 1,
+    "sprite": "pants_1",
+    "atk": 0,
+    "maxHp": 33,
+    "def": 2,
+    "spd": 0,
+    "luk": 0,
+    "price": 4771
   },
   {
     "id": "eq_t1_gloves_common",
@@ -249,11 +329,11 @@
     "region": 1,
     "sprite": "gloves_1",
     "atk": 3,
-    "maxHp": 17,
+    "maxHp": 13,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 148
+    "price": 127
   },
   {
     "id": "eq_t1_gloves_uncommon",
@@ -265,11 +345,11 @@
     "region": 1,
     "sprite": "gloves_1",
     "atk": 3,
-    "maxHp": 20,
+    "maxHp": 15,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 327
+    "price": 280
   },
   {
     "id": "eq_t1_gloves_rare",
@@ -281,11 +361,11 @@
     "region": 1,
     "sprite": "gloves_1",
     "atk": 4,
-    "maxHp": 23,
+    "maxHp": 17,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 742
+    "price": 636
   },
   {
     "id": "eq_t1_gloves_epic",
@@ -297,11 +377,11 @@
     "region": 1,
     "sprite": "gloves_1",
     "atk": 4,
-    "maxHp": 28,
+    "maxHp": 21,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1781
+    "price": 1527
   },
   {
     "id": "eq_t1_gloves_legendary",
@@ -313,11 +393,11 @@
     "region": 1,
     "sprite": "gloves_1",
     "atk": 5,
-    "maxHp": 33,
+    "maxHp": 25,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 4453
+    "price": 3817
   },
   {
     "id": "eq_t1_boots_common",
@@ -333,7 +413,7 @@
     "def": 1,
     "spd": 2.7,
     "luk": 0,
-    "price": 148
+    "price": 127
   },
   {
     "id": "eq_t1_boots_uncommon",
@@ -349,7 +429,7 @@
     "def": 2,
     "spd": 3.1,
     "luk": 0,
-    "price": 327
+    "price": 280
   },
   {
     "id": "eq_t1_boots_rare",
@@ -365,7 +445,7 @@
     "def": 2,
     "spd": 3.7,
     "luk": 0,
-    "price": 742
+    "price": 636
   },
   {
     "id": "eq_t1_boots_epic",
@@ -381,7 +461,7 @@
     "def": 2,
     "spd": 4.4,
     "luk": 0,
-    "price": 1781
+    "price": 1527
   },
   {
     "id": "eq_t1_boots_legendary",
@@ -397,7 +477,7 @@
     "def": 2,
     "spd": 5.2,
     "luk": 0,
-    "price": 4453
+    "price": 3817
   },
   {
     "id": "eq_t1_accessory_common",
@@ -413,7 +493,7 @@
     "def": 0,
     "spd": 0,
     "luk": 1.7,
-    "price": 148
+    "price": 127
   },
   {
     "id": "eq_t1_accessory_uncommon",
@@ -429,7 +509,7 @@
     "def": 0,
     "spd": 0,
     "luk": 2,
-    "price": 327
+    "price": 280
   },
   {
     "id": "eq_t1_accessory_rare",
@@ -445,7 +525,7 @@
     "def": 0,
     "spd": 0,
     "luk": 2.4,
-    "price": 742
+    "price": 636
   },
   {
     "id": "eq_t1_accessory_epic",
@@ -461,7 +541,7 @@
     "def": 0,
     "spd": 0,
     "luk": 2.8,
-    "price": 1781
+    "price": 1527
   },
   {
     "id": "eq_t1_accessory_legendary",
@@ -477,7 +557,7 @@
     "def": 0,
     "spd": 0,
     "luk": 3.3,
-    "price": 4453
+    "price": 3817
   },
   {
     "id": "eq_t2_weapon_common",
@@ -493,7 +573,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 343
+    "price": 294
   },
   {
     "id": "eq_t2_weapon_uncommon",
@@ -509,7 +589,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 754
+    "price": 647
   },
   {
     "id": "eq_t2_weapon_rare",
@@ -525,7 +605,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1715
+    "price": 1470
   },
   {
     "id": "eq_t2_weapon_epic",
@@ -541,7 +621,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 4115
+    "price": 3527
   },
   {
     "id": "eq_t2_weapon_legendary",
@@ -557,7 +637,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 10288
+    "price": 8818
   },
   {
     "id": "eq_t2_helm_common",
@@ -569,11 +649,11 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 79,
-    "def": 2,
+    "maxHp": 63,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 206
+    "price": 176
   },
   {
     "id": "eq_t2_helm_uncommon",
@@ -585,11 +665,11 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 91,
-    "def": 2,
+    "maxHp": 73,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 453
+    "price": 388
   },
   {
     "id": "eq_t2_helm_rare",
@@ -601,11 +681,11 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 106,
-    "def": 2,
+    "maxHp": 85,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1029
+    "price": 882
   },
   {
     "id": "eq_t2_helm_epic",
@@ -617,11 +697,11 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 126,
-    "def": 3,
+    "maxHp": 101,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 2469
+    "price": 2116
   },
   {
     "id": "eq_t2_helm_legendary",
@@ -633,11 +713,11 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 150,
-    "def": 3,
+    "maxHp": 120,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 6173
+    "price": 5291
   },
   {
     "id": "eq_t2_armor_common",
@@ -649,11 +729,11 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 47,
-    "def": 5,
+    "maxHp": 39,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 274
+    "price": 235
   },
   {
     "id": "eq_t2_armor_uncommon",
@@ -665,11 +745,11 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 54,
-    "def": 6,
+    "maxHp": 45,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 604
+    "price": 517
   },
   {
     "id": "eq_t2_armor_rare",
@@ -681,11 +761,11 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 64,
-    "def": 7,
+    "maxHp": 53,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 1372
+    "price": 1176
   },
   {
     "id": "eq_t2_armor_epic",
@@ -697,11 +777,11 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 76,
-    "def": 8,
+    "maxHp": 63,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 3292
+    "price": 2822
   },
   {
     "id": "eq_t2_armor_legendary",
@@ -713,11 +793,91 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 90,
-    "def": 9,
+    "maxHp": 75,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 8230
+    "price": 7055
+  },
+  {
+    "id": "eq_t2_pants_common",
+    "name": "무쇠 바지",
+    "tier": 2,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 5,
+    "region": 1,
+    "sprite": "pants_2",
+    "atk": 0,
+    "maxHp": 32,
+    "def": 2,
+    "spd": 0,
+    "luk": 0,
+    "price": 196
+  },
+  {
+    "id": "eq_t2_pants_uncommon",
+    "name": "무쇠 하갑",
+    "tier": 2,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 5,
+    "region": 1,
+    "sprite": "pants_2",
+    "atk": 0,
+    "maxHp": 36,
+    "def": 2,
+    "spd": 0,
+    "luk": 0,
+    "price": 431
+  },
+  {
+    "id": "eq_t2_pants_rare",
+    "name": "무쇠 중하갑",
+    "tier": 2,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 5,
+    "region": 1,
+    "sprite": "pants_2",
+    "atk": 0,
+    "maxHp": 43,
+    "def": 3,
+    "spd": 0,
+    "luk": 0,
+    "price": 980
+  },
+  {
+    "id": "eq_t2_pants_epic",
+    "name": "무쇠 마하갑",
+    "tier": 2,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 5,
+    "region": 1,
+    "sprite": "pants_2",
+    "atk": 0,
+    "maxHp": 50,
+    "def": 3,
+    "spd": 0,
+    "luk": 0,
+    "price": 2352
+  },
+  {
+    "id": "eq_t2_pants_legendary",
+    "name": "무쇠 성하갑",
+    "tier": 2,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 5,
+    "region": 1,
+    "sprite": "pants_2",
+    "atk": 0,
+    "maxHp": 60,
+    "def": 4,
+    "spd": 0,
+    "luk": 0,
+    "price": 5879
   },
   {
     "id": "eq_t2_gloves_common",
@@ -729,11 +889,11 @@
     "region": 1,
     "sprite": "gloves_2",
     "atk": 5,
-    "maxHp": 32,
-    "def": 2,
+    "maxHp": 24,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 183
+    "price": 157
   },
   {
     "id": "eq_t2_gloves_uncommon",
@@ -745,11 +905,11 @@
     "region": 1,
     "sprite": "gloves_2",
     "atk": 6,
-    "maxHp": 36,
-    "def": 2,
+    "maxHp": 27,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 402
+    "price": 345
   },
   {
     "id": "eq_t2_gloves_rare",
@@ -761,11 +921,11 @@
     "region": 1,
     "sprite": "gloves_2",
     "atk": 7,
-    "maxHp": 43,
-    "def": 2,
+    "maxHp": 32,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 914
+    "price": 784
   },
   {
     "id": "eq_t2_gloves_epic",
@@ -777,11 +937,11 @@
     "region": 1,
     "sprite": "gloves_2",
     "atk": 9,
-    "maxHp": 50,
-    "def": 3,
+    "maxHp": 38,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 2195
+    "price": 1881
   },
   {
     "id": "eq_t2_gloves_legendary",
@@ -793,11 +953,11 @@
     "region": 1,
     "sprite": "gloves_2",
     "atk": 10,
-    "maxHp": 60,
-    "def": 3,
+    "maxHp": 45,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 5487
+    "price": 4703
   },
   {
     "id": "eq_t2_boots_common",
@@ -813,7 +973,7 @@
     "def": 3,
     "spd": 4.6,
     "luk": 0,
-    "price": 183
+    "price": 157
   },
   {
     "id": "eq_t2_boots_uncommon",
@@ -829,7 +989,7 @@
     "def": 3,
     "spd": 5.3,
     "luk": 0,
-    "price": 402
+    "price": 345
   },
   {
     "id": "eq_t2_boots_rare",
@@ -845,7 +1005,7 @@
     "def": 4,
     "spd": 6.2,
     "luk": 0,
-    "price": 914
+    "price": 784
   },
   {
     "id": "eq_t2_boots_epic",
@@ -861,7 +1021,7 @@
     "def": 4,
     "spd": 7.3,
     "luk": 0,
-    "price": 2195
+    "price": 1881
   },
   {
     "id": "eq_t2_boots_legendary",
@@ -877,7 +1037,7 @@
     "def": 5,
     "spd": 8.7,
     "luk": 0,
-    "price": 5487
+    "price": 4703
   },
   {
     "id": "eq_t2_accessory_common",
@@ -893,7 +1053,7 @@
     "def": 0,
     "spd": 0,
     "luk": 2.1,
-    "price": 183
+    "price": 157
   },
   {
     "id": "eq_t2_accessory_uncommon",
@@ -909,7 +1069,7 @@
     "def": 0,
     "spd": 0,
     "luk": 2.5,
-    "price": 402
+    "price": 345
   },
   {
     "id": "eq_t2_accessory_rare",
@@ -925,7 +1085,7 @@
     "def": 0,
     "spd": 0,
     "luk": 2.9,
-    "price": 914
+    "price": 784
   },
   {
     "id": "eq_t2_accessory_epic",
@@ -941,7 +1101,7 @@
     "def": 0,
     "spd": 0,
     "luk": 3.4,
-    "price": 2195
+    "price": 1881
   },
   {
     "id": "eq_t2_accessory_legendary",
@@ -957,7 +1117,7 @@
     "def": 0,
     "spd": 0,
     "luk": 4.1,
-    "price": 5487
+    "price": 4703
   },
   {
     "id": "eq_t3_weapon_common",
@@ -973,7 +1133,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 442
+    "price": 379
   },
   {
     "id": "eq_t3_weapon_uncommon",
@@ -989,7 +1149,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 972
+    "price": 833
   },
   {
     "id": "eq_t3_weapon_rare",
@@ -1005,7 +1165,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2209
+    "price": 1894
   },
   {
     "id": "eq_t3_weapon_epic",
@@ -1021,7 +1181,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 5302
+    "price": 4544
   },
   {
     "id": "eq_t3_weapon_legendary",
@@ -1037,7 +1197,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 13255
+    "price": 11361
   },
   {
     "id": "eq_t3_helm_common",
@@ -1049,11 +1209,11 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 146,
-    "def": 3,
+    "maxHp": 117,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 265
+    "price": 227
   },
   {
     "id": "eq_t3_helm_uncommon",
@@ -1065,11 +1225,11 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 168,
-    "def": 4,
+    "maxHp": 134,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 583
+    "price": 500
   },
   {
     "id": "eq_t3_helm_rare",
@@ -1081,11 +1241,11 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 197,
-    "def": 4,
+    "maxHp": 158,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 1325
+    "price": 1136
   },
   {
     "id": "eq_t3_helm_epic",
@@ -1097,11 +1257,11 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 233,
-    "def": 5,
+    "maxHp": 187,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 3181
+    "price": 2727
   },
   {
     "id": "eq_t3_helm_legendary",
@@ -1113,11 +1273,11 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 277,
-    "def": 6,
+    "maxHp": 222,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 7953
+    "price": 6817
   },
   {
     "id": "eq_t3_armor_common",
@@ -1129,11 +1289,11 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 88,
-    "def": 10,
+    "maxHp": 73,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 353
+    "price": 303
   },
   {
     "id": "eq_t3_armor_uncommon",
@@ -1145,11 +1305,11 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 101,
-    "def": 11,
+    "maxHp": 84,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 778
+    "price": 667
   },
   {
     "id": "eq_t3_armor_rare",
@@ -1161,11 +1321,11 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 118,
-    "def": 13,
+    "maxHp": 98,
+    "def": 10,
     "spd": 0,
     "luk": 0,
-    "price": 1767
+    "price": 1515
   },
   {
     "id": "eq_t3_armor_epic",
@@ -1177,11 +1337,11 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 140,
-    "def": 15,
+    "maxHp": 117,
+    "def": 12,
     "spd": 0,
     "luk": 0,
-    "price": 4241
+    "price": 3636
   },
   {
     "id": "eq_t3_armor_legendary",
@@ -1193,11 +1353,91 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 166,
-    "def": 18,
+    "maxHp": 139,
+    "def": 14,
     "spd": 0,
     "luk": 0,
-    "price": 10604
+    "price": 9089
+  },
+  {
+    "id": "eq_t3_pants_common",
+    "name": "강철 바지",
+    "tier": 3,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 8,
+    "region": 2,
+    "sprite": "pants_3",
+    "atk": 0,
+    "maxHp": 58,
+    "def": 4,
+    "spd": 0,
+    "luk": 0,
+    "price": 252
+  },
+  {
+    "id": "eq_t3_pants_uncommon",
+    "name": "강철 하갑",
+    "tier": 3,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 8,
+    "region": 2,
+    "sprite": "pants_3",
+    "atk": 0,
+    "maxHp": 67,
+    "def": 5,
+    "spd": 0,
+    "luk": 0,
+    "price": 555
+  },
+  {
+    "id": "eq_t3_pants_rare",
+    "name": "강철 중하갑",
+    "tier": 3,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 8,
+    "region": 2,
+    "sprite": "pants_3",
+    "atk": 0,
+    "maxHp": 79,
+    "def": 6,
+    "spd": 0,
+    "luk": 0,
+    "price": 1262
+  },
+  {
+    "id": "eq_t3_pants_epic",
+    "name": "강철 마하갑",
+    "tier": 3,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 8,
+    "region": 2,
+    "sprite": "pants_3",
+    "atk": 0,
+    "maxHp": 93,
+    "def": 7,
+    "spd": 0,
+    "luk": 0,
+    "price": 3030
+  },
+  {
+    "id": "eq_t3_pants_legendary",
+    "name": "강철 성하갑",
+    "tier": 3,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 8,
+    "region": 2,
+    "sprite": "pants_3",
+    "atk": 0,
+    "maxHp": 111,
+    "def": 8,
+    "spd": 0,
+    "luk": 0,
+    "price": 7574
   },
   {
     "id": "eq_t3_gloves_common",
@@ -1209,11 +1449,11 @@
     "region": 2,
     "sprite": "gloves_3",
     "atk": 11,
-    "maxHp": 58,
-    "def": 3,
+    "maxHp": 44,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 236
+    "price": 202
   },
   {
     "id": "eq_t3_gloves_uncommon",
@@ -1225,11 +1465,11 @@
     "region": 2,
     "sprite": "gloves_3",
     "atk": 12,
-    "maxHp": 67,
-    "def": 4,
+    "maxHp": 50,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 518
+    "price": 444
   },
   {
     "id": "eq_t3_gloves_rare",
@@ -1241,11 +1481,11 @@
     "region": 2,
     "sprite": "gloves_3",
     "atk": 14,
-    "maxHp": 79,
-    "def": 4,
+    "maxHp": 59,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 1178
+    "price": 1010
   },
   {
     "id": "eq_t3_gloves_epic",
@@ -1257,11 +1497,11 @@
     "region": 2,
     "sprite": "gloves_3",
     "atk": 17,
-    "maxHp": 93,
-    "def": 5,
+    "maxHp": 70,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 2828
+    "price": 2424
   },
   {
     "id": "eq_t3_gloves_legendary",
@@ -1273,11 +1513,11 @@
     "region": 2,
     "sprite": "gloves_3",
     "atk": 20,
-    "maxHp": 111,
-    "def": 6,
+    "maxHp": 83,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 7069
+    "price": 6059
   },
   {
     "id": "eq_t3_boots_common",
@@ -1293,7 +1533,7 @@
     "def": 5,
     "spd": 7,
     "luk": 0,
-    "price": 236
+    "price": 202
   },
   {
     "id": "eq_t3_boots_uncommon",
@@ -1309,7 +1549,7 @@
     "def": 6,
     "spd": 8.1,
     "luk": 0,
-    "price": 518
+    "price": 444
   },
   {
     "id": "eq_t3_boots_rare",
@@ -1325,7 +1565,7 @@
     "def": 7,
     "spd": 9.5,
     "luk": 0,
-    "price": 1178
+    "price": 1010
   },
   {
     "id": "eq_t3_boots_epic",
@@ -1341,7 +1581,7 @@
     "def": 8,
     "spd": 11.3,
     "luk": 0,
-    "price": 2828
+    "price": 2424
   },
   {
     "id": "eq_t3_boots_legendary",
@@ -1357,7 +1597,7 @@
     "def": 10,
     "spd": 13.4,
     "luk": 0,
-    "price": 7069
+    "price": 6059
   },
   {
     "id": "eq_t3_accessory_common",
@@ -1373,7 +1613,7 @@
     "def": 0,
     "spd": 0,
     "luk": 2.8,
-    "price": 236
+    "price": 202
   },
   {
     "id": "eq_t3_accessory_uncommon",
@@ -1389,7 +1629,7 @@
     "def": 0,
     "spd": 0,
     "luk": 3.2,
-    "price": 518
+    "price": 444
   },
   {
     "id": "eq_t3_accessory_rare",
@@ -1405,7 +1645,7 @@
     "def": 0,
     "spd": 0,
     "luk": 3.7,
-    "price": 1178
+    "price": 1010
   },
   {
     "id": "eq_t3_accessory_epic",
@@ -1421,7 +1661,7 @@
     "def": 0,
     "spd": 0,
     "luk": 4.4,
-    "price": 2828
+    "price": 2424
   },
   {
     "id": "eq_t3_accessory_legendary",
@@ -1437,7 +1677,7 @@
     "def": 0,
     "spd": 0,
     "luk": 5.3,
-    "price": 7069
+    "price": 6059
   },
   {
     "id": "eq_t4_weapon_common",
@@ -1453,7 +1693,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 558
+    "price": 478
   },
   {
     "id": "eq_t4_weapon_uncommon",
@@ -1469,7 +1709,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1227
+    "price": 1051
   },
   {
     "id": "eq_t4_weapon_rare",
@@ -1485,7 +1725,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2788
+    "price": 2389
   },
   {
     "id": "eq_t4_weapon_epic",
@@ -1501,7 +1741,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 6690
+    "price": 5734
   },
   {
     "id": "eq_t4_weapon_legendary",
@@ -1517,7 +1757,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 16725
+    "price": 14336
   },
   {
     "id": "eq_t4_helm_common",
@@ -1529,11 +1769,11 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 240,
-    "def": 5,
+    "maxHp": 192,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 335
+    "price": 287
   },
   {
     "id": "eq_t4_helm_uncommon",
@@ -1545,11 +1785,11 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 276,
-    "def": 6,
+    "maxHp": 221,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 736
+    "price": 631
   },
   {
     "id": "eq_t4_helm_rare",
@@ -1561,11 +1801,11 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 324,
-    "def": 7,
+    "maxHp": 259,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 1673
+    "price": 1434
   },
   {
     "id": "eq_t4_helm_epic",
@@ -1577,11 +1817,11 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 384,
-    "def": 9,
+    "maxHp": 307,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 4014
+    "price": 3441
   },
   {
     "id": "eq_t4_helm_legendary",
@@ -1593,11 +1833,11 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 456,
-    "def": 10,
+    "maxHp": 365,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 10035
+    "price": 8602
   },
   {
     "id": "eq_t4_armor_common",
@@ -1609,11 +1849,11 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 144,
-    "def": 16,
+    "maxHp": 120,
+    "def": 13,
     "spd": 0,
     "luk": 0,
-    "price": 446
+    "price": 382
   },
   {
     "id": "eq_t4_armor_uncommon",
@@ -1625,11 +1865,11 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 166,
-    "def": 19,
+    "maxHp": 138,
+    "def": 15,
     "spd": 0,
     "luk": 0,
-    "price": 981
+    "price": 841
   },
   {
     "id": "eq_t4_armor_rare",
@@ -1641,11 +1881,11 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 194,
-    "def": 22,
+    "maxHp": 162,
+    "def": 17,
     "spd": 0,
     "luk": 0,
-    "price": 2230
+    "price": 1911
   },
   {
     "id": "eq_t4_armor_epic",
@@ -1657,11 +1897,11 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 230,
-    "def": 26,
+    "maxHp": 192,
+    "def": 20,
     "spd": 0,
     "luk": 0,
-    "price": 5352
+    "price": 4587
   },
   {
     "id": "eq_t4_armor_legendary",
@@ -1673,11 +1913,91 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 274,
-    "def": 31,
+    "maxHp": 228,
+    "def": 24,
     "spd": 0,
     "luk": 0,
-    "price": 13380
+    "price": 11469
+  },
+  {
+    "id": "eq_t4_pants_common",
+    "name": "은빛 바지",
+    "tier": 4,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 12,
+    "region": 2,
+    "sprite": "pants_4",
+    "atk": 0,
+    "maxHp": 96,
+    "def": 7,
+    "spd": 0,
+    "luk": 0,
+    "price": 319
+  },
+  {
+    "id": "eq_t4_pants_uncommon",
+    "name": "은빛 하갑",
+    "tier": 4,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 12,
+    "region": 2,
+    "sprite": "pants_4",
+    "atk": 0,
+    "maxHp": 110,
+    "def": 8,
+    "spd": 0,
+    "luk": 0,
+    "price": 701
+  },
+  {
+    "id": "eq_t4_pants_rare",
+    "name": "은빛 중하갑",
+    "tier": 4,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 12,
+    "region": 2,
+    "sprite": "pants_4",
+    "atk": 0,
+    "maxHp": 130,
+    "def": 10,
+    "spd": 0,
+    "luk": 0,
+    "price": 1593
+  },
+  {
+    "id": "eq_t4_pants_epic",
+    "name": "은빛 마하갑",
+    "tier": 4,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 12,
+    "region": 2,
+    "sprite": "pants_4",
+    "atk": 0,
+    "maxHp": 154,
+    "def": 12,
+    "spd": 0,
+    "luk": 0,
+    "price": 3823
+  },
+  {
+    "id": "eq_t4_pants_legendary",
+    "name": "은빛 성하갑",
+    "tier": 4,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 12,
+    "region": 2,
+    "sprite": "pants_4",
+    "atk": 0,
+    "maxHp": 182,
+    "def": 14,
+    "spd": 0,
+    "luk": 0,
+    "price": 9557
   },
   {
     "id": "eq_t4_gloves_common",
@@ -1689,11 +2009,11 @@
     "region": 2,
     "sprite": "gloves_4",
     "atk": 18,
-    "maxHp": 96,
-    "def": 5,
+    "maxHp": 72,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 297
+    "price": 255
   },
   {
     "id": "eq_t4_gloves_uncommon",
@@ -1705,11 +2025,11 @@
     "region": 2,
     "sprite": "gloves_4",
     "atk": 21,
-    "maxHp": 110,
-    "def": 6,
+    "maxHp": 83,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 654
+    "price": 561
   },
   {
     "id": "eq_t4_gloves_rare",
@@ -1721,11 +2041,11 @@
     "region": 2,
     "sprite": "gloves_4",
     "atk": 24,
-    "maxHp": 130,
-    "def": 7,
+    "maxHp": 97,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 1487
+    "price": 1274
   },
   {
     "id": "eq_t4_gloves_epic",
@@ -1737,11 +2057,11 @@
     "region": 2,
     "sprite": "gloves_4",
     "atk": 29,
-    "maxHp": 154,
-    "def": 9,
+    "maxHp": 115,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 3568
+    "price": 3058
   },
   {
     "id": "eq_t4_gloves_legendary",
@@ -1753,11 +2073,11 @@
     "region": 2,
     "sprite": "gloves_4",
     "atk": 34,
-    "maxHp": 182,
-    "def": 10,
+    "maxHp": 137,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 8920
+    "price": 7646
   },
   {
     "id": "eq_t4_boots_common",
@@ -1773,7 +2093,7 @@
     "def": 9,
     "spd": 9.5,
     "luk": 0,
-    "price": 297
+    "price": 255
   },
   {
     "id": "eq_t4_boots_uncommon",
@@ -1789,7 +2109,7 @@
     "def": 10,
     "spd": 10.9,
     "luk": 0,
-    "price": 654
+    "price": 561
   },
   {
     "id": "eq_t4_boots_rare",
@@ -1805,7 +2125,7 @@
     "def": 12,
     "spd": 12.8,
     "luk": 0,
-    "price": 1487
+    "price": 1274
   },
   {
     "id": "eq_t4_boots_epic",
@@ -1821,7 +2141,7 @@
     "def": 14,
     "spd": 15.2,
     "luk": 0,
-    "price": 3568
+    "price": 3058
   },
   {
     "id": "eq_t4_boots_legendary",
@@ -1837,7 +2157,7 @@
     "def": 17,
     "spd": 18,
     "luk": 0,
-    "price": 8920
+    "price": 7646
   },
   {
     "id": "eq_t4_accessory_common",
@@ -1853,7 +2173,7 @@
     "def": 0,
     "spd": 0,
     "luk": 3.5,
-    "price": 297
+    "price": 255
   },
   {
     "id": "eq_t4_accessory_uncommon",
@@ -1869,7 +2189,7 @@
     "def": 0,
     "spd": 0,
     "luk": 4,
-    "price": 654
+    "price": 561
   },
   {
     "id": "eq_t4_accessory_rare",
@@ -1885,7 +2205,7 @@
     "def": 0,
     "spd": 0,
     "luk": 4.7,
-    "price": 1487
+    "price": 1274
   },
   {
     "id": "eq_t4_accessory_epic",
@@ -1901,7 +2221,7 @@
     "def": 0,
     "spd": 0,
     "luk": 5.6,
-    "price": 3568
+    "price": 3058
   },
   {
     "id": "eq_t4_accessory_legendary",
@@ -1917,7 +2237,7 @@
     "def": 0,
     "spd": 0,
     "luk": 6.6,
-    "price": 8920
+    "price": 7646
   },
   {
     "id": "eq_t5_weapon_common",
@@ -1933,7 +2253,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 693
+    "price": 594
   },
   {
     "id": "eq_t5_weapon_uncommon",
@@ -1949,7 +2269,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1524
+    "price": 1307
   },
   {
     "id": "eq_t5_weapon_rare",
@@ -1965,7 +2285,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 3464
+    "price": 2969
   },
   {
     "id": "eq_t5_weapon_epic",
@@ -1981,7 +2301,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 8314
+    "price": 7126
   },
   {
     "id": "eq_t5_weapon_legendary",
@@ -1997,7 +2317,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 20785
+    "price": 17816
   },
   {
     "id": "eq_t5_helm_common",
@@ -2009,11 +2329,11 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 368,
-    "def": 8,
+    "maxHp": 294,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 416
+    "price": 356
   },
   {
     "id": "eq_t5_helm_uncommon",
@@ -2025,11 +2345,11 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 423,
-    "def": 10,
+    "maxHp": 338,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 915
+    "price": 784
   },
   {
     "id": "eq_t5_helm_rare",
@@ -2041,11 +2361,11 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 496,
-    "def": 11,
+    "maxHp": 397,
+    "def": 8,
     "spd": 0,
     "luk": 0,
-    "price": 2079
+    "price": 1782
   },
   {
     "id": "eq_t5_helm_epic",
@@ -2057,11 +2377,11 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 588,
-    "def": 14,
+    "maxHp": 471,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 4988
+    "price": 4276
   },
   {
     "id": "eq_t5_helm_legendary",
@@ -2073,11 +2393,11 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 699,
-    "def": 16,
+    "maxHp": 559,
+    "def": 11,
     "spd": 0,
     "luk": 0,
-    "price": 12471
+    "price": 10690
   },
   {
     "id": "eq_t5_armor_common",
@@ -2089,11 +2409,11 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 221,
-    "def": 25,
+    "maxHp": 184,
+    "def": 20,
     "spd": 0,
     "luk": 0,
-    "price": 554
+    "price": 475
   },
   {
     "id": "eq_t5_armor_uncommon",
@@ -2105,11 +2425,11 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 254,
-    "def": 29,
+    "maxHp": 211,
+    "def": 23,
     "spd": 0,
     "luk": 0,
-    "price": 1219
+    "price": 1045
   },
   {
     "id": "eq_t5_armor_rare",
@@ -2121,11 +2441,11 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 298,
-    "def": 34,
+    "maxHp": 248,
+    "def": 27,
     "spd": 0,
     "luk": 0,
-    "price": 2771
+    "price": 2375
   },
   {
     "id": "eq_t5_armor_epic",
@@ -2137,11 +2457,11 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 353,
-    "def": 41,
+    "maxHp": 294,
+    "def": 32,
     "spd": 0,
     "luk": 0,
-    "price": 6651
+    "price": 5701
   },
   {
     "id": "eq_t5_armor_legendary",
@@ -2153,11 +2473,91 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 419,
-    "def": 48,
+    "maxHp": 349,
+    "def": 38,
     "spd": 0,
     "luk": 0,
-    "price": 16628
+    "price": 14253
+  },
+  {
+    "id": "eq_t5_pants_common",
+    "name": "흑철 바지",
+    "tier": 5,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 16,
+    "region": 3,
+    "sprite": "pants_5",
+    "atk": 0,
+    "maxHp": 147,
+    "def": 11,
+    "spd": 0,
+    "luk": 0,
+    "price": 396
+  },
+  {
+    "id": "eq_t5_pants_uncommon",
+    "name": "흑철 하갑",
+    "tier": 5,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 16,
+    "region": 3,
+    "sprite": "pants_5",
+    "atk": 0,
+    "maxHp": 169,
+    "def": 13,
+    "spd": 0,
+    "luk": 0,
+    "price": 871
+  },
+  {
+    "id": "eq_t5_pants_rare",
+    "name": "흑철 중하갑",
+    "tier": 5,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 16,
+    "region": 3,
+    "sprite": "pants_5",
+    "atk": 0,
+    "maxHp": 199,
+    "def": 15,
+    "spd": 0,
+    "luk": 0,
+    "price": 1980
+  },
+  {
+    "id": "eq_t5_pants_epic",
+    "name": "흑철 마하갑",
+    "tier": 5,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 16,
+    "region": 3,
+    "sprite": "pants_5",
+    "atk": 0,
+    "maxHp": 235,
+    "def": 18,
+    "spd": 0,
+    "luk": 0,
+    "price": 4751
+  },
+  {
+    "id": "eq_t5_pants_legendary",
+    "name": "흑철 성하갑",
+    "tier": 5,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 16,
+    "region": 3,
+    "sprite": "pants_5",
+    "atk": 0,
+    "maxHp": 280,
+    "def": 21,
+    "spd": 0,
+    "luk": 0,
+    "price": 11877
   },
   {
     "id": "eq_t5_gloves_common",
@@ -2169,11 +2569,11 @@
     "region": 3,
     "sprite": "gloves_5",
     "atk": 28,
-    "maxHp": 147,
-    "def": 8,
+    "maxHp": 110,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 370
+    "price": 317
   },
   {
     "id": "eq_t5_gloves_uncommon",
@@ -2185,11 +2585,11 @@
     "region": 3,
     "sprite": "gloves_5",
     "atk": 32,
-    "maxHp": 169,
-    "def": 10,
+    "maxHp": 127,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 813
+    "price": 697
   },
   {
     "id": "eq_t5_gloves_rare",
@@ -2201,11 +2601,11 @@
     "region": 3,
     "sprite": "gloves_5",
     "atk": 38,
-    "maxHp": 199,
-    "def": 11,
+    "maxHp": 149,
+    "def": 8,
     "spd": 0,
     "luk": 0,
-    "price": 1848
+    "price": 1584
   },
   {
     "id": "eq_t5_gloves_epic",
@@ -2217,11 +2617,11 @@
     "region": 3,
     "sprite": "gloves_5",
     "atk": 45,
-    "maxHp": 235,
-    "def": 14,
+    "maxHp": 177,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 4434
+    "price": 3801
   },
   {
     "id": "eq_t5_gloves_legendary",
@@ -2233,11 +2633,11 @@
     "region": 3,
     "sprite": "gloves_5",
     "atk": 54,
-    "maxHp": 280,
-    "def": 16,
+    "maxHp": 210,
+    "def": 11,
     "spd": 0,
     "luk": 0,
-    "price": 11085
+    "price": 9502
   },
   {
     "id": "eq_t5_boots_common",
@@ -2253,7 +2653,7 @@
     "def": 14,
     "spd": 12,
     "luk": 0,
-    "price": 370
+    "price": 317
   },
   {
     "id": "eq_t5_boots_uncommon",
@@ -2269,7 +2669,7 @@
     "def": 16,
     "spd": 13.7,
     "luk": 0,
-    "price": 813
+    "price": 697
   },
   {
     "id": "eq_t5_boots_rare",
@@ -2285,7 +2685,7 @@
     "def": 19,
     "spd": 16.1,
     "luk": 0,
-    "price": 1848
+    "price": 1584
   },
   {
     "id": "eq_t5_boots_epic",
@@ -2301,7 +2701,7 @@
     "def": 23,
     "spd": 19.1,
     "luk": 0,
-    "price": 4434
+    "price": 3801
   },
   {
     "id": "eq_t5_boots_legendary",
@@ -2317,7 +2717,7 @@
     "def": 27,
     "spd": 22.7,
     "luk": 0,
-    "price": 11085
+    "price": 9502
   },
   {
     "id": "eq_t5_accessory_common",
@@ -2333,7 +2733,7 @@
     "def": 0,
     "spd": 0,
     "luk": 4.3,
-    "price": 370
+    "price": 317
   },
   {
     "id": "eq_t5_accessory_uncommon",
@@ -2349,7 +2749,7 @@
     "def": 0,
     "spd": 0,
     "luk": 5,
-    "price": 813
+    "price": 697
   },
   {
     "id": "eq_t5_accessory_rare",
@@ -2365,7 +2765,7 @@
     "def": 0,
     "spd": 0,
     "luk": 5.9,
-    "price": 1848
+    "price": 1584
   },
   {
     "id": "eq_t5_accessory_epic",
@@ -2381,7 +2781,7 @@
     "def": 0,
     "spd": 0,
     "luk": 6.9,
-    "price": 4434
+    "price": 3801
   },
   {
     "id": "eq_t5_accessory_legendary",
@@ -2397,7 +2797,7 @@
     "def": 0,
     "spd": 0,
     "luk": 8.3,
-    "price": 11085
+    "price": 9502
   },
   {
     "id": "eq_t6_weapon_common",
@@ -2413,7 +2813,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 895
+    "price": 767
   },
   {
     "id": "eq_t6_weapon_uncommon",
@@ -2429,7 +2829,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1969
+    "price": 1687
   },
   {
     "id": "eq_t6_weapon_rare",
@@ -2445,7 +2845,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 4474
+    "price": 3835
   },
   {
     "id": "eq_t6_weapon_epic",
@@ -2461,7 +2861,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 10737
+    "price": 9203
   },
   {
     "id": "eq_t6_weapon_legendary",
@@ -2477,7 +2877,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 26844
+    "price": 23009
   },
   {
     "id": "eq_t6_helm_common",
@@ -2489,11 +2889,11 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 587,
-    "def": 14,
+    "maxHp": 470,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 537
+    "price": 460
   },
   {
     "id": "eq_t6_helm_uncommon",
@@ -2505,11 +2905,11 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 675,
-    "def": 16,
+    "maxHp": 540,
+    "def": 11,
     "spd": 0,
     "luk": 0,
-    "price": 1181
+    "price": 1012
   },
   {
     "id": "eq_t6_helm_rare",
@@ -2521,11 +2921,11 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 793,
-    "def": 19,
+    "maxHp": 634,
+    "def": 12,
     "spd": 0,
     "luk": 0,
-    "price": 2684
+    "price": 2301
   },
   {
     "id": "eq_t6_helm_epic",
@@ -2537,11 +2937,11 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 939,
-    "def": 22,
+    "maxHp": 752,
+    "def": 15,
     "spd": 0,
     "luk": 0,
-    "price": 6442
+    "price": 5522
   },
   {
     "id": "eq_t6_helm_legendary",
@@ -2553,11 +2953,11 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 1116,
-    "def": 26,
+    "maxHp": 892,
+    "def": 17,
     "spd": 0,
     "luk": 0,
-    "price": 16106
+    "price": 13805
   },
   {
     "id": "eq_t6_armor_common",
@@ -2569,11 +2969,11 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 352,
-    "def": 41,
+    "maxHp": 294,
+    "def": 32,
     "spd": 0,
     "luk": 0,
-    "price": 716
+    "price": 614
   },
   {
     "id": "eq_t6_armor_uncommon",
@@ -2585,11 +2985,11 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 405,
-    "def": 47,
+    "maxHp": 338,
+    "def": 37,
     "spd": 0,
     "luk": 0,
-    "price": 1575
+    "price": 1350
   },
   {
     "id": "eq_t6_armor_rare",
@@ -2601,11 +3001,11 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 476,
-    "def": 56,
+    "maxHp": 396,
+    "def": 43,
     "spd": 0,
     "luk": 0,
-    "price": 3579
+    "price": 3068
   },
   {
     "id": "eq_t6_armor_epic",
@@ -2617,11 +3017,11 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 564,
-    "def": 66,
+    "maxHp": 470,
+    "def": 51,
     "spd": 0,
     "luk": 0,
-    "price": 8590
+    "price": 7363
   },
   {
     "id": "eq_t6_armor_legendary",
@@ -2633,11 +3033,91 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 669,
-    "def": 78,
+    "maxHp": 558,
+    "def": 61,
     "spd": 0,
     "luk": 0,
-    "price": 21475
+    "price": 18407
+  },
+  {
+    "id": "eq_t6_pants_common",
+    "name": "용린 바지",
+    "tier": 6,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 21,
+    "region": 3,
+    "sprite": "pants_6",
+    "atk": 0,
+    "maxHp": 235,
+    "def": 18,
+    "spd": 0,
+    "luk": 0,
+    "price": 511
+  },
+  {
+    "id": "eq_t6_pants_uncommon",
+    "name": "용린 하갑",
+    "tier": 6,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 21,
+    "region": 3,
+    "sprite": "pants_6",
+    "atk": 0,
+    "maxHp": 270,
+    "def": 21,
+    "spd": 0,
+    "luk": 0,
+    "price": 1125
+  },
+  {
+    "id": "eq_t6_pants_rare",
+    "name": "용린 중하갑",
+    "tier": 6,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 21,
+    "region": 3,
+    "sprite": "pants_6",
+    "atk": 0,
+    "maxHp": 317,
+    "def": 25,
+    "spd": 0,
+    "luk": 0,
+    "price": 2557
+  },
+  {
+    "id": "eq_t6_pants_epic",
+    "name": "용린 마하갑",
+    "tier": 6,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 21,
+    "region": 3,
+    "sprite": "pants_6",
+    "atk": 0,
+    "maxHp": 376,
+    "def": 29,
+    "spd": 0,
+    "luk": 0,
+    "price": 6136
+  },
+  {
+    "id": "eq_t6_pants_legendary",
+    "name": "용린 성하갑",
+    "tier": 6,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 21,
+    "region": 3,
+    "sprite": "pants_6",
+    "atk": 0,
+    "maxHp": 446,
+    "def": 35,
+    "spd": 0,
+    "luk": 0,
+    "price": 15339
   },
   {
     "id": "eq_t6_gloves_common",
@@ -2649,11 +3129,11 @@
     "region": 3,
     "sprite": "gloves_6",
     "atk": 46,
-    "maxHp": 235,
-    "def": 14,
+    "maxHp": 176,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 477
+    "price": 409
   },
   {
     "id": "eq_t6_gloves_uncommon",
@@ -2665,11 +3145,11 @@
     "region": 3,
     "sprite": "gloves_6",
     "atk": 53,
-    "maxHp": 270,
-    "def": 16,
+    "maxHp": 203,
+    "def": 11,
     "spd": 0,
     "luk": 0,
-    "price": 1050
+    "price": 900
   },
   {
     "id": "eq_t6_gloves_rare",
@@ -2681,11 +3161,11 @@
     "region": 3,
     "sprite": "gloves_6",
     "atk": 62,
-    "maxHp": 317,
-    "def": 19,
+    "maxHp": 238,
+    "def": 12,
     "spd": 0,
     "luk": 0,
-    "price": 2386
+    "price": 2045
   },
   {
     "id": "eq_t6_gloves_epic",
@@ -2697,11 +3177,11 @@
     "region": 3,
     "sprite": "gloves_6",
     "atk": 73,
-    "maxHp": 376,
-    "def": 22,
+    "maxHp": 282,
+    "def": 15,
     "spd": 0,
     "luk": 0,
-    "price": 5727
+    "price": 4909
   },
   {
     "id": "eq_t6_gloves_legendary",
@@ -2713,11 +3193,11 @@
     "region": 3,
     "sprite": "gloves_6",
     "atk": 87,
-    "maxHp": 446,
-    "def": 26,
+    "maxHp": 335,
+    "def": 17,
     "spd": 0,
     "luk": 0,
-    "price": 14317
+    "price": 12271
   },
   {
     "id": "eq_t6_boots_common",
@@ -2733,7 +3213,7 @@
     "def": 23,
     "spd": 15,
     "luk": 0,
-    "price": 477
+    "price": 409
   },
   {
     "id": "eq_t6_boots_uncommon",
@@ -2749,7 +3229,7 @@
     "def": 26,
     "spd": 17.3,
     "luk": 0,
-    "price": 1050
+    "price": 900
   },
   {
     "id": "eq_t6_boots_rare",
@@ -2765,7 +3245,7 @@
     "def": 31,
     "spd": 20.3,
     "luk": 0,
-    "price": 2386
+    "price": 2045
   },
   {
     "id": "eq_t6_boots_epic",
@@ -2781,7 +3261,7 @@
     "def": 37,
     "spd": 24,
     "luk": 0,
-    "price": 5727
+    "price": 4909
   },
   {
     "id": "eq_t6_boots_legendary",
@@ -2797,7 +3277,7 @@
     "def": 44,
     "spd": 28.6,
     "luk": 0,
-    "price": 14317
+    "price": 12271
   },
   {
     "id": "eq_t6_accessory_common",
@@ -2813,7 +3293,7 @@
     "def": 0,
     "spd": 0,
     "luk": 5.6,
-    "price": 477
+    "price": 409
   },
   {
     "id": "eq_t6_accessory_uncommon",
@@ -2829,7 +3309,7 @@
     "def": 0,
     "spd": 0,
     "luk": 6.5,
-    "price": 1050
+    "price": 900
   },
   {
     "id": "eq_t6_accessory_rare",
@@ -2845,7 +3325,7 @@
     "def": 0,
     "spd": 0,
     "luk": 7.6,
-    "price": 2386
+    "price": 2045
   },
   {
     "id": "eq_t6_accessory_epic",
@@ -2861,7 +3341,7 @@
     "def": 0,
     "spd": 0,
     "luk": 9,
-    "price": 5727
+    "price": 4909
   },
   {
     "id": "eq_t6_accessory_legendary",
@@ -2877,7 +3357,7 @@
     "def": 0,
     "spd": 0,
     "luk": 10.7,
-    "price": 14317
+    "price": 12271
   },
   {
     "id": "eq_t7_weapon_common",
@@ -2893,7 +3373,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1196
+    "price": 1025
   },
   {
     "id": "eq_t7_weapon_uncommon",
@@ -2909,7 +3389,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2630
+    "price": 2255
   },
   {
     "id": "eq_t7_weapon_rare",
@@ -2925,7 +3405,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 5978
+    "price": 5124
   },
   {
     "id": "eq_t7_weapon_epic",
@@ -2941,7 +3421,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 14348
+    "price": 12298
   },
   {
     "id": "eq_t7_weapon_legendary",
@@ -2957,7 +3437,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 35870
+    "price": 30746
   },
   {
     "id": "eq_t7_helm_common",
@@ -2969,11 +3449,11 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 964,
-    "def": 23,
+    "maxHp": 772,
+    "def": 15,
     "spd": 0,
     "luk": 0,
-    "price": 717
+    "price": 615
   },
   {
     "id": "eq_t7_helm_uncommon",
@@ -2985,11 +3465,11 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 1109,
-    "def": 26,
+    "maxHp": 887,
+    "def": 18,
     "spd": 0,
     "luk": 0,
-    "price": 1578
+    "price": 1353
   },
   {
     "id": "eq_t7_helm_rare",
@@ -3001,11 +3481,11 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 1302,
-    "def": 31,
+    "maxHp": 1042,
+    "def": 21,
     "spd": 0,
     "luk": 0,
-    "price": 3587
+    "price": 3075
   },
   {
     "id": "eq_t7_helm_epic",
@@ -3017,11 +3497,11 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 1543,
-    "def": 37,
+    "maxHp": 1235,
+    "def": 24,
     "spd": 0,
     "luk": 0,
-    "price": 8609
+    "price": 7379
   },
   {
     "id": "eq_t7_helm_legendary",
@@ -3033,11 +3513,11 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 1833,
-    "def": 43,
+    "maxHp": 1466,
+    "def": 29,
     "spd": 0,
     "luk": 0,
-    "price": 21522
+    "price": 18447
   },
   {
     "id": "eq_t7_armor_common",
@@ -3049,11 +3529,11 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 579,
-    "def": 69,
+    "maxHp": 482,
+    "def": 53,
     "spd": 0,
     "luk": 0,
-    "price": 957
+    "price": 820
   },
   {
     "id": "eq_t7_armor_uncommon",
@@ -3065,11 +3545,11 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 666,
-    "def": 79,
+    "maxHp": 555,
+    "def": 61,
     "spd": 0,
     "luk": 0,
-    "price": 2104
+    "price": 1804
   },
   {
     "id": "eq_t7_armor_rare",
@@ -3081,11 +3561,11 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 781,
-    "def": 93,
+    "maxHp": 651,
+    "def": 72,
     "spd": 0,
     "luk": 0,
-    "price": 4783
+    "price": 4099
   },
   {
     "id": "eq_t7_armor_epic",
@@ -3097,11 +3577,11 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 926,
-    "def": 110,
+    "maxHp": 772,
+    "def": 85,
     "spd": 0,
     "luk": 0,
-    "price": 11478
+    "price": 9839
   },
   {
     "id": "eq_t7_armor_legendary",
@@ -3113,11 +3593,91 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 1100,
-    "def": 130,
+    "maxHp": 916,
+    "def": 101,
     "spd": 0,
     "luk": 0,
-    "price": 28696
+    "price": 24597
+  },
+  {
+    "id": "eq_t7_pants_common",
+    "name": "수정 바지",
+    "tier": 7,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 26,
+    "region": 4,
+    "sprite": "pants_7",
+    "atk": 0,
+    "maxHp": 386,
+    "def": 30,
+    "spd": 0,
+    "luk": 0,
+    "price": 683
+  },
+  {
+    "id": "eq_t7_pants_uncommon",
+    "name": "수정 하갑",
+    "tier": 7,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 26,
+    "region": 4,
+    "sprite": "pants_7",
+    "atk": 0,
+    "maxHp": 444,
+    "def": 35,
+    "spd": 0,
+    "luk": 0,
+    "price": 1503
+  },
+  {
+    "id": "eq_t7_pants_rare",
+    "name": "수정 중하갑",
+    "tier": 7,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 26,
+    "region": 4,
+    "sprite": "pants_7",
+    "atk": 0,
+    "maxHp": 521,
+    "def": 41,
+    "spd": 0,
+    "luk": 0,
+    "price": 3416
+  },
+  {
+    "id": "eq_t7_pants_epic",
+    "name": "수정 마하갑",
+    "tier": 7,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 26,
+    "region": 4,
+    "sprite": "pants_7",
+    "atk": 0,
+    "maxHp": 617,
+    "def": 49,
+    "spd": 0,
+    "luk": 0,
+    "price": 8199
+  },
+  {
+    "id": "eq_t7_pants_legendary",
+    "name": "수정 성하갑",
+    "tier": 7,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 26,
+    "region": 4,
+    "sprite": "pants_7",
+    "atk": 0,
+    "maxHp": 733,
+    "def": 58,
+    "spd": 0,
+    "luk": 0,
+    "price": 20497
   },
   {
     "id": "eq_t7_gloves_common",
@@ -3129,11 +3689,11 @@
     "region": 4,
     "sprite": "gloves_7",
     "atk": 76,
-    "maxHp": 386,
-    "def": 23,
+    "maxHp": 289,
+    "def": 15,
     "spd": 0,
     "luk": 0,
-    "price": 638
+    "price": 547
   },
   {
     "id": "eq_t7_gloves_uncommon",
@@ -3145,11 +3705,11 @@
     "region": 4,
     "sprite": "gloves_7",
     "atk": 88,
-    "maxHp": 444,
-    "def": 26,
+    "maxHp": 333,
+    "def": 18,
     "spd": 0,
     "luk": 0,
-    "price": 1403
+    "price": 1202
   },
   {
     "id": "eq_t7_gloves_rare",
@@ -3161,11 +3721,11 @@
     "region": 4,
     "sprite": "gloves_7",
     "atk": 103,
-    "maxHp": 521,
-    "def": 31,
+    "maxHp": 391,
+    "def": 21,
     "spd": 0,
     "luk": 0,
-    "price": 3188
+    "price": 2733
   },
   {
     "id": "eq_t7_gloves_epic",
@@ -3177,11 +3737,11 @@
     "region": 4,
     "sprite": "gloves_7",
     "atk": 122,
-    "maxHp": 617,
-    "def": 37,
+    "maxHp": 463,
+    "def": 24,
     "spd": 0,
     "luk": 0,
-    "price": 7652
+    "price": 6559
   },
   {
     "id": "eq_t7_gloves_legendary",
@@ -3193,11 +3753,11 @@
     "region": 4,
     "sprite": "gloves_7",
     "atk": 145,
-    "maxHp": 733,
-    "def": 43,
+    "maxHp": 550,
+    "def": 29,
     "spd": 0,
     "luk": 0,
-    "price": 19131
+    "price": 16398
   },
   {
     "id": "eq_t7_boots_common",
@@ -3213,7 +3773,7 @@
     "def": 38,
     "spd": 18.7,
     "luk": 0,
-    "price": 638
+    "price": 547
   },
   {
     "id": "eq_t7_boots_uncommon",
@@ -3229,7 +3789,7 @@
     "def": 44,
     "spd": 21.5,
     "luk": 0,
-    "price": 1403
+    "price": 1202
   },
   {
     "id": "eq_t7_boots_rare",
@@ -3245,7 +3805,7 @@
     "def": 51,
     "spd": 25.3,
     "luk": 0,
-    "price": 3188
+    "price": 2733
   },
   {
     "id": "eq_t7_boots_epic",
@@ -3261,7 +3821,7 @@
     "def": 61,
     "spd": 30,
     "luk": 0,
-    "price": 7652
+    "price": 6559
   },
   {
     "id": "eq_t7_boots_legendary",
@@ -3277,7 +3837,7 @@
     "def": 72,
     "spd": 35.6,
     "luk": 0,
-    "price": 19131
+    "price": 16398
   },
   {
     "id": "eq_t7_accessory_common",
@@ -3293,7 +3853,7 @@
     "def": 0,
     "spd": 0,
     "luk": 7.5,
-    "price": 638
+    "price": 547
   },
   {
     "id": "eq_t7_accessory_uncommon",
@@ -3309,7 +3869,7 @@
     "def": 0,
     "spd": 0,
     "luk": 8.6,
-    "price": 1403
+    "price": 1202
   },
   {
     "id": "eq_t7_accessory_rare",
@@ -3325,7 +3885,7 @@
     "def": 0,
     "spd": 0,
     "luk": 10.1,
-    "price": 3188
+    "price": 2733
   },
   {
     "id": "eq_t7_accessory_epic",
@@ -3341,7 +3901,7 @@
     "def": 0,
     "spd": 0,
     "luk": 12,
-    "price": 7652
+    "price": 6559
   },
   {
     "id": "eq_t7_accessory_legendary",
@@ -3357,7 +3917,7 @@
     "def": 0,
     "spd": 0,
     "luk": 14.2,
-    "price": 19131
+    "price": 16398
   },
   {
     "id": "eq_t8_weapon_common",
@@ -3373,7 +3933,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1507
+    "price": 1291
   },
   {
     "id": "eq_t8_weapon_uncommon",
@@ -3389,7 +3949,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 3314
+    "price": 2841
   },
   {
     "id": "eq_t8_weapon_rare",
@@ -3405,7 +3965,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 7533
+    "price": 6457
   },
   {
     "id": "eq_t8_weapon_epic",
@@ -3421,7 +3981,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 18079
+    "price": 15496
   },
   {
     "id": "eq_t8_weapon_legendary",
@@ -3437,7 +3997,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 45196
+    "price": 38740
   },
   {
     "id": "eq_t8_helm_common",
@@ -3449,11 +4009,11 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 1404,
-    "def": 34,
+    "maxHp": 1123,
+    "def": 22,
     "spd": 0,
     "luk": 0,
-    "price": 904
+    "price": 775
   },
   {
     "id": "eq_t8_helm_uncommon",
@@ -3465,11 +4025,11 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 1615,
-    "def": 39,
+    "maxHp": 1292,
+    "def": 26,
     "spd": 0,
     "luk": 0,
-    "price": 1989
+    "price": 1705
   },
   {
     "id": "eq_t8_helm_rare",
@@ -3481,11 +4041,11 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 1896,
-    "def": 45,
+    "maxHp": 1517,
+    "def": 30,
     "spd": 0,
     "luk": 0,
-    "price": 4520
+    "price": 3874
   },
   {
     "id": "eq_t8_helm_epic",
@@ -3497,11 +4057,11 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 2247,
-    "def": 54,
+    "maxHp": 1797,
+    "def": 36,
     "spd": 0,
     "luk": 0,
-    "price": 10847
+    "price": 9298
   },
   {
     "id": "eq_t8_helm_legendary",
@@ -3513,11 +4073,11 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 2668,
-    "def": 64,
+    "maxHp": 2134,
+    "def": 42,
     "spd": 0,
     "luk": 0,
-    "price": 27118
+    "price": 23244
   },
   {
     "id": "eq_t8_armor_common",
@@ -3529,11 +4089,11 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 843,
-    "def": 101,
+    "maxHp": 702,
+    "def": 78,
     "spd": 0,
     "luk": 0,
-    "price": 1205
+    "price": 1033
   },
   {
     "id": "eq_t8_armor_uncommon",
@@ -3545,11 +4105,11 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 969,
-    "def": 116,
+    "maxHp": 807,
+    "def": 90,
     "spd": 0,
     "luk": 0,
-    "price": 2652
+    "price": 2273
   },
   {
     "id": "eq_t8_armor_rare",
@@ -3561,11 +4121,11 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 1137,
-    "def": 136,
+    "maxHp": 948,
+    "def": 106,
     "spd": 0,
     "luk": 0,
-    "price": 6026
+    "price": 5165
   },
   {
     "id": "eq_t8_armor_epic",
@@ -3577,11 +4137,11 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 1348,
-    "def": 161,
+    "maxHp": 1123,
+    "def": 125,
     "spd": 0,
     "luk": 0,
-    "price": 14463
+    "price": 12397
   },
   {
     "id": "eq_t8_armor_legendary",
@@ -3593,11 +4153,91 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 1601,
-    "def": 191,
+    "maxHp": 1334,
+    "def": 149,
     "spd": 0,
     "luk": 0,
-    "price": 36157
+    "price": 30992
+  },
+  {
+    "id": "eq_t8_pants_common",
+    "name": "흑요석 바지",
+    "tier": 8,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 32,
+    "region": 4,
+    "sprite": "pants_8",
+    "atk": 0,
+    "maxHp": 562,
+    "def": 45,
+    "spd": 0,
+    "luk": 0,
+    "price": 861
+  },
+  {
+    "id": "eq_t8_pants_uncommon",
+    "name": "흑요석 하갑",
+    "tier": 8,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 32,
+    "region": 4,
+    "sprite": "pants_8",
+    "atk": 0,
+    "maxHp": 646,
+    "def": 51,
+    "spd": 0,
+    "luk": 0,
+    "price": 1894
+  },
+  {
+    "id": "eq_t8_pants_rare",
+    "name": "흑요석 중하갑",
+    "tier": 8,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 32,
+    "region": 4,
+    "sprite": "pants_8",
+    "atk": 0,
+    "maxHp": 758,
+    "def": 60,
+    "spd": 0,
+    "luk": 0,
+    "price": 4304
+  },
+  {
+    "id": "eq_t8_pants_epic",
+    "name": "흑요석 마하갑",
+    "tier": 8,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 32,
+    "region": 4,
+    "sprite": "pants_8",
+    "atk": 0,
+    "maxHp": 899,
+    "def": 72,
+    "spd": 0,
+    "luk": 0,
+    "price": 10331
+  },
+  {
+    "id": "eq_t8_pants_legendary",
+    "name": "흑요석 성하갑",
+    "tier": 8,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 32,
+    "region": 4,
+    "sprite": "pants_8",
+    "atk": 0,
+    "maxHp": 1067,
+    "def": 85,
+    "spd": 0,
+    "luk": 0,
+    "price": 25827
   },
   {
     "id": "eq_t8_gloves_common",
@@ -3609,11 +4249,11 @@
     "region": 4,
     "sprite": "gloves_8",
     "atk": 112,
-    "maxHp": 562,
-    "def": 34,
+    "maxHp": 421,
+    "def": 22,
     "spd": 0,
     "luk": 0,
-    "price": 803
+    "price": 689
   },
   {
     "id": "eq_t8_gloves_uncommon",
@@ -3625,11 +4265,11 @@
     "region": 4,
     "sprite": "gloves_8",
     "atk": 129,
-    "maxHp": 646,
-    "def": 39,
+    "maxHp": 484,
+    "def": 26,
     "spd": 0,
     "luk": 0,
-    "price": 1768
+    "price": 1515
   },
   {
     "id": "eq_t8_gloves_rare",
@@ -3641,11 +4281,11 @@
     "region": 4,
     "sprite": "gloves_8",
     "atk": 151,
-    "maxHp": 758,
-    "def": 45,
+    "maxHp": 569,
+    "def": 30,
     "spd": 0,
     "luk": 0,
-    "price": 4017
+    "price": 3444
   },
   {
     "id": "eq_t8_gloves_epic",
@@ -3657,11 +4297,11 @@
     "region": 4,
     "sprite": "gloves_8",
     "atk": 179,
-    "maxHp": 899,
-    "def": 54,
+    "maxHp": 674,
+    "def": 36,
     "spd": 0,
     "luk": 0,
-    "price": 9642
+    "price": 8264
   },
   {
     "id": "eq_t8_gloves_legendary",
@@ -3673,11 +4313,11 @@
     "region": 4,
     "sprite": "gloves_8",
     "atk": 212,
-    "maxHp": 1067,
-    "def": 64,
+    "maxHp": 800,
+    "def": 42,
     "spd": 0,
     "luk": 0,
-    "price": 24105
+    "price": 20661
   },
   {
     "id": "eq_t8_boots_common",
@@ -3693,7 +4333,7 @@
     "def": 56,
     "spd": 21.8,
     "luk": 0,
-    "price": 803
+    "price": 689
   },
   {
     "id": "eq_t8_boots_uncommon",
@@ -3709,7 +4349,7 @@
     "def": 64,
     "spd": 25.1,
     "luk": 0,
-    "price": 1768
+    "price": 1515
   },
   {
     "id": "eq_t8_boots_rare",
@@ -3725,7 +4365,7 @@
     "def": 75,
     "spd": 29.4,
     "luk": 0,
-    "price": 4017
+    "price": 3444
   },
   {
     "id": "eq_t8_boots_epic",
@@ -3741,7 +4381,7 @@
     "def": 89,
     "spd": 34.9,
     "luk": 0,
-    "price": 9642
+    "price": 8264
   },
   {
     "id": "eq_t8_boots_legendary",
@@ -3757,7 +4397,7 @@
     "def": 106,
     "spd": 41.4,
     "luk": 0,
-    "price": 24105
+    "price": 20661
   },
   {
     "id": "eq_t8_accessory_common",
@@ -3773,7 +4413,7 @@
     "def": 0,
     "spd": 0,
     "luk": 9.4,
-    "price": 803
+    "price": 689
   },
   {
     "id": "eq_t8_accessory_uncommon",
@@ -3789,7 +4429,7 @@
     "def": 0,
     "spd": 0,
     "luk": 10.9,
-    "price": 1768
+    "price": 1515
   },
   {
     "id": "eq_t8_accessory_rare",
@@ -3805,7 +4445,7 @@
     "def": 0,
     "spd": 0,
     "luk": 12.8,
-    "price": 4017
+    "price": 3444
   },
   {
     "id": "eq_t8_accessory_epic",
@@ -3821,7 +4461,7 @@
     "def": 0,
     "spd": 0,
     "luk": 15.1,
-    "price": 9642
+    "price": 8264
   },
   {
     "id": "eq_t8_accessory_legendary",
@@ -3837,7 +4477,7 @@
     "def": 0,
     "spd": 0,
     "luk": 17.9,
-    "price": 24105
+    "price": 20661
   },
   {
     "id": "eq_t9_weapon_common",
@@ -3853,7 +4493,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1970
+    "price": 1688
   },
   {
     "id": "eq_t9_weapon_uncommon",
@@ -3869,7 +4509,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 4333
+    "price": 3714
   },
   {
     "id": "eq_t9_weapon_rare",
@@ -3885,7 +4525,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 9849
+    "price": 8442
   },
   {
     "id": "eq_t9_weapon_epic",
@@ -3901,7 +4541,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 23637
+    "price": 20260
   },
   {
     "id": "eq_t9_weapon_legendary",
@@ -3917,7 +4557,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 59092
+    "price": 50650
   },
   {
     "id": "eq_t9_helm_common",
@@ -3929,11 +4569,11 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 2132,
-    "def": 51,
+    "maxHp": 1706,
+    "def": 34,
     "spd": 0,
     "luk": 0,
-    "price": 1182
+    "price": 1013
   },
   {
     "id": "eq_t9_helm_uncommon",
@@ -3945,11 +4585,11 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 2452,
-    "def": 59,
+    "maxHp": 1962,
+    "def": 39,
     "spd": 0,
     "luk": 0,
-    "price": 2600
+    "price": 2229
   },
   {
     "id": "eq_t9_helm_rare",
@@ -3961,11 +4601,11 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 2879,
-    "def": 69,
+    "maxHp": 2303,
+    "def": 46,
     "spd": 0,
     "luk": 0,
-    "price": 5909
+    "price": 5065
   },
   {
     "id": "eq_t9_helm_epic",
@@ -3977,11 +4617,11 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 3412,
-    "def": 82,
+    "maxHp": 2729,
+    "def": 55,
     "spd": 0,
     "luk": 0,
-    "price": 14182
+    "price": 12156
   },
   {
     "id": "eq_t9_helm_legendary",
@@ -3993,11 +4633,11 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 4051,
-    "def": 97,
+    "maxHp": 3241,
+    "def": 65,
     "spd": 0,
     "luk": 0,
-    "price": 35455
+    "price": 30390
   },
   {
     "id": "eq_t9_armor_common",
@@ -4009,11 +4649,11 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 1279,
-    "def": 154,
+    "maxHp": 1066,
+    "def": 120,
     "spd": 0,
     "luk": 0,
-    "price": 1576
+    "price": 1351
   },
   {
     "id": "eq_t9_armor_uncommon",
@@ -4025,11 +4665,11 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 1471,
-    "def": 177,
+    "maxHp": 1226,
+    "def": 138,
     "spd": 0,
     "luk": 0,
-    "price": 3467
+    "price": 2971
   },
   {
     "id": "eq_t9_armor_rare",
@@ -4041,11 +4681,11 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 1727,
-    "def": 208,
+    "maxHp": 1439,
+    "def": 161,
     "spd": 0,
     "luk": 0,
-    "price": 7879
+    "price": 6753
   },
   {
     "id": "eq_t9_armor_epic",
@@ -4057,11 +4697,11 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 2047,
-    "def": 246,
+    "maxHp": 1706,
+    "def": 191,
     "spd": 0,
     "luk": 0,
-    "price": 18910
+    "price": 16208
   },
   {
     "id": "eq_t9_armor_legendary",
@@ -4073,11 +4713,91 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 2431,
-    "def": 292,
+    "maxHp": 2026,
+    "def": 227,
     "spd": 0,
     "luk": 0,
-    "price": 47274
+    "price": 40520
+  },
+  {
+    "id": "eq_t9_pants_common",
+    "name": "월광 바지",
+    "tier": 9,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 37,
+    "region": 5,
+    "sprite": "pants_9",
+    "atk": 0,
+    "maxHp": 853,
+    "def": 68,
+    "spd": 0,
+    "luk": 0,
+    "price": 1126
+  },
+  {
+    "id": "eq_t9_pants_uncommon",
+    "name": "월광 하갑",
+    "tier": 9,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 37,
+    "region": 5,
+    "sprite": "pants_9",
+    "atk": 0,
+    "maxHp": 981,
+    "def": 79,
+    "spd": 0,
+    "luk": 0,
+    "price": 2476
+  },
+  {
+    "id": "eq_t9_pants_rare",
+    "name": "월광 중하갑",
+    "tier": 9,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 37,
+    "region": 5,
+    "sprite": "pants_9",
+    "atk": 0,
+    "maxHp": 1151,
+    "def": 92,
+    "spd": 0,
+    "luk": 0,
+    "price": 5628
+  },
+  {
+    "id": "eq_t9_pants_epic",
+    "name": "월광 마하갑",
+    "tier": 9,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 37,
+    "region": 5,
+    "sprite": "pants_9",
+    "atk": 0,
+    "maxHp": 1365,
+    "def": 109,
+    "spd": 0,
+    "luk": 0,
+    "price": 13507
+  },
+  {
+    "id": "eq_t9_pants_legendary",
+    "name": "월광 성하갑",
+    "tier": 9,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 37,
+    "region": 5,
+    "sprite": "pants_9",
+    "atk": 0,
+    "maxHp": 1621,
+    "def": 130,
+    "spd": 0,
+    "luk": 0,
+    "price": 33767
   },
   {
     "id": "eq_t9_gloves_common",
@@ -4089,11 +4809,11 @@
     "region": 5,
     "sprite": "gloves_9",
     "atk": 171,
-    "maxHp": 853,
-    "def": 51,
+    "maxHp": 640,
+    "def": 34,
     "spd": 0,
     "luk": 0,
-    "price": 1051
+    "price": 900
   },
   {
     "id": "eq_t9_gloves_uncommon",
@@ -4105,11 +4825,11 @@
     "region": 5,
     "sprite": "gloves_9",
     "atk": 196,
-    "maxHp": 981,
-    "def": 59,
+    "maxHp": 736,
+    "def": 39,
     "spd": 0,
     "luk": 0,
-    "price": 2311
+    "price": 1981
   },
   {
     "id": "eq_t9_gloves_rare",
@@ -4121,11 +4841,11 @@
     "region": 5,
     "sprite": "gloves_9",
     "atk": 231,
-    "maxHp": 1151,
-    "def": 69,
+    "maxHp": 864,
+    "def": 46,
     "spd": 0,
     "luk": 0,
-    "price": 5253
+    "price": 4502
   },
   {
     "id": "eq_t9_gloves_epic",
@@ -4137,11 +4857,11 @@
     "region": 5,
     "sprite": "gloves_9",
     "atk": 273,
-    "maxHp": 1365,
-    "def": 82,
+    "maxHp": 1023,
+    "def": 55,
     "spd": 0,
     "luk": 0,
-    "price": 12606
+    "price": 10805
   },
   {
     "id": "eq_t9_gloves_legendary",
@@ -4153,11 +4873,11 @@
     "region": 5,
     "sprite": "gloves_9",
     "atk": 325,
-    "maxHp": 1621,
-    "def": 97,
+    "maxHp": 1215,
+    "def": 65,
     "spd": 0,
     "luk": 0,
-    "price": 31516
+    "price": 27014
   },
   {
     "id": "eq_t9_boots_common",
@@ -4173,7 +4893,7 @@
     "def": 85,
     "spd": 25.5,
     "luk": 0,
-    "price": 1051
+    "price": 900
   },
   {
     "id": "eq_t9_boots_uncommon",
@@ -4189,7 +4909,7 @@
     "def": 98,
     "spd": 29.3,
     "luk": 0,
-    "price": 2311
+    "price": 1981
   },
   {
     "id": "eq_t9_boots_rare",
@@ -4205,7 +4925,7 @@
     "def": 115,
     "spd": 34.4,
     "luk": 0,
-    "price": 5253
+    "price": 4502
   },
   {
     "id": "eq_t9_boots_epic",
@@ -4221,7 +4941,7 @@
     "def": 137,
     "spd": 40.8,
     "luk": 0,
-    "price": 12606
+    "price": 10805
   },
   {
     "id": "eq_t9_boots_legendary",
@@ -4237,7 +4957,7 @@
     "def": 162,
     "spd": 48.4,
     "luk": 0,
-    "price": 31516
+    "price": 27014
   },
   {
     "id": "eq_t9_accessory_common",
@@ -4253,7 +4973,7 @@
     "def": 0,
     "spd": 0,
     "luk": 12.3,
-    "price": 1051
+    "price": 900
   },
   {
     "id": "eq_t9_accessory_uncommon",
@@ -4269,7 +4989,7 @@
     "def": 0,
     "spd": 0,
     "luk": 14.2,
-    "price": 2311
+    "price": 1981
   },
   {
     "id": "eq_t9_accessory_rare",
@@ -4285,7 +5005,7 @@
     "def": 0,
     "spd": 0,
     "luk": 16.7,
-    "price": 5253
+    "price": 4502
   },
   {
     "id": "eq_t9_accessory_epic",
@@ -4301,7 +5021,7 @@
     "def": 0,
     "spd": 0,
     "luk": 19.8,
-    "price": 12606
+    "price": 10805
   },
   {
     "id": "eq_t9_accessory_legendary",
@@ -4317,7 +5037,7 @@
     "def": 0,
     "spd": 0,
     "luk": 23.5,
-    "price": 31516
+    "price": 27014
   },
   {
     "id": "eq_t10_weapon_common",
@@ -4333,7 +5053,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2668
+    "price": 2287
   },
   {
     "id": "eq_t10_weapon_uncommon",
@@ -4349,7 +5069,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 5869
+    "price": 5030
   },
   {
     "id": "eq_t10_weapon_rare",
@@ -4365,7 +5085,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 13338
+    "price": 11433
   },
   {
     "id": "eq_t10_weapon_epic",
@@ -4381,7 +5101,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 32012
+    "price": 27439
   },
   {
     "id": "eq_t10_weapon_legendary",
@@ -4397,7 +5117,7 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 80029
+    "price": 68596
   },
   {
     "id": "eq_t10_helm_common",
@@ -4409,11 +5129,11 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 3356,
-    "def": 81,
+    "maxHp": 2685,
+    "def": 54,
     "spd": 0,
     "luk": 0,
-    "price": 1601
+    "price": 1372
   },
   {
     "id": "eq_t10_helm_uncommon",
@@ -4425,11 +5145,11 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 3859,
-    "def": 93,
+    "maxHp": 3088,
+    "def": 62,
     "spd": 0,
     "luk": 0,
-    "price": 3521
+    "price": 3018
   },
   {
     "id": "eq_t10_helm_rare",
@@ -4441,11 +5161,11 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 4531,
-    "def": 110,
+    "maxHp": 3625,
+    "def": 73,
     "spd": 0,
     "luk": 0,
-    "price": 8003
+    "price": 6860
   },
   {
     "id": "eq_t10_helm_epic",
@@ -4457,11 +5177,11 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 5370,
-    "def": 130,
+    "maxHp": 4296,
+    "def": 87,
     "spd": 0,
     "luk": 0,
-    "price": 19207
+    "price": 16463
   },
   {
     "id": "eq_t10_helm_legendary",
@@ -4473,11 +5193,11 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 6376,
-    "def": 154,
+    "maxHp": 5101,
+    "def": 103,
     "spd": 0,
     "luk": 0,
-    "price": 48017
+    "price": 41158
   },
   {
     "id": "eq_t10_armor_common",
@@ -4489,11 +5209,11 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 2014,
-    "def": 243,
+    "maxHp": 1678,
+    "def": 189,
     "spd": 0,
     "luk": 0,
-    "price": 2134
+    "price": 1829
   },
   {
     "id": "eq_t10_armor_uncommon",
@@ -4505,11 +5225,11 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 2316,
-    "def": 280,
+    "maxHp": 1930,
+    "def": 218,
     "spd": 0,
     "luk": 0,
-    "price": 4695
+    "price": 4024
   },
   {
     "id": "eq_t10_armor_rare",
@@ -4521,11 +5241,11 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 2718,
-    "def": 329,
+    "maxHp": 2265,
+    "def": 256,
     "spd": 0,
     "luk": 0,
-    "price": 10671
+    "price": 9146
   },
   {
     "id": "eq_t10_armor_epic",
@@ -4537,11 +5257,11 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 3222,
-    "def": 389,
+    "maxHp": 2685,
+    "def": 303,
     "spd": 0,
     "luk": 0,
-    "price": 25609
+    "price": 21951
   },
   {
     "id": "eq_t10_armor_legendary",
@@ -4553,11 +5273,91 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 3826,
-    "def": 462,
+    "maxHp": 3188,
+    "def": 360,
     "spd": 0,
     "luk": 0,
-    "price": 64023
+    "price": 54877
+  },
+  {
+    "id": "eq_t10_pants_common",
+    "name": "심연 바지",
+    "tier": 10,
+    "slot": "pants",
+    "rarity": "common",
+    "level": 44,
+    "region": 5,
+    "sprite": "pants_10",
+    "atk": 0,
+    "maxHp": 1342,
+    "def": 108,
+    "spd": 0,
+    "luk": 0,
+    "price": 1524
+  },
+  {
+    "id": "eq_t10_pants_uncommon",
+    "name": "심연 하갑",
+    "tier": 10,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 44,
+    "region": 5,
+    "sprite": "pants_10",
+    "atk": 0,
+    "maxHp": 1544,
+    "def": 124,
+    "spd": 0,
+    "luk": 0,
+    "price": 3354
+  },
+  {
+    "id": "eq_t10_pants_rare",
+    "name": "심연 중하갑",
+    "tier": 10,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 44,
+    "region": 5,
+    "sprite": "pants_10",
+    "atk": 0,
+    "maxHp": 1812,
+    "def": 146,
+    "spd": 0,
+    "luk": 0,
+    "price": 7622
+  },
+  {
+    "id": "eq_t10_pants_epic",
+    "name": "심연 마하갑",
+    "tier": 10,
+    "slot": "pants",
+    "rarity": "epic",
+    "level": 44,
+    "region": 5,
+    "sprite": "pants_10",
+    "atk": 0,
+    "maxHp": 2148,
+    "def": 173,
+    "spd": 0,
+    "luk": 0,
+    "price": 18292
+  },
+  {
+    "id": "eq_t10_pants_legendary",
+    "name": "심연 성하갑",
+    "tier": 10,
+    "slot": "pants",
+    "rarity": "legendary",
+    "level": 44,
+    "region": 5,
+    "sprite": "pants_10",
+    "atk": 0,
+    "maxHp": 2551,
+    "def": 205,
+    "spd": 0,
+    "luk": 0,
+    "price": 45731
   },
   {
     "id": "eq_t10_gloves_common",
@@ -4569,11 +5369,11 @@
     "region": 5,
     "sprite": "gloves_10",
     "atk": 270,
-    "maxHp": 1342,
-    "def": 81,
+    "maxHp": 1007,
+    "def": 54,
     "spd": 0,
     "luk": 0,
-    "price": 1423
+    "price": 1219
   },
   {
     "id": "eq_t10_gloves_uncommon",
@@ -4585,11 +5385,11 @@
     "region": 5,
     "sprite": "gloves_10",
     "atk": 311,
-    "maxHp": 1544,
-    "def": 93,
+    "maxHp": 1158,
+    "def": 62,
     "spd": 0,
     "luk": 0,
-    "price": 3130
+    "price": 2683
   },
   {
     "id": "eq_t10_gloves_rare",
@@ -4601,11 +5401,11 @@
     "region": 5,
     "sprite": "gloves_10",
     "atk": 365,
-    "maxHp": 1812,
-    "def": 110,
+    "maxHp": 1359,
+    "def": 73,
     "spd": 0,
     "luk": 0,
-    "price": 7114
+    "price": 6097
   },
   {
     "id": "eq_t10_gloves_epic",
@@ -4617,11 +5417,11 @@
     "region": 5,
     "sprite": "gloves_10",
     "atk": 433,
-    "maxHp": 2148,
-    "def": 130,
+    "maxHp": 1611,
+    "def": 87,
     "spd": 0,
     "luk": 0,
-    "price": 17073
+    "price": 14634
   },
   {
     "id": "eq_t10_gloves_legendary",
@@ -4633,11 +5433,11 @@
     "region": 5,
     "sprite": "gloves_10",
     "atk": 514,
-    "maxHp": 2551,
-    "def": 154,
+    "maxHp": 1913,
+    "def": 103,
     "spd": 0,
     "luk": 0,
-    "price": 42682
+    "price": 36585
   },
   {
     "id": "eq_t10_boots_common",
@@ -4653,7 +5453,7 @@
     "def": 135,
     "spd": 29.8,
     "luk": 0,
-    "price": 1423
+    "price": 1219
   },
   {
     "id": "eq_t10_boots_uncommon",
@@ -4669,7 +5469,7 @@
     "def": 155,
     "spd": 34.3,
     "luk": 0,
-    "price": 3130
+    "price": 2683
   },
   {
     "id": "eq_t10_boots_rare",
@@ -4685,7 +5485,7 @@
     "def": 183,
     "spd": 40.2,
     "luk": 0,
-    "price": 7114
+    "price": 6097
   },
   {
     "id": "eq_t10_boots_epic",
@@ -4701,7 +5501,7 @@
     "def": 216,
     "spd": 47.7,
     "luk": 0,
-    "price": 17073
+    "price": 14634
   },
   {
     "id": "eq_t10_boots_legendary",
@@ -4717,7 +5517,7 @@
     "def": 257,
     "spd": 56.6,
     "luk": 0,
-    "price": 42682
+    "price": 36585
   },
   {
     "id": "eq_t10_accessory_common",
@@ -4733,7 +5533,7 @@
     "def": 0,
     "spd": 0,
     "luk": 16.7,
-    "price": 1423
+    "price": 1219
   },
   {
     "id": "eq_t10_accessory_uncommon",
@@ -4749,7 +5549,7 @@
     "def": 0,
     "spd": 0,
     "luk": 19.2,
-    "price": 3130
+    "price": 2683
   },
   {
     "id": "eq_t10_accessory_rare",
@@ -4765,7 +5565,7 @@
     "def": 0,
     "spd": 0,
     "luk": 22.6,
-    "price": 7114
+    "price": 6097
   },
   {
     "id": "eq_t10_accessory_epic",
@@ -4781,7 +5581,7 @@
     "def": 0,
     "spd": 0,
     "luk": 26.8,
-    "price": 17073
+    "price": 14634
   },
   {
     "id": "eq_t10_accessory_legendary",
@@ -4797,6 +5597,6 @@
     "def": 0,
     "spd": 0,
     "luk": 31.8,
-    "price": 42682
+    "price": 36585
   }
 ]

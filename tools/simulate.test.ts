@@ -211,7 +211,8 @@ test('빌드별 편차 — 배분을 어떻게 하든 굴러가야 한다 (§4.3
   // T13까지는 행운 몰빵이 400일 안에 못 끝냈다.
   const stuck = reached.filter((r) => r.day === undefined).map((r) => r.name);
   expect(stuck, 'Lv50에 못 간 빌드').toEqual([]);
-});
+  // 빌드 11개 × 시드 — 기본 5초를 넘는다
+}, 30_000);
 
 test('장비가 전투력의 85%를 댄다 (§4.5) — 맨몸 성장은 선형으로 남는다', () => {
   console.log('\n■ 맨몸 vs 장비 (그 레벨 common 풀세트)');

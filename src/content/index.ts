@@ -33,10 +33,10 @@ import {
 
 export type { Consumable, Equipment, Field, Monster, MonsterArchetype, Region };
 
-/** 몬스터 원형 12개 (§7.2). */
+/** 몬스터 원형 15개 (§7.2). */
 export const MONSTER_ARCHETYPES = MonsterArchetypesSchema.parse(archetypesRaw);
 
-/** 지역 5개와 사냥터 25개 (§7.2⑤). */
+/** 지역 5개와 사냥터 35개 (§7.2⑤, T17_4). */
 export const REGIONS = RegionsSchema.parse(regionsRaw);
 
 /** gen-content.ts가 뽑아둔 몬스터 전부. 보스도 여기 들어 있다. */
@@ -90,10 +90,10 @@ export function monstersOfTier(tier: number): Monster[] {
 // 장비 (§4.5)
 // ─────────────────────────────────────────────────────────────
 
-/** 사냥터 고유 장비 25종 (§4.4). 상점에 안 뜨고 소재로만 바꾼다. */
+/** 사냥터 고유 장비 35종 (§4.4). 상점에 안 뜨고 소재로만 바꾼다. */
 export const UNIQUES = EquipmentsSchema.parse(uniquesRaw);
 
-/** 장비 정의 325종 = 등급 그리드 300 + 고유 25. 인스턴스가 아니라 정의다. */
+/** 장비 정의 385종 = 등급 그리드 350 + 고유 35. 인스턴스가 아니라 정의다. */
 export const EQUIPMENT = [...EquipmentsSchema.parse(equipmentRaw), ...UNIQUES];
 
 /** 물약·엘릭서 (§4.5). 공식이 없어서 생성물이 아니라 창작물을 그대로 읽는다. */
@@ -105,7 +105,7 @@ export function consumableById(id: string): Consumable {
   return found;
 }
 
-/** 사냥터 25곳을 한 줄로. 상점 교환 탭과 검증이 쓴다. */
+/** 사냥터 35곳을 한 줄로. 상점 교환 탭과 검증이 쓴다. */
 export const FIELDS = REGIONS.flatMap((r) => r.fields);
 
 export function fieldById(id: string): Field {

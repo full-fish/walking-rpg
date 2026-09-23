@@ -125,6 +125,17 @@ export function validateGenerated(): string[] {
     }
   }
 
+  // §7.4 #2 — 일반 몬스터는 전부 어느 사냥터엔가 나온다 (T17_4).
+  // 원형에 티어를 넣고 사냥터에 안 붙이면 아무도 못 만나는 몬스터가 된다 — 그림만 먹는다
+  const pooled = new Set(
+    REGIONS.flatMap((r) => r.fields.flatMap((f) => f.pool.map(([arch, t]) => `${arch}-${t}`))),
+  );
+  for (const m of MONSTERS) {
+    if (!m.boss && !pooled.has(`${m.arch}-${m.tier}`)) {
+      errors.push(`[안 나오는 몬스터] ${m.name} (${m.arch} 티어 ${m.tier})`);
+    }
+  }
+
   // §7.4 #6 — 티어가 오르면 HP/ATK가 단조 증가한다 (같은 원형 안에서)
   for (const arch of new Set(MONSTERS.map((m) => m.arch))) {
     const line = MONSTERS.filter((m) => m.arch === arch && !m.boss).sort((a, b) => a.tier - b.tier);
@@ -195,7 +206,7 @@ function validateEconomy(): string[] {
     }
   }
 
-  // §4.4 — 사냥터 25곳에 고유 장비가 1:1로 있고, 지역마다 5부위가 안 겹친다
+  // §4.4 — 사냥터 35곳에 고유 장비가 1:1로 있고, 지역마다 7부위가 안 겹친다
   if (UNIQUES.length !== REGIONS.length * FIELDS_PER_REGION) {
     errors.push(`[고유 장비 수] ${UNIQUES.length}종 (사냥터 ${REGIONS.length * FIELDS_PER_REGION}곳)`);
   }
@@ -249,7 +260,7 @@ const PRICE_TOLERANCE = 0.02;
 function validateEquipment(): string[] {
   const errors: string[] = [];
 
-  // 등급 그리드만 본다. 고유 25종은 그리드 밖이라 validateEconomy가 따로 본다
+  // 등급 그리드만 본다. 고유 35종은 그리드 밖이라 validateEconomy가 따로 본다
   const grid = EQUIPMENT.filter((e) => e.rarity !== 'unique');
   if (canonical(grid) !== canonical(generateEquipment())) {
     errors.push('[생성물 낡음] 장비 — npm run gen을 다시 돌려라');
@@ -281,7 +292,7 @@ function validateEquipment(): string[] {
       // LUK은 맨몸에 비례하지 않는다 — 절대값 기준이라 base를 1로 둔다 (§4.5)
       ['LUK', gear.luk, 1, GEAR_LUK_BASE * gearShare(refLevel)],
     ] as const) {
-      // 부위마다 정수로 반올림하므로 최악이 6칸 × 0.5 = 3이다. 그만큼은 봐준다 —
+      // 부위마다 정수로 반올림하므로 최악이 7칸 × 0.5 = 3.5다. 그만큼은 봐준다 —
       // 티어 1 DEF처럼 몫 자체가 1도 안 되는 칸이 여기 걸린다
       const slack = Math.max(GEAR_SLOTS.length / 2, want * GEAR_TOLERANCE);
       if (Math.abs(got - want) > slack) {

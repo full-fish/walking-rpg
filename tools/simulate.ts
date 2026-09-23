@@ -123,7 +123,7 @@ export function buyGear(save: Save, rng: () => number): Save {
 
   // **사는 순서가 의미를 갖는다** (T16_1). 부위마다 성격이 갈린 뒤로 무기는 ATK만 주므로,
   // 무기부터 사면 더 세게 때리면서 더 빨리 죽는다. 버티는 부위를 먼저 산다.
-  const order = ['armor', 'helm', 'boots', 'weapon', 'gloves', 'accessory'];
+  const order = ['armor', 'helm', 'pants', 'boots', 'weapon', 'gloves', 'accessory'];
   let next = save;
   for (const def of [...set].sort((a, b) => order.indexOf(a.slot) - order.indexOf(b.slot))) {
     const worn = next.equipped[def.slot];

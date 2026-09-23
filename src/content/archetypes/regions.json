@@ -19,14 +19,19 @@
       {
         "id": "f_r1_meadow",
         "name": "시작의 들판",
+        "desc": "마을 울타리 바로 밖. 슬라임이 풀을 뜯고 들개가 어슬렁거린다.",
         "pool": [
+          [
+            "arch_slime",
+            1
+          ],
           [
             "arch_beast",
             1
           ],
           [
             "arch_slime",
-            1
+            2
           ],
           [
             "arch_insect",
@@ -52,8 +57,45 @@
         }
       },
       {
+        "id": "f_r1_windmill",
+        "name": "바람개비 언덕",
+        "desc": "초원의 바람이 모이는 언덕. 부서진 풍차 사이로 새떼와 바람 정령이 몰려다닌다.",
+        "pool": [
+          [
+            "arch_bird",
+            2
+          ],
+          [
+            "arch_spirit",
+            2
+          ],
+          [
+            "arch_beast",
+            3
+          ],
+          [
+            "arch_bird",
+            3
+          ]
+        ],
+        "material": {
+          "id": "mat_r1_windmill",
+          "name": "멈추지 않는 바람개비"
+        },
+        "reward": {
+          "id": "uniq_r1_windmill",
+          "name": "바람개비 끈을 맨 신",
+          "cost": {
+            "material": 3,
+            "gold": 1300
+          },
+          "slot": "boots"
+        }
+      },
+      {
         "id": "f_r1_mushroom",
         "name": "버섯 골짜기",
+        "desc": "습기 찬 골짜기. 독포자가 떠다니고 그 아래 거미와 도마뱀이 숨어 있다.",
         "pool": [
           [
             "arch_fungus",
@@ -89,6 +131,7 @@
       {
         "id": "f_r1_bramble",
         "name": "가시덤불 길",
+        "desc": "가시덤불이 삼킨 오솔길. 굶주린 짐승들이 덤불 속에서 먹이를 기다린다.",
         "pool": [
           [
             "arch_plant",
@@ -122,8 +165,45 @@
         }
       },
       {
+        "id": "f_r1_goblin",
+        "name": "고블린 굴",
+        "desc": "언덕 밑에 판 굴. 고블린들이 늑대를 길들여 문지기로 세웠다.",
+        "pool": [
+          [
+            "arch_beast",
+            2
+          ],
+          [
+            "arch_goblin",
+            3
+          ],
+          [
+            "arch_goblin",
+            4
+          ],
+          [
+            "arch_goblin",
+            5
+          ]
+        ],
+        "material": {
+          "id": "mat_r1_goblin",
+          "name": "고블린이 훔친 천 조각"
+        },
+        "reward": {
+          "id": "uniq_r1_goblin",
+          "name": "훔친 천으로 기운 바지",
+          "cost": {
+            "material": 3,
+            "gold": 1300
+          },
+          "slot": "pants"
+        }
+      },
+      {
         "id": "f_r1_tower",
         "name": "무너진 돌탑",
+        "desc": "초원의 옛 망루. 무너진 돌이 일어나 걷고, 해골이 아직 보초를 선다.",
         "pool": [
           [
             "arch_golem",
@@ -159,22 +239,23 @@
       {
         "id": "f_r1_camp",
         "name": "도적 야영지",
+        "desc": "초원 끝의 모닥불. 도적들이 까마귀를 망꾼으로, 사냥개를 경비로 둔다.",
         "pool": [
+          [
+            "arch_bandit",
+            4
+          ],
           [
             "arch_bandit",
             5
           ],
           [
             "arch_beast",
-            4
-          ],
-          [
-            "arch_undead",
             5
           ],
           [
-            "arch_insect",
-            2
+            "arch_bird",
+            5
           ]
         ],
         "material": {
@@ -218,6 +299,7 @@
       {
         "id": "f_r2_cave",
         "name": "이끼 낀 동굴",
+        "desc": "숲 아래로 뚫린 축축한 동굴. 박쥐와 개미 떼가 어둠을 나눠 쓴다.",
         "pool": [
           [
             "arch_beast",
@@ -251,24 +333,97 @@
         }
       },
       {
+        "id": "f_r2_oldwood",
+        "name": "속삭이는 고목숲",
+        "desc": "숲 이름의 주인. 늙은 나무들이 밤새 속삭이고, 그 소리를 따라 늑대와 요정이 모인다.",
+        "pool": [
+          [
+            "arch_plant",
+            6
+          ],
+          [
+            "arch_bird",
+            6
+          ],
+          [
+            "arch_beast",
+            7
+          ],
+          [
+            "arch_spirit",
+            8
+          ]
+        ],
+        "material": {
+          "id": "mat_r2_oldwood",
+          "name": "말을 거는 나뭇잎"
+        },
+        "reward": {
+          "id": "uniq_r2_oldwood",
+          "name": "고목 껍질을 덧댄 바지",
+          "cost": {
+            "material": 3,
+            "gold": 2700
+          },
+          "slot": "pants"
+        }
+      },
+      {
+        "id": "f_r2_web",
+        "name": "거미줄 수풀",
+        "desc": "햇빛이 들지 않는 덤불. 발밑까지 거미줄이 쳐져 있고, 고치 안에서 무언가 꿈틀거린다.",
+        "pool": [
+          [
+            "arch_plant",
+            7
+          ],
+          [
+            "arch_insect",
+            7
+          ],
+          [
+            "arch_insect",
+            8
+          ],
+          [
+            "arch_undead",
+            8
+          ]
+        ],
+        "material": {
+          "id": "mat_r2_web",
+          "name": "끊어지지 않는 거미줄"
+        },
+        "reward": {
+          "id": "uniq_r2_web",
+          "name": "거미줄로 짠 장갑",
+          "cost": {
+            "material": 3,
+            "gold": 2700
+          },
+          "slot": "gloves"
+        }
+      },
+      {
         "id": "f_r2_grave",
         "name": "잊혀진 무덤가",
+        "desc": "이름 없는 무덤들. 무덤지기는 아직 일하고, 도굴꾼과 구울이 같은 무덤을 노린다.",
         "pool": [
           [
             "arch_undead",
             7
           ],
           [
-            "arch_plant",
+            "arch_bird",
             8
           ],
           [
-            "arch_beast",
-            8
+            "arch_undead",
+            9
           ],
           [
             "arch_bandit",
-            8
+            9
           ]
         ],
         "material": {
@@ -288,22 +443,23 @@
       {
         "id": "f_r2_logging",
         "name": "버려진 벌목지",
+        "desc": "벌목꾼이 떠난 자리. 도끼를 주운 산적이 눌러앉았고, 베다 만 나무가 뒤틀려 일어섰다.",
         "pool": [
           [
             "arch_beast",
             8
           ],
           [
-            "arch_insect",
-            9
-          ],
-          [
-            "arch_spirit",
-            9
-          ],
-          [
             "arch_plant",
             8
+          ],
+          [
+            "arch_bandit",
+            8
+          ],
+          [
+            "arch_insect",
+            9
           ]
         ],
         "material": {
@@ -323,22 +479,23 @@
       {
         "id": "f_r2_quarry",
         "name": "무너진 채석장",
+        "desc": "숲 가장자리 절벽을 파낸 채석장. 고블린이 몰래 캐 가고, 깎다 만 석상이 지킨다.",
         "pool": [
+          [
+            "arch_goblin",
+            9
+          ],
           [
             "arch_golem",
             9
           ],
           [
             "arch_lizard",
-            10
+            9
           ],
           [
             "arch_bird",
             10
-          ],
-          [
-            "arch_insect",
-            9
           ]
         ],
         "material": {
@@ -358,7 +515,16 @@
       {
         "id": "f_r2_marsh",
         "name": "안개 낀 늪",
+        "desc": "숲이 끝나는 늪. 안개 속 도깨비불을 따라가면 악어가 기다린다.",
         "pool": [
+          [
+            "arch_aquatic",
+            8
+          ],
+          [
+            "arch_spirit",
+            9
+          ],
           [
             "arch_undead",
             10
@@ -366,14 +532,6 @@
           [
             "arch_lizard",
             10
-          ],
-          [
-            "arch_bird",
-            6
-          ],
-          [
-            "arch_spirit",
-            9
           ]
         ],
         "material": {
@@ -415,51 +573,53 @@
     },
     "fields": [
       {
-        "id": "f_r3_riverbed",
-        "name": "마른 강바닥",
+        "id": "f_r3_oasis",
+        "name": "말라붙은 오아시스",
+        "desc": "협곡 입구의 마지막 물웅덩이. 진흙 속 메기가 버티고, 목마른 자에게 신기루가 손짓한다.",
         "pool": [
           [
-            "arch_slime",
+            "arch_aquatic",
             11
           ],
           [
             "arch_insect",
-            12
-          ],
-          [
-            "arch_golem",
             11
           ],
           [
-            "arch_lizard",
-            13
+            "arch_plant",
+            12
+          ],
+          [
+            "arch_spirit",
+            12
           ]
         ],
         "material": {
-          "id": "mat_r3_riverbed",
-          "name": "마른 강바닥의 흔적"
+          "id": "mat_r3_oasis",
+          "name": "마지막 한 모금의 물"
         },
         "reward": {
-          "id": "uniq_r3_riverbed",
-          "name": "강바닥의 휜 마검",
+          "id": "uniq_r3_oasis",
+          "name": "신기루를 걷는 바지",
           "cost": {
             "material": 3,
             "gold": 4000
           },
-          "slot": "weapon"
+          "slot": "pants"
         }
       },
       {
         "id": "f_r3_cliff",
         "name": "무너진 절벽길",
+        "desc": "무너져 내린 벼랑길. 한 발 헛디디면 끝인데, 매와 약탈자가 그 한 발을 노린다.",
         "pool": [
           [
-            "arch_spirit",
+            "arch_bird",
             11
           ],
           [
-            "arch_bird",
-            14
+            "arch_spirit",
+            11
           ],
           [
             "arch_bandit",
@@ -485,19 +645,92 @@
         }
       },
       {
+        "id": "f_r3_riverbed",
+        "name": "마른 강바닥",
+        "desc": "강이 말라 드러난 바닥. 모래가 뭉쳐 점액이 되고 골렘이 된다.",
+        "pool": [
+          [
+            "arch_slime",
+            11
+          ],
+          [
+            "arch_golem",
+            11
+          ],
+          [
+            "arch_insect",
+            12
+          ],
+          [
+            "arch_lizard",
+            13
+          ]
+        ],
+        "material": {
+          "id": "mat_r3_riverbed",
+          "name": "마른 강바닥의 흔적"
+        },
+        "reward": {
+          "id": "uniq_r3_riverbed",
+          "name": "강바닥의 휜 마검",
+          "cost": {
+            "material": 3,
+            "gold": 4000
+          },
+          "slot": "weapon"
+        }
+      },
+      {
+        "id": "f_r3_fossil",
+        "name": "화석 골짜기",
+        "desc": "옛 거대 짐승의 뼈가 드러난 골짜기. 하이에나가 뼈를 뜯고, 어떤 뼈는 스스로 일어난다.",
+        "pool": [
+          [
+            "arch_undead",
+            12
+          ],
+          [
+            "arch_beast",
+            12
+          ],
+          [
+            "arch_golem",
+            13
+          ],
+          [
+            "arch_insect",
+            13
+          ]
+        ],
+        "material": {
+          "id": "mat_r3_fossil",
+          "name": "돌이 된 송곳니"
+        },
+        "reward": {
+          "id": "uniq_r3_fossil",
+          "name": "화석 두개골 투구",
+          "cost": {
+            "material": 3,
+            "gold": 4000
+          },
+          "slot": "helm"
+        }
+      },
+      {
         "id": "f_r3_saltflat",
         "name": "소금 평원",
+        "desc": "바다가 말라 남은 하얀 평원. 소금 게와 결정 골렘이 반짝이는 땅을 지킨다.",
         "pool": [
           [
             "arch_fungus",
             12
           ],
           [
-            "arch_slime",
-            13
+            "arch_aquatic",
+            12
           ],
           [
-            "arch_lizard",
+            "arch_slime",
             13
           ],
           [
@@ -522,7 +755,12 @@
       {
         "id": "f_r3_ridge",
         "name": "바람 능선",
+        "desc": "협곡 위 칼날 능선. 돌개바람에 몸을 가누기 힘든데, 산양과 늑대는 아랑곳하지 않는다.",
         "pool": [
+          [
+            "arch_beast",
+            13
+          ],
           [
             "arch_bird",
             14
@@ -530,10 +768,6 @@
           [
             "arch_spirit",
             14
-          ],
-          [
-            "arch_undead",
-            15
           ],
           [
             "arch_beast",
@@ -557,22 +791,23 @@
       {
         "id": "f_r3_outpost",
         "name": "버려진 초소",
+        "desc": "협곡을 지키던 옛 초소. 병사들은 떠나지 못했고, 척후병이 그 틈에 자리를 잡았다.",
         "pool": [
+          [
+            "arch_undead",
+            13
+          ],
+          [
+            "arch_bandit",
+            14
+          ],
           [
             "arch_knight",
             15
           ],
           [
-            "arch_bandit",
-            12
-          ],
-          [
             "arch_undead",
             15
-          ],
-          [
-            "arch_insect",
-            12
           ]
         ],
         "material": {
@@ -614,8 +849,45 @@
     },
     "fields": [
       {
+        "id": "f_r4_hotspring",
+        "name": "유황 온천",
+        "desc": "화산 기슭의 뜨거운 샘. 김이 자욱하고, 끓는 물속에도 사는 것들이 있다.",
+        "pool": [
+          [
+            "arch_aquatic",
+            16
+          ],
+          [
+            "arch_spirit",
+            16
+          ],
+          [
+            "arch_lizard",
+            16
+          ],
+          [
+            "arch_slime",
+            17
+          ]
+        ],
+        "material": {
+          "id": "mat_r4_hotspring",
+          "name": "식지 않는 온천석"
+        },
+        "reward": {
+          "id": "uniq_r4_hotspring",
+          "name": "온천석을 박은 바지",
+          "cost": {
+            "material": 3,
+            "gold": 5300
+          },
+          "slot": "pants"
+        }
+      },
+      {
         "id": "f_r4_crater",
         "name": "분화구 가장자리",
+        "desc": "분화구 테두리를 따라 난 길. 비룡이 열기를 타고 날고, 불꽃 임프가 바위 틈에서 튀어나온다.",
         "pool": [
           [
             "arch_beast",
@@ -626,12 +898,12 @@
             16
           ],
           [
-            "arch_spirit",
-            17
+            "arch_demon",
+            16
           ],
           [
-            "arch_fungus",
-            17
+            "arch_slime",
+            16
           ]
         ],
         "material": {
@@ -651,22 +923,23 @@
       {
         "id": "f_r4_ashfield",
         "name": "재의 들판",
+        "desc": "화산재가 발목까지 쌓인 들판. 재에 묻힌 망자가 일어나고, 하피가 재 구름 속을 맴돈다.",
         "pool": [
           [
-            "arch_bandit",
-            16
+            "arch_undead",
+            17
+          ],
+          [
+            "arch_lizard",
+            17
           ],
           [
             "arch_bird",
             18
           ],
           [
-            "arch_undead",
+            "arch_demon",
             18
-          ],
-          [
-            "arch_lizard",
-            17
           ]
         ],
         "material": {
@@ -686,22 +959,27 @@
       {
         "id": "f_r4_lavatube",
         "name": "용암 동굴",
+        "desc": "용암이 흘러간 자리에 남은 굴. 벽의 포자가 빛나고, 식지 않은 바닥에서 슬라임과 샐러맨더가 기어 나온다.",
         "pool": [
-          [
-            "arch_lizard",
-            17
-          ],
-          [
-            "arch_golem",
-            19
-          ],
           [
             "arch_fungus",
             17
           ],
           [
-            "arch_plant",
-            19
+            "arch_golem",
+            17
+          ],
+          [
+            "arch_slime",
+            18
+          ],
+          [
+            "arch_lizard",
+            18
+          ],
+          [
+            "arch_spirit",
+            17
           ]
         ],
         "material": {
@@ -719,23 +997,60 @@
         }
       },
       {
-        "id": "f_r4_obsidian",
-        "name": "흑요석 비탈",
+        "id": "f_r4_hideout",
+        "name": "검은 손 은신처",
+        "desc": "화산 동굴에 숨은 암살 교단. 지네를 길러 독을 뽑고, 제물로 바쳐진 자들이 아직 동굴을 떠돈다.",
         "pool": [
           [
-            "arch_knight",
-            18
+            "arch_bandit",
+            16
           ],
+          [
+            "arch_insect",
+            17
+          ],
+          [
+            "arch_undead",
+            19
+          ],
+          [
+            "arch_bandit",
+            20
+          ]
+        ],
+        "material": {
+          "id": "mat_r4_hideout",
+          "name": "피로 맺은 서약서"
+        },
+        "reward": {
+          "id": "uniq_r4_hideout",
+          "name": "검은 손의 반지",
+          "cost": {
+            "material": 3,
+            "gold": 5300
+          },
+          "slot": "accessory"
+        }
+      },
+      {
+        "id": "f_r4_obsidian",
+        "name": "흑요석 비탈",
+        "desc": "용암이 굳어 유리가 된 비탈. 발밑이 칼날이고, 그 위를 리치와 흑철 기사가 걷는다.",
+        "pool": [
           [
             "arch_undead",
             18
           ],
           [
-            "arch_insect",
-            16
+            "arch_knight",
+            18
           ],
           [
-            "arch_bird",
+            "arch_insect",
+            19
+          ],
+          [
+            "arch_plant",
             18
           ]
         ],
@@ -756,22 +1071,27 @@
       {
         "id": "f_r4_forge",
         "name": "버려진 대장간",
+        "desc": "화산의 열로 쇠를 벼리던 대장간. 불은 꺼지지 않았고, 대장장이가 만든 것들이 아직 주인을 지킨다.",
         "pool": [
           [
-            "arch_knight",
-            20
-          ],
-          [
-            "arch_bandit",
-            20
+            "arch_golem",
+            19
           ],
           [
             "arch_plant",
             19
           ],
           [
-            "arch_undead",
-            18
+            "arch_slime",
+            19
+          ],
+          [
+            "arch_knight",
+            20
+          ],
+          [
+            "arch_lizard",
+            20
           ]
         ],
         "material": {
@@ -815,6 +1135,7 @@
       {
         "id": "f_r5_abyss",
         "name": "심연 입구",
+        "desc": "세상 밑으로 뚫린 구멍. 검은 불꽃이 길을 밝히고, 심연의 하수인이 올라오는 자를 막는다.",
         "pool": [
           [
             "arch_slime",
@@ -829,8 +1150,8 @@
             21
           ],
           [
-            "arch_bird",
-            22
+            "arch_demon",
+            21
           ]
         ],
         "material": {
@@ -848,23 +1169,60 @@
         }
       },
       {
+        "id": "f_r5_temple",
+        "name": "가라앉은 신전",
+        "desc": "지하 호수에 잠긴 신전. 사제들은 물속에서도 기도를 멈추지 않았고, 촉수가 제단을 감고 있다.",
+        "pool": [
+          [
+            "arch_aquatic",
+            21
+          ],
+          [
+            "arch_undead",
+            21
+          ],
+          [
+            "arch_slime",
+            22
+          ],
+          [
+            "arch_aquatic",
+            23
+          ]
+        ],
+        "material": {
+          "id": "mat_r5_temple",
+          "name": "물에 불은 기도서"
+        },
+        "reward": {
+          "id": "uniq_r5_temple",
+          "name": "익사한 사제의 장갑",
+          "cost": {
+            "material": 3,
+            "gold": 6700
+          },
+          "slot": "gloves"
+        }
+      },
+      {
         "id": "f_r5_frost",
         "name": "서리 회랑",
+        "desc": "심연 한가운데 얼어붙은 회랑. 바닥 없는 추위 속에서 이리가 울고, 거상이 길을 막는다.",
         "pool": [
+          [
+            "arch_beast",
+            21
+          ],
           [
             "arch_golem",
             22
           ],
           [
-            "arch_bird",
+            "arch_undead",
             22
           ],
           [
-            "arch_fungus",
-            23
-          ],
-          [
-            "arch_lizard",
+            "arch_slime",
             23
           ]
         ],
@@ -885,22 +1243,23 @@
       {
         "id": "f_r5_hall",
         "name": "무너진 대전",
+        "desc": "심연에 가라앉은 왕국의 대전. 무너진 천장으로 뇌명조가 드나들고, 심판의 기사가 아직 재판을 연다.",
         "pool": [
           [
             "arch_knight",
             22
           ],
           [
+            "arch_bird",
+            22
+          ],
+          [
             "arch_undead",
-            25
+            23
           ],
           [
-            "arch_plant",
-            24
-          ],
-          [
-            "arch_spirit",
-            24
+            "arch_golem",
+            23
           ]
         ],
         "material": {
@@ -920,22 +1279,27 @@
       {
         "id": "f_r5_root",
         "name": "세계수 뿌리",
+        "desc": "심연 바닥까지 내려온 세계수의 뿌리. 벌레가 뿌리를 갉고, 그 밑에는 태고의 것들이 잠들어 있다.",
         "pool": [
           [
-            "arch_plant",
-            24
-          ],
-          [
-            "arch_lizard",
-            23
+            "arch_insect",
+            22
           ],
           [
             "arch_fungus",
             23
           ],
           [
-            "arch_spirit",
+            "arch_lizard",
+            23
+          ],
+          [
+            "arch_plant",
             24
+          ],
+          [
+            "arch_golem",
+            25
           ]
         ],
         "material": {
@@ -953,9 +1317,50 @@
         }
       },
       {
+        "id": "f_r5_rift",
+        "name": "공허의 균열",
+        "desc": "심연보다 더 아래, 세계가 찢어진 틈. 태초의 불꽃이 새어 나오고, 공허의 것들이 그 불을 쫓는다.",
+        "pool": [
+          [
+            "arch_demon",
+            22
+          ],
+          [
+            "arch_slime",
+            24
+          ],
+          [
+            "arch_spirit",
+            24
+          ],
+          [
+            "arch_demon",
+            25
+          ]
+        ],
+        "material": {
+          "id": "mat_r5_rift",
+          "name": "공허의 파편"
+        },
+        "reward": {
+          "id": "uniq_r5_rift",
+          "name": "공허를 걷는 바지",
+          "cost": {
+            "material": 3,
+            "gold": 6700
+          },
+          "slot": "pants"
+        }
+      },
+      {
         "id": "f_r5_throne",
         "name": "폐왕의 옥좌",
+        "desc": "심연의 가장 깊은 방. 왕을 배신한 장군이 옥좌를 노리고, 근위대와 까마귀가 아직 빈 옥좌를 지킨다.",
         "pool": [
+          [
+            "arch_bird",
+            21
+          ],
           [
             "arch_knight",
             24
@@ -967,10 +1372,6 @@
           [
             "arch_undead",
             25
-          ],
-          [
-            "arch_insect",
-            21
           ]
         ],
         "material": {

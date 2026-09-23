@@ -1,5 +1,94 @@
 [
   {
+    "id": "mon_t21_aquatic",
+    "name": "심해 아귀",
+    "region": 5,
+    "tier": 21,
+    "arch": "arch_aquatic",
+    "power": 0.95,
+    "sprite": "aquatic_21",
+    "maxHp": 8237,
+    "atk": 148.6,
+    "def": 201.92,
+    "spd": 122.56,
+    "scale": 46.01,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 43,
+    "gold": 304,
+    "traits": [
+      "aquatic"
+    ]
+  },
+  {
+    "id": "mon_t21_beast",
+    "name": "설원 이리",
+    "region": 5,
+    "tier": 21,
+    "arch": "arch_beast",
+    "power": 1,
+    "sprite": "beast_21",
+    "maxHp": 7540,
+    "atk": 179.88,
+    "def": 154.58,
+    "spd": 191.5,
+    "scale": 46.01,
+    "cri": 0.1,
+    "crd": 1.5,
+    "eva": 0.08,
+    "exp": 45,
+    "gold": 320,
+    "traits": [
+      "beast"
+    ]
+  },
+  {
+    "id": "mon_t21_bird",
+    "name": "옥좌의 까마귀",
+    "region": 5,
+    "tier": 21,
+    "arch": "arch_bird",
+    "power": 0.9,
+    "sprite": "bird_21",
+    "maxHp": 5089,
+    "atk": 140.78,
+    "def": 121.73,
+    "spd": 237.46,
+    "scale": 46.01,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.15,
+    "exp": 41,
+    "gold": 288,
+    "traits": [
+      "beast",
+      "flying"
+    ]
+  },
+  {
+    "id": "mon_t21_demon",
+    "name": "심연의 하수인",
+    "region": 5,
+    "tier": 21,
+    "arch": "arch_demon",
+    "power": 1.1,
+    "sprite": "demon_21",
+    "maxHp": 7879,
+    "atk": 215.07,
+    "def": 180.66,
+    "spd": 145.54,
+    "scale": 46.01,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.06,
+    "exp": 50,
+    "gold": 352,
+    "traits": [
+      "demon"
+    ]
+  },
+  {
     "id": "mon_t21_insect",
     "name": "심연 지네",
     "region": 5,
@@ -66,6 +155,28 @@
     ]
   },
   {
+    "id": "mon_t21_undead",
+    "name": "익사한 사제",
+    "region": 5,
+    "tier": 21,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_21",
+    "maxHp": 7464,
+    "atk": 140.78,
+    "def": 147.81,
+    "spd": 122.56,
+    "scale": 46.01,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 41,
+    "gold": 288,
+    "traits": [
+      "undead"
+    ]
+  },
+  {
     "id": "mon_t22_bird",
     "name": "뇌명조",
     "region": 5,
@@ -89,6 +200,28 @@
     ]
   },
   {
+    "id": "mon_t22_demon",
+    "name": "공허 추적자",
+    "region": 5,
+    "tier": 22,
+    "arch": "arch_demon",
+    "power": 1.1,
+    "sprite": "demon_22",
+    "maxHp": 9636,
+    "atk": 258.09,
+    "def": 216.79,
+    "spd": 152.38,
+    "scale": 55.21,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.06,
+    "exp": 57,
+    "gold": 398,
+    "traits": [
+      "demon"
+    ]
+  },
+  {
     "id": "mon_t22_golem",
     "name": "서리 거상",
     "region": 5,
@@ -108,6 +241,28 @@
     "gold": 506,
     "traits": [
       "construct"
+    ]
+  },
+  {
+    "id": "mon_t22_insect",
+    "name": "뿌리 갉는 벌레",
+    "region": 5,
+    "tier": 22,
+    "arch": "arch_insect",
+    "power": 0.95,
+    "sprite": "insect_22",
+    "maxHp": 7446,
+    "atk": 187.23,
+    "def": 165.2,
+    "spd": 216.54,
+    "scale": 55.21,
+    "cri": 0.06,
+    "crd": 1.5,
+    "eva": 0.12,
+    "exp": 50,
+    "gold": 344,
+    "traits": [
+      "insect"
     ]
   },
   {
@@ -134,6 +289,72 @@
     ]
   },
   {
+    "id": "mon_t22_slime",
+    "name": "심해 해파리",
+    "region": 5,
+    "tier": 22,
+    "arch": "arch_slime",
+    "power": 0.7,
+    "sprite": "slime_22",
+    "maxHp": 8391,
+    "atk": 111.68,
+    "def": 113.61,
+    "spd": 120.3,
+    "scale": 55.21,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.03,
+    "exp": 37,
+    "gold": 253,
+    "traits": [
+      "ooze"
+    ]
+  },
+  {
+    "id": "mon_t22_undead",
+    "name": "얼어붙은 망령",
+    "region": 5,
+    "tier": 22,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_22",
+    "maxHp": 9129,
+    "atk": 168.93,
+    "def": 177.38,
+    "spd": 128.32,
+    "scale": 55.21,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 47,
+    "gold": 325,
+    "traits": [
+      "undead"
+    ]
+  },
+  {
+    "id": "mon_t23_aquatic",
+    "name": "심연 촉수",
+    "region": 5,
+    "tier": 23,
+    "arch": "arch_aquatic",
+    "power": 0.95,
+    "sprite": "aquatic_23",
+    "maxHp": 12320,
+    "atk": 213.98,
+    "def": 290.76,
+    "spd": 134.08,
+    "scale": 66.25,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 56,
+    "gold": 383,
+    "traits": [
+      "aquatic"
+    ]
+  },
+  {
     "id": "mon_t23_fungus",
     "name": "심연 균사왕",
     "region": 5,
@@ -157,6 +378,28 @@
     ]
   },
   {
+    "id": "mon_t23_golem",
+    "name": "대전 수호 석상",
+    "region": 5,
+    "tier": 23,
+    "arch": "arch_golem",
+    "power": 1.4,
+    "sprite": "golem_23",
+    "maxHp": 22893,
+    "atk": 299.57,
+    "def": 545.35,
+    "spd": 100.56,
+    "scale": 66.25,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.01,
+    "exp": 83,
+    "gold": 565,
+    "traits": [
+      "construct"
+    ]
+  },
+  {
     "id": "mon_t23_lizard",
     "name": "고룡의 후예",
     "region": 5,
@@ -176,6 +419,50 @@
     "gold": 464,
     "traits": [
       "dragonkin"
+    ]
+  },
+  {
+    "id": "mon_t23_slime",
+    "name": "서리 젤리",
+    "region": 5,
+    "tier": 23,
+    "arch": "arch_slime",
+    "power": 0.7,
+    "sprite": "slime_23",
+    "maxHp": 10262,
+    "atk": 134.02,
+    "def": 136.34,
+    "spd": 125.7,
+    "scale": 66.25,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.03,
+    "exp": 41,
+    "gold": 282,
+    "traits": [
+      "ooze"
+    ]
+  },
+  {
+    "id": "mon_t23_undead",
+    "name": "망령 사제",
+    "region": 5,
+    "tier": 23,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_23",
+    "maxHp": 11164,
+    "atk": 202.72,
+    "def": 212.85,
+    "spd": 134.08,
+    "scale": 66.25,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 53,
+    "gold": 363,
+    "traits": [
+      "undead"
     ]
   },
   {
@@ -221,6 +508,28 @@
     "gold": 356,
     "traits": [
       "plant"
+    ]
+  },
+  {
+    "id": "mon_t24_slime",
+    "name": "공허 점액",
+    "region": 5,
+    "tier": 24,
+    "arch": "arch_slime",
+    "power": 0.7,
+    "sprite": "slime_24",
+    "maxHp": 12551,
+    "atk": 160.82,
+    "def": 163.6,
+    "spd": 131.1,
+    "scale": 79.5,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.03,
+    "exp": 46,
+    "gold": 312,
+    "traits": [
+      "ooze"
     ]
   },
   {
@@ -288,6 +597,28 @@
     "gold": 511,
     "traits": [
       "humanoid"
+    ]
+  },
+  {
+    "id": "mon_t25_demon",
+    "name": "공허의 문지기",
+    "region": 5,
+    "tier": 25,
+    "arch": "arch_demon",
+    "power": 1.1,
+    "sprite": "demon_25",
+    "maxHp": 17627,
+    "atk": 445.98,
+    "def": 374.62,
+    "spd": 172.9,
+    "scale": 95.4,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.06,
+    "exp": 80,
+    "gold": 535,
+    "traits": [
+      "demon"
     ]
   },
   {

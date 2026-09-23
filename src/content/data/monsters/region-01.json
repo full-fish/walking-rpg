@@ -89,6 +89,29 @@
     ]
   },
   {
+    "id": "mon_t2_bird",
+    "name": "칼깃 참새",
+    "region": 1,
+    "tier": 2,
+    "arch": "arch_bird",
+    "power": 0.9,
+    "sprite": "bird_2",
+    "maxHp": 111,
+    "atk": 4.41,
+    "def": 3.81,
+    "spd": 25.42,
+    "scale": 1.44,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.15,
+    "exp": 12,
+    "gold": 44,
+    "traits": [
+      "beast",
+      "flying"
+    ]
+  },
+  {
     "id": "mon_t2_insect",
     "name": "왕개미",
     "region": 1,
@@ -133,6 +156,50 @@
     ]
   },
   {
+    "id": "mon_t2_spirit",
+    "name": "산들바람 정령",
+    "region": 1,
+    "tier": 2,
+    "arch": "arch_spirit",
+    "power": 1.1,
+    "sprite": "spirit_2",
+    "maxHp": 163,
+    "atk": 7.54,
+    "def": 4.32,
+    "spd": 17.22,
+    "scale": 1.44,
+    "cri": 0.07,
+    "crd": 1.5,
+    "eva": 0.1,
+    "exp": 15,
+    "gold": 54,
+    "traits": [
+      "spirit"
+    ]
+  },
+  {
+    "id": "mon_t3_beast",
+    "name": "뿔토끼",
+    "region": 1,
+    "tier": 3,
+    "arch": "arch_beast",
+    "power": 1,
+    "sprite": "beast_3",
+    "maxHp": 201,
+    "atk": 6.76,
+    "def": 5.81,
+    "spd": 29.5,
+    "scale": 1.73,
+    "cri": 0.1,
+    "crd": 1.5,
+    "eva": 0.08,
+    "exp": 15,
+    "gold": 55,
+    "traits": [
+      "beast"
+    ]
+  },
+  {
     "id": "mon_t3_bird",
     "name": "들까마귀",
     "region": 1,
@@ -153,6 +220,28 @@
     "traits": [
       "beast",
       "flying"
+    ]
+  },
+  {
+    "id": "mon_t3_goblin",
+    "name": "고블린 졸개",
+    "region": 1,
+    "tier": 3,
+    "arch": "arch_goblin",
+    "power": 0.85,
+    "sprite": "goblin_3",
+    "maxHp": 145,
+    "atk": 4.99,
+    "def": 4.94,
+    "spd": 28.32,
+    "scale": 1.73,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.1,
+    "exp": 13,
+    "gold": 47,
+    "traits": [
+      "goblin"
     ]
   },
   {
@@ -222,6 +311,28 @@
     ]
   },
   {
+    "id": "mon_t4_bandit",
+    "name": "초원 좀도둑",
+    "region": 1,
+    "tier": 4,
+    "arch": "arch_bandit",
+    "power": 1.05,
+    "sprite": "bandit_4",
+    "maxHp": 245,
+    "atk": 8.14,
+    "def": 8.69,
+    "spd": 33.88,
+    "scale": 2.07,
+    "cri": 0.12,
+    "crd": 1.5,
+    "eva": 0.07,
+    "exp": 18,
+    "gold": 64,
+    "traits": [
+      "humanoid"
+    ]
+  },
+  {
     "id": "mon_t4_beast",
     "name": "굶주린 살쾡이",
     "region": 1,
@@ -264,6 +375,28 @@
     "traits": [
       "fungus",
       "poison"
+    ]
+  },
+  {
+    "id": "mon_t4_goblin",
+    "name": "고블린 투석꾼",
+    "region": 1,
+    "tier": 4,
+    "arch": "arch_goblin",
+    "power": 0.85,
+    "sprite": "goblin_4",
+    "maxHp": 178,
+    "atk": 5.99,
+    "def": 5.92,
+    "spd": 36.96,
+    "scale": 2.07,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.1,
+    "exp": 15,
+    "gold": 52,
+    "traits": [
+      "goblin"
     ]
   },
   {
@@ -353,6 +486,73 @@
     "gold": 70,
     "traits": [
       "humanoid"
+    ]
+  },
+  {
+    "id": "mon_t5_beast",
+    "name": "도적단 사냥개",
+    "region": 1,
+    "tier": 5,
+    "arch": "arch_beast",
+    "power": 1,
+    "sprite": "beast_5",
+    "maxHp": 301,
+    "atk": 9.73,
+    "def": 8.36,
+    "spd": 47.5,
+    "scale": 2.49,
+    "cri": 0.1,
+    "crd": 1.5,
+    "eva": 0.08,
+    "exp": 19,
+    "gold": 67,
+    "traits": [
+      "beast"
+    ]
+  },
+  {
+    "id": "mon_t5_bird",
+    "name": "망보는 까마귀",
+    "region": 1,
+    "tier": 5,
+    "arch": "arch_bird",
+    "power": 0.9,
+    "sprite": "bird_5",
+    "maxHp": 203,
+    "atk": 7.61,
+    "def": 6.58,
+    "spd": 58.9,
+    "scale": 2.49,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.15,
+    "exp": 17,
+    "gold": 60,
+    "traits": [
+      "beast",
+      "flying"
+    ]
+  },
+  {
+    "id": "mon_t5_goblin",
+    "name": "고블린 주술사",
+    "region": 1,
+    "tier": 5,
+    "arch": "arch_goblin",
+    "power": 0.85,
+    "sprite": "goblin_5",
+    "maxHp": 217,
+    "atk": 7.19,
+    "def": 7.11,
+    "spd": 45.6,
+    "scale": 2.49,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.1,
+    "exp": 16,
+    "gold": 57,
+    "traits": [
+      "goblin"
     ]
   },
   {

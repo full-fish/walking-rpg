@@ -80,6 +80,12 @@ export const migrations: Record<number, Migration> = {
     const owned = Array.isArray(s.inventory) ? s.inventory.length : 0;
     return { ...s, bag: { capacity: Math.max(BAG.capacity, owned), expansions: 0 } };
   },
+
+  /**
+   * v7 → v8: 하의 칸 (§4.5, T17_4). 빈 칸으로 연다 — 없던 부위라 낄 게 없다.
+   * 다른 부위의 HP·DEF 몫을 떼어 하의를 만들었으므로 **사서 끼기 전까지는 조금 약해진다.**
+   */
+  7: (s) => ({ ...s, equipped: { ...(s.equipped as object), pants: null } }),
 };
 
 /**

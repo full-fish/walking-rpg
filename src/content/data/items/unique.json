@@ -18,7 +18,28 @@
       "insect",
       "ooze"
     ],
-    "price": 2058
+    "price": 1764
+  },
+  {
+    "id": "uniq_r1_windmill",
+    "name": "바람개비 끈을 맨 신",
+    "tier": 2,
+    "slot": "boots",
+    "rarity": "unique",
+    "level": 5,
+    "region": 1,
+    "sprite": "uniq_f_r1_windmill",
+    "atk": 0,
+    "maxHp": 0,
+    "def": 3,
+    "spd": 5.7,
+    "luk": 0,
+    "vs": [
+      "beast",
+      "flying",
+      "spirit"
+    ],
+    "price": 941
   },
   {
     "id": "uniq_r1_mushroom",
@@ -30,8 +51,8 @@
     "region": 1,
     "sprite": "uniq_f_r1_mushroom",
     "atk": 7,
-    "maxHp": 39,
-    "def": 2,
+    "maxHp": 30,
+    "def": 1,
     "spd": 0,
     "luk": 0,
     "vs": [
@@ -40,7 +61,7 @@
       "insect",
       "poison"
     ],
-    "price": 1097
+    "price": 941
   },
   {
     "id": "uniq_r1_bramble",
@@ -52,8 +73,8 @@
     "region": 1,
     "sprite": "uniq_f_r1_bramble",
     "atk": 0,
-    "maxHp": 59,
-    "def": 6,
+    "maxHp": 49,
+    "def": 5,
     "spd": 0,
     "luk": 0,
     "vs": [
@@ -62,7 +83,27 @@
       "flying",
       "plant"
     ],
-    "price": 1646
+    "price": 1411
+  },
+  {
+    "id": "uniq_r1_goblin",
+    "name": "훔친 천으로 기운 바지",
+    "tier": 2,
+    "slot": "pants",
+    "rarity": "unique",
+    "level": 5,
+    "region": 1,
+    "sprite": "uniq_f_r1_goblin",
+    "atk": 0,
+    "maxHp": 39,
+    "def": 3,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "beast",
+      "goblin"
+    ],
+    "price": 1176
   },
   {
     "id": "uniq_r1_tower",
@@ -74,8 +115,8 @@
     "region": 1,
     "sprite": "uniq_f_r1_tower",
     "atk": 0,
-    "maxHp": 99,
-    "def": 2,
+    "maxHp": 79,
+    "def": 1,
     "spd": 0,
     "luk": 0,
     "vs": [
@@ -84,7 +125,7 @@
       "plant",
       "undead"
     ],
-    "price": 1235
+    "price": 1058
   },
   {
     "id": "uniq_r1_camp",
@@ -102,11 +143,10 @@
     "luk": 2.7,
     "vs": [
       "beast",
-      "humanoid",
-      "insect",
-      "undead"
+      "flying",
+      "humanoid"
     ],
-    "price": 1097
+    "price": 941
   },
   {
     "id": "uniq_r2_cave",
@@ -129,7 +169,50 @@
       "insect",
       "poison"
     ],
-    "price": 1784
+    "price": 1529
+  },
+  {
+    "id": "uniq_r2_oldwood",
+    "name": "고목 껍질을 덧댄 바지",
+    "tier": 4,
+    "slot": "pants",
+    "rarity": "unique",
+    "level": 12,
+    "region": 2,
+    "sprite": "uniq_f_r2_oldwood",
+    "atk": 0,
+    "maxHp": 120,
+    "def": 9,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "beast",
+      "flying",
+      "plant",
+      "spirit"
+    ],
+    "price": 1911
+  },
+  {
+    "id": "uniq_r2_web",
+    "name": "거미줄로 짠 장갑",
+    "tier": 4,
+    "slot": "gloves",
+    "rarity": "unique",
+    "level": 12,
+    "region": 2,
+    "sprite": "uniq_f_r2_web",
+    "atk": 23,
+    "maxHp": 90,
+    "def": 5,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "insect",
+      "plant",
+      "undead"
+    ],
+    "price": 1529
   },
   {
     "id": "uniq_r2_grave",
@@ -141,17 +224,17 @@
     "region": 2,
     "sprite": "uniq_f_r2_grave",
     "atk": 0,
-    "maxHp": 180,
-    "def": 20,
+    "maxHp": 150,
+    "def": 16,
     "spd": 0,
     "luk": 0,
     "vs": [
       "beast",
+      "flying",
       "humanoid",
-      "plant",
       "undead"
     ],
-    "price": 2676
+    "price": 2294
   },
   {
     "id": "uniq_r2_logging",
@@ -169,11 +252,11 @@
     "luk": 0,
     "vs": [
       "beast",
+      "humanoid",
       "insect",
-      "plant",
-      "spirit"
+      "plant"
     ],
-    "price": 3345
+    "price": 2867
   },
   {
     "id": "uniq_r2_quarry",
@@ -185,8 +268,8 @@
     "region": 2,
     "sprite": "uniq_f_r2_quarry",
     "atk": 0,
-    "maxHp": 300,
-    "def": 7,
+    "maxHp": 240,
+    "def": 5,
     "spd": 0,
     "luk": 0,
     "vs": [
@@ -194,9 +277,9 @@
       "construct",
       "dragonkin",
       "flying",
-      "insect"
+      "goblin"
     ],
-    "price": 2007
+    "price": 1720
   },
   {
     "id": "uniq_r2_marsh",
@@ -213,35 +296,34 @@
     "spd": 0,
     "luk": 4.4,
     "vs": [
-      "beast",
+      "aquatic",
       "dragonkin",
-      "flying",
       "spirit",
       "undead"
     ],
-    "price": 1784
+    "price": 1529
   },
   {
-    "id": "uniq_r3_riverbed",
-    "name": "강바닥의 휜 마검",
+    "id": "uniq_r3_oasis",
+    "name": "신기루를 걷는 바지",
     "tier": 6,
-    "slot": "weapon",
+    "slot": "pants",
     "rarity": "unique",
     "level": 21,
     "region": 3,
-    "sprite": "uniq_f_r3_riverbed",
-    "atk": 172,
-    "maxHp": 0,
-    "def": 0,
+    "sprite": "uniq_f_r3_oasis",
+    "atk": 0,
+    "maxHp": 294,
+    "def": 23,
     "spd": 0,
     "luk": 0,
     "vs": [
-      "construct",
-      "dragonkin",
+      "aquatic",
       "insect",
-      "ooze"
+      "plant",
+      "spirit"
     ],
-    "price": 5369
+    "price": 3068
   },
   {
     "id": "uniq_r3_cliff",
@@ -264,7 +346,51 @@
       "plant",
       "spirit"
     ],
-    "price": 2863
+    "price": 2454
+  },
+  {
+    "id": "uniq_r3_riverbed",
+    "name": "강바닥의 휜 마검",
+    "tier": 6,
+    "slot": "weapon",
+    "rarity": "unique",
+    "level": 21,
+    "region": 3,
+    "sprite": "uniq_f_r3_riverbed",
+    "atk": 172,
+    "maxHp": 0,
+    "def": 0,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "construct",
+      "dragonkin",
+      "insect",
+      "ooze"
+    ],
+    "price": 4602
+  },
+  {
+    "id": "uniq_r3_fossil",
+    "name": "화석 두개골 투구",
+    "tier": 6,
+    "slot": "helm",
+    "rarity": "unique",
+    "level": 21,
+    "region": 3,
+    "sprite": "uniq_f_r3_fossil",
+    "atk": 0,
+    "maxHp": 587,
+    "def": 11,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "beast",
+      "construct",
+      "insect",
+      "undead"
+    ],
+    "price": 2761
   },
   {
     "id": "uniq_r3_saltflat",
@@ -276,18 +402,18 @@
     "region": 3,
     "sprite": "uniq_f_r3_saltflat",
     "atk": 0,
-    "maxHp": 440,
-    "def": 52,
+    "maxHp": 367,
+    "def": 40,
     "spd": 0,
     "luk": 0,
     "vs": [
+      "aquatic",
       "construct",
-      "dragonkin",
       "fungus",
       "ooze",
       "poison"
     ],
-    "price": 4295
+    "price": 3681
   },
   {
     "id": "uniq_r3_ridge",
@@ -299,17 +425,16 @@
     "region": 3,
     "sprite": "uniq_f_r3_ridge",
     "atk": 57,
-    "maxHp": 294,
-    "def": 17,
+    "maxHp": 220,
+    "def": 11,
     "spd": 0,
     "luk": 0,
     "vs": [
       "beast",
       "flying",
-      "spirit",
-      "undead"
+      "spirit"
     ],
-    "price": 2863
+    "price": 2454
   },
   {
     "id": "uniq_r3_outpost",
@@ -328,10 +453,31 @@
     "vs": [
       "armored",
       "humanoid",
-      "insect",
       "undead"
     ],
-    "price": 2863
+    "price": 2454
+  },
+  {
+    "id": "uniq_r4_hotspring",
+    "name": "온천석을 박은 바지",
+    "tier": 8,
+    "slot": "pants",
+    "rarity": "unique",
+    "level": 32,
+    "region": 4,
+    "sprite": "uniq_f_r4_hotspring",
+    "atk": 0,
+    "maxHp": 702,
+    "def": 56,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "aquatic",
+      "dragonkin",
+      "ooze",
+      "spirit"
+    ],
+    "price": 5165
   },
   {
     "id": "uniq_r4_crater",
@@ -343,18 +489,17 @@
     "region": 4,
     "sprite": "uniq_f_r4_crater",
     "atk": 140,
-    "maxHp": 702,
-    "def": 42,
+    "maxHp": 527,
+    "def": 28,
     "spd": 0,
     "luk": 0,
     "vs": [
       "beast",
-      "fungus",
+      "demon",
       "insect",
-      "poison",
-      "spirit"
+      "ooze"
     ],
-    "price": 4821
+    "price": 4132
   },
   {
     "id": "uniq_r4_ashfield",
@@ -366,18 +511,18 @@
     "region": 4,
     "sprite": "uniq_f_r4_ashfield",
     "atk": 0,
-    "maxHp": 1053,
-    "def": 126,
+    "maxHp": 878,
+    "def": 98,
     "spd": 0,
     "luk": 0,
     "vs": [
       "beast",
+      "demon",
       "dragonkin",
       "flying",
-      "humanoid",
       "undead"
     ],
-    "price": 7231
+    "price": 6198
   },
   {
     "id": "uniq_r4_lavatube",
@@ -397,10 +542,32 @@
       "construct",
       "dragonkin",
       "fungus",
-      "plant",
-      "poison"
+      "ooze",
+      "poison",
+      "spirit"
     ],
-    "price": 9039
+    "price": 7748
+  },
+  {
+    "id": "uniq_r4_hideout",
+    "name": "검은 손의 반지",
+    "tier": 8,
+    "slot": "accessory",
+    "rarity": "unique",
+    "level": 32,
+    "region": 4,
+    "sprite": "uniq_f_r4_hideout",
+    "atk": 0,
+    "maxHp": 0,
+    "def": 0,
+    "spd": 0,
+    "luk": 11.8,
+    "vs": [
+      "humanoid",
+      "insect",
+      "undead"
+    ],
+    "price": 4132
   },
   {
     "id": "uniq_r4_obsidian",
@@ -412,19 +579,18 @@
     "region": 4,
     "sprite": "uniq_f_r4_obsidian",
     "atk": 0,
-    "maxHp": 1755,
-    "def": 42,
+    "maxHp": 1404,
+    "def": 28,
     "spd": 0,
     "luk": 0,
     "vs": [
       "armored",
-      "beast",
-      "flying",
       "humanoid",
       "insect",
+      "plant",
       "undead"
     ],
-    "price": 5424
+    "price": 4649
   },
   {
     "id": "uniq_r4_forge",
@@ -442,11 +608,13 @@
     "luk": 0,
     "vs": [
       "armored",
+      "construct",
+      "dragonkin",
       "humanoid",
-      "plant",
-      "undead"
+      "ooze",
+      "plant"
     ],
-    "price": 4821
+    "price": 4132
   },
   {
     "id": "uniq_r5_abyss",
@@ -463,13 +631,33 @@
     "spd": 0,
     "luk": 0,
     "vs": [
-      "beast",
-      "flying",
+      "demon",
       "insect",
       "ooze",
       "spirit"
     ],
-    "price": 16006
+    "price": 13719
+  },
+  {
+    "id": "uniq_r5_temple",
+    "name": "익사한 사제의 장갑",
+    "tier": 10,
+    "slot": "gloves",
+    "rarity": "unique",
+    "level": 44,
+    "region": 5,
+    "sprite": "uniq_f_r5_temple",
+    "atk": 338,
+    "maxHp": 1259,
+    "def": 68,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "aquatic",
+      "ooze",
+      "undead"
+    ],
+    "price": 7317
   },
   {
     "id": "uniq_r5_frost",
@@ -481,19 +669,17 @@
     "region": 5,
     "sprite": "uniq_f_r5_frost",
     "atk": 0,
-    "maxHp": 2517,
-    "def": 304,
+    "maxHp": 2098,
+    "def": 237,
     "spd": 0,
     "luk": 0,
     "vs": [
       "beast",
       "construct",
-      "dragonkin",
-      "flying",
-      "fungus",
-      "poison"
+      "ooze",
+      "undead"
     ],
-    "price": 12805
+    "price": 10975
   },
   {
     "id": "uniq_r5_hall",
@@ -511,12 +697,13 @@
     "luk": 0,
     "vs": [
       "armored",
+      "beast",
+      "construct",
+      "flying",
       "humanoid",
-      "plant",
-      "spirit",
       "undead"
     ],
-    "price": 8536
+    "price": 7317
   },
   {
     "id": "uniq_r5_root",
@@ -533,13 +720,35 @@
     "spd": 0,
     "luk": 20.9,
     "vs": [
+      "construct",
       "dragonkin",
       "fungus",
+      "insect",
       "plant",
-      "poison",
+      "poison"
+    ],
+    "price": 7317
+  },
+  {
+    "id": "uniq_r5_rift",
+    "name": "공허를 걷는 바지",
+    "tier": 10,
+    "slot": "pants",
+    "rarity": "unique",
+    "level": 44,
+    "region": 5,
+    "sprite": "uniq_f_r5_rift",
+    "atk": 0,
+    "maxHp": 1678,
+    "def": 135,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "demon",
+      "ooze",
       "spirit"
     ],
-    "price": 8536
+    "price": 9146
   },
   {
     "id": "uniq_r5_throne",
@@ -551,16 +760,17 @@
     "region": 5,
     "sprite": "uniq_f_r5_throne",
     "atk": 0,
-    "maxHp": 4195,
-    "def": 101,
+    "maxHp": 3356,
+    "def": 68,
     "spd": 0,
     "luk": 0,
     "vs": [
       "armored",
+      "beast",
+      "flying",
       "humanoid",
-      "insect",
       "undead"
     ],
-    "price": 9603
+    "price": 8232
   }
 ]

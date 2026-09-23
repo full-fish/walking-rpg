@@ -67,6 +67,50 @@
     ]
   },
   {
+    "id": "mon_t6_plant",
+    "name": "속삭이는 나무",
+    "region": 2,
+    "tier": 6,
+    "arch": "arch_plant",
+    "power": 0.8,
+    "sprite": "plant_6",
+    "maxHp": 368,
+    "atk": 6.09,
+    "def": 13.04,
+    "spd": 22.6,
+    "scale": 2.99,
+    "cri": 0.01,
+    "crd": 1.5,
+    "eva": 0.02,
+    "exp": 13,
+    "gold": 77,
+    "traits": [
+      "plant"
+    ]
+  },
+  {
+    "id": "mon_t7_beast",
+    "name": "그림자 늑대",
+    "region": 2,
+    "tier": 7,
+    "arch": "arch_beast",
+    "power": 1,
+    "sprite": "beast_7",
+    "maxHp": 450,
+    "atk": 14.01,
+    "def": 12.04,
+    "spd": 65.5,
+    "scale": 3.58,
+    "cri": 0.1,
+    "crd": 1.5,
+    "eva": 0.08,
+    "exp": 19,
+    "gold": 109,
+    "traits": [
+      "beast"
+    ]
+  },
+  {
     "id": "mon_t7_fungus",
     "name": "부패한 균사체",
     "region": 2,
@@ -87,6 +131,28 @@
     "traits": [
       "fungus",
       "poison"
+    ]
+  },
+  {
+    "id": "mon_t7_insect",
+    "name": "그늘 거미",
+    "region": 2,
+    "tier": 7,
+    "arch": "arch_insect",
+    "power": 0.95,
+    "sprite": "insect_7",
+    "maxHp": 364,
+    "atk": 12.15,
+    "def": 10.72,
+    "spd": 70.74,
+    "scale": 3.58,
+    "cri": 0.06,
+    "crd": 1.5,
+    "eva": 0.12,
+    "exp": 18,
+    "gold": 103,
+    "traits": [
+      "insect"
     ]
   },
   {
@@ -112,6 +178,28 @@
     ]
   },
   {
+    "id": "mon_t7_plant",
+    "name": "끈끈이 덩굴",
+    "region": 2,
+    "tier": 7,
+    "arch": "arch_plant",
+    "power": 0.8,
+    "sprite": "plant_7",
+    "maxHp": 450,
+    "atk": 7.31,
+    "def": 15.65,
+    "spd": 26.2,
+    "scale": 3.58,
+    "cri": 0.01,
+    "crd": 1.5,
+    "eva": 0.02,
+    "exp": 15,
+    "gold": 87,
+    "traits": [
+      "plant"
+    ]
+  },
+  {
     "id": "mon_t7_undead",
     "name": "무덤지기",
     "region": 2,
@@ -134,8 +222,30 @@
     ]
   },
   {
+    "id": "mon_t8_aquatic",
+    "name": "늪 두꺼비",
+    "region": 2,
+    "tier": 8,
+    "arch": "arch_aquatic",
+    "power": 0.95,
+    "sprite": "aquatic_8",
+    "maxHp": 601,
+    "atk": 13.89,
+    "def": 18.87,
+    "spd": 47.68,
+    "scale": 4.3,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 20,
+    "gold": 115,
+    "traits": [
+      "aquatic"
+    ]
+  },
+  {
     "id": "mon_t8_bandit",
-    "name": "산적 두목",
+    "name": "도끼 산적",
     "region": 2,
     "tier": 8,
     "arch": "arch_bandit",
@@ -178,6 +288,51 @@
     ]
   },
   {
+    "id": "mon_t8_bird",
+    "name": "무덤 까마귀",
+    "region": 2,
+    "tier": 8,
+    "arch": "arch_bird",
+    "power": 0.9,
+    "sprite": "bird_8",
+    "maxHp": 372,
+    "atk": 13.16,
+    "def": 11.38,
+    "spd": 92.38,
+    "scale": 4.3,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.15,
+    "exp": 19,
+    "gold": 109,
+    "traits": [
+      "beast",
+      "flying"
+    ]
+  },
+  {
+    "id": "mon_t8_insect",
+    "name": "독니 거미",
+    "region": 2,
+    "tier": 8,
+    "arch": "arch_insect",
+    "power": 0.95,
+    "sprite": "insect_8",
+    "maxHp": 445,
+    "atk": 14.58,
+    "def": 12.87,
+    "spd": 80.46,
+    "scale": 4.3,
+    "cri": 0.06,
+    "crd": 1.5,
+    "eva": 0.12,
+    "exp": 20,
+    "gold": 115,
+    "traits": [
+      "insect"
+    ]
+  },
+  {
     "id": "mon_t8_plant",
     "name": "뒤틀린 고목",
     "region": 2,
@@ -200,8 +355,96 @@
     ]
   },
   {
+    "id": "mon_t8_spirit",
+    "name": "숲 요정",
+    "region": 2,
+    "tier": 8,
+    "arch": "arch_spirit",
+    "power": 1.1,
+    "sprite": "spirit_8",
+    "maxHp": 545,
+    "atk": 22.51,
+    "def": 12.91,
+    "spd": 62.58,
+    "scale": 4.3,
+    "cri": 0.07,
+    "crd": 1.5,
+    "eva": 0.1,
+    "exp": 24,
+    "gold": 133,
+    "traits": [
+      "spirit"
+    ]
+  },
+  {
+    "id": "mon_t8_undead",
+    "name": "고치 속 망자",
+    "region": 2,
+    "tier": 8,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_8",
+    "maxHp": 545,
+    "atk": 13.16,
+    "def": 13.82,
+    "spd": 47.68,
+    "scale": 4.3,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 19,
+    "gold": 109,
+    "traits": [
+      "undead"
+    ]
+  },
+  {
+    "id": "mon_t9_bandit",
+    "name": "도굴꾼",
+    "region": 2,
+    "tier": 9,
+    "arch": "arch_bandit",
+    "power": 1.05,
+    "sprite": "bandit_9",
+    "maxHp": 672,
+    "atk": 20.26,
+    "def": 21.62,
+    "spd": 73.48,
+    "scale": 5.16,
+    "cri": 0.12,
+    "crd": 1.5,
+    "eva": 0.07,
+    "exp": 25,
+    "gold": 140,
+    "traits": [
+      "humanoid"
+    ]
+  },
+  {
+    "id": "mon_t9_goblin",
+    "name": "고블린 채굴꾼",
+    "region": 2,
+    "tier": 9,
+    "arch": "arch_goblin",
+    "power": 0.85,
+    "sprite": "goblin_9",
+    "maxHp": 486,
+    "atk": 14.91,
+    "def": 14.74,
+    "spd": 80.16,
+    "scale": 5.16,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.1,
+    "exp": 20,
+    "gold": 114,
+    "traits": [
+      "goblin"
+    ]
+  },
+  {
     "id": "mon_t9_golem",
-    "name": "강철 조각상",
+    "name": "깎다 만 석상",
     "region": 2,
     "tier": 9,
     "arch": "arch_golem",
@@ -244,8 +487,30 @@
     ]
   },
   {
+    "id": "mon_t9_lizard",
+    "name": "바위 도마뱀",
+    "region": 2,
+    "tier": 9,
+    "arch": "arch_lizard",
+    "power": 1.15,
+    "sprite": "lizard_9",
+    "maxHp": 890,
+    "atk": 22.19,
+    "def": 27.41,
+    "spd": 56.78,
+    "scale": 5.16,
+    "cri": 0.05,
+    "crd": 1.5,
+    "eva": 0.04,
+    "exp": 28,
+    "gold": 154,
+    "traits": [
+      "dragonkin"
+    ]
+  },
+  {
     "id": "mon_t9_spirit",
-    "name": "불씨 정령",
+    "name": "도깨비불",
     "region": 2,
     "tier": 9,
     "arch": "arch_spirit",
@@ -263,6 +528,28 @@
     "gold": 147,
     "traits": [
       "spirit"
+    ]
+  },
+  {
+    "id": "mon_t9_undead",
+    "name": "굶주린 구울",
+    "region": 2,
+    "tier": 9,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_9",
+    "maxHp": 667,
+    "atk": 15.79,
+    "def": 16.58,
+    "spd": 53.44,
+    "scale": 5.16,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 22,
+    "gold": 120,
+    "traits": [
+      "undead"
     ]
   },
   {

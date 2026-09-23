@@ -34,6 +34,8 @@ type Tab = (typeof TABS)[number];
 
 /** 확률 계수를 "%p"로. 0.0025 → "0.25%p" */
 const pp = (v: number) => `${+(v * 100).toFixed(2)}%p`;
+/** 배율에 더하는 몫을 "%"로. 0.01 → "1%" — 드랍·골드는 1점당 +1%씩 더해진다 (T17_4) */
+const pct = (v: number) => `${+(v * 100).toFixed(2)}%`;
 
 /**
  * 배분할 수 있는 1차 스탯 4종과 그게 뭘 하는지 (§4.3).
@@ -57,18 +59,18 @@ const STATS: { key: StatKey; label: string; effect: string }[] = [
     label: '행운 LUK',
     effect:
       `치명 +${pp(STAT_PER_POINT.luk.cri)} · 치명피해 +${pp(STAT_PER_POINT.luk.crd)}` +
-      ` · 장비 드랍 ×${1 + STAT_PER_POINT.luk.dropRate} · 골드 ×${1 + STAT_PER_POINT.luk.goldFind} (곱)`,
+      ` · 장비 드랍 +${pct(STAT_PER_POINT.luk.dropRate)} · 골드 +${pct(STAT_PER_POINT.luk.goldFind)}`,
   },
 ];
 
 /**
- * 인형 배치 (T17_1). 3열 × 4행에 부위를 사람 모양으로 앉힌다.
+ * 인형 배치 (T17_1). 3열 × 4행에 부위를 사람 모양으로 앉힌다. 하의는 다리 자리다 (T17_4).
  * null은 빈 칸 — 무기가 손 위치에 오려면 양옆이 비어 있어야 한다.
  */
 const DOLL: (GearSlot | null)[][] = [
   [null, 'helm', null],
   ['weapon', 'armor', 'accessory'],
-  ['gloves', null, null],
+  ['gloves', 'pants', null],
   [null, 'boots', null],
 ];
 
@@ -142,7 +144,12 @@ export default function Character() {
 
       <View style={styles.tabs}>
         {TABS.map((t) => (
-          <Button key={t} label={t} tone={t === tab ? 'gold' : 'normal'} onPress={() => setTab(t)} />
+          <Button
+            key={t}
+            label={t}
+            tone={t === tab ? 'gold' : 'normal'}
+            onPress={() => setTab(t)}
+          />
         ))}
       </View>
 
@@ -215,7 +222,8 @@ export default function Character() {
                 {(stats.eva * 100).toFixed(1)}% · 마법공격 {stats.matk.toFixed(1)}
               </Text>
               <Text size="sm" dim>
-                장비 드랍 ×{stats.dropMult.toFixed(2)} · 골드 ×{stats.goldMult.toFixed(2)}
+                장비 드랍 +{((stats.dropMult - 1) * 100).toFixed(1)}% · 골드 +
+                {((stats.goldMult - 1) * 100).toFixed(1)}%
               </Text>
             </Panel>
           </>

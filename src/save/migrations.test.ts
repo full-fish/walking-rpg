@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { BAG, VAULT } from '../game/formulas';
+import { BAG, GEAR_SLOTS, VAULT } from '../game/formulas';
 import { migrate } from './migrations';
 import { defaultSave, SAVE_VERSION, SaveSchema } from './schema';
 
@@ -95,8 +95,8 @@ test('v3 → v4: 인벤토리 칸이 생기고 INT는 0에서 시작한다 (§4.
   // 배분해 둔 건 그대로 남는다 — 옛 세이브의 포인트를 회수하지 않는다
   expect(v4.statPoints).toEqual({ unspent: 5, str: 10, vit: 10, agi: 8, luk: 0, int: 0 });
   expect(v4.inventory).toEqual([]);
-  // 여섯 칸이 전부 있어야 한다. 하나라도 없으면 장착 화면이 undefined를 만난다
-  expect(Object.values(v4.equipped)).toEqual([null, null, null, null, null, null]);
+  // 부위가 전부 있어야 한다. 하나라도 없으면 장착 화면이 undefined를 만난다
+  expect(Object.values(v4.equipped)).toEqual(GEAR_SLOTS.map(() => null));
 });
 
 test('v4 → v5: 창고·소재·소모품이 생긴다 (§3.7, §4.5)', () => {
@@ -152,4 +152,16 @@ test('v6 → v7: 가방 칸이 생기고, 이미 가진 건 안 버린다 (§4.5
   );
   expect(full.bag.capacity).toBe(45);
   expect(full.inventory).toHaveLength(45);
+});
+
+test('v7 → v8: 하의 칸이 빈 칸으로 생기고, 낀 건 그대로다 (§4.5, T17_4)', () => {
+  const v7 = {
+    ...defaultSave(),
+    version: 7,
+    inventory: [{ uid: '1', defId: 'eq_t1_weapon_common', quality: 1, enhance: 0 }],
+    equipped: { weapon: '1', helm: null, armor: null, gloves: null, boots: null, accessory: null },
+  };
+  const v8 = SaveSchema.parse(migrate(v7));
+  expect(v8.equipped.pants).toBeNull();
+  expect(v8.equipped.weapon).toBe('1');
 });

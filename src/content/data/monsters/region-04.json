@@ -1,5 +1,27 @@
 [
   {
+    "id": "mon_t16_aquatic",
+    "name": "유황 두꺼비",
+    "region": 4,
+    "tier": 16,
+    "arch": "arch_aquatic",
+    "power": 0.95,
+    "sprite": "aquatic_16",
+    "maxHp": 3010,
+    "atk": 59.72,
+    "def": 81.15,
+    "spd": 93.76,
+    "scale": 18.49,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 31,
+    "gold": 221,
+    "traits": [
+      "aquatic"
+    ]
+  },
+  {
     "id": "mon_t16_bandit",
     "name": "검은 손 자객",
     "region": 4,
@@ -44,6 +66,28 @@
     ]
   },
   {
+    "id": "mon_t16_demon",
+    "name": "불꽃 임프",
+    "region": 4,
+    "tier": 16,
+    "arch": "arch_demon",
+    "power": 1.1,
+    "sprite": "demon_16",
+    "maxHp": 2880,
+    "atk": 86.43,
+    "def": 72.6,
+    "spd": 111.34,
+    "scale": 18.49,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.06,
+    "exp": 36,
+    "gold": 256,
+    "traits": [
+      "demon"
+    ]
+  },
+  {
     "id": "mon_t16_insect",
     "name": "검은 말벌",
     "region": 4,
@@ -63,6 +107,72 @@
     "gold": 221,
     "traits": [
       "insect"
+    ]
+  },
+  {
+    "id": "mon_t16_lizard",
+    "name": "온천 도롱뇽",
+    "region": 4,
+    "tier": 16,
+    "arch": "arch_lizard",
+    "power": 1.15,
+    "sprite": "lizard_16",
+    "maxHp": 3644,
+    "atk": 79.52,
+    "def": 98.23,
+    "spd": 99.62,
+    "scale": 18.49,
+    "cri": 0.05,
+    "crd": 1.5,
+    "eva": 0.04,
+    "exp": 37,
+    "gold": 268,
+    "traits": [
+      "dragonkin"
+    ]
+  },
+  {
+    "id": "mon_t16_slime",
+    "name": "잿빛 점액",
+    "region": 4,
+    "tier": 16,
+    "arch": "arch_slime",
+    "power": 0.7,
+    "sprite": "slime_16",
+    "maxHp": 2508,
+    "atk": 37.4,
+    "def": 38.05,
+    "spd": 87.9,
+    "scale": 18.49,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.03,
+    "exp": 23,
+    "gold": 163,
+    "traits": [
+      "ooze"
+    ]
+  },
+  {
+    "id": "mon_t16_spirit",
+    "name": "증기 정령",
+    "region": 4,
+    "tier": 16,
+    "arch": "arch_spirit",
+    "power": 1.1,
+    "sprite": "spirit_16",
+    "maxHp": 2728,
+    "atk": 96.81,
+    "def": 55.52,
+    "spd": 123.06,
+    "scale": 18.49,
+    "cri": 0.07,
+    "crd": 1.5,
+    "eva": 0.1,
+    "exp": 36,
+    "gold": 256,
+    "traits": [
+      "spirit"
     ]
   },
   {
@@ -89,6 +199,50 @@
     ]
   },
   {
+    "id": "mon_t17_golem",
+    "name": "용암 골렘",
+    "region": 4,
+    "tier": 17,
+    "arch": "arch_golem",
+    "power": 1.4,
+    "sprite": "golem_17",
+    "maxHp": 6841,
+    "atk": 100.33,
+    "def": 182.64,
+    "spd": 74.64,
+    "scale": 22.19,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.01,
+    "exp": 52,
+    "gold": 368,
+    "traits": [
+      "construct"
+    ]
+  },
+  {
+    "id": "mon_t17_insect",
+    "name": "독 사육 지네",
+    "region": 4,
+    "tier": 17,
+    "arch": "arch_insect",
+    "power": 0.95,
+    "sprite": "insect_17",
+    "maxHp": 2721,
+    "atk": 75.24,
+    "def": 66.39,
+    "spd": 167.94,
+    "scale": 22.19,
+    "cri": 0.06,
+    "crd": 1.5,
+    "eva": 0.12,
+    "exp": 35,
+    "gold": 250,
+    "traits": [
+      "insect"
+    ]
+  },
+  {
     "id": "mon_t17_lizard",
     "name": "비늘 사냥꾼",
     "region": 4,
@@ -111,8 +265,30 @@
     ]
   },
   {
+    "id": "mon_t17_slime",
+    "name": "끓는 점액",
+    "region": 4,
+    "tier": 17,
+    "arch": "arch_slime",
+    "power": 0.7,
+    "sprite": "slime_17",
+    "maxHp": 3067,
+    "atk": 44.88,
+    "def": 45.66,
+    "spd": 93.3,
+    "scale": 22.19,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.03,
+    "exp": 26,
+    "gold": 184,
+    "traits": [
+      "ooze"
+    ]
+  },
+  {
     "id": "mon_t17_spirit",
-    "name": "번개 정령",
+    "name": "화염 정령",
     "region": 4,
     "tier": 17,
     "arch": "arch_spirit",
@@ -130,6 +306,28 @@
     "gold": 289,
     "traits": [
       "spirit"
+    ]
+  },
+  {
+    "id": "mon_t17_undead",
+    "name": "재투성이 망자",
+    "region": 4,
+    "tier": 17,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_17",
+    "maxHp": 3336,
+    "atk": 67.89,
+    "def": 71.28,
+    "spd": 99.52,
+    "scale": 22.19,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 34,
+    "gold": 237,
+    "traits": [
+      "undead"
     ]
   },
   {
@@ -156,6 +354,28 @@
     ]
   },
   {
+    "id": "mon_t18_demon",
+    "name": "재의 악마",
+    "region": 4,
+    "tier": 18,
+    "arch": "arch_demon",
+    "power": 1.1,
+    "sprite": "demon_18",
+    "maxHp": 4307,
+    "atk": 124.46,
+    "def": 104.55,
+    "spd": 125.02,
+    "scale": 26.62,
+    "cri": 0.08,
+    "crd": 1.5,
+    "eva": 0.06,
+    "exp": 46,
+    "gold": 323,
+    "traits": [
+      "demon"
+    ]
+  },
+  {
     "id": "mon_t18_knight",
     "name": "흑철 기사",
     "region": 4,
@@ -176,6 +396,72 @@
     "traits": [
       "humanoid",
       "armored"
+    ]
+  },
+  {
+    "id": "mon_t18_lizard",
+    "name": "샐러맨더",
+    "region": 4,
+    "tier": 18,
+    "arch": "arch_lizard",
+    "power": 1.15,
+    "sprite": "lizard_18",
+    "maxHp": 5451,
+    "atk": 114.51,
+    "def": 141.45,
+    "spd": 111.86,
+    "scale": 26.62,
+    "cri": 0.05,
+    "crd": 1.5,
+    "eva": 0.04,
+    "exp": 49,
+    "gold": 337,
+    "traits": [
+      "dragonkin"
+    ]
+  },
+  {
+    "id": "mon_t18_plant",
+    "name": "유리 가시덤불",
+    "region": 4,
+    "tier": 18,
+    "arch": "arch_plant",
+    "power": 0.8,
+    "sprite": "plant_18",
+    "maxHp": 4122,
+    "atk": 54.31,
+    "def": 116.29,
+    "spd": 65.8,
+    "scale": 26.62,
+    "cri": 0.01,
+    "crd": 1.5,
+    "eva": 0.02,
+    "exp": 34,
+    "gold": 235,
+    "traits": [
+      "plant"
+    ]
+  },
+  {
+    "id": "mon_t18_slime",
+    "name": "용암 슬라임",
+    "region": 4,
+    "tier": 18,
+    "arch": "arch_slime",
+    "power": 0.7,
+    "sprite": "slime_18",
+    "maxHp": 3751,
+    "atk": 53.86,
+    "def": 54.79,
+    "spd": 98.7,
+    "scale": 26.62,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.03,
+    "exp": 30,
+    "gold": 205,
+    "traits": [
+      "ooze"
     ]
   },
   {
@@ -223,6 +509,28 @@
     ]
   },
   {
+    "id": "mon_t19_insect",
+    "name": "흑요석 전갈",
+    "region": 4,
+    "tier": 19,
+    "arch": "arch_insect",
+    "power": 0.95,
+    "sprite": "insect_19",
+    "maxHp": 4070,
+    "atk": 108.35,
+    "def": 95.6,
+    "spd": 187.38,
+    "scale": 31.95,
+    "cri": 0.06,
+    "crd": 1.5,
+    "eva": 0.12,
+    "exp": 45,
+    "gold": 308,
+    "traits": [
+      "insect"
+    ]
+  },
+  {
     "id": "mon_t19_plant",
     "name": "무쇠 덩굴",
     "region": 4,
@@ -242,6 +550,50 @@
     "gold": 259,
     "traits": [
       "plant"
+    ]
+  },
+  {
+    "id": "mon_t19_slime",
+    "name": "쇳물 점액",
+    "region": 4,
+    "tier": 19,
+    "arch": "arch_slime",
+    "power": 0.7,
+    "sprite": "slime_19",
+    "maxHp": 4587,
+    "atk": 64.63,
+    "def": 65.75,
+    "spd": 104.1,
+    "scale": 31.95,
+    "cri": 0.02,
+    "crd": 1.5,
+    "eva": 0.03,
+    "exp": 33,
+    "gold": 227,
+    "traits": [
+      "ooze"
+    ]
+  },
+  {
+    "id": "mon_t19_undead",
+    "name": "버려진 제물",
+    "region": 4,
+    "tier": 19,
+    "arch": "arch_undead",
+    "power": 0.9,
+    "sprite": "undead_19",
+    "maxHp": 4990,
+    "atk": 97.76,
+    "def": 102.65,
+    "spd": 111.04,
+    "scale": 31.95,
+    "cri": 0.04,
+    "crd": 1.5,
+    "eva": 0.05,
+    "exp": 42,
+    "gold": 291,
+    "traits": [
+      "undead"
     ]
   },
   {

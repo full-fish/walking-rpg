@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
 
+import { FIELDS_PER_REGION } from '../game/formulas';
 import {
   MONSTER_ARCHETYPES,
   MONSTERS,
@@ -13,11 +14,11 @@ import {
  * 앱이 켜질 때 타는 경로 그대로다 — import만 해도 스키마 검증이 돈다.
  * 내용 검증은 `npm run validate`가 하고, 여기서는 "로더가 살아 있나"만 본다.
  */
-test('로더 — 원형 12개와 지역 데이터가 파싱된다 (§7.2)', () => {
-  expect(MONSTER_ARCHETYPES).toHaveLength(12);
+test('로더 — 원형 15개와 지역 데이터가 파싱된다 (§7.2)', () => {
+  expect(MONSTER_ARCHETYPES).toHaveLength(15);
   expect(REGIONS).toHaveLength(5);
-  expect(MONSTERS.length).toBeGreaterThan(70);
-  expect(regionById(1).fields).toHaveLength(5);
+  expect(MONSTERS.length).toBeGreaterThan(130);
+  expect(regionById(1).fields).toHaveLength(FIELDS_PER_REGION);
 });
 
 test('사냥터 풀이 실제 몬스터로 풀린다', () => {

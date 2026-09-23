@@ -149,8 +149,9 @@ export const STAT_PER_POINT = {
    * 확률과 배율을 같이 올리고 골드·드랍까지 준다 — 기댓값을 증폭하는 스탯이라는 성격 그대로,
    * 대신 실제로 증폭되게 한다.
    *
-   * **cri·crd는 가산, dropRate·goldFind는 곱산이다** (T17). 뒤의 둘은 1점당 ×1.01이라
-   * 151점(Lv50 몰빵)이면 4.45배가 된다 — 행운이 후반에 급격히 붙는 건 의도다.
+   * **넷 다 가산이다** (T17_4). 드랍·골드는 1점당 +1%라 151점(Lv50 몰빵)이면 ×2.51이다.
+   * T17에서 곱산(1점당 ×1.01, 151점이면 ×4.45)으로 했다가 되돌렸다 — 후반에 급격히 붙어서
+   * 행운 1점의 값이 "지금 몇 점이냐"에 따라 달라졌다. 가산이면 몇 번째 점이든 똑같이 +1%다.
    * dropRate는 **장비 드랍에만** 곱한다(T19). 사냥터 소재는 6마리 완주 확정이라
    * 확률이 끼어들 자리가 없다 (§4.4).
    */
@@ -246,9 +247,9 @@ export function combatStats(level: number, job: JobId = 'warrior', spend?: StatS
     crd: BASE_STATS.crd + STAT_PER_POINT.luk.crd * s.luk,
     eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * s.agi,
     /** 장비 드랍 배율 (T19). 소재에는 안 붙는다 — 6마리 완주 확정이다 (§4.4) */
-    dropMult: (1 + STAT_PER_POINT.luk.dropRate) ** s.luk,
+    dropMult: 1 + STAT_PER_POINT.luk.dropRate * s.luk,
     /** 골드 배율. killReward가 골드에만 곱한다 (EXP는 안 건드린다) */
-    goldMult: (1 + STAT_PER_POINT.luk.goldFind) ** s.luk,
+    goldMult: 1 + STAT_PER_POINT.luk.goldFind * s.luk,
     /** 피해배율 K의 기준선 — 스탯에 곱하는 값이 아니다 (§4.2) */
     scale: powerScale(level),
   };
@@ -298,8 +299,11 @@ export const DEATH_HP_RATIO = 0.1;
 export const REGION_COUNT = 5;
 export const TIERS_PER_REGION = 5;
 export const MAX_TIER = REGION_COUNT * TIERS_PER_REGION;
-/** 지역마다 사냥터 5개 (§4.4). */
-export const FIELDS_PER_REGION = 5;
+/**
+ * 지역마다 사냥터 7개 (§4.4, T17_4). **부위 수와 같다** — 사냥터마다 고유 장비 한 부위씩이라
+ * 한 지역을 다 돌면 7부위가 한 벌이 된다.
+ */
+export const FIELDS_PER_REGION = 7;
 
 /**
  * 티어가 하나 오를 때 몬스터 스탯에 곱하는 값 (§7.2④).
@@ -411,19 +415,27 @@ export function rollRunSize(rng: () => number): number {
 // 장비 (§4.5) — 전투력의 85%가 여기서 나온다
 // ─────────────────────────────────────────────────────────────
 
-/** 부위 6종 (§4.5). */
-export const GEAR_SLOTS = ['weapon', 'helm', 'armor', 'gloves', 'boots', 'accessory'] as const;
+/** 부위 7종 (§4.5). 하의는 T17_4에 들어왔다. 순서는 화면에 늘어놓는 순서다 */
+export const GEAR_SLOTS = [
+  'weapon',
+  'helm',
+  'armor',
+  'pants',
+  'gloves',
+  'boots',
+  'accessory',
+] as const;
 export type GearSlot = (typeof GEAR_SLOTS)[number];
 
 /** 장비 티어 10단계 — 지역마다 2단계씩 (§7.2). 몬스터 티어(1~25)와는 다른 축이다. */
 export const GEAR_TIERS = 10;
 export const GEAR_TIERS_PER_REGION = GEAR_TIERS / REGION_COUNT;
 
-/** 상점·드랍이 쓰는 등급 그리드 5종. 티어 × 부위 × 등급으로 300종이 나온다 (§7.2). */
+/** 상점·드랍이 쓰는 등급 그리드 5종. 티어 × 부위 × 등급으로 350종이 나온다 (§7.2). */
 export const RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as const;
 /**
  * 사냥터 고유 장비 (§4.4, §4.5). 그리드 밖이라 따로 둔다 —
- * 티어 × 부위로 뽑는 게 아니라 **사냥터 25곳에 1:1로 붙는다.**
+ * 티어 × 부위로 뽑는 게 아니라 **사냥터 35곳에 1:1로 붙는다.**
  */
 export const UNIQUE_RARITY = 'unique';
 export const ALL_RARITIES = [...RARITIES, UNIQUE_RARITY] as const;
@@ -455,7 +467,7 @@ export const RARITY_PRICE: Record<Rarity, number> = {
 };
 
 /**
- * 부위가 가져가는 몫 (§4.5). **스탯마다 합이 1.0**이라 6부위 풀세트가 곧 그 티어의 몫이다.
+ * 부위가 가져가는 몫 (§4.5). **스탯마다 합이 1.0**이라 7부위 풀세트가 곧 그 티어의 몫이다.
  *
  * T16_1에서 부위마다 **성격을 뾰족하게** 다시 갈랐다. 전에는 무기만 빼면 여섯 칸이
  * 다 비슷해서, 어느 부위를 갈든 같은 물건을 하나 더 끼는 느낌이었다.
@@ -465,15 +477,20 @@ export const RARITY_PRICE: Record<Rarity, number> = {
  *   무기   공격력만            장갑   셋 다 조금씩
  *   투구   HP 많이 · DEF 조금   신발   SPD 전부 · DEF 조금
  *   갑옷   DEF 많이 · HP 조금   장신구 LUK 전부
+ *   하의   HP · DEF 반반
+ *
+ * 하의(T17_4)는 투구·갑옷·장갑의 HP·DEF를 조금씩 떼어 만들었다. 풀세트 합은 그대로라
+ * 밸런스 기준선이 안 움직이고, 대신 **하의를 안 입으면 HP·DEF가 5분의 1쯤 빈다.**
  */
 export const SLOT_BIAS: Record<
   GearSlot,
   { atk: number; maxHp: number; def: number; spd: number; luk: number }
 > = {
   weapon: { atk: 0.75, maxHp: 0, def: 0, spd: 0, luk: 0 },
-  helm: { atk: 0, maxHp: 0.5, def: 0.15, spd: 0, luk: 0 },
-  armor: { atk: 0, maxHp: 0.3, def: 0.45, spd: 0, luk: 0 },
-  gloves: { atk: 0.25, maxHp: 0.2, def: 0.15, spd: 0, luk: 0 },
+  helm: { atk: 0, maxHp: 0.4, def: 0.1, spd: 0, luk: 0 },
+  armor: { atk: 0, maxHp: 0.25, def: 0.35, spd: 0, luk: 0 },
+  pants: { atk: 0, maxHp: 0.2, def: 0.2, spd: 0, luk: 0 },
+  gloves: { atk: 0.25, maxHp: 0.15, def: 0.1, spd: 0, luk: 0 },
   boots: { atk: 0, maxHp: 0, def: 0.25, spd: 1, luk: 0 },
   accessory: { atk: 0, maxHp: 0, def: 0, spd: 0, luk: 1 },
 };
@@ -501,11 +518,12 @@ export const GEAR_SPD_RATE = 0.15;
  */
 export const GEAR_LUK_BASE = 3;
 
-/** 부위별 가격 몫. 합이 6.0이라 "풀세트 = 세트 가격"이 그대로 성립한다. */
+/** 부위별 가격 몫. 합이 부위 수(7.0)라 "풀세트 = 세트 가격"이 그대로 성립한다. */
 export const SLOT_PRICE: Record<GearSlot, number> = {
   weapon: 1.5,
   helm: 0.9,
   armor: 1.2,
+  pants: 1.0,
   gloves: 0.8,
   boots: 0.8,
   accessory: 0.8,
@@ -586,7 +604,7 @@ export function itemStat(base: number, quality: number, enhance: number): number
 /**
  * 장비 한 점의 기본 스탯 (§4.5).
  *
- * 기준은 **그 레벨의 맨몸 스탯**이다. gearShare(level)만큼을 6부위가 나눠 가지므로
+ * 기준은 **그 레벨의 맨몸 스탯**이다. gearShare(level)만큼을 7부위가 나눠 가지므로
  * common 풀세트를 갖춰 입으면 ATK·HP·DEF가 정확히 powerScale(level)배가 된다.
  * SPD와 LUK만 계산이 다르다 — 둘 다 맨몸이 선형(또는 고정)이라 비례시킬 바닥이 없다.
  * 회피는 여전히 안 준다. AGI가 SPD와 회피를 다 잃으면 배분할 이유가 없어진다.
@@ -611,7 +629,7 @@ export function gearStats(level: number, slot: GearSlot, rarity: Rarity) {
 
 /**
  * 지역별 하루 골드 수입 (§6.3). 장비 가격을 여기에 묶어 둔다 —
- * §4.5의 "common 6부위 풀세트 ≈ 그 지역 하루 수입 1일치"가 계수가 아니라 정의가 된다.
+ * §4.5의 "common 풀세트 ≈ 그 지역 하루 수입 1일치"가 계수가 아니라 정의가 된다.
  */
 export const REGION_DAILY_GOLD = [2_020, 4_041, 6_061, 8_081, 10_102] as const;
 
@@ -638,7 +656,7 @@ export function gearSetPrice(refLevel: number): number {
   return GEAR_PRICE_K * gearShare(refLevel);
 }
 
-/** 장비 한 점의 값. 풀세트를 다 더하면 gearSetPrice가 된다 (SLOT_PRICE 합이 6). */
+/** 장비 한 점의 값. 풀세트를 다 더하면 gearSetPrice가 된다 (SLOT_PRICE 합이 부위 수). */
 export function gearPrice(refLevel: number, slot: GearSlot, rarity: Rarity): number {
   return Math.round(
     (gearSetPrice(refLevel) / GEAR_SLOTS.length) * SLOT_PRICE[slot] * RARITY_PRICE[rarity],

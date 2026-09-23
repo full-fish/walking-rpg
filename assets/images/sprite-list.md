@@ -16,15 +16,15 @@
 
 ---
 
-## 1. 장비 (60개, assets/images/items/)
+## 1. 장비 (70개, assets/images/items/)
 
-슬롯 6종 × 티어 10단계. 파일명: `<sprite>.png`
+슬롯 7종 × 티어 10단계. 파일명: `<sprite>.png`
 
-> **등급과 그림.** 60장이 **장비 300종 전부**를 덮습니다. sprite id에 등급이 없어서(`sword_3`),
+> **등급과 그림.** 70장이 **장비 350종 전부**를 덮습니다. sprite id에 등급이 없어서(`sword_3`),
 > 강철 검·강철 장검·강철 대검·강철 마검·강철 성검이 **같은 그림**을 씁니다. 등급은 게임 안에서
 > **테두리 색**으로 구분합니다. 표의 이름은 common 기준입니다.
 >
-> **고유 장비 25종은 여기 없습니다.** sprite id가 따로(`uniq_<사냥터 id>`)라 60장에 안 들어갑니다.
+> **고유 장비 35종은 여기 없습니다.** sprite id가 따로(`uniq_<사냥터 id>`)라 70장에 안 들어갑니다.
 > 지금은 그림 없이 빈 칸으로 보입니다.
 
 ### sword
@@ -256,6 +256,87 @@ Same art style as before, now a moonlight armor (pale silver-blue with a crescen
 
 ```
 Same art style as before, now an abyss armor (near-black plates with glowing teal cracks, ominous).
+```
+
+### pants
+
+T17_4에서 들어온 부위입니다. 투구·갑옷·장갑에서 HP·DEF를 조금씩 떼어 만들었습니다.
+인형 화면에서 **다리 자리**(장갑 옆)에 놓입니다. 다른 부위와 헷갈리지 않게
+**허리부터 발목 위까지의 바지 모양**이 보여야 하고, 신발은 그리지 않습니다(신발은 따로 있음).
+
+| sprite id | 파일명 | 이름(참고) |
+|---|---|---|
+| pants_1 | pants_1.png | 낡은 바지 |
+| pants_2 | pants_2.png | 무쇠 바지 |
+| pants_3 | pants_3.png | 강철 바지 |
+| pants_4 | pants_4.png | 은빛 바지 |
+| pants_5 | pants_5.png | 흑철 바지 |
+| pants_6 | pants_6.png | 용린 바지 |
+| pants_7 | pants_7.png | 수정 바지 |
+| pants_8 | pants_8.png | 흑요석 바지 |
+| pants_9 | pants_9.png | 월광 바지 |
+| pants_10 | pants_10.png | 심연 바지 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`pants_1.png`
+
+```
+Flat 2D pixel art game icon of a pair of worn old cloth trousers, simple fantasy RPG legwear icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, front view.
+```
+
+`pants_2.png`
+
+```
+Same art style as before, now a pair of iron-studded trousers (leather with small iron plates on the knees, slightly better quality/shinier).
+```
+
+`pants_3.png`
+
+```
+Same art style as before, now a pair of steel leg guards (polished steel thigh and knee plates over cloth, sturdier).
+```
+
+`pants_4.png`
+
+```
+Same art style as before, now a pair of silver leg armor (bright silver plates with a small engraved pattern).
+```
+
+`pants_5.png`
+
+```
+Same art style as before, now a pair of black iron leg armor (dark blackened metal, heavier and more menacing).
+```
+
+`pants_6.png`
+
+```
+Same art style as before, now a pair of dragon-scale leg armor (deep red overlapping scales).
+```
+
+`pants_7.png`
+
+```
+Same art style as before, now a pair of crystal leg armor (translucent pale blue crystal plates, faint glow).
+```
+
+`pants_8.png`
+
+```
+Same art style as before, now a pair of obsidian leg armor (glossy black volcanic glass plates with a dark blue sheen).
+```
+
+`pants_9.png`
+
+```
+Same art style as before, now a pair of moonlight leg armor (pale silver-blue with a crescent moon emblem on the belt, soft white glow).
+```
+
+`pants_10.png`
+
+```
+Same art style as before, now a pair of abyss leg armor (near-black plates with glowing teal cracks, ominous).
 ```
 
 ### gloves
@@ -505,38 +586,57 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 
 ---
 
-## 2. 몬스터 — 1차: 아키타입 12개만 (assets/images/monsters/)
+## 2. 몬스터 — 1차: 아키타입 15개만 (assets/images/monsters/)
 
 처음엔 이것만 만들면 됨. 같은 종족 몬스터는 티어 구분 없이 이 이미지 하나를 공유.
+**goblin · aquatic · demon은 T17_4에 새로 생긴 종족입니다** (고블린 / 물가·심해 / 마족).
 
 | arch | 파일명 | 대표 몬스터(참고) |
 |---|---|---|
-| arch_bandit | bandit.png | 떠돌이 도적 등 6종 |
-| arch_beast | beast.png | 들개 등 7종 |
-| arch_bird | bird.png | 들까마귀 등 6종 |
+| arch_aquatic | aquatic.png | 늪 두꺼비 등 6종 |
+| arch_bandit | bandit.png | 초원 좀도둑 등 9종 |
+| arch_beast | beast.png | 들개 등 13종 |
+| arch_bird | bird.png | 칼깃 참새 등 11종 |
+| arch_demon | demon.png | 불꽃 임프 등 5종 |
 | arch_fungus | fungus.png | 홀씨 버섯 등 6종 |
-| arch_golem | golem.png | 돌무더기 등 9종 |
-| arch_insect | insect.png | 왕개미 등 7종 |
+| arch_goblin | goblin.png | 고블린 졸개 등 4종 |
+| arch_golem | golem.png | 돌무더기 등 12종 |
+| arch_insect | insect.png | 왕개미 등 14종 |
 | arch_knight | knight.png | 녹슨 갑주병 등 5종 |
-| arch_lizard | lizard.png | 새끼 도마뱀 등 7종 |
-| arch_plant | plant.png | 가시덩굴 등 6종 |
-| arch_slime | slime.png | 초록 슬라임 등 6종 |
-| arch_spirit | spirit.png | 불씨 정령 등 6종 |
-| arch_undead | undead.png | 떠도는 해골 등 6종 |
+| arch_lizard | lizard.png | 새끼 도마뱀 등 10종 |
+| arch_plant | plant.png | 가시덩굴 등 10종 |
+| arch_slime | slime.png | 초록 슬라임 등 13종 |
+| arch_spirit | spirit.png | 산들바람 정령 등 10종 |
+| arch_undead | undead.png | 떠도는 해골 등 15종 |
 
 ---
 
-## 3. 몬스터 — 2차 확장: 티어별 세부 이미지 (총 77개, 나중에)
+## 3. 몬스터 — 2차 확장: 티어별 세부 이미지 (총 143개, 나중에)
 
 1차로 부족하면 여기서 추가. 파일명: `<sprite>.png`
+보스가 같은 티어의 일반 몬스터와 sprite id를 나눠 쓰는 곳은 이름을 둘 다 적었습니다.
+
+### aquatic
+
+| sprite id | 파일명 | 이름 |
+|---|---|---|
+| aquatic_8 | aquatic_8.png | 늪 두꺼비 |
+| aquatic_11 | aquatic_11.png | 진흙 메기 |
+| aquatic_12 | aquatic_12.png | 소금 게 |
+| aquatic_16 | aquatic_16.png | 유황 두꺼비 |
+| aquatic_21 | aquatic_21.png | 심해 아귀 |
+| aquatic_23 | aquatic_23.png | 심연 촉수 |
 
 ### bandit
 
 | sprite id | 파일명 | 이름 |
 |---|---|---|
+| bandit_4 | bandit_4.png | 초원 좀도둑 |
 | bandit_5 | bandit_5.png | 떠돌이 도적 |
-| bandit_8 | bandit_8.png | 산적 두목 |
+| bandit_8 | bandit_8.png | 도끼 산적 |
+| bandit_9 | bandit_9.png | 도굴꾼 |
 | bandit_12 | bandit_12.png | 사막 약탈자 |
+| bandit_14 | bandit_14.png | 사막 척후병 |
 | bandit_16 | bandit_16.png | 검은 손 자객 |
 | bandit_20 | bandit_20.png | 혈맹 검객 |
 | bandit_25 | bandit_25.png | 배신자 장군 |
@@ -547,22 +647,43 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 |---|---|---|
 | beast_1 | beast_1.png | 들개 |
 | beast_2 | beast_2.png | 잿빛 늑대 |
+| beast_3 | beast_3.png | 뿔토끼 |
 | beast_4 | beast_4.png | 굶주린 살쾡이 |
+| beast_5 | beast_5.png | 도적단 사냥개 |
 | beast_6 | beast_6.png | 동굴 박쥐 |
+| beast_7 | beast_7.png | 그림자 늑대 |
 | beast_8 | beast_8.png | 검은 멧돼지 |
-| beast_15 | beast_15.png | 설원 이리 |
+| beast_12 | beast_12.png | 뼈 하이에나 |
+| beast_13 | beast_13.png | 뿔 산양 |
+| beast_15 | beast_15.png | 능선 늑대 |
 | beast_16 | beast_16.png | 화산 비룡 |
+| beast_21 | beast_21.png | 설원 이리 |
 
 ### bird
 
 | sprite id | 파일명 | 이름 |
 |---|---|---|
+| bird_2 | bird_2.png | 칼깃 참새 |
 | bird_3 | bird_3.png | 들까마귀 |
+| bird_5 | bird_5.png | 망보는 까마귀 |
 | bird_6 | bird_6.png | 매부리 |
+| bird_8 | bird_8.png | 무덤 까마귀 |
 | bird_10 | bird_10.png | 절벽 독수리 |
+| bird_11 | bird_11.png | 벼랑 매 |
 | bird_14 | bird_14.png | 폭풍 까마귀 |
 | bird_18 | bird_18.png | 잿빛 하피 |
+| bird_21 | bird_21.png | 옥좌의 까마귀 |
 | bird_22 | bird_22.png | 뇌명조 |
+
+### demon
+
+| sprite id | 파일명 | 이름 |
+|---|---|---|
+| demon_16 | demon_16.png | 불꽃 임프 |
+| demon_18 | demon_18.png | 재의 악마 |
+| demon_21 | demon_21.png | 심연의 하수인 |
+| demon_22 | demon_22.png | 공허 추적자 |
+| demon_25 | demon_25.png | 공허의 문지기 |
 
 ### fungus
 
@@ -575,19 +696,31 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 | fungus_17 | fungus_17.png | 발광 포자군 |
 | fungus_23 | fungus_23.png | 심연 균사왕 |
 
+### goblin
+
+| sprite id | 파일명 | 이름 |
+|---|---|---|
+| goblin_3 | goblin_3.png | 고블린 졸개 |
+| goblin_4 | goblin_4.png | 고블린 투석꾼 |
+| goblin_5 | goblin_5.png | 고블린 주술사 |
+| goblin_9 | goblin_9.png | 고블린 채굴꾼 |
+
 ### golem
 
 | sprite id | 파일명 | 이름 |
 |---|---|---|
 | golem_3 | golem_3.png | 돌무더기 |
-| golem_5 | golem_5.png | 이끼 덮인 수호석 |
-| golem_9 | golem_9.png | 강철 조각상 |
+| golem_5 | golem_5.png | 이끼 덮인 수호석 (보스) |
+| golem_9 | golem_9.png | 깎다 만 석상 |
 | golem_11 | golem_11.png | 모래 골렘 |
-| golem_14 | golem_14.png | 이끼 낀 석상 |
-| golem_15 | golem_15.png | 협곡을 지키는 거상 |
+| golem_13 | golem_13.png | 화석 골렘 |
+| golem_14 | golem_14.png | 소금 결정 골렘 |
+| golem_15 | golem_15.png | 협곡을 지키는 거상 (보스) |
+| golem_17 | golem_17.png | 용암 골렘 |
 | golem_19 | golem_19.png | 무쇠 수호자 |
 | golem_22 | golem_22.png | 서리 거상 |
-| golem_25 | golem_25.png | 심연의 지배자 |
+| golem_23 | golem_23.png | 대전 수호 석상 |
+| golem_25 | golem_25.png | 심연의 지배자 (보스) / 태고의 거인 |
 
 ### insect
 
@@ -596,10 +729,17 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 | insect_2 | insect_2.png | 왕개미 |
 | insect_4 | insect_4.png | 독거미 |
 | insect_6 | insect_6.png | 날개미 떼 |
+| insect_7 | insect_7.png | 그늘 거미 |
+| insect_8 | insect_8.png | 독니 거미 |
 | insect_9 | insect_9.png | 뿔풍뎅이 |
+| insect_11 | insect_11.png | 모래 파리 떼 |
 | insect_12 | insect_12.png | 모래 전갈 |
+| insect_13 | insect_13.png | 뼈 먹는 딱정벌레 |
 | insect_16 | insect_16.png | 검은 말벌 |
+| insect_17 | insect_17.png | 독 사육 지네 |
+| insect_19 | insect_19.png | 흑요석 전갈 |
 | insect_21 | insect_21.png | 심연 지네 |
+| insect_22 | insect_22.png | 뿌리 갉는 벌레 |
 
 ### knight
 
@@ -607,7 +747,7 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 |---|---|---|
 | knight_15 | knight_15.png | 녹슨 갑주병 |
 | knight_18 | knight_18.png | 흑철 기사 |
-| knight_20 | knight_20.png | 대장간의 마지막 기사 |
+| knight_20 | knight_20.png | 대장간의 마지막 기사 (보스) / 성채 수호병 |
 | knight_22 | knight_22.png | 심판의 기사 |
 | knight_24 | knight_24.png | 폐왕의 근위대 |
 
@@ -617,9 +757,12 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 |---|---|---|
 | lizard_4 | lizard_4.png | 새끼 도마뱀 |
 | lizard_7 | lizard_7.png | 도마뱀 전사 |
-| lizard_10 | lizard_10.png | 늪을 삼킨 악어 |
+| lizard_9 | lizard_9.png | 바위 도마뱀 |
+| lizard_10 | lizard_10.png | 늪을 삼킨 악어 (보스) / 늪지 악어 |
 | lizard_13 | lizard_13.png | 협곡 이구아나 |
+| lizard_16 | lizard_16.png | 온천 도롱뇽 |
 | lizard_17 | lizard_17.png | 비늘 사냥꾼 |
+| lizard_18 | lizard_18.png | 샐러맨더 |
 | lizard_20 | lizard_20.png | 용린 전사 |
 | lizard_23 | lizard_23.png | 고룡의 후예 |
 
@@ -629,8 +772,12 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 |---|---|---|
 | plant_3 | plant_3.png | 가시덩굴 |
 | plant_5 | plant_5.png | 식인초 |
+| plant_6 | plant_6.png | 속삭이는 나무 |
+| plant_7 | plant_7.png | 끈끈이 덩굴 |
 | plant_8 | plant_8.png | 뒤틀린 고목 |
+| plant_12 | plant_12.png | 말라가는 야자수 |
 | plant_13 | plant_13.png | 사막 선인장 |
+| plant_18 | plant_18.png | 유리 가시덤불 |
 | plant_19 | plant_19.png | 무쇠 덩굴 |
 | plant_24 | plant_24.png | 세계수의 가지 |
 
@@ -643,16 +790,27 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 | slime_3 | slime_3.png | 늪 젤리 |
 | slime_11 | slime_11.png | 모래 점액 |
 | slime_13 | slime_13.png | 석영 슬라임 |
+| slime_16 | slime_16.png | 잿빛 점액 |
+| slime_17 | slime_17.png | 끓는 점액 |
+| slime_18 | slime_18.png | 용암 슬라임 |
+| slime_19 | slime_19.png | 쇳물 점액 |
 | slime_21 | slime_21.png | 심연 젤리 |
+| slime_22 | slime_22.png | 심해 해파리 |
+| slime_23 | slime_23.png | 서리 젤리 |
+| slime_24 | slime_24.png | 공허 점액 |
 
 ### spirit
 
 | sprite id | 파일명 | 이름 |
 |---|---|---|
-| spirit_9 | spirit_9.png | 불씨 정령 |
+| spirit_2 | spirit_2.png | 산들바람 정령 |
+| spirit_8 | spirit_8.png | 숲 요정 |
+| spirit_9 | spirit_9.png | 도깨비불 |
 | spirit_11 | spirit_11.png | 모래 소용돌이 |
-| spirit_14 | spirit_14.png | 물안개 정령 |
-| spirit_17 | spirit_17.png | 번개 정령 |
+| spirit_12 | spirit_12.png | 신기루 정령 |
+| spirit_14 | spirit_14.png | 돌개바람 정령 |
+| spirit_16 | spirit_16.png | 증기 정령 |
+| spirit_17 | spirit_17.png | 화염 정령 |
 | spirit_21 | spirit_21.png | 흑염 정령 |
 | spirit_24 | spirit_24.png | 태초의 불꽃 |
 
@@ -662,8 +820,16 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 |---|---|---|
 | undead_5 | undead_5.png | 떠도는 해골 |
 | undead_7 | undead_7.png | 무덤지기 |
+| undead_8 | undead_8.png | 고치 속 망자 |
+| undead_9 | undead_9.png | 굶주린 구울 |
 | undead_10 | undead_10.png | 창백한 망령 |
+| undead_12 | undead_12.png | 되살아난 화석 |
+| undead_13 | undead_13.png | 말라붙은 파수꾼 |
 | undead_15 | undead_15.png | 원한의 유령 |
+| undead_17 | undead_17.png | 재투성이 망자 |
 | undead_18 | undead_18.png | 흑요석 리치 |
+| undead_19 | undead_19.png | 버려진 제물 |
+| undead_21 | undead_21.png | 익사한 사제 |
+| undead_22 | undead_22.png | 얼어붙은 망령 |
+| undead_23 | undead_23.png | 망령 사제 |
 | undead_25 | undead_25.png | 폐허의 군주 |
-

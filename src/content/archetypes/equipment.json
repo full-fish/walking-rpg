@@ -38,6 +38,18 @@
       }
     },
     {
+      "slot": "pants",
+      "label": "하의",
+      "spriteTag": "pants",
+      "namePool": {
+        "common": "바지",
+        "uncommon": "하갑",
+        "rare": "중하갑",
+        "epic": "마하갑",
+        "legendary": "성하갑"
+      }
+    },
+    {
       "slot": "gloves",
       "label": "장갑",
       "spriteTag": "gloves",

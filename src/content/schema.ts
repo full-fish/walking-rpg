@@ -60,12 +60,14 @@ const tier = z.int().min(1).max(MAX_TIER);
 export const FieldSchema = z.object({
   id: z.string().regex(/^f_r\d_[a-z]+$/),
   name: z.string().min(1),
+  /** 사냥터 컨셉 한 줄. 모험 탭 목록에 이름 아래로 보인다 (T17_4) */
+  desc: z.string().min(1),
   pool: z.array(z.tuple([z.string(), tier])).min(2),
   /** 6마리 완주 시 확정 드랍. 사냥터마다 다르다 (§4.4) */
   material: z.object({ id: z.string().regex(/^mat_/), name: z.string().min(1) }),
   /**
    * 그 소재로만 바꿀 수 있는 전용 장비 (§4.5).
-   * 지역마다 사냥터 5곳이 **서로 다른 부위**를 준다 — 한 지역만 돌아도 부위가 안 겹친다.
+   * 지역마다 사냥터 7곳이 **서로 다른 부위**를 준다 — 한 지역을 다 돌면 7부위 한 벌이다.
    */
   reward: z.object({
     id: z.string().regex(/^uniq_/),
@@ -75,7 +77,7 @@ export const FieldSchema = z.object({
   }),
 });
 
-/** 지역 하나 (§7.2⑤). 티어 대역을 나눠 갖고, 사냥터 5개와 보스 1마리를 가진다. */
+/** 지역 하나 (§7.2⑤). 티어 대역을 나눠 갖고, 사냥터 7개와 보스 1마리를 가진다. */
 export const RegionSchema = z.object({
   id: z.int().min(1).max(REGION_COUNT),
   name: z.string().min(1),
@@ -133,7 +135,7 @@ const rarity = z.enum(ALL_RARITIES);
  * 장비 원형 — 부위 하나. 수치는 하나도 없다.
  *
  * 스탯은 §4.5 공식(gearStats)이 전부 뽑고, 여기 있는 건 **이름과 스프라이트뿐**이다.
- * 이름 = `tierNames[티어-1] + namePool[등급]` — 10티어 × 6부위 × 5등급 = 300종이 겹치지 않는다.
+ * 이름 = `tierNames[티어-1] + namePool[등급]` — 10티어 × 7부위 × 5등급 = 350종이 겹치지 않는다.
  */
 export const EquipmentArchetypeSchema = z.object({
   slot,

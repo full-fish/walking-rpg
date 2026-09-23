@@ -1,5 +1,5 @@
 /**
- * 콘텐츠 생성 (§7.2④, §7.3). 원형 12개 × 지역 데이터 → 몬스터 정의.
+ * 콘텐츠 생성 (§7.2④, §7.3). 원형 15개 × 지역 데이터 → 몬스터 정의.
  *
  * 창작물(archetypes/)을 읽어 생성물(data/)을 만든다. data/는 언제든 지우고 다시 만들 수 있다.
  * 산출물을 커밋하는 이유는 **밸런스를 건드렸을 때 숫자가 diff로 보이게** 하려는 것이다.
@@ -125,7 +125,7 @@ export function gearTierLevels(): GearTier[] {
   });
 }
 
-/** 장비 정의 300종 = 티어 10 × 부위 6 × 등급 5 (§7.2). */
+/** 장비 정의 350종 = 티어 10 × 부위 7 × 등급 5 (§7.2). */
 export function generateEquipment(): Equipment[] {
   const { tierNames, slots } = EQUIPMENT_ARCHETYPES;
   const out: Equipment[] = [];
@@ -153,7 +153,7 @@ export function generateEquipment(): Equipment[] {
 }
 
 /**
- * 사냥터 고유 장비 25종 (§4.4, §4.5).
+ * 사냥터 고유 장비 35종 (§4.4, §4.5).
  *
  * 그리드(티어 × 부위 × 등급) 밖이다 — **사냥터 한 곳에 하나씩** 붙는다.
  * 티어는 그 지역의 뒷단 장비 티어고, 성능은 같은 티어 common과 rare 사이(1.25배)다.

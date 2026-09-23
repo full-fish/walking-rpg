@@ -48,8 +48,8 @@ export function statsOf(save: Save) {
     // 장신구가 주는 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3, T16_1)
     cri: base.cri + STAT_PER_POINT.luk.cri * gear.luk,
     crd: base.crd + STAT_PER_POINT.luk.crd * gear.luk,
-    dropMult: base.dropMult * (1 + STAT_PER_POINT.luk.dropRate) ** gear.luk,
-    goldMult: base.goldMult * (1 + STAT_PER_POINT.luk.goldFind) ** gear.luk,
+    dropMult: base.dropMult + STAT_PER_POINT.luk.dropRate * gear.luk,
+    goldMult: base.goldMult + STAT_PER_POINT.luk.goldFind * gear.luk,
     /** 고유 장비의 특효 (§4.5). battle.ts가 몬스터 traits와 맞춰 본다 */
     bonusVs: equippedBonusVs(save),
   };

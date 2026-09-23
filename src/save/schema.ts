@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { BAG, ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN, VAULT } from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 7;
+export const SAVE_VERSION = 8;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —

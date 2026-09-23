@@ -9,6 +9,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { expect, test } from 'vitest';
 
 import { EquipmentsSchema, MonstersSchema } from '../src/content/schema';
+import { FIELDS_PER_REGION, GEAR_SLOTS } from '../src/game/formulas';
 import { generateAll, generateEquipment, generateUniques, REGIONS } from './gen-content';
 
 const OUT = 'src/content/data/monsters';
@@ -44,19 +45,19 @@ test('gen — 장비 정의 JSON을 쓴다 (§4.5)', () => {
 
   const set = equipment.filter((e) => e.tier === 10 && e.rarity === 'common');
   console.log(
-    `${file}  ${equipment.length}종 (티어 1~10 × 부위 6 × 등급 5)` +
+    `${file}  ${equipment.length}종 (티어 1~10 × 부위 ${GEAR_SLOTS.length} × 등급 5)` +
       `  티어10 common 풀세트 ATK +${set.reduce((s, e) => s + e.atk, 0)}` +
       ` HP +${set.reduce((s, e) => s + e.maxHp, 0)}` +
       ` / ${set.reduce((s, e) => s + e.price, 0).toLocaleString()}골드`,
   );
 });
 
-test('gen — 사냥터 고유 장비 25종 (§4.4)', () => {
+test('gen — 사냥터 고유 장비 — 사냥터마다 한 종 (§4.4)', () => {
   mkdirSync(ITEMS, { recursive: true });
 
   const uniques = generateUniques();
   expect(EquipmentsSchema.safeParse(uniques).success).toBe(true);
-  expect(uniques).toHaveLength(25);
+  expect(uniques).toHaveLength(REGIONS.length * FIELDS_PER_REGION);
 
   const file = `${ITEMS}/unique.json`;
   writeFileSync(file, JSON.stringify(uniques, null, 2) + '\n');
