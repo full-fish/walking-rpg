@@ -458,28 +458,6 @@
     "price": 2454
   },
   {
-    "id": "uniq_r4_hotspring",
-    "name": "온천석을 박은 바지",
-    "tier": 8,
-    "slot": "pants",
-    "rarity": "unique",
-    "level": 32,
-    "region": 4,
-    "sprite": "uniq_f_r4_hotspring",
-    "atk": 0,
-    "maxHp": 702,
-    "def": 56,
-    "spd": 0,
-    "luk": 0,
-    "vs": [
-      "aquatic",
-      "dragonkin",
-      "ooze",
-      "spirit"
-    ],
-    "price": 5165
-  },
-  {
     "id": "uniq_r4_crater",
     "name": "재를 머금은 장갑",
     "tier": 8,
@@ -500,6 +478,28 @@
       "ooze"
     ],
     "price": 4132
+  },
+  {
+    "id": "uniq_r4_hotspring",
+    "name": "온천석을 박은 바지",
+    "tier": 8,
+    "slot": "pants",
+    "rarity": "unique",
+    "level": 32,
+    "region": 4,
+    "sprite": "uniq_f_r4_hotspring",
+    "atk": 0,
+    "maxHp": 702,
+    "def": 56,
+    "spd": 0,
+    "luk": 0,
+    "vs": [
+      "aquatic",
+      "dragonkin",
+      "ooze",
+      "spirit"
+    ],
+    "price": 5165
   },
   {
     "id": "uniq_r4_ashfield",

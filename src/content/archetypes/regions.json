@@ -849,42 +849,6 @@
     },
     "fields": [
       {
-        "id": "f_r4_hotspring",
-        "name": "유황 온천",
-        "desc": "화산 기슭의 뜨거운 샘. 김이 자욱하고, 끓는 물속에도 사는 것들이 있다.",
-        "pool": [
-          [
-            "arch_aquatic",
-            16
-          ],
-          [
-            "arch_spirit",
-            16
-          ],
-          [
-            "arch_lizard",
-            16
-          ],
-          [
-            "arch_slime",
-            17
-          ]
-        ],
-        "material": {
-          "id": "mat_r4_hotspring",
-          "name": "식지 않는 온천석"
-        },
-        "reward": {
-          "id": "uniq_r4_hotspring",
-          "name": "온천석을 박은 바지",
-          "cost": {
-            "material": 3,
-            "gold": 5300
-          },
-          "slot": "pants"
-        }
-      },
-      {
         "id": "f_r4_crater",
         "name": "분화구 가장자리",
         "desc": "분화구 테두리를 따라 난 길. 비룡이 열기를 타고 날고, 불꽃 임프가 바위 틈에서 튀어나온다.",
@@ -918,6 +882,42 @@
             "gold": 5300
           },
           "slot": "gloves"
+        }
+      },
+      {
+        "id": "f_r4_hotspring",
+        "name": "유황 온천",
+        "desc": "화산 기슭의 뜨거운 샘. 김이 자욱하고, 끓는 물속에도 사는 것들이 있다.",
+        "pool": [
+          [
+            "arch_aquatic",
+            16
+          ],
+          [
+            "arch_spirit",
+            16
+          ],
+          [
+            "arch_lizard",
+            16
+          ],
+          [
+            "arch_slime",
+            17
+          ]
+        ],
+        "material": {
+          "id": "mat_r4_hotspring",
+          "name": "식지 않는 온천석"
+        },
+        "reward": {
+          "id": "uniq_r4_hotspring",
+          "name": "온천석을 박은 바지",
+          "cost": {
+            "material": 3,
+            "gold": 5300
+          },
+          "slot": "pants"
         }
       },
       {
