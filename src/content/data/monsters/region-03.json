@@ -19,7 +19,8 @@
     "gold": 151,
     "traits": [
       "aquatic"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t11_bird",
@@ -42,7 +43,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t11_golem",
@@ -64,7 +66,8 @@
     "gold": 222,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t11_insect",
@@ -86,7 +89,8 @@
     "gold": 151,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t11_slime",
@@ -108,7 +112,8 @@
     "gold": 111,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t11_spirit",
@@ -130,7 +135,8 @@
     "gold": 174,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t12_aquatic",
@@ -152,7 +158,8 @@
     "gold": 170,
     "traits": [
       "aquatic"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t12_bandit",
@@ -174,7 +181,8 @@
     "gold": 188,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t12_beast",
@@ -196,7 +204,8 @@
     "gold": 179,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t12_fungus",
@@ -219,7 +228,8 @@
     "traits": [
       "fungus",
       "poison"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t12_insect",
@@ -241,7 +251,8 @@
     "gold": 170,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t12_plant",
@@ -263,7 +274,8 @@
     "gold": 143,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t12_spirit",
@@ -285,7 +297,8 @@
     "gold": 197,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t12_undead",
@@ -307,7 +320,8 @@
     "gold": 161,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t13_beast",
@@ -329,7 +343,8 @@
     "gold": 200,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t13_golem",
@@ -351,7 +366,8 @@
     "gold": 280,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t13_insect",
@@ -373,7 +389,8 @@
     "gold": 190,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t13_lizard",
@@ -395,7 +412,8 @@
     "gold": 230,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t13_plant",
@@ -417,7 +435,8 @@
     "gold": 160,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t13_slime",
@@ -439,7 +458,8 @@
     "gold": 140,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t13_undead",
@@ -461,7 +481,8 @@
     "gold": 180,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t14_bandit",
@@ -483,7 +504,8 @@
     "gold": 232,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t14_bird",
@@ -506,7 +528,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t14_golem",
@@ -528,7 +551,8 @@
     "gold": 309,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t14_spirit",
@@ -550,7 +574,8 @@
     "gold": 243,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_r3_boss",
@@ -558,18 +583,18 @@
     "region": 3,
     "tier": 15,
     "arch": "arch_golem",
-    "power": 1.4,
-    "sprite": "golem_15",
-    "maxHp": 4574,
-    "atk": 69.67,
-    "def": 126.83,
+    "power": 5.404,
+    "sprite": "boss_r3",
+    "maxHp": 17655,
+    "atk": 268.93,
+    "def": 489.57,
     "spd": 66,
     "scale": 15.41,
     "cri": 0.02,
     "crd": 1.5,
     "eva": 0.01,
-    "exp": 52,
-    "gold": 338,
+    "exp": 201,
+    "gold": 1304,
     "traits": [
       "construct"
     ],
@@ -595,7 +620,8 @@
     "gold": 241,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t15_knight",
@@ -618,7 +644,8 @@
     "traits": [
       "humanoid",
       "armored"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t15_undead",
@@ -640,6 +667,7 @@
     "gold": 217,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "accessory"
   }
 ]

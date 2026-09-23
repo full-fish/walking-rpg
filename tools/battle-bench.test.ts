@@ -9,10 +9,19 @@
  */
 import { expect, test } from 'vitest';
 
-import { gearSetFor, monstersOfField, REGIONS, type Field, type Region } from '../src/content';
+import {
+  bossOf,
+  fieldLevel,
+  gearSetFor,
+  monstersOfField,
+  REGIONS,
+  type Field,
+  type Region,
+} from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
 import { combatStats } from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
+import { bossTrial } from './simulate';
 
 const RUNS = 1_000;
 /** §4.2 목표 행동 수 */
@@ -48,20 +57,6 @@ function poolOf(field: Field): Combatant[] {
 function levelsOf(region: Region): number[] {
   const [lo, hi] = region.levelRange;
   return [lo, Math.round((lo + hi) / 2), hi];
-}
-
-/**
- * 그 사냥터를 돌 만한 레벨 (§7.2⑤).
- *
- * 지역 안의 난이도 변화는 **사냥터를 옮겨 다니는 것**에서 온다 — 같은 사냥터를 계속 돌면
- * 몬스터는 그대로인데 플레이어만 크므로 당연히 쉬워진다. 그러니 사냥터마다
- * "풀 평균 티어가 대역에서 어디쯤인가"로 적정 레벨을 잡고, 거기서 §4.2·§4.4를 검사한다.
- */
-function properLevel(region: Region, field: Field): number {
-  const avgTier = field.pool.reduce((sum, [, t]) => sum + t, 0) / field.pool.length;
-  const [loT, hiT] = region.tierBand;
-  const [loL, hiL] = region.levelRange;
-  return Math.round(loL + ((avgTier - loT) / (hiT - loT)) * (hiL - loL));
 }
 
 /** 풀 전체의 평균. 사냥터는 풀에서 무작위로 뽑으므로 평균이 체감에 가깝다. */
@@ -152,7 +147,7 @@ test(`1:1 전투 — 하드캡 0%, 사냥터별 ${TARGET.min}~${TARGET.max}행�
 
     for (const field of region.fields) {
       const pool = poolOf(field);
-      const proper = properLevel(region, field);
+      const proper = fieldLevel(field);
       const cells = levels.map((level) => {
         const s = averageOf(pool.map((m) => runPairing(warrior(level), m)));
         expect.soft(s.hardcapRate, `${field.name} Lv${level} 하드캡`).toBe(0);
@@ -191,7 +186,7 @@ test('한 판 — 4·6마리 완주율 진단 (§4.4)', () => {
 
     for (const field of region.fields) {
       const pool = poolOf(field);
-      const proper = properLevel(region, field);
+      const proper = fieldLevel(field);
       const cells = levels.map((level) => {
         const [four, six] = RUN_SIZES.map((n) =>
           averageOf(pool.map((m) => runStreak(warrior(level), m, n))),
@@ -257,3 +252,34 @@ test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 3배)', () 
   }
   console.log('');
 });
+
+/**
+ * 보스 1:1 (T17_5) — **지역 끝 레벨 · common 풀세트 · 물약 3개로 승률 50%.**
+ *
+ * 강화·등급·품질이 전부 그 위의 이득이라(§4.5) 기준선에서 반반이면, 준비한 사람은 대체로
+ * 이기고 맨몸으로 가면 진다. 배율(regions.json의 boss.mult)은 이 승률을 이분 탐색으로 맞춘
+ * 값이다 — 지역마다 다른 건 지역 끝에서 플레이어가 몬스터를 앞지른 정도가 달라서다.
+ * 밸런스를 건드려 여기가 깨지면 배율을 다시 맞춘다.
+ */
+test('보스 1:1 — 지역 끝 레벨 · common 풀세트 · 물약 3개로 승률 50% (T17_5)', () => {
+  console.log('\n보스 1:1 — 지역 끝 레벨, common 풀세트(품질 100%, +0), 물약 3개');
+  console.log('  지역  보스                 배율    레벨    승률');
+  console.log('  ' + '─'.repeat(50));
+  const rates: number[] = [];
+  for (const region of REGIONS) {
+    const level = region.levelRange[1];
+    let wins = 0;
+    for (let seed = 1; seed <= RUNS; seed++) {
+      if (bossTrial(level, region.id, makeRng(seed)) === 'win') wins++;
+    }
+    rates.push(wins / RUNS);
+    console.log(
+      `  ${pad(region.id, 3)}   ${padEnd(bossOf(region.id).name, 18)} ×${region.boss.mult.toFixed(2)}` +
+        `  Lv${pad(level, 2)}  ${pad(pct(wins / RUNS, 0), 6)}`,
+    );
+  }
+  console.log('  ' + '─'.repeat(50));
+  for (const rate of rates) expect(rate, '보스 승률').toBeGreaterThan(0.4);
+  for (const rate of rates) expect(rate, '보스 승률').toBeLessThan(0.6);
+}, 60_000);
+

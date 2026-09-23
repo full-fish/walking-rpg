@@ -11,20 +11,38 @@
 import {
   consumableById,
   fieldById,
+  fieldDropTier,
+  gridItem,
+  monsterById,
   monstersOfField,
   regionOfField,
   type Monster,
 } from '../content';
-import type { Save } from '../save/schema';
+import type { ItemInstance, Save } from '../save/schema';
 import type { Outcome } from './battle';
 import {
+  BOSS_DROP_RARITY,
   CLEAR_BONUS_RATE,
+  DROP_RARITY,
+  DROP_RATE,
+  GEAR_SLOTS,
+  GEAR_TIERS,
+  GEAR_TIERS_PER_REGION,
   MATERIAL_GUARANTEED_SIZE,
   POTION_CARRY_MAX,
+  rollRarity,
   rollRunSize,
   WP_COST,
 } from './formulas';
-import { killReward, settleBattle, statsOf, type Reward, type Settlement } from './progression';
+import { bagFull, makeItem } from './items';
+import {
+  addItem,
+  killReward,
+  settleBattle,
+  statsOf,
+  type Reward,
+  type Settlement,
+} from './progression';
 import { spendWp } from './wp';
 
 /** 진행 중인 판. save.run이 null이 아닐 때의 모양이다. */
@@ -71,6 +89,20 @@ export function packPotions(save: Save, limit = POTION_CARRY_MAX): Record<string
 }
 
 /**
+ * 판을 연다 — 물약을 챙기고 run을 만든다. 사냥터와 보스(T17_5)가 같이 쓴다.
+ * 들고 간 만큼 소지품에서 빼고, 안 쓰고 나오면 돌려준다.
+ */
+export function openRun(save: Save, run: Omit<Run, 'potions'>): Save {
+  const packed = packPotions(save);
+  const consumables = { ...save.consumables };
+  for (const [id, n] of Object.entries(packed)) {
+    consumables[id] -= n;
+    if (consumables[id] <= 0) delete consumables[id];
+  }
+  return { ...save, consumables, run: { ...run, potions: packed } };
+}
+
+/**
  * 사냥터에 들어간다 (§4.4). WP를 내고 마릿수를 뽑는다.
  *
  * **HP 요구치는 없다.** 다쳐서 들어가면 그만큼 위험할 뿐이고, 그 판단이 이 게임이다.
@@ -82,32 +114,23 @@ export function enterField(save: Save, fieldId: string, rng: () => number): Save
   const wp = spendWp(save.wp, WP_COST.fieldEntry(regionOfField(fieldId).id));
   if (!wp) return null;
 
-  const packed = packPotions(save);
-  // 들고 간 만큼 창고(소지품)에서 뺀다. 안 쓰고 나오면 돌려준다
-  const consumables = { ...save.consumables };
-  for (const [id, n] of Object.entries(packed)) {
-    consumables[id] -= n;
-    if (consumables[id] <= 0) delete consumables[id];
-  }
-
-  return {
-    ...save,
-    wp,
-    consumables,
-    run: {
+  return openRun(
+    { ...save, wp },
+    {
       fieldId,
       size: rollRunSize(rng),
       killed: 0,
       earned: { exp: 0, gold: 0 },
-      potions: packed,
       monsterId: pickMonster(fieldId, rng).id,
+      boss: false,
     },
-  };
+  );
 }
 
-/** 지금 상대할 몬스터. 판 안이 아니면 null. */
+/** 지금 상대할 몬스터. 판 안이 아니면 null. 보스전이면 그 보스다 (T17_5). */
 export function currentMonster(save: Save): Monster | null {
   if (!save.run) return null;
+  if (save.run.boss) return monsterById(save.run.monsterId);
   const pool = monstersOfField(fieldById(save.run.fieldId));
   return pool.find((m) => m.id === save.run!.monsterId) ?? pool[0];
 }
@@ -149,9 +172,84 @@ export type RunResult = Settlement & {
   material: string | null;
   /** 판이 끝났나 — 완주·도망·사망이면 true, 마을로 돌아간다 */
   over: boolean;
+  /** 이번 전투로 주운 장비 (T17_6). 보스는 확정이다 (T17_5) */
+  drop: ItemInstance | null;
+  /** 떨어졌는데 가방이 차서 못 주웠다 (§4.4) — 화면이 알려준다 */
+  dropLost: boolean;
+  /** 보스를 쓰러뜨렸나 (T17_5). 이제 다음 지역을 해금할 수 있다 */
+  bossCleared: boolean;
 };
 
 const NONE: Reward = { exp: 0, gold: 0 };
+
+/** 전투 결과에 드랍 칸의 기본값. 대부분의 전투는 아무것도 안 떨군다 */
+const NO_DROP = { drop: null, dropLost: false, bossCleared: false } as const;
+
+type Given = { save: Save; drop: ItemInstance | null; lost: boolean };
+
+/** 장비를 가방에 넣는다. 차 있으면 못 줍는다 — 사냥은 그대로 이어진다 (§4.4) */
+function give(save: Save, defId: string, rng: () => number): Given {
+  if (bagFull(save)) return { save, drop: null, lost: true };
+  const item = makeItem(save.inventory, defId, rng);
+  return { save: addItem(save, item), drop: item, lost: false };
+}
+
+/**
+ * 몬스터 한 마리의 장비 드랍 (T17_6). 기본 3% × LUK 배율, 처치마다 한 번.
+ * **부위는 몬스터가, 티어는 사냥터가 정한다** — 같은 몬스터라도 어디서 잡았느냐에 따라
+ * 티어가 다를 수 있고, 사냥터마다 나오는 부위가 정해진다.
+ */
+function rollDrop(save: Save, monster: Monster, fieldId: string, rng: () => number): Given {
+  if (!monster.drop || rng() >= DROP_RATE * statsOf(save).dropMult) {
+    return { save, drop: null, lost: false };
+  }
+  const tier = fieldDropTier(fieldById(fieldId));
+  return give(save, gridItem(tier, monster.drop, rollRarity(DROP_RARITY, rng)).id, rng);
+}
+
+/**
+ * 보스전 정산 (T17_5). 1:1이라 클리어 보너스·소재가 없다 — 대신 보상을 ×0.54 없이 통째로 주고
+ * **장비 하나를 확정으로** 준다. 티어는 다음 지역 앞단(보스를 잡는 레벨에서 바로 낄 수 있다),
+ * 등급은 rare 이상, 부위는 무작위다. 지거나 나가도 도전 비용은 돌아오지 않는다 —
+ * 들어갈 때 이미 'tried'로 적어 뒀으니 다음은 재도전 값이다.
+ */
+function settleBoss(
+  save: Save,
+  run: Run,
+  outcome: Outcome,
+  playerHp: number,
+  rng: () => number,
+  now: number,
+): RunResult {
+  const boss = currentMonster(save)!;
+  const done = { cleared: false, bonus: NONE, material: null, over: true };
+
+  if (outcome !== 'win') {
+    const settled = settleBattle(save, outcome, playerHp, NONE, now);
+    const back = { ...settled.save, consumables: returnPotions(settled.save, run), run: null };
+    return { ...settled, ...done, ...NO_DROP, save: back };
+  }
+
+  const reward = { exp: boss.exp, gold: Math.round(boss.gold * statsOf(save).goldMult) };
+  const settled = settleBattle(save, 'win', playerHp, reward, now);
+  const progress = {
+    ...settled.save.regionProgress,
+    bosses: { ...settled.save.regionProgress.bosses, [boss.region]: 'cleared' as const },
+  };
+  const tier = Math.min(GEAR_TIERS, boss.region * GEAR_TIERS_PER_REGION + 1);
+  const slot = GEAR_SLOTS[Math.floor(rng() * GEAR_SLOTS.length)];
+  const item = gridItem(tier, slot, rollRarity(BOSS_DROP_RARITY, rng));
+  const given = give({ ...settled.save, regionProgress: progress }, item.id, rng);
+
+  return {
+    ...settled,
+    ...done,
+    save: { ...given.save, consumables: returnPotions(given.save, run), run: null },
+    drop: given.drop,
+    dropLost: given.lost,
+    bossCleared: true,
+  };
+}
 
 /** 안 쓰고 남은 물약을 소지품으로 돌려준다. 판이 끝날 때마다 부른다. */
 function returnPotions(save: Save, run: Run): Save['consumables'] {
@@ -178,6 +276,7 @@ export function settleRun(
 ): RunResult {
   const run = save.run;
   if (!run) throw new Error('판 안이 아닌데 settleRun을 불렀다');
+  if (run.boss) return settleBoss(save, run, outcome, playerHp, rng, now);
 
   const monster = currentMonster(save)!;
 
@@ -190,12 +289,17 @@ export function settleRun(
       bonus: NONE,
       material: null,
       over: true,
+      ...NO_DROP,
     };
   }
 
   const stats = statsOf(save);
   const gained = killReward(monster, stats.goldMult);
-  const settled = settleBattle(save, 'win', playerHp, gained, now);
+  const won = settleBattle(save, 'win', playerHp, gained, now);
+  // 드랍은 처치 즉시 들어온다 — 개별 보상처럼 도망·사망해도 남는다 (T17_6)
+  const loot = rollDrop(won.save, monster, run.fieldId, rng);
+  const settled = { ...won, save: loot.save };
+  const dropped = { drop: loot.drop, dropLost: loot.lost, bossCleared: false };
   const killed = run.killed + 1;
   const earned = { exp: run.earned.exp + gained.exp, gold: run.earned.gold + gained.gold };
 
@@ -208,6 +312,7 @@ export function settleRun(
       bonus: NONE,
       material: null,
       over: false,
+      ...dropped,
     };
   }
 
@@ -244,5 +349,6 @@ export function settleRun(
     bonus,
     material,
     over: true,
+    ...dropped,
   };
 }

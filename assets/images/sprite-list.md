@@ -600,7 +600,7 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 | arch_demon | demon.png | 불꽃 임프 등 5종 |
 | arch_fungus | fungus.png | 홀씨 버섯 등 6종 |
 | arch_goblin | goblin.png | 고블린 졸개 등 4종 |
-| arch_golem | golem.png | 돌무더기 등 12종 |
+| arch_golem | golem.png | 돌무더기 등 10종 |
 | arch_insect | insect.png | 왕개미 등 14종 |
 | arch_knight | knight.png | 녹슨 갑주병 등 5종 |
 | arch_lizard | lizard.png | 새끼 도마뱀 등 10종 |
@@ -611,10 +611,24 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 
 ---
 
-## 3. 몬스터 — 2차 확장: 티어별 세부 이미지 (총 143개, 나중에)
+## 2-1. 보스 (5개, assets/images/monsters/)
+
+T17_5부터 보스는 **그림을 따로** 씁니다(`boss_r{지역}`). 전에는 같은 티어 일반 몬스터와
+sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관문이라 일반 몬스터보다 크고 위압적으로.
+
+| sprite id | 파일명 | 이름 | 지역 | 원형 |
+|---|---|---|---|---|
+| boss_r1 | boss_r1.png | 들개 우두머리 | 바람 부는 초원 | 야수형 |
+| boss_r2 | boss_r2.png | 늪을 삼킨 악어 | 속삭이는 숲 | 파충류형 |
+| boss_r3 | boss_r3.png | 협곡을 지키는 거상 | 메마른 협곡 | 바위형 |
+| boss_r4 | boss_r4.png | 대장간의 마지막 기사 | 잿빛 화산지대 | 기갑형 |
+| boss_r5 | boss_r5.png | 심연의 지배자 | 잊혀진 심연 | 마족형 |
+
+---
+
+## 3. 몬스터 — 2차 확장: 티어별 세부 이미지 (총 141개, 나중에)
 
 1차로 부족하면 여기서 추가. 파일명: `<sprite>.png`
-보스가 같은 티어의 일반 몬스터와 sprite id를 나눠 쓰는 곳은 이름을 둘 다 적었습니다.
 
 ### aquatic
 
@@ -710,17 +724,15 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 | sprite id | 파일명 | 이름 |
 |---|---|---|
 | golem_3 | golem_3.png | 돌무더기 |
-| golem_5 | golem_5.png | 이끼 덮인 수호석 (보스) |
 | golem_9 | golem_9.png | 깎다 만 석상 |
 | golem_11 | golem_11.png | 모래 골렘 |
 | golem_13 | golem_13.png | 화석 골렘 |
 | golem_14 | golem_14.png | 소금 결정 골렘 |
-| golem_15 | golem_15.png | 협곡을 지키는 거상 (보스) |
 | golem_17 | golem_17.png | 용암 골렘 |
 | golem_19 | golem_19.png | 무쇠 수호자 |
 | golem_22 | golem_22.png | 서리 거상 |
 | golem_23 | golem_23.png | 대전 수호 석상 |
-| golem_25 | golem_25.png | 심연의 지배자 (보스) / 태고의 거인 |
+| golem_25 | golem_25.png | 태고의 거인 |
 
 ### insect
 
@@ -747,7 +759,7 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 |---|---|---|
 | knight_15 | knight_15.png | 녹슨 갑주병 |
 | knight_18 | knight_18.png | 흑철 기사 |
-| knight_20 | knight_20.png | 대장간의 마지막 기사 (보스) / 성채 수호병 |
+| knight_20 | knight_20.png | 성채 수호병 |
 | knight_22 | knight_22.png | 심판의 기사 |
 | knight_24 | knight_24.png | 폐왕의 근위대 |
 
@@ -758,7 +770,7 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 | lizard_4 | lizard_4.png | 새끼 도마뱀 |
 | lizard_7 | lizard_7.png | 도마뱀 전사 |
 | lizard_9 | lizard_9.png | 바위 도마뱀 |
-| lizard_10 | lizard_10.png | 늪을 삼킨 악어 (보스) / 늪지 악어 |
+| lizard_10 | lizard_10.png | 늪지 악어 |
 | lizard_13 | lizard_13.png | 협곡 이구아나 |
 | lizard_16 | lizard_16.png | 온천 도롱뇽 |
 | lizard_17 | lizard_17.png | 비늘 사냥꾼 |

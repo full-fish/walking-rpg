@@ -86,6 +86,16 @@ export const migrations: Record<number, Migration> = {
    * 다른 부위의 HP·DEF 몫을 떼어 하의를 만들었으므로 **사서 끼기 전까지는 조금 약해진다.**
    */
   7: (s) => ({ ...s, equipped: { ...(s.equipped as object), pants: null } }),
+
+  /**
+   * v8 → v9: 보스 기록과 보스전 표시 (T17_5). 아직 아무도 보스를 안 만났다.
+   * 진행 중인 판은 전부 사냥터 판이다 — 보스전은 이 버전부터 생긴다.
+   */
+  8: (s) => ({
+    ...s,
+    regionProgress: { ...(s.regionProgress as object), bosses: {} },
+    run: s.run ? { ...(s.run as object), boss: false } : null,
+  }),
 };
 
 /**

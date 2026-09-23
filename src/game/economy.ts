@@ -14,6 +14,7 @@ import {
   BAG,
   bagExpandCost,
   SELL_RATE,
+  SHOP_RARITIES,
   VAULT,
   vaultExpandCost,
 } from './formulas';
@@ -47,8 +48,8 @@ function bump(map: Record<string, number>, id: string, delta: number): Record<st
  */
 export function buyEquipment(save: Save, defId: string, rng: () => number): Save | null {
   const def = equipmentById(defId);
-  // 고유 장비는 골드로 못 산다. 소재로만 바꾼다 (§4.4)
-  if (def.rarity === 'unique') return null;
+  // 고유 장비는 소재로만(§4.4), 전설은 드랍으로만 나온다 (T17_6)
+  if (!(SHOP_RARITIES as readonly string[]).includes(def.rarity)) return null;
   if (bagFull(save)) return null;
 
   const paid = withGold(save, -def.price);
@@ -56,7 +57,7 @@ export function buyEquipment(save: Save, defId: string, rng: () => number): Save
   return addItem(paid, makeItem(paid.inventory, defId, rng));
 }
 
-/** 되팔 때 받는 골드 (§4.5). 정가 × 품질 × 0.25 — 강화분은 안 쳐준다. */
+/** 되팔 때 받는 골드 (§4.5). 정가 × 품질 × SELL_RATE(0.1) — 강화분은 안 쳐준다. */
 export function sellPrice(item: ItemInstance): number {
   return Math.max(1, Math.round(itemDef(item).price * item.quality * SELL_RATE));
 }

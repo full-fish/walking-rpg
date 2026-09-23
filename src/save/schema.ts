@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { BAG, ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN, VAULT } from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 8;
+export const SAVE_VERSION = 9;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
@@ -93,14 +93,25 @@ export const SaveSchema = z.object({
       potions: z.record(z.string(), z.int().min(0)),
       /** 지금 상대할 몬스터. 세이브에 둬야 전투 중에 앱이 꺼져도 이어진다 */
       monsterId: z.string().min(1),
+      /**
+       * 보스전인가 (T17_5). 보스는 몰이사냥이 아니라 1:1이라 size 1짜리 판으로 돈다 —
+       * 물약 휴대 · 전투 중 물약 · 앱 재시작 복구를 사냥터와 똑같이 얻는다.
+       * 이때 fieldId는 사냥터가 아니라 `boss_r{지역}`이다.
+       */
+      boss: z.boolean(),
     })
     .nullable(),
-  /** 지역 진행도 (§4.1). 해금은 보스 클리어 + 해금 비용 — 실제 해금은 T17 이후 */
+  /** 지역 진행도 (§4.1, T17_5). 해금 = 그 지역 보스 처치 + 해금 비용. 이동은 따로 낸다 */
   regionProgress: z.object({
     /** 지금 있는 지역 */
     current: z.int().min(1),
     /** 해금된 가장 높은 지역 */
     unlocked: z.int().min(1),
+    /**
+     * 지역 번호 → 보스 기록. 없으면 아직 안 싸웠다(첫 도전 값), tried면 재도전 값,
+     * cleared면 잡았다 — 다음 지역을 해금할 수 있다.
+     */
+    bosses: z.record(z.string(), z.enum(['tried', 'cleared'])),
   }),
 });
 
@@ -120,6 +131,6 @@ export function defaultSave(): Save {
     materials: {},
     consumables: {},
     run: null,
-    regionProgress: { current: 1, unlocked: 1 },
+    regionProgress: { current: 1, unlocked: 1, bosses: {} },
   };
 }

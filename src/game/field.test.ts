@@ -182,8 +182,8 @@ test('소재는 6마리 완주만 준다 — 그 아래는 행운을 몰빵해�
     statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 147, int: 0 },
   };
   // 행운은 골드·장비 드랍만 증폭한다. 소재에는 손을 못 댄다.
-  // 가산이다 — 시작 4 + 배분 147 = 151점이면 +151% (T17_4)
-  expect(statsOf(lucky).goldMult).toBeCloseTo(2.51);
+  // 가산이다 — 시작 4 + 배분 147 = 151점이면 1점당 2%로 +302% (T17_6)
+  expect(statsOf(lucky).goldMult).toBeCloseTo(4.02);
 
   let sub6 = 0;
   let sub6Material = 0;

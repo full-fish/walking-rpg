@@ -19,7 +19,8 @@
     "gold": 304,
     "traits": [
       "aquatic"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t21_beast",
@@ -41,7 +42,8 @@
     "gold": 320,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t21_bird",
@@ -64,7 +66,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t21_demon",
@@ -86,7 +89,8 @@
     "gold": 352,
     "traits": [
       "demon"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t21_insect",
@@ -108,7 +112,8 @@
     "gold": 304,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t21_slime",
@@ -130,7 +135,8 @@
     "gold": 224,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t21_spirit",
@@ -152,7 +158,8 @@
     "gold": 352,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t21_undead",
@@ -174,7 +181,8 @@
     "gold": 288,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t22_bird",
@@ -197,7 +205,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t22_demon",
@@ -219,7 +228,8 @@
     "gold": 398,
     "traits": [
       "demon"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t22_golem",
@@ -241,7 +251,8 @@
     "gold": 506,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t22_insect",
@@ -263,7 +274,8 @@
     "gold": 344,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t22_knight",
@@ -286,7 +298,8 @@
     "traits": [
       "humanoid",
       "armored"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t22_slime",
@@ -308,7 +321,8 @@
     "gold": 253,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t22_undead",
@@ -330,7 +344,8 @@
     "gold": 325,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t23_aquatic",
@@ -352,7 +367,8 @@
     "gold": 383,
     "traits": [
       "aquatic"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t23_fungus",
@@ -375,7 +391,8 @@
     "traits": [
       "fungus",
       "poison"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t23_golem",
@@ -397,7 +414,8 @@
     "gold": 565,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t23_lizard",
@@ -419,7 +437,8 @@
     "gold": 464,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t23_slime",
@@ -441,7 +460,8 @@
     "gold": 282,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t23_undead",
@@ -463,7 +483,8 @@
     "gold": 363,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t24_knight",
@@ -486,7 +507,8 @@
     "traits": [
       "humanoid",
       "armored"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t24_plant",
@@ -508,7 +530,8 @@
     "gold": 356,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t24_slime",
@@ -530,7 +553,8 @@
     "gold": 312,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t24_spirit",
@@ -552,28 +576,29 @@
     "gold": 490,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_r5_boss",
     "name": "심연의 지배자",
     "region": 5,
     "tier": 25,
-    "arch": "arch_golem",
-    "power": 1.4,
-    "sprite": "golem_25",
-    "maxHp": 34241,
-    "atk": 431.38,
-    "def": 785.3,
-    "spd": 109.2,
+    "arch": "arch_demon",
+    "power": 2.607,
+    "sprite": "boss_r5",
+    "maxHp": 41775,
+    "atk": 1056.97,
+    "def": 887.85,
+    "spd": 172.9,
     "scale": 95.4,
-    "cri": 0.02,
+    "cri": 0.08,
     "crd": 1.5,
-    "eva": 0.01,
-    "exp": 102,
-    "gold": 682,
+    "eva": 0.06,
+    "exp": 190,
+    "gold": 1269,
     "traits": [
-      "construct"
+      "demon"
     ],
     "boss": true
   },
@@ -597,7 +622,8 @@
     "gold": 511,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t25_demon",
@@ -619,7 +645,8 @@
     "gold": 535,
     "traits": [
       "demon"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t25_golem",
@@ -641,7 +668,8 @@
     "gold": 682,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t25_undead",
@@ -663,6 +691,7 @@
     "gold": 438,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "gloves"
   }
 ]

@@ -2,7 +2,7 @@ import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { consumableById, fieldById, regionOfField } from '@/content';
+import { consumableById, fieldById, regionById } from '@/content';
 import { currentMonster } from '@/game/field';
 import { statsOf } from '@/game/progression';
 import { usePlayer } from '@/stores/usePlayer';
@@ -38,8 +38,9 @@ export default function Field() {
     );
   }
 
-  const field = fieldById(run.fieldId);
-  const region = regionOfField(run.fieldId);
+  // 보스전도 같은 화면이다 (T17_5) — 1:1이라 "N번째 처치" 대신 보스 이름을 건다
+  const title = run.boss ? currentMonster(save)!.name : fieldById(run.fieldId).name;
+  const region = regionById(save.regionProgress.current);
   const stats = statsOf(save);
   const next = currentMonster(save);
   const potions = Object.entries(run.potions).filter(([, n]) => n > 0);
@@ -47,16 +48,24 @@ export default function Field() {
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
       <View style={styles.header}>
-        <Text size="xl">{field.name}</Text>
+        <Text size="xl">{title}</Text>
         <Text size="sm" dim>
           {region.name}
         </Text>
       </View>
 
-      <Panel title={run.killed === 0 ? '사냥터에 들어섰다' : `${run.killed}번째 처치`}>
+      <Panel
+        title={
+          run.boss ? '보스' : run.killed === 0 ? '사냥터에 들어섰다' : `${run.killed}번째 처치`
+        }
+      >
         <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
         <Text size="sm" dim>
-          {run.killed === 0 ? '무언가 다가온다...' : '또 다른 기척이 느껴진다...'}
+          {run.boss
+            ? '물러설 곳이 없다.'
+            : run.killed === 0
+              ? '무언가 다가온다...'
+              : '또 다른 기척이 느껴진다...'}
         </Text>
         {next && <Text>{next.name}</Text>}
       </Panel>
@@ -92,7 +101,11 @@ export default function Field() {
       </Panel>
 
       <View style={styles.row}>
-        <Button label="계속 싸운다" tone="gold" onPress={() => router.push('/battle')} />
+        <Button
+          label={run.boss ? '싸운다' : '계속 싸운다'}
+          tone="gold"
+          onPress={() => router.push('/battle')}
+        />
         {/* 나가면 개별 보상은 그대로 두고 클리어 보너스만 잃는다 (§4.4) */}
         <Button
           label="나가기"
@@ -103,7 +116,9 @@ export default function Field() {
         />
       </View>
       <Text size="sm" dim>
-        나가면 지금까지 받은 보상은 그대로지만 **클리어 보너스**는 없습니다.
+        {run.boss
+          ? '나가면 도전 비용은 돌아오지 않고, 다음 도전은 재도전 값입니다.'
+          : '나가면 지금까지 받은 보상은 그대로지만 **클리어 보너스**는 없습니다.'}
       </Text>
     </SafeAreaView>
   );
@@ -112,6 +127,11 @@ export default function Field() {
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg, padding: space.lg, gap: space.lg },
   header: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
-  row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: space.sm },
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.sm,
+  },
   name: { gap: space.xs, flexShrink: 1 },
 });

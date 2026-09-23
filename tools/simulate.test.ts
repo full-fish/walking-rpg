@@ -138,35 +138,48 @@ test('§6.2·§6.3 하루 수입 — 지역별 EXP와 골드', () => {
 });
 
 test('★ 골드는 어디로 가나 — 유지비가 수입의 25~35%여야 한다 (§4.5)', () => {
-  const runs = [1, 2, 3].map((seed) =>
-    simulate({ steps: STEPS, build: balanced, ...CAP }, seed),
-  );
-  const avg = (pick: (r: (typeof runs)[number]) => number) =>
-    runs.reduce((sum, r) => sum + pick(r), 0) / runs.length;
-
-  const earned = avg((r) => r.log.reduce((sum, d) => sum + d.gold, 0));
-  const rows: [string, number][] = [
-    ['번 골드', earned],
-    ['물약', -avg((r) => r.spentOnPotions)],
-    ['여관', -avg((r) => r.spentOnInn)],
-    ['장비 구매', -avg((r) => r.spentOnGear)],
-    ['사망 손실 (창고 안 씀)', -avg((r) => r.log.reduce((sum, d) => sum + d.goldLost, 0))],
-    ['남은 골드', avg((r) => r.save.player.gold)],
-  ];
-
-  console.log(`\n■ Lv50까지 골드 흐름 (시드 ${runs.length}개 평균)`);
-  console.log('  ' + '─'.repeat(46));
-  for (const [label, value] of rows) {
-    console.log(
-      `  ${label.padEnd(24)} ${pad(value.toLocaleString(undefined, { maximumFractionDigits: 0 }), 10)}` +
-        `  ${pad(((Math.abs(value) / earned) * 100).toFixed(0) + '%', 5)}`,
+  // 두 플레이어를 나란히 본다 (T17_6). 기준선은 강화를 안 하고, 투자형은 남는 걸 전부 강화에 넣는다.
+  // 실제 플레이어는 둘 사이 어딘가다. §4.5의 유지비 목표는 기준선에서 잰 값이다
+  const flows = [false, true].map((invest) => {
+    const runs = [1, 2, 3].map((seed) =>
+      simulate({ steps: STEPS, build: balanced, ...CAP, invest }, seed),
     );
-  }
-  console.log('  ' + '─'.repeat(46));
+    const avg = (pick: (r: (typeof runs)[number]) => number) =>
+      runs.reduce((sum, r) => sum + pick(r), 0) / runs.length;
+    const earned = avg((r) => r.log.reduce((sum, d) => sum + d.gold, 0));
+    return {
+      earned,
+      days: avg((r) => r.days),
+      rows: [
+        ['번 골드 (사냥)', earned],
+        ['장비 판매 (드랍 · 옛 장비)', avg((r) => r.soldGear)],
+        ['물약', -avg((r) => r.spentOnPotions)],
+        ['여관', -avg((r) => r.spentOnInn)],
+        ['장비 구매', -avg((r) => r.spentOnGear)],
+        ['강화', -avg((r) => r.spentOnEnhance)],
+        ['사망 손실 (창고 안 씀)', -avg((r) => r.log.reduce((sum, d) => sum + d.goldLost, 0))],
+        ['남은 골드', avg((r) => r.save.player.gold)],
+      ] as [string, number][],
+      upkeep: (avg((r) => r.spentOnPotions) + avg((r) => r.spentOnInn)) / earned,
+    };
+  });
 
-  const upkeep = (avg((r) => r.spentOnPotions) + avg((r) => r.spentOnInn)) / earned;
-  console.log(`  유지비(물약+여관) ${(upkeep * 100).toFixed(0)}% — 목표 25~35%`);
-  expect(upkeep, '유지비 비중').toBeGreaterThan(0.15);
+  console.log(`\n■ Lv50까지 골드 흐름 (시드 3개 평균) — 기준선(강화 안 함) / 투자형(남는 골드 전부 강화)`);
+  console.log('  ' + '─'.repeat(64));
+  const [base, invest] = flows;
+  for (let i = 0; i < base.rows.length; i++) {
+    const cell = (f: (typeof flows)[number]) => {
+      const v = f.rows[i][1];
+      return `${pad(v.toLocaleString(undefined, { maximumFractionDigits: 0 }), 10)} ${pad(((Math.abs(v) / f.earned) * 100).toFixed(0) + '%', 4)}`;
+    };
+    console.log(`  ${padEnd(base.rows[i][0], 22)} ${cell(base)}   ${cell(invest)}`);
+  }
+  console.log('  ' + '─'.repeat(64));
+  console.log(
+    `  유지비(물약+여관) ${(base.upkeep * 100).toFixed(0)}% / ${(invest.upkeep * 100).toFixed(0)}% — 목표 25~35% (기준선)` +
+      `   Lv50 ${base.days.toFixed(0)}일 / ${invest.days.toFixed(0)}일`,
+  );
+  expect(base.upkeep, '유지비 비중 (기준선)').toBeGreaterThan(0.15);
 });
 
 test('§6.2 덜 걷는 날 — 걸음 수에 따른 진행 속도', () => {

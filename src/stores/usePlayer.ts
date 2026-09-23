@@ -19,6 +19,7 @@ import {
 } from '@/game/economy';
 import type { GearSlot } from '@/game/formulas';
 import { makeItem } from '@/game/items';
+import { enterBoss, travel, unlockNext } from '@/game/region';
 import { grantWp, spendWp } from '@/game/wp';
 import {
   addItem,
@@ -76,7 +77,7 @@ type PlayerStore = {
   trade: (change: (save: Save) => Save | null) => boolean;
   /** 실기기 확인용 — 지금 레벨의 common 풀세트를 공짜로 준다 */
   grantGearSet: () => void;
-  /** 실기기 확인용 — 그림(sprite)마다 장비 하나씩 가방에 넣는다. 아이콘 전수 확인용 */
+  /** 실기기 확인용 — 그림(sprite)마다 장비 하나씩 가방에 넣는다. 고유 장비 포함 */
   grantAllSprites: () => void;
   /** 실기기 확인용 — 가방 칸 수를 바로 정한다 */
   setBagCapacity: (capacity: number) => void;
@@ -216,8 +217,8 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     let save = get().save;
     const seen = new Set<string>();
     for (const def of EQUIPMENT) {
-      // 고유 장비는 그림이 따로(uniq_…)고 아직 없다. 넣으면 80칸도 넘친다
-      if (def.rarity === 'unique' || seen.has(def.sprite)) continue;
+      // 고유 장비도 넣는다 — 그림이 따로(uniq_…)라 한 종씩 따로 들어온다. 설정의 [가방 300칸]과 짝이다
+      if (seen.has(def.sprite)) continue;
       seen.add(def.sprite);
       save = addItem(save, makeItem(save.inventory, def.id, Math.random));
     }
@@ -254,4 +255,8 @@ export const trades = {
   expand: () => (save: Save) => vaultExpand(save),
   expandBag: () => (save: Save) => bagExpand(save),
   exchange: (fieldId: string) => (save: Save) => exchangeUnique(save, fieldId, Math.random),
+  /** 지역 관문 (T17_5) — 보스 도전 · 해금 · 이동은 따로 낸다 */
+  challengeBoss: () => (save: Save) => enterBoss(save),
+  unlockRegion: () => (save: Save) => unlockNext(save),
+  travel: (region: number) => (save: Save) => travel(save, region),
 };

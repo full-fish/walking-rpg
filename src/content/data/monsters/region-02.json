@@ -19,7 +19,8 @@
     "gold": 96,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t6_bird",
@@ -42,7 +43,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t6_insect",
@@ -64,7 +66,8 @@
     "gold": 91,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t6_plant",
@@ -86,7 +89,8 @@
     "gold": 77,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t7_beast",
@@ -108,7 +112,8 @@
     "gold": 109,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t7_fungus",
@@ -131,7 +136,8 @@
     "traits": [
       "fungus",
       "poison"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t7_insect",
@@ -153,7 +159,8 @@
     "gold": 103,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t7_lizard",
@@ -175,7 +182,8 @@
     "gold": 125,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t7_plant",
@@ -197,7 +205,8 @@
     "gold": 87,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t7_undead",
@@ -219,7 +228,8 @@
     "gold": 98,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t8_aquatic",
@@ -241,7 +251,8 @@
     "gold": 115,
     "traits": [
       "aquatic"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t8_bandit",
@@ -263,7 +274,8 @@
     "gold": 127,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t8_beast",
@@ -285,7 +297,8 @@
     "gold": 121,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t8_bird",
@@ -308,7 +321,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t8_insect",
@@ -330,7 +344,8 @@
     "gold": 115,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t8_plant",
@@ -352,7 +367,8 @@
     "gold": 97,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t8_spirit",
@@ -374,7 +390,8 @@
     "gold": 133,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t8_undead",
@@ -396,7 +413,8 @@
     "gold": 109,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t9_bandit",
@@ -418,7 +436,8 @@
     "gold": 140,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t9_goblin",
@@ -440,7 +459,8 @@
     "gold": 114,
     "traits": [
       "goblin"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t9_golem",
@@ -462,7 +482,8 @@
     "gold": 187,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t9_insect",
@@ -484,7 +505,8 @@
     "gold": 127,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t9_lizard",
@@ -506,7 +528,8 @@
     "gold": 154,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t9_spirit",
@@ -528,7 +551,8 @@
     "gold": 147,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t9_undead",
@@ -550,7 +574,8 @@
     "gold": 120,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_r2_boss",
@@ -558,18 +583,18 @@
     "region": 2,
     "tier": 10,
     "arch": "arch_lizard",
-    "power": 1.15,
-    "sprite": "lizard_10",
-    "maxHp": 1089,
-    "atk": 26.63,
-    "def": 32.9,
+    "power": 5.0714999999999995,
+    "sprite": "boss_r2",
+    "maxHp": 4803,
+    "atk": 117.44,
+    "def": 145.07,
     "spd": 62.9,
     "scale": 6.19,
     "cri": 0.05,
     "crd": 1.5,
     "eva": 0.04,
-    "exp": 31,
-    "gold": 168,
+    "exp": 135,
+    "gold": 742,
     "traits": [
       "dragonkin"
     ],
@@ -596,7 +621,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t10_lizard",
@@ -618,7 +644,8 @@
     "gold": 168,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t10_undead",
@@ -640,6 +667,7 @@
     "gold": 132,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "boots"
   }
 ]

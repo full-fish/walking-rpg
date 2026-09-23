@@ -39,10 +39,19 @@ export const MonsterArchetypeSchema = z
     spriteTag: z.string().min(1),
     tiers: z.array(z.int().min(1).max(MAX_TIER)).nonempty(),
     namePool: z.array(z.string().min(1)).nonempty(),
+    /**
+     * 그 티어 몬스터가 떨구는 장비 부위 (T17_6). tiers와 1:1 — 몬스터마다 한 부위다.
+     * 사냥터에서 나오는 부위는 풀에 있는 몬스터들의 부위를 모은 것이 된다.
+     */
+    drops: z.array(z.enum(GEAR_SLOTS)).nonempty(),
   })
   .refine((a) => a.tiers.length === a.namePool.length, {
     error: 'tiers와 namePool의 길이가 같아야 한다 (§7.4 #4)',
     path: ['namePool'],
+  })
+  .refine((a) => a.tiers.length === a.drops.length, {
+    error: 'tiers와 drops의 길이가 같아야 한다 (T17_6)',
+    path: ['drops'],
   });
 
 export const MonsterArchetypesSchema = z.array(MonsterArchetypeSchema).nonempty();
@@ -89,7 +98,17 @@ export const RegionSchema = z.object({
   town: z.object({ name: z.string().min(1), inn: z.int().min(0) }),
   fields: z.array(FieldSchema).length(FIELDS_PER_REGION),
   /** 다음 지역 해금 조건. 원형의 tiers에 없는 티어를 써도 된다 — 보스는 따로 뽑는다 */
-  boss: z.object({ arch: z.string(), tier, name: z.string().min(1) }),
+  boss: z.object({
+    arch: z.string(),
+    tier,
+    name: z.string().min(1),
+    /**
+     * 보스 배율 (T17_5). 원형 power에 곱한다 — HP·ATK·DEF와 보상이 같이 커진다.
+     * 지역 끝 레벨 · common 풀세트 · 물약 3개로 **승률 50%** 가 되게 벤치가 잡은 값이다.
+     * 지역마다 다른 건 지역 끝에서 플레이어가 몬스터를 앞지른 정도가 지역마다 달라서다.
+     */
+    mult: z.number().positive(),
+  }),
 });
 
 export const RegionsSchema = z.array(RegionSchema).nonempty();
@@ -117,6 +136,8 @@ export const MonsterSchema = z.object({
   exp: z.int().min(1),
   gold: z.int().min(1),
   traits: z.array(z.string().min(1)).nonempty(),
+  /** 떨구는 장비 부위 (T17_6). 보스는 없다 — 보스는 부위를 가리지 않고 확정으로 준다 */
+  drop: z.enum(GEAR_SLOTS).optional(),
   boss: z.boolean().optional(),
 });
 

@@ -16,6 +16,7 @@ import region02 from './data/monsters/region-02.json';
 import region03 from './data/monsters/region-03.json';
 import region04 from './data/monsters/region-04.json';
 import region05 from './data/monsters/region-05.json';
+import { SHOP_RARITIES, type GearSlot, type GridRarity } from '../game/formulas';
 import {
   ConsumablesSchema,
   EquipmentArchetypesSchema,
@@ -81,6 +82,21 @@ export function tierForLevel(level: number): number {
   return Math.round(loTier + ratio * (hiTier - loTier));
 }
 
+const MONSTER_BY_ID = new Map(MONSTERS.map((m) => [m.id, m]));
+
+export function monsterById(id: string): Monster {
+  const found = MONSTER_BY_ID.get(id);
+  if (!found) throw new Error(`없는 몬스터: ${id}`);
+  return found;
+}
+
+/** 그 지역의 보스 (T17_5). 1:1 전투 상대이자 다음 지역의 관문이다. */
+export function bossOf(regionId: number): Monster {
+  const boss = MONSTERS.find((m) => m.boss && m.region === regionId);
+  if (!boss) throw new Error(`${regionId}지역에 보스가 없다`);
+  return boss;
+}
+
 /** 그 티어의 일반 몬스터 전부 (보스 제외). 밸런스 벤치·시뮬레이터가 쓴다. */
 export function monstersOfTier(tier: number): Monster[] {
   return MONSTERS.filter((m) => m.tier === tier && !m.boss);
@@ -144,11 +160,45 @@ export function gearSetFor(level: number, rarity: Equipment['rarity'] = 'common'
   return grid.filter((e) => e.tier === tier && e.rarity === rarity);
 }
 
-/** 상점 진열 — 그 레벨에 낄 수 있는 등급 그리드 장비 전부 (§4.5). 고유는 안 판다. */
+/**
+ * 상점 진열 — 그 레벨에 낄 수 있는 등급 그리드 장비 (§4.5).
+ * 고유는 소재로만, **전설은 드랍으로만** 나온다 (T17_6). 높은 티어부터.
+ */
 export function shopGear(level: number): Equipment[] {
-  return EQUIPMENT.filter((e) => e.rarity !== 'unique' && e.level <= level).sort(
-    (a, b) => b.tier - a.tier || a.slot.localeCompare(b.slot),
-  );
+  return EQUIPMENT.filter(
+    (e) => (SHOP_RARITIES as readonly string[]).includes(e.rarity) && e.level <= level,
+  ).sort((a, b) => b.tier - a.tier);
+}
+
+/** 등급 그리드에서 장비 정의 하나를 찾는다 (드랍·보스 보상, T17_6). */
+export function gridItem(tier: number, slot: GearSlot, rarity: GridRarity): Equipment {
+  const found = EQUIPMENT.find((e) => e.tier === tier && e.slot === slot && e.rarity === rarity);
+  if (!found) throw new Error(`없는 장비: 티어 ${tier} ${slot} ${rarity}`);
+  return found;
+}
+
+/**
+ * 그 사냥터를 돌 만한 레벨 (§7.2⑤). 풀의 평균 티어가 지역 대역에서 어디쯤인지를
+ * 지역 레벨 구간에 그대로 옮긴다. 벤치·시뮬레이터·드랍 티어가 전부 이 하나를 본다.
+ */
+export function fieldLevel(field: Field): number {
+  const region = regionOfField(field.id);
+  const avgTier = field.pool.reduce((sum, [, t]) => sum + t, 0) / field.pool.length;
+  const [loT, hiT] = region.tierBand;
+  const [loL, hiL] = region.levelRange;
+  return Math.round(loL + ((avgTier - loT) / (hiT - loT)) * (hiL - loL));
+}
+
+/**
+ * 그 사냥터에서 떨어지는 장비의 티어 (T17_6). 지역의 장비 티어 두 개 중
+ * **그 사냥터 적정 레벨에 낄 수 있는 높은 쪽**이다 — 앞쪽 사냥터는 앞단, 뒤쪽은 뒷단.
+ */
+export function fieldDropTier(field: Field): number {
+  const region = regionOfField(field.id);
+  const tiers = EQUIPMENT.filter((e) => e.region === region.id && e.rarity === 'common');
+  const level = fieldLevel(field);
+  const wearable = tiers.filter((e) => e.level <= level).map((e) => e.tier);
+  return wearable.length > 0 ? Math.max(...wearable) : Math.min(...tiers.map((e) => e.tier));
 }
 
 /** 그 지역에서 파는 소모품 (§4.5). 아래 지역 것도 계속 판다. */

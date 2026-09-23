@@ -9,10 +9,11 @@
  */
 import {
   CONSUMABLES,
+  fieldLevel,
   gearSetFor,
-  monstersOfField,
-  REGIONS,
+  regionById,
   type Field,
+  type Monster,
   type Region,
 } from '../src/content';
 import {
@@ -22,19 +23,25 @@ import {
   type Combatant,
   type Outcome,
 } from '../src/game/battle';
-import { buyConsumable, sellItem, stayInn } from '../src/game/economy';
+import { buyConsumable, enhanceItem, sellItem, stayInn } from '../src/game/economy';
 import { currentMonster, drinkPotion, enterField, settleRun } from '../src/game/field';
 import {
+  ENHANCE_MAX,
+  enhanceCost,
+  enhanceRate,
   expToNext,
+  GEAR_SLOTS,
   MIDNIGHT_WP,
   POTION_CARRY_MAX,
+  REGION_COUNT,
   SPENDABLE_STATS,
   WP_COST,
   type SpendableStat,
 } from '../src/game/formulas';
-import { itemDef, makeItem } from '../src/game/items';
+import { bagItems, equippedItems, itemDef, itemPower, makeItem } from '../src/game/items';
 import { addItem, applyRegen, equipItem, newGame, statsOf } from '../src/game/progression';
-import type { Save } from '../src/save/schema';
+import { bossCost, bossState, enterBoss, travel, unlockCost, unlockNext } from '../src/game/region';
+import { defaultSave, type ItemInstance, type Save } from '../src/save/schema';
 
 type StatPoints = Save['statPoints'];
 
@@ -86,14 +93,6 @@ function allocate(spend: StatPoints, build: Build, points: number): StatPoints {
   return { ...next, unspent: 0 };
 }
 
-/** 그 사냥터를 돌 만한 레벨 (T11 벤치와 같은 기준). */
-export function properLevel(region: Region, field: Field): number {
-  const avgTier = field.pool.reduce((sum, [, t]) => sum + t, 0) / field.pool.length;
-  const [loT, hiT] = region.tierBand;
-  const [loL, hiL] = region.levelRange;
-  return Math.round(loL + ((avgTier - loT) / (hiT - loT)) * (hiL - loL));
-}
-
 /**
  * 어디서 사냥할까. 보통은 **갈 수 있는 곳 중 제일 센 곳**이다 — 보상이 제일 크니까.
  *
@@ -102,35 +101,42 @@ export function properLevel(region: Region, field: Field): number {
  * (힘 몰빵이 시드 하나에서 Lv48에 400일을 갇혔다). 실제 플레이어는 내려간다.
  */
 function pickField(region: Region, level: number, cautious = false): Field {
-  const sorted = [...region.fields].sort((a, b) => properLevel(region, a) - properLevel(region, b));
+  const sorted = [...region.fields].sort((a, b) => fieldLevel(a) - fieldLevel(b));
   if (cautious) return sorted[0];
-  const unlocked = sorted.filter((f) => properLevel(region, f) <= level);
+  const unlocked = sorted.filter((f) => fieldLevel(f) <= level);
   return unlocked.at(-1) ?? sorted[0];
 }
 
-function regionOf(level: number): Region {
-  return REGIONS.find((r) => level <= r.levelRange[1]) ?? REGIONS.at(-1)!;
+/** 가게에 막 나온 새 물건의 세기 — 품질 100%, +0으로 친다. 낀 것과 견줄 때 쓴다 */
+function freshPower(defId: string): number {
+  return itemPower({ uid: '', defId, quality: 1, enhance: 0 });
+}
+
+/** 낀 것의 세기. 빈 칸이면 0 */
+function wornPower(save: Save, slot: (typeof GEAR_SLOTS)[number]): number {
+  const uid = save.equipped[slot];
+  const item = uid ? save.inventory.find((i) => i.uid === uid) : undefined;
+  return item ? itemPower(item) : 0;
 }
 
 /**
- * 살 수 있는 가장 좋은 common 풀세트로 갈아입는다 (§4.5).
+ * 살 수 있는 가장 좋은 common으로 갈아입는다 (§4.5).
  *
- * 밸런스 기준선은 **그 지역 common 풀세트**다 — 등급·품질·강화는 전부 그 위의 이득이라
- * 시뮬은 기준선만 본다. 돈이 모자라면 중요한 부위부터 한 점씩 산다.
+ * **티어가 아니라 세기로 견준다** (T17_6). 강화해 둔 옛 장비나 드랍으로 주운 rare가
+ * 새 티어 common보다 세면 안 산다 — 사람은 +5 검을 버리고 +0 검을 사지 않는다.
+ * 돈이 모자라면 중요한 부위부터 한 점씩 산다.
  */
 export function buyGear(save: Save, rng: () => number): Save {
   const set = gearSetFor(save.player.level);
 
   // **사는 순서가 의미를 갖는다** (T16_1). 부위마다 성격이 갈린 뒤로 무기는 ATK만 주므로,
   // 무기부터 사면 더 세게 때리면서 더 빨리 죽는다. 버티는 부위를 먼저 산다.
-  const order = ['armor', 'helm', 'pants', 'boots', 'weapon', 'gloves', 'accessory'];
   let next = save;
-  for (const def of [...set].sort((a, b) => order.indexOf(a.slot) - order.indexOf(b.slot))) {
-    const worn = next.equipped[def.slot];
-    const wornTier = worn ? itemDef(next.inventory.find((i) => i.uid === worn)!).tier : 0;
+  for (const def of wantedGear(save, set)) {
     // 못 산 부위는 다음 날 다시 본다. 하루 돈이 모자랐다고 다음 티어까지 그 칸을 비워두면
     // 실제 플레이와 다르다 — 사람은 이틀에 걸쳐 갖춰 입는다
-    if (def.tier <= wornTier || next.player.gold < def.price) continue;
+    if (next.player.gold < def.price) continue;
+    const worn = next.equipped[def.slot];
     const item = makeItem(next.inventory, def.id, rng);
     next = addItem(next, item);
     next = { ...next, player: { ...next.player, gold: next.player.gold - def.price } };
@@ -140,6 +146,97 @@ export function buyGear(save: Save, rng: () => number): Save {
     if (worn) next = sellItem(next, worn) ?? next;
   }
   return next;
+}
+
+/** 지금 낀 것보다 센 새 물건들 — 사는 순서대로 (T16_1). 강화 예산에서 이만큼은 남긴다 */
+function wantedGear(save: Save, set = gearSetFor(save.player.level)) {
+  // **사는 순서가 의미를 갖는다** (T16_1). 부위마다 성격이 갈린 뒤로 무기는 ATK만 주므로,
+  // 무기부터 사면 더 세게 때리면서 더 빨리 죽는다. 버티는 부위를 먼저 산다.
+  const order = ['armor', 'helm', 'pants', 'boots', 'weapon', 'gloves', 'accessory'];
+  return [...set]
+    .filter((def) => freshPower(def.id) > wornPower(save, def.slot))
+    .sort((a, b) => order.indexOf(a.slot) - order.indexOf(b.slot));
+}
+
+/**
+ * 가방 정리 (T17_6) — 부위마다 **제일 센 것을 끼고** 나머지는 판다.
+ * 드랍을 줍게 된 뒤로 사람이 하는 일 그대로다. 파는 값을 돌려준다 (드랍 판매 수입).
+ */
+function sortGear(save: Save, wear: boolean): { save: Save; sold: number } {
+  let next = save;
+  for (const slot of wear ? GEAR_SLOTS : []) {
+    const fits = next.inventory.filter(
+      (i) => itemDef(i).slot === slot && itemDef(i).level <= next.player.level,
+    );
+    const best = fits.reduce<ItemInstance | undefined>(
+      (a, b) => (a && itemPower(a) >= itemPower(b) ? a : b),
+      undefined,
+    );
+    if (best && next.equipped[slot] !== best.uid) next = equipItem(next, best.uid) ?? next;
+  }
+  const before = next.player.gold;
+  for (const item of bagItems(next)) next = sellItem(next, item.uid) ?? next;
+  return { save: next, sold: next.player.gold - before };
+}
+
+/**
+ * 남는 골드로 낀 장비를 강화한다 (T17_6). **한 단계의 기대값(비용 ÷ 성공률)이 제일 싼 것부터.**
+ * `reserve`만큼은 남긴다 — 물약·여관·아직 못 산 장비가 먼저다.
+ * 강화를 안 넣으면 남은 골드가 수입의 절반을 넘어 시뮬이 실제보다 약하게 나온다.
+ */
+function enhanceGear(save: Save, reserve: number, rng: () => number) {
+  let next = save;
+  let spent = 0;
+  for (;;) {
+    const steps = equippedItems(next)
+      .filter((i) => i.enhance < ENHANCE_MAX)
+      .map((i) => ({
+        uid: i.uid,
+        cost: enhanceCost(itemDef(i).price, i.enhance + 1),
+        step: i.enhance + 1,
+      }));
+    const cheapest = steps.reduce<(typeof steps)[number] | undefined>(
+      (a, b) => (a && a.cost / enhanceRate(a.step) <= b.cost / enhanceRate(b.step) ? a : b),
+      undefined,
+    );
+    if (!cheapest || next.player.gold - cheapest.cost < reserve) break;
+    const tried = enhanceItem(next, cheapest.uid, rng);
+    if (!tried) break;
+    next = tried.save;
+    spent += tried.cost;
+  }
+  return { save: next, spent };
+}
+
+/**
+ * 보스 벤치용 기준 세이브 (T17_5) — 그 레벨, 균등 배분(STR·VIT·AGI), 그 레벨 common 풀세트
+ * (품질 100%, +0), 그 지역 물약 3개. 보스 배율은 **이 상태로 승률 50%** 가 되게 잡는다.
+ * 강화·등급·품질은 전부 그 위의 이득이다 (§4.5).
+ */
+export function baselineSave(level: number, region: number): Save {
+  const ups = level - 1;
+  let save: Save = {
+    ...defaultSave(),
+    player: { level, exp: 0, gold: 0, hp: 1 },
+    statPoints: { unspent: 0, str: ups, vit: ups, agi: ups, luk: 0, int: 0 },
+    wp: { current: 1_000_000, grantedByDate: {}, lastMidnightGrantAt: '' },
+    consumables: { [bestPotion(region).id]: POTION_CARRY_MAX },
+    regionProgress: { current: region, unlocked: region, bosses: {} },
+  };
+  for (const def of gearSetFor(level)) {
+    const item = { uid: String(save.inventory.length + 1), defId: def.id, quality: 1, enhance: 0 };
+    save = equipItem(addItem(save, item), item.uid)!;
+  }
+  return { ...save, player: { ...save.player, hp: statsOf(save).maxHp } };
+}
+
+/**
+ * 보스 한 판 (T17_5) — 기준 세이브로 들어가 fight()로 싸운다. 화면과 같은 규칙이다.
+ * `boss`를 주면 그 몬스터와 싸운다 — 배율을 바꿔 가며 승률을 재는 벤치가 쓴다.
+ */
+export function bossTrial(level: number, region: number, rng: () => number, boss?: Monster) {
+  const inside = enterBoss(baselineSave(level, region))!;
+  return fight(inside, rng, boss).outcome;
 }
 
 /** 그 지역에서 살 수 있는 가장 좋은 물약 (§4.5). 콘텐츠를 그대로 읽는다. */
@@ -178,6 +275,13 @@ const ENTER_THRESHOLD = 0.3;
  */
 const FLEE_THRESHOLD = 0.3;
 
+/** 보스 앞 — 조금이라도 다쳤으면 묵는다 (T17_5). */
+function restFull(save: Save, region: Region, now: number): { save: Save; spent: number } {
+  if (save.player.hp >= statsOf(save).maxHp) return { save, spent: 0 };
+  const rested = stayInn(save, region.town.inn, now);
+  return rested ? { save: rested, spent: region.town.inn } : { save, spent: 0 };
+}
+
 /** 다쳤으면 여관에 묵는다 (§4.5). 자연회복만으로는 하루 6~9판을 못 버틴다. */
 function rest(save: Save, region: Region, now: number): { save: Save; spent: number } {
   const maxHp = statsOf(save).maxHp;
@@ -194,8 +298,11 @@ function rest(save: Save, region: Region, now: number): { save: Save; spent: num
  * 새 HP로 다시 뽑는다(app/battle.tsx의 onDrink). 한 방에 0이 되면 마실 틈이 없다.
  * 물약은 매번 하나씩 줄어드니 많아야 세 번 돈다.
  */
-function fight(save: Save, rng: () => number): { save: Save; outcome: Outcome; playerHp: number } {
-  const monster = currentMonster(save)!;
+export function fight(
+  save: Save,
+  rng: () => number,
+  monster: Monster = currentMonster(save)!,
+): { save: Save; outcome: Outcome; playerHp: number } {
   let monsterHp = monster.maxHp;
   for (;;) {
     const stats = statsOf(save);
@@ -235,11 +342,47 @@ export type DayLog = {
   clearRate: number;
 };
 
-export type SimOptions = { steps: number; build: Build; maxLevel: number; maxDays: number };
+export type SimOptions = {
+  steps: number;
+  build: Build;
+  maxLevel: number;
+  maxDays: number;
+  /**
+   * 주운 장비를 끼고 남는 골드를 강화에 쏟나 (T17_6). 기본은 그렇다 — 실제 플레이에 가깝다.
+   * 끄면 **기준선 플레이어**다 — common만 사서 끼고, 주운 건 전부 팔고, 강화는 안 한다.
+   * §4.5가 "기준선은 그 지역 common 풀세트"라고 한 그 상태이고, 유지비 목표 25~35%도
+   * 여기서 잰 값이다. 드랍을 끼거나 강화하면 덜 맞아서 유지비가 확 준다.
+   */
+  invest?: boolean;
+};
+
+/**
+ * 지역 관문에서 지금 할 일 (T17_5). 지역 끝 레벨에 닿으면 보스 → 해금 → 이동 순서다.
+ * 마지막 지역은 다음이 없어서 관문이 없다.
+ *
+ * **보스에 지면 한 레벨 더 올리고 다시 간다** (`lostAt`). 1:1 전투는 길어서 운이 거의 평균으로
+ * 수렴한다 — 기준선에서 스탯이 1할만 모자라도 승률이 50% → 0%로 떨어진다(벤치 참고).
+ * 같은 레벨로 매일 들이받으면 영영 못 넘는다. 사람은 지면 사냥터로 돌아가 키워 온다.
+ */
+function gateStep(
+  save: Save,
+  lostAt: number,
+): { step: 'boss' | 'unlock' | 'travel'; cost: number } | null {
+  const here = regionById(save.regionProgress.current);
+  if (here.id >= REGION_COUNT || save.player.level < here.levelRange[1]) return null;
+  if (bossState(save, here.id) !== 'cleared') {
+    return save.player.level > lostAt ? { step: 'boss', cost: bossCost(save, here.id) } : null;
+  }
+  if (save.regionProgress.unlocked === here.id) return { step: 'unlock', cost: unlockCost(save) };
+  return { step: 'travel', cost: WP_COST.regionTravel };
+}
 
 /**
  * 하루치를 돌린다. 걸음이 WP가 되고, WP가 사냥터 입장이 되고, 입장이 보상이 된다 (§4.1, §6.1).
  * 남은 WP는 다음 날로 넘어간다 — 상한이 없다 (§4.1).
+ *
+ * 지역 관문(T17_5)에 닿으면 **WP를 관문에 먼저 쓴다.** 모자라면 그날은 사냥을 접고 모은다 —
+ * 사냥에 다 써버리면 관문 앞에서 영영 못 넘는다. §4.1의 "관문 몫 약 10일치"가 여기서 나온다.
  */
 export function simulate(opts: SimOptions, seed = 1) {
   const rng = makeRng(seed);
@@ -248,21 +391,16 @@ export function simulate(opts: SimOptions, seed = 1) {
   let spentOnPotions = 0;
   let spentOnInn = 0;
   let spentOnGear = 0;
+  let spentOnEnhance = 0;
+  let soldGear = 0;
+  const bosses: { region: number; day: number; level: number; tries: number }[] = [];
+  let tries = 0;
+  /** 보스에 마지막으로 진 레벨. 그보다 올라야 다시 도전한다 */
+  let lostAt = 0;
   const log: DayLog[] = [];
 
   for (let day = 1; day <= opts.maxDays && save.player.level < opts.maxLevel; day++) {
     save = { ...save, wp: { ...save.wp, current: save.wp.current + opts.steps + MIDNIGHT_WP } };
-
-    const region = regionOf(save.player.level);
-    // 다음 지역 해금 — 레벨이 닿으면 관문 비용을 낸다 (§4.1)
-    const next = REGIONS.find((r) => r.id === region.id + 1);
-    if (next && save.player.level >= next.levelRange[0]) {
-      const gate = WP_COST.regionUnlock(region.id) + WP_COST.bossFirst(region.id);
-      if (save.wp.current >= gate) {
-        save = { ...save, wp: { ...save.wp, current: save.wp.current - gate } };
-        spentOnGates += gate;
-      }
-    }
 
     const today = {
       entries: 0,
@@ -279,15 +417,17 @@ export function simulate(opts: SimOptions, seed = 1) {
     const dayStart = day * 86_400_000;
 
     for (;;) {
-      const here = regionOf(save.player.level);
-      if (save.wp.current < WP_COST.fieldEntry(here.id)) break;
+      const here = regionById(save.regionProgress.current);
 
       // 하루 안에서도 시간이 흐른다 — 입장 사이에 자연회복이 조금씩 붙는다 (§4.2).
       // 하루 7판이면 판 사이가 3시간쯤이고 최대 HP의 20%가 찬다. 나머지는 돈으로 메운다.
       const now = dayStart + Math.round((today.entries * 86_400_000) / 9);
       save = applyRegen(save, now);
 
-      // 마을에서 할 일 — 장비 갈아입기, 물약 채우기, 너무 다쳤으면 여관
+      // 마을에서 할 일 — 주운 것 정리, 장비 갈아입기, 물약 채우기, 너무 다쳤으면 여관
+      const sorted = sortGear(save, opts.invest !== false);
+      save = sorted.save;
+      soldGear += sorted.sold;
       const goldBefore = save.player.gold;
       save = buyGear(save, rng);
       spentOnGear += goldBefore - save.player.gold;
@@ -296,9 +436,62 @@ export function simulate(opts: SimOptions, seed = 1) {
       save = stocked.save;
       today.potion += stocked.spent;
 
-      const rested = rest(save, here, now);
+      const gate = gateStep(save, lostAt);
+      // 보스 앞에서는 만피로 들어간다. 반쯤 다친 채로 관문 값을 내는 사람은 없다
+      const rested = gate?.step === 'boss' ? restFull(save, here, now) : rest(save, here, now);
       save = rested.save;
       today.inn += rested.spent;
+
+      // 남는 골드는 강화로 (T17_6). 물약 한 번 채울 값 · 여관 한 번 · 아직 못 산 장비는 남긴다
+      const reserve =
+        here.town.inn +
+        bestPotion(here.id).price * POTION_CARRY_MAX +
+        wantedGear(save).reduce((sum, def) => sum + def.price, 0);
+      if (opts.invest !== false) {
+        const enhanced = enhanceGear(save, reserve, rng);
+        save = enhanced.save;
+        spentOnEnhance += enhanced.spent;
+      }
+
+      if (gate) {
+        if (save.wp.current < gate.cost) break;
+        spentOnGates += gate.cost;
+        if (gate.step === 'unlock') {
+          save = unlockNext(save)!;
+          continue;
+        }
+        if (gate.step === 'travel') {
+          save = travel(save, here.id + 1)!;
+          continue;
+        }
+        // 보스 — 다쳤는데 회복할 돈도 없으면 오늘은 접는다
+        if (save.player.hp < statsOf(save).maxHp) break;
+        const inside = enterBoss(save);
+        if (!inside) break;
+        tries += 1;
+        const battle = fight(inside, rng);
+        const result = settleRun(battle.save, battle.outcome, battle.playerHp, rng, now);
+        save = result.save;
+        today.gold += result.gained.gold;
+        today.lost += result.goldLost;
+        if (battle.outcome === 'lose') today.deaths += 1;
+        if (result.bossCleared) {
+          bosses.push({ region: here.id, day, level: save.player.level, tries });
+          tries = 0;
+          lostAt = 0;
+        } else {
+          lostAt = save.player.level;
+        }
+        if (save.statPoints.unspent > 0) {
+          save = {
+            ...save,
+            statPoints: allocate(save.statPoints, opts.build, save.statPoints.unspent),
+          };
+        }
+        continue;
+      }
+
+      if (save.wp.current < WP_COST.fieldEntry(here.id)) break;
 
       // 다쳤는데 여관도 못 가면 오늘은 접는다. WP는 내일로 넘어간다 (§4.1)
       if (save.player.hp < statsOf(save).maxHp * ENTER_THRESHOLD) break;
@@ -380,6 +573,9 @@ export function simulate(opts: SimOptions, seed = 1) {
     spentOnPotions,
     spentOnInn,
     spentOnGear,
+    spentOnEnhance,
+    soldGear,
+    bosses,
     days: log.length,
   };
 }

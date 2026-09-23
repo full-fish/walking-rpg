@@ -8,7 +8,7 @@
  * §7.4 7번(스프라이트 파일 존재)은 아직 파일이 하나도 없어서 넣지 않았다.
  */
 import raw from '../src/content/archetypes/monsters.json';
-import { CONSUMABLES, EQUIPMENT, MONSTERS, REGIONS, UNIQUES } from '../src/content';
+import { CONSUMABLES, EQUIPMENT, MONSTERS, monstersOfField, REGIONS, UNIQUES } from '../src/content';
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
 import {
   combatStats,
@@ -109,8 +109,9 @@ export function validateGenerated(): string[] {
       }
 
       // §7.4 #6 — 사냥터 평균 power = 1.0 ± 0.15
+      // 보스는 power에 배율이 붙어 있으니 일반 몬스터에서 원형 power를 읽는다 (T17_5)
       const powers = field.pool.map(([arch]) => {
-        const m = MONSTERS.find((x) => x.arch === arch);
+        const m = MONSTERS.find((x) => x.arch === arch && !x.boss);
         return m?.power ?? 0;
       });
       const avg = powers.reduce((a, b) => a + b, 0) / powers.length;
@@ -122,6 +123,20 @@ export function validateGenerated(): string[] {
     // §7.4 #6 — 보스 원형이 있는가
     if (!MONSTERS.some((m) => m.boss && m.region === region.id)) {
       errors.push(`[보스 없음] 지역 ${region.id}`);
+    }
+
+    // T17_6 — 사냥터마다 드랍 부위가 2~4개다. 1개면 특색이 아니라 외길이고,
+    // 다 나오면 사냥터를 고를 이유가 없다. 지역 전체로는 7부위가 다 나와야 한다
+    const regionSlots = new Set<string>();
+    for (const field of region.fields) {
+      const slots = new Set(monstersOfField(field).map((m) => m.drop));
+      if (slots.size < 2 || slots.size > 4) {
+        errors.push(`[드랍 부위] ${field.id} — ${[...slots].join(', ')} (2~4개여야 한다)`);
+      }
+      for (const slot of slots) if (slot) regionSlots.add(slot);
+    }
+    if (regionSlots.size !== GEAR_SLOTS.length) {
+      errors.push(`[드랍 부위] 지역 ${region.id} — ${regionSlots.size}/${GEAR_SLOTS.length}부위만 나온다`);
     }
   }
 

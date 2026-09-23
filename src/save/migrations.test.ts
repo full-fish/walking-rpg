@@ -63,7 +63,7 @@ test('v2 → v3: 지금까지 올린 레벨만큼 배분 포인트를 소급해�
   const v3 = SaveSchema.parse(migrate(v2));
 
   expect(v3.statPoints).toEqual({ unspent: 2 * 3, str: 0, vit: 0, agi: 0, luk: 0, int: 0 });
-  expect(v3.regionProgress).toEqual({ current: 1, unlocked: 1 });
+  expect(v3.regionProgress).toMatchObject({ current: 1, unlocked: 1 });
   // 0으로 두면 첫 로드에서 24시간치 회복이 한 번에 들어온다 — 지금부터 센다
   expect(v3.hpUpdatedAt).toBeGreaterThan(0);
 });
@@ -164,4 +164,24 @@ test('v7 → v8: 하의 칸이 빈 칸으로 생기고, 낀 건 그대로다 (§
   const v8 = SaveSchema.parse(migrate(v7));
   expect(v8.equipped.pants).toBeNull();
   expect(v8.equipped.weapon).toBe('1');
+});
+
+test('v8 → v9: 보스 기록이 비어서 생기고, 진행 중인 판은 사냥터 판이다 (T17_5)', () => {
+  const v8 = {
+    ...defaultSave(),
+    version: 8,
+    regionProgress: { current: 2, unlocked: 2 },
+    run: {
+      fieldId: 'f_r1_meadow',
+      size: 4,
+      killed: 1,
+      earned: { exp: 5, gold: 10 },
+      potions: {},
+      monsterId: 'mon_t1_slime',
+    },
+  };
+  const v9 = SaveSchema.parse(migrate(v8));
+  expect(v9.regionProgress).toEqual({ current: 2, unlocked: 2, bosses: {} });
+  expect(v9.run?.boss).toBe(false);
+  expect(v9.run?.killed).toBe(1);
 });

@@ -38,32 +38,37 @@ export function tierInRegion(tier: number, region: number): number {
   return tier - (region - 1) * TIERS_PER_REGION;
 }
 
+type Extra = { drop: Monster['drop'] } | { boss: number };
+
 function build(
   arch: MonsterArchetype,
   tier: number,
   region: Region,
   name: string,
   id: string,
-  boss = false,
+  extra: Extra,
 ): Monster {
   const t = tierInRegion(tier, region.id);
+  // 보스는 원형 power에 배율을 곱한다 — 스탯과 보상이 같이 커져서 "보상 ∝ power"가 그대로다
+  const power = 'boss' in extra ? arch.power * extra.boss : arch.power;
   return {
     id,
     name,
     region: region.id,
     tier,
     arch: arch.id,
-    power: arch.power,
-    sprite: `${arch.spriteTag}_${tier}`,
-    ...monsterStats(tier, region.difficulty, arch.power, arch.statBias),
+    power,
+    // 보스는 그림을 따로 쓴다. 같은 티어 일반 몬스터와 id가 겹치면 그림도 겹친다
+    sprite: 'boss' in extra ? `boss_r${region.id}` : `${arch.spriteTag}_${tier}`,
+    ...monsterStats(tier, region.difficulty, power, arch.statBias),
     cri: arch.cri,
     crd: 1.5,
     eva: arch.eva,
     // 보상도 power에 비례한다 — 센 원형이 떴을 때 손해가 아니라 이득이어야 한다 (§7.2④)
-    exp: Math.round(monsterExp(region.id, t, arch.power)),
-    gold: Math.round(monsterGold(region.id, t, arch.power)),
+    exp: Math.round(monsterExp(region.id, t, power)),
+    gold: Math.round(monsterGold(region.id, t, power)),
     traits: arch.traits,
-    ...(boss ? { boss: true } : {}),
+    ...('boss' in extra ? { boss: true } : { drop: extra.drop }),
   };
 }
 
@@ -76,14 +81,20 @@ export function generateRegion(region: Region): Monster[] {
     arch.tiers.forEach((tier, i) => {
       if (tier < lo || tier > hi) return;
       const suffix = arch.id.replace('arch_', '');
-      monsters.push(build(arch, tier, region, arch.namePool[i], `mon_t${tier}_${suffix}`));
+      monsters.push(
+        build(arch, tier, region, arch.namePool[i], `mon_t${tier}_${suffix}`, {
+          drop: arch.drops[i],
+        }),
+      );
     });
   }
 
   const bossArch = ARCHETYPES.find((a) => a.id === region.boss.arch);
   if (!bossArch) throw new Error(`${region.id}지역 보스의 원형이 없다: ${region.boss.arch}`);
   monsters.push(
-    build(bossArch, region.boss.tier, region, region.boss.name, `mon_r${region.id}_boss`, true),
+    build(bossArch, region.boss.tier, region, region.boss.name, `mon_r${region.id}_boss`, {
+      boss: region.boss.mult,
+    }),
   );
 
   return monsters.sort((a, b) => a.tier - b.tier || a.id.localeCompare(b.id));

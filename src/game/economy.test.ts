@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { equipmentById, fieldById, regionById } from '../content';
+import { equipmentById, fieldById, regionById, shopGear } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import { makeRng } from './battle';
 import {
@@ -51,6 +51,14 @@ test('장비 구매 — 골드가 모자라면 아무것도 안 바뀐다', () =
 
 test('고유 장비는 골드로 못 산다 — 소재로만 바꾼다 (§4.4)', () => {
   expect(buyEquipment(rich(1_000_000), 'uniq_r1_meadow', rng)).toBeNull();
+});
+
+test('전설은 상점에 없다 — 드랍으로만 나온다 (T17_6)', () => {
+  expect(buyEquipment(rich(1_000_000), 'eq_t1_weapon_legendary', rng)).toBeNull();
+  expect(buyEquipment(rich(1_000_000), 'eq_t1_weapon_epic', rng)).not.toBeNull();
+  expect(shopGear(50).some((e) => e.rarity === 'legendary')).toBe(false);
+  // 전에는 앞 12개만 보여서 하의가 안 보였다 — 목록 자체에는 7부위가 다 있어야 한다
+  expect(new Set(shopGear(1).map((e) => e.slot)).size).toBe(7);
 });
 
 test('낀 장비는 못 판다 — 실수로 알몸이 되는 경로를 없앤다', () => {

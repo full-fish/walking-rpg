@@ -149,13 +149,13 @@ export const STAT_PER_POINT = {
    * 확률과 배율을 같이 올리고 골드·드랍까지 준다 — 기댓값을 증폭하는 스탯이라는 성격 그대로,
    * 대신 실제로 증폭되게 한다.
    *
-   * **넷 다 가산이다** (T17_4). 드랍·골드는 1점당 +1%라 151점(Lv50 몰빵)이면 ×2.51이다.
-   * T17에서 곱산(1점당 ×1.01, 151점이면 ×4.45)으로 했다가 되돌렸다 — 후반에 급격히 붙어서
-   * 행운 1점의 값이 "지금 몇 점이냐"에 따라 달라졌다. 가산이면 몇 번째 점이든 똑같이 +1%다.
-   * dropRate는 **장비 드랍에만** 곱한다(T19). 사냥터 소재는 6마리 완주 확정이라
-   * 확률이 끼어들 자리가 없다 (§4.4).
+   * **넷 다 가산이다** (T17_4). 드랍·골드는 1점당 **+2%** 라(T17_6에서 1% → 2%)
+   * 151점(Lv50 몰빵)이면 ×4.02다. T17에서 곱산(1점당 ×1.01)으로 했다가 되돌렸다 —
+   * 후반에 급격히 붙어서 행운 1점의 값이 "지금 몇 점이냐"에 따라 달라졌다.
+   * dropRate는 **몬스터 장비 드랍에만** 곱한다 (DROP_RATE, T17_6). 사냥터 소재는
+   * 6마리 완주 확정이라 확률이 끼어들 자리가 없다 (§4.4).
    */
-  luk: { cri: 0.0025, crd: 0.005, dropRate: 0.01, goldFind: 0.01 },
+  luk: { cri: 0.0025, crd: 0.005, dropRate: 0.02, goldFind: 0.02 },
   /** 마법사용. 쓸 데가 생기는 건 스킬이 들어오는 T18이라 아직 배분 대상이 아니다 */
   int: { maxMp: 10, matk: 2 },
 } as const;
@@ -401,6 +401,46 @@ export const POTION_CARRY_MAX = 3;
  */
 export const MATERIAL_GUARANTEED_SIZE = 6;
 
+/**
+ * 몬스터 장비 드랍 (§4.4, T17_6). **처치마다 한 번** 굴린다 — 기본 3%에 LUK의 dropMult를 곱한다.
+ * 부위는 몬스터가, 티어는 사냥터가 정한다 (content의 fieldDropTier).
+ * 개별 보상처럼 처치 즉시 들어오므로 도망·사망해도 남는다.
+ */
+export const DROP_RATE = 0.03;
+
+/** 드랍 등급 비율 (T17_6). 합이 1이다. 전설은 상점에 없어서 여기서만 나온다 */
+export const DROP_RARITY: Partial<Record<GridRarity, number>> = {
+  common: 0.4,
+  uncommon: 0.3,
+  rare: 0.15,
+  epic: 0.1,
+  legendary: 0.05,
+};
+
+/**
+ * 보스 확정 드랍의 등급 (T17_5). common·uncommon은 안 나온다 — 관문 값을 한 보상이다.
+ * 티어는 **다음 지역 앞단**이라 보스를 잡는 레벨(지역 끝)에서 바로 낄 수 있다.
+ */
+export const BOSS_DROP_RARITY: Partial<Record<GridRarity, number>> = {
+  rare: 0.5,
+  epic: 0.3,
+  legendary: 0.2,
+};
+
+/** 비율표에서 등급 하나를 뽑는다. 표의 합이 1이라 마지막 칸이 나머지를 받는다. */
+export function rollRarity(
+  weights: Partial<Record<GridRarity, number>>,
+  rng: () => number,
+): GridRarity {
+  const entries = Object.entries(weights) as [GridRarity, number][];
+  let r = rng();
+  for (const [rarity, weight] of entries) {
+    r -= weight;
+    if (r < 0) return rarity;
+  }
+  return entries.at(-1)![0];
+}
+
 /** 한 판의 마릿수를 뽑는다. 입장 시점에 정해지고 끝까지 안 보여준다 (§4.4). */
 export function rollRunSize(rng: () => number): number {
   let r = rng();
@@ -433,6 +473,9 @@ export const GEAR_TIERS_PER_REGION = GEAR_TIERS / REGION_COUNT;
 
 /** 상점·드랍이 쓰는 등급 그리드 5종. 티어 × 부위 × 등급으로 350종이 나온다 (§7.2). */
 export const RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as const;
+export type GridRarity = (typeof RARITIES)[number];
+/** 상점이 파는 등급 (T17_6). **전설은 드랍으로만 나온다** — 사서 끼는 물건이 아니다 */
+export const SHOP_RARITIES: readonly GridRarity[] = ['common', 'uncommon', 'rare', 'epic'];
 /**
  * 사냥터 고유 장비 (§4.4, §4.5). 그리드 밖이라 따로 둔다 —
  * 티어 × 부위로 뽑는 게 아니라 **사냥터 35곳에 1:1로 붙는다.**
@@ -667,8 +710,14 @@ export function gearPrice(refLevel: number, slot: GearSlot, rarity: Rarity): num
 // 경제 (§4.5, §3.7) — T14
 // ─────────────────────────────────────────────────────────────
 
-/** 장비를 되팔 때 받는 비율 (§4.5). 정가 × 품질 × 이 값. */
-export const SELL_RATE = 0.25;
+/**
+ * 장비를 되팔 때 받는 비율 (§4.5). 정가 × 품질 × 이 값.
+ *
+ * T17_6에서 0.25 → 0.1로 내렸다. 몬스터가 장비를 떨구게 되면서(처치마다 3% × LUK)
+ * 0.25로는 주운 걸 파는 돈이 사냥 수입의 8%가 됐다 — 전설 하나 팔면 하루치다.
+ * 0.1이면 3% 남짓이라 드랍은 "팔아서 버는 것"이 아니라 "끼는 것"으로 남는다.
+ */
+export const SELL_RATE = 0.1;
 
 /**
  * 가방 (§4.5, T17_2). **낀 장비는 안 센다** — 몸에 있는 것이지 가방에 있는 게 아니다.

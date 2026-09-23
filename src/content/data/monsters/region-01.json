@@ -19,7 +19,8 @@
     "gold": 44,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t1_fungus",
@@ -42,7 +43,8 @@
     "traits": [
       "fungus",
       "poison"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t1_slime",
@@ -64,7 +66,8 @@
     "gold": 31,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t2_beast",
@@ -86,7 +89,8 @@
     "gold": 49,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t2_bird",
@@ -109,7 +113,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t2_insect",
@@ -131,7 +136,8 @@
     "gold": 47,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t2_slime",
@@ -153,7 +159,8 @@
     "gold": 35,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t2_spirit",
@@ -175,7 +182,8 @@
     "gold": 54,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t3_beast",
@@ -197,7 +205,8 @@
     "gold": 55,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t3_bird",
@@ -220,7 +229,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t3_goblin",
@@ -242,7 +252,8 @@
     "gold": 47,
     "traits": [
       "goblin"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t3_golem",
@@ -264,7 +275,8 @@
     "gold": 77,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t3_plant",
@@ -286,7 +298,8 @@
     "gold": 44,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t3_slime",
@@ -308,7 +321,8 @@
     "gold": 39,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t4_bandit",
@@ -330,7 +344,8 @@
     "gold": 64,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t4_beast",
@@ -352,7 +367,8 @@
     "gold": 61,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t4_fungus",
@@ -375,7 +391,8 @@
     "traits": [
       "fungus",
       "poison"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t4_goblin",
@@ -397,7 +414,8 @@
     "gold": 52,
     "traits": [
       "goblin"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t4_insect",
@@ -419,7 +437,8 @@
     "gold": 58,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t4_lizard",
@@ -441,28 +460,29 @@
     "gold": 70,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_r1_boss",
-    "name": "이끼 덮인 수호석",
+    "name": "들개 우두머리",
     "region": 1,
     "tier": 5,
-    "arch": "arch_golem",
-    "power": 1.4,
-    "sprite": "golem_5",
-    "maxHp": 611,
-    "atk": 11.25,
-    "def": 20.48,
-    "spd": 22.8,
+    "arch": "arch_beast",
+    "power": 4.89,
+    "sprite": "boss_r1",
+    "maxHp": 1472,
+    "atk": 47.58,
+    "def": 40.88,
+    "spd": 47.5,
     "scale": 2.49,
-    "cri": 0.02,
+    "cri": 0.1,
     "crd": 1.5,
-    "eva": 0.01,
-    "exp": 27,
-    "gold": 93,
+    "eva": 0.08,
+    "exp": 93,
+    "gold": 325,
     "traits": [
-      "construct"
+      "beast"
     ],
     "boss": true
   },
@@ -486,7 +506,8 @@
     "gold": 70,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t5_beast",
@@ -508,7 +529,8 @@
     "gold": 67,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t5_bird",
@@ -531,7 +553,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t5_goblin",
@@ -553,7 +576,8 @@
     "gold": 57,
     "traits": [
       "goblin"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t5_plant",
@@ -575,7 +599,8 @@
     "gold": 53,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t5_undead",
@@ -597,6 +622,7 @@
     "gold": 60,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "helm"
   }
 ]

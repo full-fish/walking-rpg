@@ -15,6 +15,7 @@ import {
 } from '@/game/battle';
 import { currentMonster, type RunResult } from '@/game/field';
 import { POINTS_PER_LEVEL } from '@/game/formulas';
+import { itemDef, itemLabel } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import type { Save } from '@/save/schema';
 import { usePlayer } from '@/stores/usePlayer';
@@ -22,7 +23,7 @@ import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
-import { colors, space } from '@/ui/theme';
+import { colors, rarity, space } from '@/ui/theme';
 
 /** 행동 하나를 보여주는 시간 (§4.2). */
 const STEP_MS = 600;
@@ -234,6 +235,21 @@ export default function Battle() {
           {settled.material && (
             <Text color={colors.gold}>
               {fieldById(settled.material).material.name}을(를) 얻었다
+            </Text>
+          )}
+          {settled.drop && (
+            <Text color={rarity[itemDef(settled.drop).rarity]}>
+              장비를 주웠다: {itemLabel(settled.drop)}
+            </Text>
+          )}
+          {settled.dropLost && (
+            <Text size="sm" color={colors.hp}>
+              장비가 떨어졌지만 가방이 꽉 차 못 주웠다
+            </Text>
+          )}
+          {settled.bossCleared && (
+            <Text color={colors.gold}>
+              👑 보스를 쓰러뜨렸다! 모험 탭에서 다음 지역을 해금할 수 있다
             </Text>
           )}
           {settled.goldLost > 0 && (

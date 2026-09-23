@@ -19,7 +19,8 @@
     "gold": 221,
     "traits": [
       "aquatic"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t16_bandit",
@@ -41,7 +42,8 @@
     "gold": 244,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t16_beast",
@@ -63,7 +65,8 @@
     "gold": 233,
     "traits": [
       "beast"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t16_demon",
@@ -85,7 +88,8 @@
     "gold": 256,
     "traits": [
       "demon"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t16_insect",
@@ -107,7 +111,8 @@
     "gold": 221,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t16_lizard",
@@ -129,7 +134,8 @@
     "gold": 268,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t16_slime",
@@ -151,7 +157,8 @@
     "gold": 163,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t16_spirit",
@@ -173,7 +180,8 @@
     "gold": 256,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t17_fungus",
@@ -196,7 +204,8 @@
     "traits": [
       "fungus",
       "poison"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t17_golem",
@@ -218,7 +227,8 @@
     "gold": 368,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t17_insect",
@@ -240,7 +250,8 @@
     "gold": 250,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t17_lizard",
@@ -262,7 +273,8 @@
     "gold": 302,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t17_slime",
@@ -284,7 +296,8 @@
     "gold": 184,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t17_spirit",
@@ -306,7 +319,8 @@
     "gold": 289,
     "traits": [
       "spirit"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t17_undead",
@@ -328,7 +342,8 @@
     "gold": 237,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t18_bird",
@@ -351,7 +366,8 @@
     "traits": [
       "beast",
       "flying"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t18_demon",
@@ -373,7 +389,8 @@
     "gold": 323,
     "traits": [
       "demon"
-    ]
+    ],
+    "drop": "pants"
   },
   {
     "id": "mon_t18_knight",
@@ -396,7 +413,8 @@
     "traits": [
       "humanoid",
       "armored"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t18_lizard",
@@ -418,7 +436,8 @@
     "gold": 337,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "boots"
   },
   {
     "id": "mon_t18_plant",
@@ -440,7 +459,8 @@
     "gold": 235,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_t18_slime",
@@ -462,7 +482,8 @@
     "gold": 205,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t18_undead",
@@ -484,7 +505,8 @@
     "gold": 264,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t19_golem",
@@ -506,7 +528,8 @@
     "gold": 453,
     "traits": [
       "construct"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t19_insect",
@@ -528,7 +551,8 @@
     "gold": 308,
     "traits": [
       "insect"
-    ]
+    ],
+    "drop": "helm"
   },
   {
     "id": "mon_t19_plant",
@@ -550,7 +574,8 @@
     "gold": 259,
     "traits": [
       "plant"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t19_slime",
@@ -572,7 +597,8 @@
     "gold": 227,
     "traits": [
       "ooze"
-    ]
+    ],
+    "drop": "weapon"
   },
   {
     "id": "mon_t19_undead",
@@ -594,7 +620,8 @@
     "gold": 291,
     "traits": [
       "undead"
-    ]
+    ],
+    "drop": "accessory"
   },
   {
     "id": "mon_r4_boss",
@@ -602,18 +629,18 @@
     "region": 4,
     "tier": 20,
     "arch": "arch_knight",
-    "power": 1.35,
-    "sprite": "knight_20",
-    "maxHp": 9987,
-    "atk": 219.96,
-    "def": 293.46,
+    "power": 4.009500000000001,
+    "sprite": "boss_r4",
+    "maxHp": 29662,
+    "atk": 653.29,
+    "def": 871.56,
     "spd": 116.8,
     "scale": 38.34,
     "cri": 0.06,
     "crd": 1.5,
     "eva": 0.02,
-    "exp": 70,
-    "gold": 478,
+    "exp": 209,
+    "gold": 1420,
     "traits": [
       "humanoid",
       "armored"
@@ -640,7 +667,8 @@
     "gold": 372,
     "traits": [
       "humanoid"
-    ]
+    ],
+    "drop": "gloves"
   },
   {
     "id": "mon_t20_knight",
@@ -663,7 +691,8 @@
     "traits": [
       "humanoid",
       "armored"
-    ]
+    ],
+    "drop": "armor"
   },
   {
     "id": "mon_t20_lizard",
@@ -685,6 +714,7 @@
     "gold": 407,
     "traits": [
       "dragonkin"
-    ]
+    ],
+    "drop": "weapon"
   }
 ]
