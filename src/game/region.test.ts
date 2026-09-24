@@ -1,7 +1,7 @@
 import { expect, test } from 'vitest';
 
 import { bossOf, equipmentById, fieldById, fieldDropTier, monstersOfField } from '../content';
-import { defaultSave, type Save } from '../save/schema';
+import { defaultSave, SaveSchema, type Save } from '../save/schema';
 import { currentMonster, enterField, settleRun } from './field';
 import { BAG, WP_COST } from './formulas';
 import { makeItem } from './items';
@@ -31,6 +31,8 @@ test('보스 — 처음엔 첫 도전 값, 한 번 들어가면 재도전 값이
   expect(currentMonster(inside)!.id).toBe(bossOf(1).id);
   // 들어가는 순간 적어 둔다 — 나가도 비용은 안 돌아온다
   expect(bossState(inside, 1)).toBe('tried');
+  // 보스전 중에 앱이 꺼져도 세이브를 다시 읽을 수 있어야 한다 (size 1 — T17_6 검수에서 고침)
+  expect(() => SaveSchema.parse(inside)).not.toThrow();
 
   const fled = settleRun(inside, 'flee', inside.player.hp, always, 0);
   expect(fled.over).toBe(true);
