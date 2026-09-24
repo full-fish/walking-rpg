@@ -291,7 +291,7 @@
       6,
       10
     ],
-    "difficulty": 1.0,
+    "difficulty": 1.27,
     "town": {
       "name": "숲가 마을",
       "inn": 330
@@ -568,7 +568,7 @@
       11,
       15
     ],
-    "difficulty": 1.0,
+    "difficulty": 1.47,
     "town": {
       "name": "협곡 관문",
       "inn": 545
@@ -831,7 +831,7 @@
       "arch": "arch_golem",
       "tier": 15,
       "name": "협곡을 지키는 거상",
-      "mult": 2.74
+      "mult": 2.81
     }
   },
   {
@@ -845,7 +845,7 @@
       16,
       20
     ],
-    "difficulty": 1.0,
+    "difficulty": 1.8,
     "town": {
       "name": "화산 관문",
       "inn": 799
@@ -1130,7 +1130,7 @@
       21,
       25
     ],
-    "difficulty": 1.0,
+    "difficulty": 2.09,
     "town": {
       "name": "심연 관문",
       "inn": 1098
@@ -1397,7 +1397,7 @@
       "arch": "arch_demon",
       "tier": 25,
       "name": "심연의 지배자",
-      "mult": 2.37
+      "mult": 2.44
     }
   }
 ]

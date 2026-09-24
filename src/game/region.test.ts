@@ -1,10 +1,18 @@
 import { expect, test } from 'vitest';
 
-import { bossOf, equipmentById, fieldById, fieldDropTier, monstersOfField } from '../content';
+import {
+  bossOf,
+  equipmentById,
+  fieldById,
+  fieldDropTier,
+  monstersOfField,
+  regionById,
+} from '../content';
 import { defaultSave, SaveSchema, type Save } from '../save/schema';
 import { currentMonster, enterField, settleRun } from './field';
-import { BAG, WP_COST } from './formulas';
+import { BAG, BOSS_BUFF, WP_COST } from './formulas';
 import { makeItem } from './items';
+import { statsOf } from './progression';
 import { bossCost, bossState, enterBoss, travel, unlockCost, unlockNext } from './region';
 
 /** WP·골드가 넉넉한 세이브. */
@@ -74,6 +82,27 @@ test('보스 — 판 안이거나 가방이 차 있으면 못 들어간다', () 
   }
   expect(enterBoss(full)).toBeNull();
   expect(enterBoss({ ...save, wp: { ...save.wp, current: 0 } })).toBeNull();
+});
+
+test('보스 버프 — 그 지역 소재 하나에 무작위 전투력 하나 ×1.1, 그 판에만 (T17_6 검수)', () => {
+  const [a, b] = regionById(1).fields.map((f) => f.id);
+  const save = ready({ materials: { [a]: 2, [b]: 1 } });
+
+  // 난수 0이면 매번 첫 번째(ATK) — 세 번 겹치면 ×1.331
+  const inside = enterBoss(save, 3, always)!;
+  expect(inside.run!.buffs).toEqual(['atk', 'atk', 'atk']);
+  expect(inside.materials).toEqual({});
+  expect(statsOf(inside).atk).toBeCloseTo(statsOf(save).atk * BOSS_BUFF.mult ** 3);
+  expect(statsOf(inside).def).toBeCloseTo(statsOf(save).def);
+
+  // 끝나면 사라진다
+  const fled = settleRun(inside, 'flee', inside.player.hp, always, 0).save;
+  expect(statsOf(fled).atk).toBeCloseTo(statsOf(save).atk);
+
+  // 가진 것보다 많이는 못 쓴다 · 최대 3개 · 안 쓰면 버프 없음
+  expect(enterBoss(ready({ materials: { [a]: 1 } }), 2, always)).toBeNull();
+  expect(enterBoss(ready({ materials: { [a]: 9 } }), 5, always)!.run!.buffs).toHaveLength(3);
+  expect(enterBoss(save)!.run!.buffs).toEqual([]);
 });
 
 test('해금은 보스를 잡아야 되고, 이동은 따로 낸다 (§4.1, T17_5)', () => {

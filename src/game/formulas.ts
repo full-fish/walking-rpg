@@ -596,6 +596,23 @@ export const ENHANCE_MULT = 1.1;
  */
 export const ENHANCE_RATE = [1, 1, 0.9, 0.75, 0.6, 0.45, 0.3, 0.2, 0.15, 0.1] as const;
 
+/**
+ * 지역마다 **보통으로 투자한 사람**이 입고 있을 장비 (T17_6 검수) — 몬스터와 보스를 여기에 맞춘다.
+ * 그 레벨에 그 지역에서 살 수 있는 가장 높은 티어를 이 등급·강화로 한 벌(품질 100%) 입은 사람이,
+ * 적정 레벨 1:1에서 **예전 common +0이 difficulty 1.0 몬스터에게 잃던 만큼** 잃게 regions.json의
+ * difficulty를 잡았다. 보스 배율도 "지역 끝 레벨 · 이 장비 · 물약 3개로 승률 50%"다.
+ * 지역 1은 입문이라 그대로 두고 뒤로 갈수록 더 요구한다 — common 한 벌의 1 / 1.33 / 1.53 / 1.68 / 1.80배.
+ * **더 가파르면 못 산다.** uncommon +5(1.85배)는 한 벌이 common 한 벌 값의 14배(지역 수입 약 14일치)라
+ * 지역 5에서 티어가 두 번 바뀌는 동안 수입의 70%가 장비로 나간다 — 시뮬 투자형이 152일로 무너졌다.
+ */
+export const EXPECTED_GEAR: readonly { rarity: GridRarity; enhance: number }[] = [
+  { rarity: 'common', enhance: 0 },
+  { rarity: 'common', enhance: 3 },
+  { rarity: 'uncommon', enhance: 3 },
+  { rarity: 'uncommon', enhance: 4 },
+  { rarity: 'rare', enhance: 3 },
+];
+
 /** 비용 곡선 (§4.5). 장비가격 × 0.3 × 1.5^(N-1) — 단계마다 1.5배씩 비싸진다. */
 export const ENHANCE_COST_RATE = 0.3;
 export const ENHANCE_COST_GROWTH = 1.5;
@@ -604,6 +621,28 @@ export const ENHANCE_COST_GROWTH = 1.5;
 export function enhanceCost(price: number, next: number): number {
   return Math.round(price * ENHANCE_COST_RATE * ENHANCE_COST_GROWTH ** (next - 1));
 }
+
+/**
+ * +6부터는 강화에 **그 장비 지역의 사냥터 소재**가 든다 (T17_6 검수). 인덱스는 enhanceRate와 같고
+ * 값은 필요한 소재 수다. **한 사냥터에서 하나씩** — +7이면 서로 다른 두 곳, +10이면 그 지역 일곱 곳 전부.
+ * 소재는 **성공할 때만** 쓴다. 실패는 골드만 나간다 — 시도마다 쓰면 +10 한 번에 소재 70개(7개 × 기대 10회)라
+ * 지역 5를 다 돌아도 모이는 30개 안팎으로는 영영 못 간다.
+ */
+export const ENHANCE_MATERIALS = [0, 0, 0, 0, 0, 1, 2, 3, 4, 7] as const;
+
+/** `next`단계 강화에 드는 소재 수. 0이면 골드만 든다. */
+export function enhanceMaterials(next: number): number {
+  return ENHANCE_MATERIALS[next - 1] ?? 0;
+}
+
+/**
+ * 보스 버프 (T17_6 검수) — 보스에 들어갈 때 **그 지역 소재를 최대 3개** 쓰면 하나에 하나씩, 전투력 탭의
+ * 값 중 하나가 무작위로 ×1.1이 된다(지금 값에 곱한다. 같은 게 두 번 나오면 ×1.21). 그 판에만 붙는다.
+ * 마법 공격은 뺐다 — 스킬(T18) 전에는 붙어도 아무 일이 없어서 소재만 버린다.
+ */
+export const BOSS_BUFF = { max: 3, mult: 1.1 } as const;
+export const BOSS_BUFF_STATS = ['atk', 'def', 'spd', 'cri', 'crd', 'eva'] as const;
+export type BossBuffStat = (typeof BOSS_BUFF_STATS)[number];
 
 /** `next`단계로 올릴 확률. 상한을 넘으면 0 — 호출부가 더 못 올린다는 걸 이걸로 안다. */
 export function enhanceRate(next: number): number {

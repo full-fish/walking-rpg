@@ -139,7 +139,8 @@ test('§6.2·§6.3 하루 수입 — 지역별 EXP와 골드', () => {
 
 test('★ 골드는 어디로 가나 — 유지비가 수입의 25~35%여야 한다 (§4.5)', () => {
   // 두 플레이어를 나란히 본다 (T17_6). 기준선은 강화를 안 하고, 투자형은 남는 걸 전부 강화에 넣는다.
-  // 실제 플레이어는 둘 사이 어딘가다. §4.5의 유지비 목표는 기준선에서 잰 값이다
+  // 실제 플레이어는 둘 사이 어딘가다. 몬스터를 "보통으로 투자한 사람"에 맞춘 뒤로(T17_6 검수)
+  // 유지비 목표는 투자형에서 잰다 — 전에는 투자형이 2%라 물약·여관이 사실상 안 쓰였다
   const flows = [false, true].map((invest) => {
     const runs = [1, 2, 3].map((seed) =>
       simulate({ steps: STEPS, build: balanced, ...CAP, invest }, seed),
@@ -147,8 +148,18 @@ test('★ 골드는 어디로 가나 — 유지비가 수입의 25~35%여야 한
     const avg = (pick: (r: (typeof runs)[number]) => number) =>
       runs.reduce((sum, r) => sum + pick(r), 0) / runs.length;
     const earned = avg((r) => r.log.reduce((sum, d) => sum + d.gold, 0));
+    const kept = avg((r) => Object.values(r.save.materials).reduce((a, n) => a + n, 0));
+    const enhanced = avg((r) => r.materialsUsed.enhance);
+    const boss = avg((r) => r.materialsUsed.boss);
+    // Lv50에 낀 장비의 강화 단계 — +6부터는 소재가 있어야 올라간다 (T17_6 검수)
+    const worn = runs[0].save.inventory
+      .filter((i) => Object.values(runs[0].save.equipped).includes(i.uid))
+      .map((i) => i.enhance)
+      .sort((a, b) => b - a);
     return {
       earned,
+      materials: { gained: kept + enhanced + boss, enhanced, boss, kept },
+      worn,
       days: avg((r) => r.days),
       rows: [
         ['번 골드 (사냥)', earned],
@@ -176,10 +187,20 @@ test('★ 골드는 어디로 가나 — 유지비가 수입의 25~35%여야 한
   }
   console.log('  ' + '─'.repeat(64));
   console.log(
-    `  유지비(물약+여관) ${(base.upkeep * 100).toFixed(0)}% / ${(invest.upkeep * 100).toFixed(0)}% — 목표 25~35% (기준선)` +
+    `  유지비(물약+여관) ${(base.upkeep * 100).toFixed(0)}% / ${(invest.upkeep * 100).toFixed(0)}% — 목표 25~35% (투자형)` +
       `   Lv50 ${base.days.toFixed(0)}일 / ${invest.days.toFixed(0)}일`,
   );
-  expect(base.upkeep, '유지비 비중 (기준선)').toBeGreaterThan(0.15);
+  for (const [name, f] of [
+    ['기준선', base],
+    ['투자형', invest],
+  ] as const) {
+    const m = f.materials;
+    console.log(
+      `  소재 (${name}) 모은 ${m.gained.toFixed(0)}개 → 강화 ${m.enhanced.toFixed(0)} · 보스 버프 ${m.boss.toFixed(0)} · 남음 ${m.kept.toFixed(0)}` +
+        `   Lv50에 낀 장비 +${f.worn.join(' +')} (시드 1)`,
+    );
+  }
+  expect(invest.upkeep, '유지비 비중 (투자형)').toBeGreaterThan(0.15);
 });
 
 test('§6.2 덜 걷는 날 — 걸음 수에 따른 진행 속도', () => {

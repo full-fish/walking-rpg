@@ -96,6 +96,9 @@ export const migrations: Record<number, Migration> = {
     regionProgress: { ...(s.regionProgress as object), bosses: {} },
     run: s.run ? { ...(s.run as object), boss: false } : null,
   }),
+
+  /** v9 → v10: 보스 버프 (T17_6 검수). 진행 중인 판에는 아직 버프가 없다 */
+  9: (s) => ({ ...s, run: s.run ? { ...(s.run as object), buffs: [] } : null }),
 };
 
 /**

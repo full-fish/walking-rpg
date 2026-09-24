@@ -5,11 +5,12 @@
  * 호출부가 "살 수 있나"를 따로 묻지 않고 결과만 확인하면 된다.
  * React를 import하지 않는다 — Node에서 돌아야 한다.
  */
-import { consumableById, equipmentById, fieldById } from '../content';
+import { consumableById, equipmentById, fieldById, regionById } from '../content';
 import type { ItemInstance, Save } from '../save/schema';
 import {
   ENHANCE_MAX,
   enhanceCost,
+  enhanceMaterials,
   enhanceRate,
   BAG,
   bagExpandCost,
@@ -36,6 +37,39 @@ function bump(map: Record<string, number>, id: string, delta: number): Record<st
   const next = { ...map, [id]: count(map, id) + delta };
   if (next[id] <= 0) delete next[id];
   return next;
+}
+
+/** 그 지역 사냥터 소재를 몇 개 가졌나 (T17_6 검수). */
+export function regionMaterials(save: Save, region: number): number {
+  return regionById(region).fields.reduce((sum, f) => sum + count(save.materials, f.id), 0);
+}
+
+/**
+ * 그 지역 사냥터 소재를 n개 고른다 (T17_6 검수) — **가진 게 많은 곳부터** 하나씩 집어서,
+ * 나중에 +7~+10이 요구하는 "서로 다른 사냥터"가 되도록 남겨 둔다. `distinct`면 한 곳에서 하나만.
+ * 모자라면 null. 고르기만 하고 빼지는 않는다 — 쓰는 쪽이 spendMaterials로 뺀다.
+ */
+export function pickMaterials(
+  save: Save,
+  region: number,
+  n: number,
+  distinct: boolean,
+): string[] | null {
+  const left = { ...save.materials };
+  const ids = regionById(region).fields.map((f) => f.id);
+  const picked: string[] = [];
+  for (let i = 0; i < n; i++) {
+    const pool = ids.filter((id) => count(left, id) > 0 && !(distinct && picked.includes(id)));
+    if (pool.length === 0) return null;
+    const best = pool.reduce((a, b) => (count(left, b) > count(left, a) ? b : a));
+    picked.push(best);
+    left[best] -= 1;
+  }
+  return picked;
+}
+
+export function spendMaterials(save: Save, ids: string[]): Save {
+  return { ...save, materials: ids.reduce((m, id) => bump(m, id, -1), save.materials) };
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -218,7 +252,14 @@ export type EnhanceResult = {
   cost: number;
   /** 시도한 단계 (+N의 N) */
   step: number;
+  /** 쓴 소재 수 (+6부터, 성공했을 때만) */
+  materials: number;
 };
+
+/** 다음 단계 강화에 쓸 소재 — 그 장비 지역의 서로 다른 사냥터에서 하나씩. 모자라면 null */
+export function enhancePick(save: Save, item: ItemInstance): string[] | null {
+  return pickMaterials(save, itemDef(item).region, enhanceMaterials(item.enhance + 1), true);
+}
 
 /**
  * 장비 한 점을 한 단계 올려 본다 (§4.5).
@@ -233,17 +274,20 @@ export function enhanceItem(save: Save, uid: string, rng: () => number): Enhance
   if (!item || item.enhance >= ENHANCE_MAX) return null;
 
   const step = item.enhance + 1;
+  // +6부터는 소재가 있어야 두드릴 수 있다. 쓰는 건 성공했을 때뿐이다 (T17_6 검수)
+  const picked = enhancePick(save, item);
+  if (!picked) return null;
   const cost = enhanceCost(itemDef(item).price, step);
   const paid = withGold(save, -cost);
   if (!paid) return null;
 
   const success = rng() < enhanceRate(step);
-  if (!success) return { save: paid, success, cost, step };
+  if (!success) return { save: paid, success, cost, step, materials: 0 };
 
   const next: Save = {
-    ...paid,
+    ...spendMaterials(paid, picked),
     inventory: paid.inventory.map((i) => (i.uid === uid ? { ...i, enhance: step } : i)),
   };
   // 낀 장비를 강화하면 최대 HP가 늘어난다. 현재 HP도 같이 올린다 (장착과 같은 규칙)
-  return { save: withStatChange(paid, next), success, cost, step };
+  return { save: withStatChange(paid, next), success, cost, step, materials: picked.length };
 }

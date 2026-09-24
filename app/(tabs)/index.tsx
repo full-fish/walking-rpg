@@ -1,10 +1,11 @@
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { bossOf, REGIONS, regionById, type Field } from '@/content';
-import { REGION_COUNT, WP_COST } from '@/game/formulas';
+import { regionMaterials } from '@/game/economy';
+import { BOSS_BUFF, REGION_COUNT, WP_COST } from '@/game/formulas';
 import { bagFull } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import { bossCost, bossState, unlockCost } from '@/game/region';
@@ -43,6 +44,10 @@ export default function Adventure() {
   const { unlocked } = save.regionProgress;
   const boss = bossOf(region.id);
   const bossNow = bossState(save, region.id);
+  /** 보스 버프에 쓸 소재 수 (T17_6 검수). 가진 것보다 많이 고를 수는 없다 */
+  const [buffs, setBuffs] = useState(0);
+  const haveMaterials = regionMaterials(save, region.id);
+  const useMaterials = Math.min(buffs, haveMaterials);
 
   // 걸음이 갱신될 때마다(=60초 폴링/센서) 지급과 HP 회복을 함께 반영한다.
   // 둘 다 받을 게 없으면 아무것도 저장하지 않으므로 그냥 매번 불러도 된다.
@@ -138,10 +143,30 @@ export default function Adventure() {
                       bagFull(save)
                     }
                     onPress={() => {
-                      if (trade(trades.challengeBoss())) router.push('/field');
+                      if (trade(trades.challengeBoss(useMaterials))) router.push('/field');
                     }}
                   />
                 </View>
+              )}
+              {/* 보스 버프 (T17_6 검수) — 소재 하나에 무작위 버프 하나. 뭐가 붙을지는 들어가서 본다 */}
+              {bossNow !== 'cleared' && (
+                <>
+                  <Text size="sm" dim>
+                    소재를 쓰면 하나에 하나씩 무작위 버프(전투력 값 ×{BOSS_BUFF.mult}) — 이 지역
+                    소재 {haveMaterials}개
+                  </Text>
+                  <View style={styles.row}>
+                    {Array.from({ length: BOSS_BUFF.max + 1 }, (_, n) => (
+                      <Button
+                        key={n}
+                        label={`소재 ${n}`}
+                        tone={n === useMaterials ? 'gold' : 'normal'}
+                        disabled={n > haveMaterials}
+                        onPress={() => setBuffs(n)}
+                      />
+                    ))}
+                  </View>
+                </>
               )}
             </Panel>
 

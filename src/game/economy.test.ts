@@ -209,6 +209,50 @@ test('강화 — §4.5 표 그대로. 실패해도 단계가 안 내려간다', 
   expect(enhanceItem(save, '없는uid', rng)).toBeNull();
 });
 
+test('+6부터는 그 지역 소재가 서로 다른 사냥터에서 1·2·3·4·7개 든다 — 성공할 때만 쓴다 (T17_6 검수)', () => {
+  const def = equipmentById('eq_t5_weapon_common'); // 티어 5 = 지역 3
+  const [a, b, ...rest] = regionById(def.region).fields.map((f) => f.id);
+  let save = buyEquipment(rich(100_000_000), def.id, rng)!;
+  const uid = save.inventory[0].uid;
+  save = { ...save, inventory: [{ ...save.inventory[0], enhance: 5 }] };
+
+  // 소재가 없으면 골드가 있어도 못 두드린다
+  expect(enhanceItem(save, uid, () => 0)).toBeNull();
+
+  // +6은 아무 사냥터 하나 — 가진 게 많은 곳부터 쓴다
+  save = { ...save, materials: { [a]: 1, [b]: 3 } };
+  const six = enhanceItem(save, uid, () => 0)!;
+  expect(six.materials).toBe(1);
+  expect(six.save.materials).toEqual({ [a]: 1, [b]: 2 });
+
+  // 실패하면 골드만 나가고 소재는 그대로다
+  const failed = enhanceItem(six.save, uid, () => 0.999)!;
+  expect(failed.success).toBe(false);
+  expect(failed.save.materials).toEqual(six.save.materials);
+
+  // +7은 서로 다른 두 곳 — 한 곳에 아무리 많아도 안 된다
+  expect(enhanceItem({ ...six.save, materials: { [b]: 9 } }, uid, () => 0)).toBeNull();
+  const seven = enhanceItem(six.save, uid, () => 0)!;
+  expect(seven.save.materials).toEqual({ [b]: 1 });
+
+  // +10은 그 지역 일곱 곳 전부 — 여섯 곳이면 못 간다
+  const all = [a, b, ...rest];
+  const at9 = { ...seven.save, inventory: [{ ...seven.save.inventory[0], enhance: 9 }] };
+  const one = (ids: string[]) => Object.fromEntries(ids.map((id) => [id, 1]));
+  expect(enhanceItem({ ...at9, materials: one(all.slice(0, 6)) }, uid, () => 0)).toBeNull();
+  const ten = enhanceItem({ ...at9, materials: one(all) }, uid, () => 0)!;
+  expect(ten.save.inventory[0].enhance).toBe(10);
+  expect(ten.save.materials).toEqual({});
+});
+
+test('레벨이 모자라도 장비는 산다 — 미리 사 두고 레벨이 되면 낀다 (T17_6 검수)', () => {
+  const def = equipmentById('eq_t4_weapon_common');
+  expect(def.level).toBeGreaterThan(1);
+  const bought = buyEquipment(rich(1_000_000), def.id, rng)!;
+  expect(bought.inventory).toHaveLength(1);
+  expect(equipItem(bought, bought.inventory[0].uid), '끼는 건 레벨이 돼야 한다').toBeNull();
+});
+
 test('강화는 인스턴스 단위다 — 같은 이름 둘이 섞이면 안 된다 (§4.5)', () => {
   let save = buyEquipment(rich(10_000_000), 'eq_t5_weapon_common', rng)!;
   save = buyEquipment(save, 'eq_t5_weapon_common', rng)!;
@@ -230,7 +274,12 @@ test('★ +10 기대 시도 33.3회 · 기대 골드를 난수로 재현한다 (
   let gold = 0;
   for (let seed = 0; seed < RUNS; seed++) {
     const r = makeRng(seed);
-    let save = { ...defaultSave(), player: { ...defaultSave().player, gold: 100_000_000 } };
+    // +6부터 드는 소재는 넉넉히 — 성공할 때만 쓰므로 시도 수·골드에는 안 끼어든다 (T17_6 검수)
+    let save = {
+      ...defaultSave(),
+      player: { ...defaultSave().player, gold: 100_000_000 },
+      materials: Object.fromEntries(regionById(def.region).fields.map((f) => [f.id, 100])),
+    };
     save = buyEquipment(save, def.id, rng)!;
     const uid = save.inventory[0].uid;
     const start = save.player.gold;

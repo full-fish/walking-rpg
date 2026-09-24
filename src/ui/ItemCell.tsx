@@ -67,28 +67,50 @@ export function ItemCell({
       </Pressable>
       {/* 칸의 형제로 둔다 — 안에 두면 창 안을 누른 게 칸의 onPress까지 올라갈 수 있다 */}
       {def && (
-        <Modal
-          transparent
-          visible={info}
-          animationType="fade"
-          onRequestClose={() => setInfo(false)}
-        >
-          <Pressable style={styles.backdrop} onPress={() => setInfo(false)}>
-            <Panel>
-              <View style={styles.infoHead}>
-                <ItemIcon def={def} size={48} />
-                <View style={styles.infoName}>
-                  <Text color={rarity[def.rarity]}>{item ? itemLabel(item) : def.name}</Text>
-                  <Text size="sm" dim>
-                    {GEAR_SLOT_LABELS[def.slot]} · 요구 Lv{def.level}
-                  </Text>
-                </View>
-              </View>
-              <Text>{statText(item ? itemStats(item) : def)}</Text>
-            </Panel>
-          </Pressable>
-        </Modal>
+        <Popup visible={info} onClose={() => setInfo(false)}>
+          <ItemInfo def={def} item={item} />
+        </Popup>
       )}
+    </>
+  );
+}
+
+/**
+ * 화면 가운데 뜨는 창 — 바깥이나 창의 빈 곳을 누르면 닫힌다. 안의 버튼은 버튼대로 먹는다.
+ * 꾹 누르기 정보창과 상점 격자에서 고른 칸(T17_6 검수)이 같이 쓴다.
+ */
+export function Popup({
+  visible,
+  onClose,
+  children,
+}: {
+  visible: boolean;
+  onClose: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <Modal transparent visible={visible} animationType="fade" onRequestClose={onClose}>
+      <Pressable style={styles.backdrop} onPress={onClose}>
+        <Panel>{children}</Panel>
+      </Pressable>
+    </Modal>
+  );
+}
+
+/** 장비 한 점의 이름 · 부위 · 착용 Lv · 스탯. 가진 물건(`item`)이면 품질·강화가 붙은 값이다 */
+export function ItemInfo({ def, item }: { def: Equipment; item?: ItemInstance }) {
+  return (
+    <>
+      <View style={styles.infoHead}>
+        <ItemIcon def={def} size={48} />
+        <View style={styles.infoName}>
+          <Text color={rarity[def.rarity]}>{item ? itemLabel(item) : def.name}</Text>
+          <Text size="sm" dim>
+            {GEAR_SLOT_LABELS[def.slot]} · 착용 Lv{def.level}
+          </Text>
+        </View>
+      </View>
+      <Text>{statText(item ? itemStats(item) : def)}</Text>
     </>
   );
 }

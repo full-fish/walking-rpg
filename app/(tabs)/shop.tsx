@@ -1,5 +1,5 @@
-import { useState, type ReactElement } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { useState, type ReactElement, type ReactNode } from 'react';
+import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
@@ -11,7 +11,7 @@ import {
   type Equipment,
   type Field,
 } from '@/content';
-import { depositNet, sellPrice } from '@/game/economy';
+import { depositNet, enhancePick, sellPrice } from '@/game/economy';
 import { inTown } from '@/game/field';
 import {
   BAG,
@@ -19,6 +19,7 @@ import {
   ENHANCE_MAX,
   enhanceCost,
   enhanceExpected,
+  enhanceMaterials,
   enhanceRate,
   GEAR_SLOTS,
   VAULT,
@@ -31,7 +32,7 @@ import { statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
-import { ItemCell, ItemGrid, ItemIcon, qualityTag } from '@/ui/ItemCell';
+import { ItemCell, ItemGrid, ItemIcon, ItemInfo, Popup, qualityTag } from '@/ui/ItemCell';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
@@ -49,7 +50,8 @@ function Row({
   tone,
   icon,
 }: {
-  title: string;
+  /** 비우면 줄에 이름을 안 쓴다 — 격자 창 안에서는 위의 ItemInfo가 이미 보여준다 */
+  title?: string;
   detail: string;
   action: string;
   disabled?: boolean;
@@ -63,7 +65,7 @@ function Row({
       <View style={styles.itemRow}>
         {icon && <ItemIcon def={icon} size={36} />}
         <View style={styles.name}>
-          <Text>{title}</Text>
+          {title ? <Text>{title}</Text> : null}
           <Text size="sm" dim>
             {detail}
           </Text>
@@ -75,9 +77,21 @@ function Row({
 }
 
 /**
+ * 되돌릴 수 없는 거래는 한 번 더 묻는다 (T17_6 검수) — 장비 사고팔기 · 교환 · 확장.
+ * 물약은 자주 사는 거라 안 묻고, 강화는 연달아 두드리는 거라 안 묻는다.
+ */
+function confirm(title: string, message: string, action: string, onOk: () => void) {
+  Alert.alert(title, message, [
+    { text: '취소', style: 'cancel' },
+    { text: action, onPress: onOk },
+  ]);
+}
+
+/**
  * 장비 목록을 격자나 줄로 편다 (T17_6) — 가방 탭과 같은 칸(ItemCell)을 쓴다.
- * 격자는 **눌러서 고르고, 고른 것의 줄이 아래에 뜬다.** 칸을 누르자마자 사거나 팔면
- * 스크롤하다 잘못 건드린 한 번이 골드로 나간다.
+ * 격자는 **눌러서 고르면 창이 뜨고, 그 안에서 사고판다** (T17_6 검수). 전에는 고른 것의 줄이
+ * 목록 맨 아래에 붙어서, 목록이 길면 위쪽 칸을 눌러도 줄이 화면 밖이라 안 보였다.
+ * 칸을 누르자마자 사거나 팔지는 않는다 — 스크롤하다 잘못 건드린 한 번이 골드로 나간다.
  */
 function ItemList<T>({
   items,
@@ -88,6 +102,7 @@ function ItemList<T>({
   tagOf,
   row,
   empty,
+  note,
 }: {
   items: T[];
   grid: boolean;
@@ -96,8 +111,11 @@ function ItemList<T>({
   /** 가진 물건이면 개체를 준다 — 꾹 눌렀을 때 품질·강화가 붙은 스탯이 뜬다 */
   instOf?: (item: T) => ItemInstance;
   tagOf: (item: T) => string;
-  row: (item: T) => ReactElement;
+  /** 줄 하나. `compact`면 창 안이라 그림·이름을 빼고 설명과 버튼만 */
+  row: (item: T, compact?: boolean) => ReactElement;
   empty: string;
+  /** 창에 같이 띄울 것 — 강화 결과 한 줄 */
+  note?: ReactNode;
 }) {
   const [picked, setPicked] = useState<string | null>(null);
   if (items.length === 0) {
@@ -131,13 +149,15 @@ function ItemList<T>({
           />
         ))}
       </ItemGrid>
-      {chosen ? (
-        row(chosen)
-      ) : (
-        <Text size="sm" dim>
-          칸을 누르면 여기에 뜹니다.
-        </Text>
-      )}
+      <Popup visible={chosen !== undefined} onClose={() => setPicked(null)}>
+        {chosen !== undefined && (
+          <>
+            <ItemInfo def={defOf(chosen)} item={instOf?.(chosen)} />
+            {note}
+            {row(chosen, true)}
+          </>
+        )}
+      </Popup>
     </>
   );
 }
@@ -192,31 +212,42 @@ export default function Shop() {
     </>
   );
 
-  const enhanceRow = (item: ItemInstance) => {
+  const enhanceRow = (item: ItemInstance, compact?: boolean) => {
     const def = itemDef(item);
     const next = item.enhance + 1;
     const maxed = item.enhance >= ENHANCE_MAX;
     const cost = maxed ? 0 : enhanceCost(def.price, next);
+    // +6부터는 그 장비 지역의 서로 다른 사냥터 소재가 든다 (T17_6 검수)
+    const need = maxed ? 0 : enhanceMaterials(next);
+    const owned = regionById(def.region).fields.filter((f) => save.materials[f.id] > 0).length;
+    const short = need > 0 && enhancePick(save, item) === null;
+    const worn = equipped.has(item.uid);
     return (
       <Row
-        icon={def}
-        title={`${equipped.has(item.uid) ? '[착용] ' : ''}${itemLabel(item)}`}
+        icon={compact ? undefined : def}
+        title={compact ? undefined : `${worn ? '[착용] ' : ''}${itemLabel(item)}`}
         detail={
-          maxed
+          (compact && worn ? '착용 중 · ' : '') +
+          (maxed
             ? '최대 단계입니다'
             : `+${next} 성공률 ${(enhanceRate(next) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
-              ` · +10까지 기대 ${enhanceExpected(def.price).gold.toLocaleString()}G`
+              (need > 0
+                ? ` · ${regionById(def.region).name} 소재 ${need}종 (가진 ${owned}종)`
+                : '') +
+              ` · +10까지 기대 ${enhanceExpected(def.price).gold.toLocaleString()}G`)
         }
         action={maxed ? '완료' : '강화'}
-        tone={equipped.has(item.uid) ? 'gold' : 'normal'}
-        disabled={maxed || gold < cost}
+        tone={worn ? 'gold' : 'normal'}
+        disabled={maxed || gold < cost || short}
         onPress={() => {
           const r = enhance(item.uid);
           if (!r) return;
           setLastEnhance(
             r.success
-              ? `성공! ${def.name} +${r.step} (${r.cost.toLocaleString()}G)`
-              : `실패… +${r.step} 못 붙었습니다 (${r.cost.toLocaleString()}G)`,
+              ? `성공! ${def.name} +${r.step} (${r.cost.toLocaleString()}G` +
+                  (r.materials > 0 ? ` · 소재 ${r.materials}개` : '') +
+                  ')'
+              : `실패… +${r.step} 못 붙었습니다 (${r.cost.toLocaleString()}G — 소재는 그대로)`,
           );
         }}
       />
@@ -300,17 +331,25 @@ export default function Shop() {
                 defOf={(e) => e}
                 tagOf={(e) => `${e.price.toLocaleString()}G`}
                 empty="이 부위는 파는 게 없습니다."
-                row={(e) => (
+                row={(e, compact) => (
                   <Row
-                    icon={e}
-                    title={e.name}
+                    icon={compact ? undefined : e}
+                    title={compact ? undefined : e.name}
                     detail={
                       `${GEAR_SLOT_LABELS[e.slot]} · ${statText(e)} · ${e.price.toLocaleString()}G` +
-                      (e.level > save.player.level ? ` · 요구 Lv${e.level}` : '')
+                      // 레벨이 모자라도 산다 — 미리 사 두고 레벨이 되면 낀다
+                      (e.level > save.player.level ? ` · 착용 Lv${e.level}` : '')
                     }
                     action="구매"
                     disabled={full || gold < e.price}
-                    onPress={() => trade(trades.buyEquipment(e.id))}
+                    onPress={() =>
+                      confirm(
+                        '구매할까요?',
+                        `${e.name} · ${e.price.toLocaleString()}G`,
+                        '구매',
+                        () => trade(trades.buyEquipment(e.id)),
+                      )
+                    }
                   />
                 )}
               />
@@ -329,7 +368,14 @@ export default function Shop() {
                   save.bag.expansions >= BAG.maxExpansions ||
                   gold < bagExpandCost(save.bag.expansions)
                 }
-                onPress={() => trade(trades.expandBag())}
+                onPress={() =>
+                  confirm(
+                    '가방을 늘릴까요?',
+                    `${bagExpandCost(save.bag.expansions).toLocaleString()}G · ${save.bag.capacity} → ${save.bag.capacity + BAG.step}칸`,
+                    '확장',
+                    () => trade(trades.expandBag()),
+                  )
+                }
               />
               <Text size="sm" dim>
                 낀 장비는 칸을 안 씁니다. 가방이 차면 드랍을 못 줍고 장비도 못 벗습니다.
@@ -345,13 +391,20 @@ export default function Shop() {
                 instOf={(i) => i}
                 tagOf={(i) => `${sellPrice(i).toLocaleString()}G`}
                 empty="팔 게 없습니다."
-                row={(item) => (
+                row={(item, compact) => (
                   <Row
-                    icon={itemDef(item)}
-                    title={itemLabel(item)}
+                    icon={compact ? undefined : itemDef(item)}
+                    title={compact ? undefined : itemLabel(item)}
                     detail={`${GEAR_SLOT_LABELS[equipmentById(item.defId).slot]} · ${sellPrice(item).toLocaleString()}G`}
                     action="팔기"
-                    onPress={() => trade(trades.sellItem(item.uid))}
+                    onPress={() =>
+                      confirm(
+                        '팔까요?',
+                        `${itemLabel(item)} · ${sellPrice(item).toLocaleString()}G`,
+                        '팔기',
+                        () => trade(trades.sellItem(item.uid)),
+                      )
+                    }
                   />
                 )}
               />
@@ -368,6 +421,10 @@ export default function Shop() {
                 골드만 사라집니다. 장비가 깨지거나 단계가 떨어지지는 않습니다. 금색 버튼이 낀
                 장비입니다.
               </Text>
+              <Text size="sm" dim>
+                +6부터는 그 장비 지역의 소재가 서로 다른 사냥터에서 1 · 2 · 3 · 4 · 7종 듭니다 —
+                성공했을 때만 씁니다.
+              </Text>
               <ItemList
                 items={upgradable}
                 grid={grid}
@@ -377,6 +434,7 @@ export default function Shop() {
                 tagOf={(i) => `${equipped.has(i.uid) ? '착용 ' : ''}${qualityTag(i)}`}
                 empty="강화할 장비가 없습니다."
                 row={enhanceRow}
+                note={lastEnhance && <Text color={colors.gold}>{lastEnhance}</Text>}
               />
             </Panel>
           </>
@@ -451,7 +509,14 @@ export default function Shop() {
                 save.vault.expansions >= VAULT.maxExpansions ||
                 gold < vaultExpandCost(save.vault.capacity)
               }
-              onPress={() => trade(trades.expand())}
+              onPress={() =>
+                confirm(
+                  '창고 한도를 늘릴까요?',
+                  `${vaultExpandCost(save.vault.capacity).toLocaleString()}G → 한도 ${(save.vault.capacity * VAULT.step).toLocaleString()}G`,
+                  '확장',
+                  () => trade(trades.expand()),
+                )
+              }
             />
           </Panel>
         )}
@@ -473,7 +538,14 @@ export default function Shop() {
                   detail={`${field.material.name} ${have}/${material} + ${cost.toLocaleString()}G · ${statText(item)}`}
                   action="교환"
                   disabled={full || have < material || gold < cost}
-                  onPress={() => trade(trades.exchange(field.id))}
+                  onPress={() =>
+                    confirm(
+                      '교환할까요?',
+                      `${field.reward.name} · ${field.material.name} ${material}개 + ${cost.toLocaleString()}G`,
+                      '교환',
+                      () => trade(trades.exchange(field.id)),
+                    )
+                  }
                 />
               );
             })}

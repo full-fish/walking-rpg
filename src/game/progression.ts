@@ -2,6 +2,7 @@ import { gearSetFor } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import type { Outcome } from './battle';
 import {
+  BOSS_BUFF,
   combatStats,
   GEAR_SLOTS,
   DEATH_GOLD_LOSS,
@@ -39,7 +40,7 @@ export type StatKey = SpendableStat;
 export function statsOf(save: Save) {
   const base = combatStats(save.player.level, 'warrior', save.statPoints);
   const gear = equippedStats(save);
-  return {
+  const stats = {
     ...base,
     maxHp: base.maxHp + gear.maxHp,
     atk: base.atk + gear.atk,
@@ -53,6 +54,9 @@ export function statsOf(save: Save) {
     /** 고유 장비의 특효 (§4.5). battle.ts가 몬스터 traits와 맞춰 본다 */
     bonusVs: equippedBonusVs(save),
   };
+  // 보스 버프 (T17_6 검수) — 그 판에만 붙는다. 전투 화면·시뮬·HP 막대가 전부 여기를 지나서 한 곳이면 된다
+  for (const stat of save.run?.buffs ?? []) stats[stat] *= BOSS_BUFF.mult;
+  return stats;
 }
 
 /**

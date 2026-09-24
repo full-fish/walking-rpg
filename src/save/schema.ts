@@ -1,9 +1,17 @@
 import { z } from 'zod';
 
-import { BAG, ENHANCE_MAX, GEAR_SLOTS, QUALITY_MAX, QUALITY_MIN, VAULT } from '../game/formulas';
+import {
+  BAG,
+  BOSS_BUFF_STATS,
+  ENHANCE_MAX,
+  GEAR_SLOTS,
+  QUALITY_MAX,
+  QUALITY_MIN,
+  VAULT,
+} from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 9;
+export const SAVE_VERSION = 10;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
@@ -100,6 +108,11 @@ export const SaveSchema = z.object({
        * 이때 fieldId는 사냥터가 아니라 `boss_r{지역}`이다.
        */
       boss: z.boolean(),
+      /**
+       * 보스 버프 (T17_6 검수) — 들어갈 때 소재 하나에 하나씩 뽑은 전투력 값. statsOf가 그 판에만
+       * ×1.1씩 곱한다. 같은 게 두 번이면 두 번 곱한다. 사냥터 판은 늘 빈 배열이다.
+       */
+      buffs: z.array(z.enum(BOSS_BUFF_STATS)),
     })
     .nullable(),
   /** 지역 진행도 (§4.1, T17_5). 해금 = 그 지역 보스 처치 + 해금 비용. 이동은 따로 낸다 */

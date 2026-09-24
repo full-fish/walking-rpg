@@ -185,3 +185,20 @@ test('v8 → v9: 보스 기록이 비어서 생기고, 진행 중인 판은 사�
   expect(v9.run?.boss).toBe(false);
   expect(v9.run?.killed).toBe(1);
 });
+
+test('v9 → v10: 진행 중인 판에 보스 버프 칸이 비어서 생긴다 (T17_6 검수)', () => {
+  const run = {
+    fieldId: 'boss_r1',
+    size: 1,
+    killed: 0,
+    earned: { exp: 0, gold: 0 },
+    potions: {},
+    monsterId: 'boss_r1',
+    boss: true,
+  };
+  const v10 = SaveSchema.parse(migrate({ ...defaultSave(), version: 9, run }));
+  expect(v10.run?.buffs).toEqual([]);
+  expect(v10.run?.boss).toBe(true);
+  // 마을에 있던 세이브는 그대로 마을이다
+  expect(SaveSchema.parse(migrate({ ...defaultSave(), version: 9, run: null })).run).toBeNull();
+});

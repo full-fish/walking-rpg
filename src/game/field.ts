@@ -123,6 +123,7 @@ export function enterField(save: Save, fieldId: string, rng: () => number): Save
       earned: { exp: 0, gold: 0 },
       monsterId: pickMonster(fieldId, rng).id,
       boss: false,
+      buffs: [],
     },
   );
 }

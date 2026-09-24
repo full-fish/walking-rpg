@@ -23,10 +23,19 @@ import {
   type Combatant,
   type Outcome,
 } from '../src/game/battle';
-import { buyConsumable, enhanceItem, sellItem, stayInn } from '../src/game/economy';
+import {
+  buyConsumable,
+  enhanceItem,
+  enhancePick,
+  regionMaterials,
+  sellItem,
+  stayInn,
+} from '../src/game/economy';
 import { currentMonster, drinkPotion, enterField, settleRun } from '../src/game/field';
 import {
+  BOSS_BUFF,
   ENHANCE_MAX,
+  EXPECTED_GEAR,
   enhanceCost,
   enhanceRate,
   expToNext,
@@ -187,9 +196,11 @@ function sortGear(save: Save, wear: boolean): { save: Save; sold: number } {
 function enhanceGear(save: Save, reserve: number, rng: () => number) {
   let next = save;
   let spent = 0;
+  let materials = 0;
   for (;;) {
+    // +6부터는 소재가 있어야 한다 (T17_6 검수) — 없는 장비는 이번엔 건너뛴다
     const steps = equippedItems(next)
-      .filter((i) => i.enhance < ENHANCE_MAX)
+      .filter((i) => i.enhance < ENHANCE_MAX && enhancePick(next, i) !== null)
       .map((i) => ({
         uid: i.uid,
         cost: enhanceCost(itemDef(i).price, i.enhance + 1),
@@ -204,14 +215,28 @@ function enhanceGear(save: Save, reserve: number, rng: () => number) {
     if (!tried) break;
     next = tried.save;
     spent += tried.cost;
+    materials += tried.materials;
   }
-  return { save: next, spent };
+  return { save: next, spent, materials };
 }
 
 /**
- * 보스 벤치용 기준 세이브 (T17_5) — 그 레벨, 균등 배분(STR·VIT·AGI), **그 지역 상점에서 살 수
- * 있는** 가장 좋은 common 풀세트(품질 100%, +0), 그 지역 물약 3개. 보스 배율은 **이 상태로 승률 50%** 가 되게 잡는다.
- * 강화·등급·품질은 전부 그 위의 이득이다 (§4.5).
+ * 그 지역 **보통으로 투자한 사람**의 한 벌 (EXPECTED_GEAR, T17_6 검수) — 그 레벨에 그 지역에서
+ * 살 수 있는 가장 높은 티어, 품질 100%. 보스 배율과 벤치가 이걸 기준으로 잰다.
+ */
+export function expectedSet(level: number, region: number): ItemInstance[] {
+  const { rarity, enhance } = EXPECTED_GEAR[region - 1];
+  return gearSetFor(level, region, rarity).map((def, i) => ({
+    uid: String(i + 1),
+    defId: def.id,
+    quality: 1,
+    enhance,
+  }));
+}
+
+/**
+ * 보스 벤치용 기준 세이브 (T17_5) — 그 레벨, 균등 배분(STR·VIT·AGI), 그 지역 **보통으로 투자한**
+ * 한 벌(expectedSet), 그 지역 물약 3개. 보스 배율은 **이 상태로 승률 50%** 가 되게 잡는다 (T17_6 검수).
  */
 export function baselineSave(level: number, region: number): Save {
   const ups = level - 1;
@@ -223,10 +248,7 @@ export function baselineSave(level: number, region: number): Save {
     consumables: { [bestPotion(region).id]: POTION_CARRY_MAX },
     regionProgress: { current: region, unlocked: region, bosses: {} },
   };
-  for (const def of gearSetFor(level, region)) {
-    const item = { uid: String(save.inventory.length + 1), defId: def.id, quality: 1, enhance: 0 };
-    save = equipItem(addItem(save, item), item.uid)!;
-  }
+  for (const item of expectedSet(level, region)) save = equipItem(addItem(save, item), item.uid)!;
   return { ...save, player: { ...save.player, hp: statsOf(save).maxHp } };
 }
 
@@ -350,8 +372,8 @@ export type SimOptions = {
   /**
    * 주운 장비를 끼고 남는 골드를 강화에 쏟나 (T17_6). 기본은 그렇다 — 실제 플레이에 가깝다.
    * 끄면 **기준선 플레이어**다 — common만 사서 끼고, 주운 건 전부 팔고, 강화는 안 한다.
-   * §4.5가 "기준선은 그 지역 common 풀세트"라고 한 그 상태이고, 유지비 목표 25~35%도
-   * 여기서 잰 값이다. 드랍을 끼거나 강화하면 덜 맞아서 유지비가 확 준다.
+   * 몬스터는 이제 "보통으로 투자한 사람"(EXPECTED_GEAR)에 맞춰져 있어서(T17_6 검수) 기준선은
+   * 보스에서 막히고 한참 느리다 — 강화를 안 하면 어떻게 되는지 보는 쪽이다.
    */
   invest?: boolean;
 };
@@ -393,6 +415,8 @@ export function simulate(opts: SimOptions, seed = 1) {
   let spentOnGear = 0;
   let spentOnEnhance = 0;
   let soldGear = 0;
+  /** 소재를 어디에 썼나 (T17_6 검수) — 모은 양은 남은 것 + 이 둘이다 */
+  const materialsUsed = { enhance: 0, boss: 0 };
   const bosses: { region: number; day: number; level: number; tries: number }[] = [];
   let tries = 0;
   /** 보스에 마지막으로 진 레벨. 그보다 올라야 다시 도전한다 */
@@ -451,6 +475,7 @@ export function simulate(opts: SimOptions, seed = 1) {
         const enhanced = enhanceGear(save, reserve, rng);
         save = enhanced.save;
         spentOnEnhance += enhanced.spent;
+        materialsUsed.enhance += enhanced.materials;
       }
 
       if (gate) {
@@ -466,8 +491,11 @@ export function simulate(opts: SimOptions, seed = 1) {
         }
         // 보스 — 다쳤는데 회복할 돈도 없으면 오늘은 접는다
         if (save.player.hp < statsOf(save).maxHp) break;
-        const inside = enterBoss(save);
+        // 남은 그 지역 소재는 보스 버프로 쓴다 (T17_6 검수). 강화에 먼저 쓰고 남은 만큼이다
+        const buffs = Math.min(BOSS_BUFF.max, regionMaterials(save, here.id));
+        const inside = enterBoss(save, buffs, rng);
         if (!inside) break;
+        materialsUsed.boss += buffs;
         tries += 1;
         const battle = fight(inside, rng);
         const result = settleRun(battle.save, battle.outcome, battle.playerHp, rng, now);
@@ -575,6 +603,7 @@ export function simulate(opts: SimOptions, seed = 1) {
     spentOnGear,
     spentOnEnhance,
     soldGear,
+    materialsUsed,
     bosses,
     days: log.length,
   };

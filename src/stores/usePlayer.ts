@@ -256,7 +256,8 @@ export const trades = {
   expandBag: () => (save: Save) => bagExpand(save),
   exchange: (fieldId: string) => (save: Save) => exchangeUnique(save, fieldId, Math.random),
   /** 지역 관문 (T17_5) — 보스 도전 · 해금 · 이동은 따로 낸다 */
-  challengeBoss: () => (save: Save) => enterBoss(save),
+  /** 소재를 쓰면 하나에 하나씩 무작위 버프 (T17_6 검수) */
+  challengeBoss: (materials: number) => (save: Save) => enterBoss(save, materials),
   unlockRegion: () => (save: Save) => unlockNext(save),
   travel: (region: number) => (save: Save) => travel(save, region),
 };

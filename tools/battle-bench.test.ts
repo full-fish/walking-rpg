@@ -12,16 +12,15 @@ import { expect, test } from 'vitest';
 import {
   bossOf,
   fieldLevel,
-  gearSetFor,
   monstersOfField,
   REGIONS,
   type Field,
   type Region,
 } from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
-import { combatStats } from '../src/game/formulas';
-import { setBonus } from '../src/game/items';
-import { bossTrial } from './simulate';
+import { combatStats, EXPECTED_GEAR } from '../src/game/formulas';
+import { itemStats } from '../src/game/items';
+import { bossTrial, expectedSet } from './simulate';
 
 const RUNS = 1_000;
 /** §4.2 목표 행동 수 */
@@ -30,22 +29,23 @@ const TARGET = { min: 20, max: 40 };
 const RUN_SIZES = [4, 6] as const;
 
 /**
- * Lv L 전사, **그 레벨 common 풀세트 착용** (§4.5). 상점은 지금 지역 티어만 판다 (T17_6 검수) —
- * 지역 끝 레벨이면 다음 지역 앞단을 낄 수 있어도 못 산다.
+ * Lv L 전사, **그 지역 보통으로 투자한 한 벌** 착용 (EXPECTED_GEAR, T17_6 검수) — 지역 1 common +0 ·
+ * 2 common +3 · 3~5 uncommon +3/+4/+5. 상점은 지금 지역 티어만 판다 — 지역 끝 레벨이면 다음 지역
+ * 앞단을 낄 수 있어도 못 산다.
  *
  * 맨몸으로 재면 후반이 전멸한다 — 전투력의 85%가 장비에서 오는 게 설계라서다.
- * 기준선은 "그 지역에서 살 수 있는 common 한 벌"이고, 등급·품질·강화는 전부 그 위의 이득이다.
- * 스탯 계산은 화면과 같은 combatStats·setBonus를 쓴다 — 여기서 따로 세면 둘이 어긋난다.
+ * 스탯 계산은 화면과 같은 combatStats·itemStats를 쓴다 — 여기서 따로 세면 둘이 어긋난다.
  */
-function warrior(level: number, region?: number): Combatant {
+function warrior(level: number, region = 1): Combatant {
   const stats = combatStats(level);
-  const gear = setBonus(gearSetFor(level, region));
+  const gear = expectedSet(level, region).map(itemStats);
+  const sum = (k: 'maxHp' | 'atk' | 'def' | 'spd') => gear.reduce((s, g) => s + g[k], 0);
   const geared = {
     ...stats,
-    maxHp: stats.maxHp + gear.maxHp,
-    atk: stats.atk + gear.atk,
-    def: stats.def + gear.def,
-    spd: stats.spd + gear.spd,
+    maxHp: stats.maxHp + sum('maxHp'),
+    atk: stats.atk + sum('atk'),
+    def: stats.def + sum('def'),
+    spd: stats.spd + sum('spd'),
   };
   return { name: `Lv${level} 전사`, hp: geared.maxHp, ...geared };
 }
@@ -255,20 +255,21 @@ test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 3배)', () 
 });
 
 /**
- * 보스 1:1 (T17_5) — **지역 끝 레벨 · common 풀세트 · 물약 3개로 승률 50%.**
+ * 보스 1:1 (T17_5) — **지역 끝 레벨 · 보통으로 투자한 한 벌 · 물약 3개로 승률 50%** (T17_6 검수).
  *
- * 강화·등급·품질이 전부 그 위의 이득이라(§4.5) 기준선에서 반반이면, 준비한 사람은 대체로
- * 이기고 맨몸으로 가면 진다. 배율(regions.json의 boss.mult)은 이 승률을 이분 탐색으로 맞춘
- * 값이다 — 지역마다 다른 건 지역 끝에서 플레이어가 몬스터를 앞지른 정도가 달라서다.
- * 밸런스를 건드려 여기가 깨지면 배율을 다시 맞춘다.
+ * 보통 투자(EXPECTED_GEAR)는 지역 1 common +0부터 지역 5 uncommon +5까지 한 단계씩 오른다.
+ * 기준선에서 반반이면, 더 키워 온 사람은 대체로 이기고 강화를 안 한 사람은 레벨로 메워야 한다.
+ * 배율(regions.json의 boss.mult)은 이 승률을 이분 탐색으로 맞춘 값이다. 밸런스를 건드려 여기가
+ * 깨지면 배율을 다시 맞춘다.
  */
-test('보스 1:1 — 지역 끝 레벨 · common 풀세트 · 물약 3개로 승률 50% (T17_5)', () => {
-  console.log('\n보스 1:1 — 지역 끝 레벨, common 풀세트(품질 100%, +0), 물약 3개');
-  console.log('  지역  보스                 배율    레벨    승률');
-  console.log('  ' + '─'.repeat(50));
+test('보스 1:1 — 지역 끝 레벨 · 보통 투자 한 벌 · 물약 3개로 승률 50% (T17_5, T17_6 검수)', () => {
+  console.log('\n보스 1:1 — 지역 끝 레벨, 보통 투자 한 벌(품질 100%), 물약 3개');
+  console.log('  지역  보스                 배율    레벨  장비          승률');
+  console.log('  ' + '─'.repeat(62));
   const rates: number[] = [];
   for (const region of REGIONS) {
     const level = region.levelRange[1];
+    const { rarity, enhance } = EXPECTED_GEAR[region.id - 1];
     let wins = 0;
     for (let seed = 1; seed <= RUNS; seed++) {
       if (bossTrial(level, region.id, makeRng(seed)) === 'win') wins++;
@@ -276,10 +277,10 @@ test('보스 1:1 — 지역 끝 레벨 · common 풀세트 · 물약 3개로 승
     rates.push(wins / RUNS);
     console.log(
       `  ${pad(region.id, 3)}   ${padEnd(bossOf(region.id).name, 18)} ×${region.boss.mult.toFixed(2)}` +
-        `  Lv${pad(level, 2)}  ${pad(pct(wins / RUNS, 0), 6)}`,
+        `  Lv${pad(level, 2)}  ${padEnd(`${rarity} +${enhance}`, 12)} ${pad(pct(wins / RUNS, 0), 6)}`,
     );
   }
-  console.log('  ' + '─'.repeat(50));
+  console.log('  ' + '─'.repeat(62));
   for (const rate of rates) expect(rate, '보스 승률').toBeGreaterThan(0.4);
   for (const rate of rates) expect(rate, '보스 승률').toBeLessThan(0.6);
 }, 60_000);

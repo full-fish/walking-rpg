@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { consumableById, fieldById, regionById } from '@/content';
 import { currentMonster } from '@/game/field';
+import { BOSS_BUFF, type BossBuffStat } from '@/game/formulas';
 import { statsOf } from '@/game/progression';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
@@ -11,6 +12,25 @@ import { Button } from '@/ui/Button';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
+
+/** 보스 버프 이름 (T17_6 검수) — 전투력 탭과 같은 말을 쓴다 */
+const BUFF_LABEL: Record<BossBuffStat, string> = {
+  atk: 'ATK',
+  def: 'DEF',
+  spd: 'SPD',
+  cri: '치명',
+  crd: '치명 피해',
+  eva: '회피',
+};
+
+/** ["atk", "cri", "atk"] → "ATK ×1.21 · 치명 ×1.10" — 같은 게 겹치면 곱해서 한 번에 보여준다 */
+function buffText(buffs: BossBuffStat[]): string {
+  const counts = new Map<BossBuffStat, number>();
+  for (const b of buffs) counts.set(b, (counts.get(b) ?? 0) + 1);
+  return [...counts]
+    .map(([b, n]) => `${BUFF_LABEL[b]} ×${(BOSS_BUFF.mult ** n).toFixed(2)}`)
+    .join(' · ');
+}
 
 /**
  * 사냥터 한 판의 진행 화면 (§4.4).
@@ -60,6 +80,7 @@ export default function Field() {
         }
       >
         <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
+        {run.buffs.length > 0 && <Text color={colors.gold}>버프 — {buffText(run.buffs)}</Text>}
         <Text size="sm" dim>
           {run.boss
             ? '물러설 곳이 없다.'

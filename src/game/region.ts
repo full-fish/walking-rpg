@@ -8,7 +8,8 @@
  */
 import { bossOf } from '../content';
 import type { Save } from '../save/schema';
-import { REGION_COUNT, WP_COST } from './formulas';
+import { pickMaterials, spendMaterials } from './economy';
+import { BOSS_BUFF, BOSS_BUFF_STATS, REGION_COUNT, WP_COST } from './formulas';
 import { openRun } from './field';
 import { bagFull } from './items';
 import { spendWp } from './wp';
@@ -43,16 +44,21 @@ export function travel(save: Save, region: number): Save | null {
  * 들어가는 순간 'tried'로 적는다. 지든 나가든 비용은 안 돌아오고 다음은 재도전 값이다.
  * **가방이 차 있으면 못 들어간다** — 이기면 장비를 확정으로 주는데 받을 칸이 없으면
  * 관문 값을 치른 보상이 통째로 날아간다.
+ *
+ * `materials`만큼 그 지역 소재를 쓰면(최대 3개) 하나에 하나씩 무작위 버프가 붙는다 (T17_6 검수).
+ * 소재가 모자라면 못 들어간다 — 화면이 가진 만큼만 고르게 한다.
  */
-export function enterBoss(save: Save): Save | null {
+export function enterBoss(save: Save, materials = 0, rng: () => number = Math.random): Save | null {
   const region = save.regionProgress.current;
   if (save.run !== null || bagFull(save) || bossState(save, region) === 'cleared') return null;
 
+  const used = pickMaterials(save, region, Math.min(materials, BOSS_BUFF.max), false);
+  if (!used) return null;
   const wp = spendWp(save.wp, bossCost(save, region));
   if (!wp) return null;
 
   const tried: Save = {
-    ...save,
+    ...spendMaterials(save, used),
     wp,
     regionProgress: {
       ...save.regionProgress,
@@ -66,6 +72,7 @@ export function enterBoss(save: Save): Save | null {
     earned: { exp: 0, gold: 0 },
     monsterId: bossOf(region).id,
     boss: true,
+    buffs: used.map(() => BOSS_BUFF_STATS[Math.floor(rng() * BOSS_BUFF_STATS.length)]),
   });
 }
 
