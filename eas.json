@@ -4,14 +4,16 @@
     "development": {
       "developmentClient": true,
       "distribution": "internal",
+      "env": { "APP_VARIANT": "development" },
       "android": { "buildType": "apk" }
     },
     "preview": {
-      "distribution": "internal",
-      "android": { "buildType": "apk" }
+      "autoIncrement": true,
+      "android": { "buildType": "app-bundle" }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "android": { "buildType": "app-bundle" }
     }
   },
   "submit": { "production": {} }

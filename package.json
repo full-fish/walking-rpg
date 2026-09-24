@@ -6,6 +6,12 @@
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
+    "build:dev": "eas build -p android --profile development",
+    "build:dev:local": "eas build -p android --profile development --local",
+    "build:preview": "eas build -p android --profile preview",
+    "build:preview:local": "eas build -p android --profile preview --local",
+    "build:prod": "eas build -p android --profile production",
+    "build:prod:local": "eas build -p android --profile production --local",
     "lint": "expo lint",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit",
