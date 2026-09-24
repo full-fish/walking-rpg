@@ -13,6 +13,8 @@
 - **배경은 마젠타(#FF00FF)** 입니다. 잘라낼 때 이 색을 지우므로, 아이템 쪽에는
   **보라·분홍을 일부러 안 썼습니다** — 같이 지워집니다. 수정·흑요석·심연을 파랑·청록으로 잡은 이유입니다.
 - 한 장이 **같은 티어의 5등급 전부**에 쓰입니다(아래 "등급과 그림"). 그래서 이름보다 **재질**을 묘사합니다.
+- **몬스터는 정면 3/4**(전투 화면에서 나를 보는 쪽), **보스는 화면을 채울 만큼 크게** 잡았습니다.
+  몬스터에도 보라·분홍을 안 썼습니다 — 마족·공허·심연은 **검정 + 청록**으로 통일했습니다.
 
 ---
 
@@ -609,6 +611,98 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 | arch_spirit | spirit.png | 산들바람 정령 등 10종 |
 | arch_undead | undead.png | 떠도는 해골 등 15종 |
 
+**프롬프트** — 같은 대화창에서 위에서부터 차례로 (종족 대표 그림이라 특정 개체가 아닙니다)
+
+`aquatic.png`
+
+```
+Flat 2D pixel art game sprite of a big warty swamp toad with webbed feet, bulging yellow eyes and a wide mouth, olive-green and brown, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`bandit.png`
+
+```
+Same art style as before, now a hooded human bandit with a scarf over the face, holding a short curved dagger, brown leather clothes.
+```
+
+`beast.png`
+
+```
+Same art style as before, now a snarling wild dog with bristling brown-grey fur and bared fangs.
+```
+
+`bird.png`
+
+```
+Same art style as before, now a sharp-beaked black crow with wings spread, ready to dive.
+```
+
+`demon.png`
+
+```
+Same art style as before, now a small horned demon with red skin, bat wings and a pointed tail, black claws.
+```
+
+`fungus.png`
+
+```
+Same art style as before, now a walking mushroom creature with a spotted brown-and-cream cap and stubby little legs.
+```
+
+`goblin.png`
+
+```
+Same art style as before, now a scrawny green goblin with big pointed ears, a ragged loincloth and a crude wooden club.
+```
+
+`golem.png`
+
+```
+Same art style as before, now a lumbering golem of stacked grey stone blocks with glowing yellow eyes.
+```
+
+`insect.png`
+
+```
+Same art style as before, now a giant ant with a shiny dark brown carapace and big mandibles.
+```
+
+`knight.png`
+
+```
+Same art style as before, now an empty suit of dark iron armor walking on its own, sword and shield, glowing eyes in the helmet slit.
+```
+
+`lizard.png`
+
+```
+Same art style as before, now an upright lizardman warrior with green scales holding a spear.
+```
+
+`plant.png`
+
+```
+Same art style as before, now a thorny vine monster with a toothy red-and-yellow flower head.
+```
+
+`slime.png`
+
+```
+Same art style as before, now a round green slime with a glossy highlight and simple dot eyes.
+```
+
+`spirit.png`
+
+```
+Same art style as before, now a floating wind spirit of swirling pale cyan air with two bright eyes.
+```
+
+`undead.png`
+
+```
+Same art style as before, now a walking skeleton warrior with cracked bones and a rusty sword.
+```
+
 ---
 
 ## 2-1. 보스 (5개, assets/images/monsters/)
@@ -624,11 +718,44 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | boss_r4 | boss_r4.png | 대장간의 마지막 기사 | 잿빛 화산지대 | 기갑형 |
 | boss_r5 | boss_r5.png | 심연의 지배자 | 잊혀진 심연 | 마족형 |
 
+**프롬프트** — 새 대화에서 1번부터 차례로
+
+`boss_r1.png`
+
+```
+Flat 2D pixel art game sprite of a huge scarred alpha wild dog, the pack leader, thick ruff of grey-brown fur, a torn ear, bared fangs and a spiked leather bandit collar, fantasy RPG boss monster, large and imposing, filling most of the frame, front three-quarter view facing the viewer, full body, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`boss_r2.png`
+
+```
+Same art style as before, now another boss: a gigantic moss-covered swamp crocodile rising out of murky green water, jaws wide open, reeds and vines hanging from its back, glowing yellow eyes. Large and imposing, filling most of the frame.
+```
+
+`boss_r3.png`
+
+```
+Same art style as before, now another boss: a towering sandstone colossus carved out of canyon rock, red-orange rock layers across its body, sand pouring from cracked joints, glowing amber eyes. Large and imposing, filling most of the frame.
+```
+
+`boss_r4.png`
+
+```
+Same art style as before, now another boss: a massive knight in soot-blackened forged armor with glowing orange-hot seams, gripping a huge greatsword still red-hot from the forge, embers drifting around. Large and imposing, filling most of the frame.
+```
+
+`boss_r5.png`
+
+```
+Same art style as before, now another boss: a colossal demon lord of the abyss, black armored body with glowing teal cracks, four curved horns, tattered black wings and a dark iron crown, teal fire in its eyes. Large and imposing, filling most of the frame.
+```
+
 ---
 
 ## 3. 몬스터 — 2차 확장: 티어별 세부 이미지 (총 141개, 나중에)
 
 1차로 부족하면 여기서 추가. 파일명: `<sprite>.png`
+종족마다 **새 대화**에서 1번부터 붙여 넣으세요 — 1번만 완결된 문장입니다.
 
 ### aquatic
 
@@ -640,6 +767,44 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | aquatic_16 | aquatic_16.png | 유황 두꺼비 |
 | aquatic_21 | aquatic_21.png | 심해 아귀 |
 | aquatic_23 | aquatic_23.png | 심연 촉수 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`aquatic_8.png`
+
+```
+Flat 2D pixel art game sprite of a big warty swamp toad, olive-green and brown, with bulging yellow eyes and a wide mouth, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`aquatic_11.png`
+
+```
+Same art style as before, now a mud catfish crawling out of cracked mud, slimy brown-grey skin and long whiskers.
+```
+
+`aquatic_12.png`
+
+```
+Same art style as before, now a large crab crusted with white salt crystals, pale grey shell, claws raised.
+```
+
+`aquatic_16.png`
+
+```
+Same art style as before, now a sulfur toad with warty yellow-orange skin, yellow sulfur crust and steam rising from its back.
+```
+
+`aquatic_21.png`
+
+```
+Same art style as before, now a deep-sea anglerfish with a dark navy body, a glowing teal lure and a huge needle-toothed mouth.
+```
+
+`aquatic_23.png`
+
+```
+Same art style as before, now a mass of dark tentacles rising from black water, glowing teal suckers and a single eye in the middle.
+```
 
 ### bandit
 
@@ -654,6 +819,62 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | bandit_16 | bandit_16.png | 검은 손 자객 |
 | bandit_20 | bandit_20.png | 혈맹 검객 |
 | bandit_25 | bandit_25.png | 배신자 장군 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`bandit_4.png`
+
+```
+Flat 2D pixel art game sprite of a scrawny grassland thief in a patched brown hood, holding a small knife and a stolen coin pouch, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`bandit_5.png`
+
+```
+Same art style as before, now a wandering bandit in a worn leather coat with a scarf mask, holding a short sword.
+```
+
+`bandit_8.png`
+
+```
+Same art style as before, now a burly bearded mountain bandit in a fur vest carrying a big woodcutter's axe.
+```
+
+`bandit_9.png`
+
+```
+Same art style as before, now a grave robber in a dirty grey cloak with a shovel, a lantern and a sack of loot on his back.
+```
+
+`bandit_12.png`
+
+```
+Same art style as before, now a desert raider wrapped in sand-colored cloth, face covered, holding a curved scimitar.
+```
+
+`bandit_14.png`
+
+```
+Same art style as before, now a desert scout in light tan leather armor with a short bow and a spyglass on the belt.
+```
+
+`bandit_16.png`
+
+```
+Same art style as before, now an assassin dressed all in black with a black hand emblem on the chest, twin daggers, red eyes above a mask.
+```
+
+`bandit_20.png`
+
+```
+Same art style as before, now a blood-oath swordsman in dark red and black armor, bandaged face, holding a long single-edged blade.
+```
+
+`bandit_25.png`
+
+```
+Same art style as before, now a traitor general in ornate dark steel armor with a torn royal cape, holding a greatsword, cold teal eyes.
+```
 
 ### beast
 
@@ -673,6 +894,86 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | beast_16 | beast_16.png | 화산 비룡 |
 | beast_21 | beast_21.png | 설원 이리 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`beast_1.png`
+
+```
+Flat 2D pixel art game sprite of a scrappy wild dog with brown fur and bared teeth, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`beast_2.png`
+
+```
+Same art style as before, now a lean hungry grey wolf with ash-colored fur.
+```
+
+`beast_3.png`
+
+```
+Same art style as before, now a white rabbit with a single sharp horn on its forehead and angry red eyes.
+```
+
+`beast_4.png`
+
+```
+Same art style as before, now a starving wildcat with tawny striped fur and visible ribs, hissing.
+```
+
+`beast_5.png`
+
+```
+Same art style as before, now a dark brown bandit hound with a spiked leather collar and a broken chain leash.
+```
+
+`beast_6.png`
+
+```
+Same art style as before, now a large cave bat with dark brown leathery wings spread wide, big ears and small fangs.
+```
+
+`beast_7.png`
+
+```
+Same art style as before, now a shadow wolf with black smoke-like fur and glowing white eyes.
+```
+
+`beast_8.png`
+
+```
+Same art style as before, now a black wild boar with long curved tusks and bristly fur.
+```
+
+`beast_12.png`
+
+```
+Same art style as before, now a gaunt hyena with sandy spotted fur, patches of exposed bone and a skull-like face.
+```
+
+`beast_13.png`
+
+```
+Same art style as before, now a mountain goat with huge curled horns and a shaggy white-grey coat, standing on a rock.
+```
+
+`beast_15.png`
+
+```
+Same art style as before, now a ridge wolf with thick grey-white fur blowing in the wind and fierce yellow eyes.
+```
+
+`beast_16.png`
+
+```
+Same art style as before, now a small volcanic wyvern with charcoal-black scales, glowing orange cracks and ember-lit wings.
+```
+
+`beast_21.png`
+
+```
+Same art style as before, now a snowfield wolf with frosty white-blue fur, icicles hanging from its coat, misty breath.
+```
+
 ### bird
 
 | sprite id | 파일명 | 이름 |
@@ -689,6 +990,74 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | bird_21 | bird_21.png | 옥좌의 까마귀 |
 | bird_22 | bird_22.png | 뇌명조 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`bird_2.png`
+
+```
+Flat 2D pixel art game sprite of a small brown-grey sparrow whose feathers are sharp metal blades, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`bird_3.png`
+
+```
+Same art style as before, now a black field crow with ruffled feathers and a sharp beak.
+```
+
+`bird_5.png`
+
+```
+Same art style as before, now a lookout crow wearing a tiny red bandana, perched and alert.
+```
+
+`bird_6.png`
+
+```
+Same art style as before, now a hawk with a sharply hooked beak and brown-and-cream plumage, wings half spread.
+```
+
+`bird_8.png`
+
+```
+Same art style as before, now a gaunt graveyard crow with dull black feathers, pale eyes and a bone in its talons.
+```
+
+`bird_10.png`
+
+```
+Same art style as before, now a cliff eagle with dark brown wings spread wide, a white head and powerful talons.
+```
+
+`bird_11.png`
+
+```
+Same art style as before, now a sand-colored cliff falcon in a diving pose with sharp talons.
+```
+
+`bird_14.png`
+
+```
+Same art style as before, now a storm crow with dark grey feathers crackling with small yellow lightning sparks.
+```
+
+`bird_18.png`
+
+```
+Same art style as before, now an ash harpy, half woman and half bird, with soot-grey feathered wings, talons and wild white hair.
+```
+
+`bird_21.png`
+
+```
+Same art style as before, now a large glossy black raven wearing a small tarnished gold crown, glowing teal eyes.
+```
+
+`bird_22.png`
+
+```
+Same art style as before, now a thunderbird with deep blue and white feathers crackling with bright yellow lightning, wings spread wide.
+```
+
 ### demon
 
 | sprite id | 파일명 | 이름 |
@@ -698,6 +1067,38 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | demon_21 | demon_21.png | 심연의 하수인 |
 | demon_22 | demon_22.png | 공허 추적자 |
 | demon_25 | demon_25.png | 공허의 문지기 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`demon_16.png`
+
+```
+Flat 2D pixel art game sprite of a small fire imp with red skin, tiny bat wings, little horns and a flame at the tip of its tail, grinning, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`demon_18.png`
+
+```
+Same art style as before, now an ash demon with cracked charcoal-grey skin, curved horns, glowing orange eyes and embers falling off its body.
+```
+
+`demon_21.png`
+
+```
+Same art style as before, now an abyssal minion, a hunched black-skinned demon with small horns, long claws and glowing teal eyes.
+```
+
+`demon_22.png`
+
+```
+Same art style as before, now a void stalker, a lean shadowy demon on all fours with a featureless face, long clawed limbs and teal cracks along its body.
+```
+
+`demon_25.png`
+
+```
+Same art style as before, now a void gatekeeper, a tall armored demon holding a huge black key-shaped halberd, teal flames around its horns.
+```
 
 ### fungus
 
@@ -710,6 +1111,44 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | fungus_17 | fungus_17.png | 발광 포자군 |
 | fungus_23 | fungus_23.png | 심연 균사왕 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`fungus_1.png`
+
+```
+Flat 2D pixel art game sprite of a small walking mushroom with a spotted brown cap and stubby legs, puffing spores, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`fungus_4.png`
+
+```
+Same art style as before, now a poison spore mushroom with a sickly yellow-green cap releasing a green toxic spore cloud.
+```
+
+`fungus_7.png`
+
+```
+Same art style as before, now a rotting blob of grey-white fungal threads with small mushrooms sprouting from it and a gaping mouth.
+```
+
+`fungus_12.png`
+
+```
+Same art style as before, now a sulfur mushroom with a bright yellow crusty cap, puffing yellow spores.
+```
+
+`fungus_17.png`
+
+```
+Same art style as before, now a cluster of glowing mushrooms with bright cyan-green bioluminescent caps.
+```
+
+`fungus_23.png`
+
+```
+Same art style as before, now a giant mushroom king with a wide black cap crowned by smaller mushrooms, glowing teal gills and root-like tendrils.
+```
+
 ### goblin
 
 | sprite id | 파일명 | 이름 |
@@ -718,6 +1157,32 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | goblin_4 | goblin_4.png | 고블린 투석꾼 |
 | goblin_5 | goblin_5.png | 고블린 주술사 |
 | goblin_9 | goblin_9.png | 고블린 채굴꾼 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`goblin_3.png`
+
+```
+Flat 2D pixel art game sprite of a small green goblin grunt in ragged clothes with a crude wooden club, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`goblin_4.png`
+
+```
+Same art style as before, now a goblin slinger swinging a leather sling with a stone, a pouch of rocks on its belt.
+```
+
+`goblin_5.png`
+
+```
+Same art style as before, now a goblin shaman in a bone mask and feathered headdress, holding a staff topped with a skull and a green flame.
+```
+
+`goblin_9.png`
+
+```
+Same art style as before, now a goblin miner with a pickaxe, a helmet with a candle on top and a sack of ore.
+```
 
 ### golem
 
@@ -733,6 +1198,68 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | golem_22 | golem_22.png | 서리 거상 |
 | golem_23 | golem_23.png | 대전 수호 석상 |
 | golem_25 | golem_25.png | 태고의 거인 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`golem_3.png`
+
+```
+Flat 2D pixel art game sprite of a small rubble golem, a pile of grey stones held together by a glowing yellow core, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`golem_9.png`
+
+```
+Same art style as before, now a half-carved stone statue come to life, one side smooth and sculpted, the other side raw rock with chisel marks.
+```
+
+`golem_11.png`
+
+```
+Same art style as before, now a sand golem of packed tan sand with grains streaming off its arms.
+```
+
+`golem_13.png`
+
+```
+Same art style as before, now a fossil golem, a stone body with embedded dinosaur bones and ammonite shells.
+```
+
+`golem_14.png`
+
+```
+Same art style as before, now a golem made of jagged white and pale grey salt crystals.
+```
+
+`golem_17.png`
+
+```
+Same art style as before, now a lava golem of black rock plates with glowing orange molten cracks, dripping lava.
+```
+
+`golem_19.png`
+
+```
+Same art style as before, now an iron guardian, a heavy riveted cast-iron construct with a furnace glowing in its chest.
+```
+
+`golem_22.png`
+
+```
+Same art style as before, now a frost colossus made of blue ice blocks and packed snow, icicle spikes on its shoulders.
+```
+
+`golem_23.png`
+
+```
+Same art style as before, now a great-hall guardian statue, an ornate marble knight statue with cracked gold trim and glowing teal eyes.
+```
+
+`golem_25.png`
+
+```
+Same art style as before, now a primordial giant of ancient moss-covered stone with tree roots growing through its body and glowing green runes.
+```
 
 ### insect
 
@@ -753,6 +1280,92 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | insect_21 | insect_21.png | 심연 지네 |
 | insect_22 | insect_22.png | 뿌리 갉는 벌레 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`insect_2.png`
+
+```
+Flat 2D pixel art game sprite of a giant ant with a shiny dark brown carapace and big mandibles, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`insect_4.png`
+
+```
+Same art style as before, now a poison spider with a black body and green markings, dripping green venom.
+```
+
+`insect_6.png`
+
+```
+Same art style as before, now a swarm of winged ants flying together in a tight cluster.
+```
+
+`insect_7.png`
+
+```
+Same art style as before, now a shade spider with a dark grey hairy body and many glowing yellow eyes, hanging from a web thread.
+```
+
+`insect_8.png`
+
+```
+Same art style as before, now a fang spider with a dark brown body, red markings and huge dripping green-tipped fangs.
+```
+
+`insect_9.png`
+
+```
+Same art style as before, now a rhinoceros beetle with a big horn and a glossy dark green-brown shell.
+```
+
+`insect_11.png`
+
+```
+Same art style as before, now a buzzing swarm of small tan sand flies.
+```
+
+`insect_12.png`
+
+```
+Same art style as before, now a sand scorpion with a tan carapace, pincers open and stinger raised.
+```
+
+`insect_13.png`
+
+```
+Same art style as before, now a bone-eating beetle with an ivory-white shell, gnawing on a bone.
+```
+
+`insect_16.png`
+
+```
+Same art style as before, now a black wasp with a black-and-orange striped abdomen and a huge stinger.
+```
+
+`insect_17.png`
+
+```
+Same art style as before, now a long dark red centipede wearing a metal collar, dripping green venom.
+```
+
+`insect_19.png`
+
+```
+Same art style as before, now an obsidian scorpion with a glossy black glass-like carapace and a sharp crystal stinger.
+```
+
+`insect_21.png`
+
+```
+Same art style as before, now a giant black centipede with glowing teal segments.
+```
+
+`insect_22.png`
+
+```
+Same art style as before, now a fat pale grub with strong jaws, burrowing through thick tree roots.
+```
+
 ### knight
 
 | sprite id | 파일명 | 이름 |
@@ -762,6 +1375,38 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | knight_20 | knight_20.png | 성채 수호병 |
 | knight_22 | knight_22.png | 심판의 기사 |
 | knight_24 | knight_24.png | 폐왕의 근위대 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`knight_15.png`
+
+```
+Flat 2D pixel art game sprite of a walking suit of rusty orange-brown armor with a dented helmet and a notched sword, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`knight_18.png`
+
+```
+Same art style as before, now a black iron knight in heavy dark steel plate armor with a tower shield and a longsword.
+```
+
+`knight_20.png`
+
+```
+Same art style as before, now a fortress guard in bulky steel armor with a halberd and a large rectangular shield.
+```
+
+`knight_22.png`
+
+```
+Same art style as before, now a knight of judgment in white-and-gold armor with a blindfolded helmet, holding a greatsword and a set of scales.
+```
+
+`knight_24.png`
+
+```
+Same art style as before, now a royal guard of a fallen king in tarnished gold and black armor with a torn cloak, spear and a shield with a broken crown crest.
+```
 
 ### lizard
 
@@ -778,6 +1423,68 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | lizard_20 | lizard_20.png | 용린 전사 |
 | lizard_23 | lizard_23.png | 고룡의 후예 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`lizard_4.png`
+
+```
+Flat 2D pixel art game sprite of a small green baby lizard with big eyes, crawling, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`lizard_7.png`
+
+```
+Same art style as before, now an upright lizardman warrior with green scales, a wooden shield and a spear.
+```
+
+`lizard_9.png`
+
+```
+Same art style as before, now a rock lizard whose grey scales look like stone plates.
+```
+
+`lizard_10.png`
+
+```
+Same art style as before, now a dark green swamp crocodile half out of murky water, jaws open.
+```
+
+`lizard_13.png`
+
+```
+Same art style as before, now a canyon iguana with spiky orange-brown scales and a spiny crest.
+```
+
+`lizard_16.png`
+
+```
+Same art style as before, now a hot-spring salamander with smooth orange and yellow skin, steam rising around it.
+```
+
+`lizard_17.png`
+
+```
+Same art style as before, now a lizardman hunter with dark red scales, a bone spear and a necklace of trophy teeth.
+```
+
+`lizard_18.png`
+
+```
+Same art style as before, now a salamander with fiery red-orange skin and flames running along its back.
+```
+
+`lizard_20.png`
+
+```
+Same art style as before, now a tall lizardman in dragon-scale armor with small horns and a curved blade.
+```
+
+`lizard_23.png`
+
+```
+Same art style as before, now a young dragon with bronze-green scales, small wings and glowing teal eyes.
+```
+
 ### plant
 
 | sprite id | 파일명 | 이름 |
@@ -792,6 +1499,68 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | plant_18 | plant_18.png | 유리 가시덤불 |
 | plant_19 | plant_19.png | 무쇠 덩굴 |
 | plant_24 | plant_24.png | 세계수의 가지 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`plant_3.png`
+
+```
+Flat 2D pixel art game sprite of a thorny vine creature of twisting green vines covered in sharp thorns, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`plant_5.png`
+
+```
+Same art style as before, now a man-eating plant with a big red-and-yellow toothy flower head on a thick green stem.
+```
+
+`plant_6.png`
+
+```
+Same art style as before, now an old mossy tree with a sleepy face in its bark, leaves rustling as if whispering.
+```
+
+`plant_7.png`
+
+```
+Same art style as before, now a sticky vine monster dripping clear sap, covered in sticky pods.
+```
+
+`plant_8.png`
+
+```
+Same art style as before, now a twisted ancient tree with claw-like gnarled branches and an angry face in the bark.
+```
+
+`plant_12.png`
+
+```
+Same art style as before, now a withering palm tree monster with drooping brown fronds and coconut eyes.
+```
+
+`plant_13.png`
+
+```
+Same art style as before, now a desert cactus monster with arms, long spines and a small yellow flower on top.
+```
+
+`plant_18.png`
+
+```
+Same art style as before, now a glass thornbush with glassy branches and sharp black obsidian thorns.
+```
+
+`plant_19.png`
+
+```
+Same art style as before, now a tangle of rusty iron vines with nail-like thorns, twisting like chains.
+```
+
+`plant_24.png`
+
+```
+Same art style as before, now a living branch of the world tree, a massive ancient branch with glowing golden-green leaves and roots like arms.
+```
 
 ### slime
 
@@ -811,6 +1580,86 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | slime_23 | slime_23.png | 서리 젤리 |
 | slime_24 | slime_24.png | 공허 점액 |
 
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`slime_1.png`
+
+```
+Flat 2D pixel art game sprite of a round green slime with a glossy highlight and simple dot eyes, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`slime_2.png`
+
+```
+Same art style as before, now a lopsided sticky light-brown slime dripping goo.
+```
+
+`slime_3.png`
+
+```
+Same art style as before, now a murky olive-green swamp jelly with bits of weeds inside.
+```
+
+`slime_11.png`
+
+```
+Same art style as before, now a tan sand slime with sand grains mixed into its body.
+```
+
+`slime_13.png`
+
+```
+Same art style as before, now a clear white slime with quartz crystals growing out of it.
+```
+
+`slime_16.png`
+
+```
+Same art style as before, now a grey ash-covered slime with tiny ember sparks.
+```
+
+`slime_17.png`
+
+```
+Same art style as before, now a yellow-orange slime bubbling and steaming as if boiling.
+```
+
+`slime_18.png`
+
+```
+Same art style as before, now a molten orange-red lava slime with a dark cooling crust.
+```
+
+`slime_19.png`
+
+```
+Same art style as before, now a slime of molten iron, bright orange-white liquid metal with grey slag.
+```
+
+`slime_21.png`
+
+```
+Same art style as before, now a dark navy translucent jelly with a glowing teal core.
+```
+
+`slime_22.png`
+
+```
+Same art style as before, now a deep-sea jellyfish with a translucent blue bell and long glowing teal tentacles.
+```
+
+`slime_23.png`
+
+```
+Same art style as before, now an icy pale blue slime with frost crystals on top.
+```
+
+`slime_24.png`
+
+```
+Same art style as before, now a pitch-black slime with glowing teal cracks and tiny white star-like specks inside.
+```
+
 ### spirit
 
 | sprite id | 파일명 | 이름 |
@@ -825,6 +1674,68 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | spirit_17 | spirit_17.png | 화염 정령 |
 | spirit_21 | spirit_21.png | 흑염 정령 |
 | spirit_24 | spirit_24.png | 태초의 불꽃 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`spirit_2.png`
+
+```
+Flat 2D pixel art game sprite of a gentle breeze spirit, a small swirl of pale green-white wind with two bright eyes, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`spirit_8.png`
+
+```
+Same art style as before, now a small mischievous forest fairy with leaf wings and a green glow.
+```
+
+`spirit_9.png`
+
+```
+Same art style as before, now a will-o'-the-wisp, a floating blue-white flame with a faint face.
+```
+
+`spirit_11.png`
+
+```
+Same art style as before, now a spinning tan sand vortex spirit with glowing eyes.
+```
+
+`spirit_12.png`
+
+```
+Same art style as before, now a mirage spirit, a shimmering semi-transparent heat-haze figure in pale gold and light blue.
+```
+
+`spirit_14.png`
+
+```
+Same art style as before, now a whirlwind spirit, a strong grey-white tornado carrying debris, with angry eyes.
+```
+
+`spirit_16.png`
+
+```
+Same art style as before, now a steam spirit, a cloud of white steam with a face and wispy arms.
+```
+
+`spirit_17.png`
+
+```
+Same art style as before, now a fire elemental, a humanoid figure made of orange and yellow flames.
+```
+
+`spirit_21.png`
+
+```
+Same art style as before, now a spirit of black fire with teal edges and glowing white eyes.
+```
+
+`spirit_24.png`
+
+```
+Same art style as before, now the primordial flame, a large radiant white-gold flame spirit wearing a crown of fire.
+```
 
 ### undead
 
@@ -845,3 +1756,95 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 | undead_22 | undead_22.png | 얼어붙은 망령 |
 | undead_23 | undead_23.png | 망령 사제 |
 | undead_25 | undead_25.png | 폐허의 군주 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`undead_5.png`
+
+```
+Flat 2D pixel art game sprite of a wandering skeleton with cracked bones and a rusty short sword, simple fantasy RPG monster, front three-quarter view facing the viewer, full body, centered, solid magenta (#FF00FF) background, no pink or purple on the creature, no gradient shading, clean silhouette, no text.
+```
+
+`undead_7.png`
+
+```
+Same art style as before, now a gravekeeper zombie in tattered grey clothes with a shovel and a lantern.
+```
+
+`undead_8.png`
+
+```
+Same art style as before, now a corpse wrapped in a spider silk cocoon, only a skeletal face and one hand showing.
+```
+
+`undead_9.png`
+
+```
+Same art style as before, now a hungry ghoul, a gaunt grey-green creature with long claws and a wide mouth.
+```
+
+`undead_10.png`
+
+```
+Same art style as before, now a pale wraith, a translucent white-blue ghost in a tattered shroud.
+```
+
+`undead_12.png`
+
+```
+Same art style as before, now a reanimated fossil, a dinosaur-like skeleton of stone-brown fossil bones.
+```
+
+`undead_13.png`
+
+```
+Same art style as before, now a mummified sentry in old desert armor holding a spear.
+```
+
+`undead_15.png`
+
+```
+Same art style as before, now a vengeful ghost with a twisted screaming face, wrapped in chains, cold blue glow.
+```
+
+`undead_17.png`
+
+```
+Same art style as before, now an ash-covered corpse shambling forward, grey soot-caked body with glowing ember eyes.
+```
+
+`undead_18.png`
+
+```
+Same art style as before, now an obsidian lich, a skeletal sorcerer in dark robes with a black glass crown, a staff and teal soul-fire.
+```
+
+`undead_19.png`
+
+```
+Same art style as before, now an abandoned sacrifice, a bound undead figure in ritual wrappings with red markings.
+```
+
+`undead_21.png`
+
+```
+Same art style as before, now a drowned priest, a waterlogged undead in soaked white robes draped with seaweed, holding a rusted censer.
+```
+
+`undead_22.png`
+
+```
+Same art style as before, now a frozen wraith, an icy blue ghost encased in frost with icicles hanging from it.
+```
+
+`undead_23.png`
+
+```
+Same art style as before, now a hooded ghost priest with a staff and a pale teal glow.
+```
+
+`undead_25.png`
+
+```
+Same art style as before, now the lord of ruins, a towering undead king with a broken crown, a tattered royal cloak and a massive sword.
+```
