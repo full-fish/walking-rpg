@@ -16,7 +16,7 @@ import region02 from './data/monsters/region-02.json';
 import region03 from './data/monsters/region-03.json';
 import region04 from './data/monsters/region-04.json';
 import region05 from './data/monsters/region-05.json';
-import { SHOP_RARITIES, type GearSlot, type GridRarity } from '../game/formulas';
+import { REGION_COUNT, SHOP_RARITIES, type GearSlot, type GridRarity } from '../game/formulas';
 import {
   ConsumablesSchema,
   EquipmentArchetypesSchema,
@@ -153,20 +153,26 @@ export function equipmentById(id: string): Equipment {
 /**
  * 그 레벨에서 낄 수 있는 **가장 높은 티어**의 한 벌 (§4.5).
  * 상점 진열(T14)과 밸런스 기준선이 같은 걸 봐야 해서 여기 둔다.
+ * `region`을 주면 그 지역 티어까지만 본다 — 상점이 지금 지역 것만 팔아서다 (T17_6 검수).
  */
-export function gearSetFor(level: number, rarity: Equipment['rarity'] = 'common'): Equipment[] {
-  const grid = EQUIPMENT.filter((e) => e.rarity !== 'unique');
+export function gearSetFor(
+  level: number,
+  region = REGION_COUNT,
+  rarity: Equipment['rarity'] = 'common',
+): Equipment[] {
+  const grid = EQUIPMENT.filter((e) => e.rarity !== 'unique' && e.region <= region);
   const tier = Math.max(...grid.filter((e) => e.level <= level).map((e) => e.tier));
   return grid.filter((e) => e.tier === tier && e.rarity === rarity);
 }
 
 /**
- * 상점 진열 — 그 레벨에 낄 수 있는 등급 그리드 장비 (§4.5).
+ * 상점 진열 — **지금 지역의 티어 두 개** (§4.5, T17_6 검수). 레벨이 아직 모자란 뒷단도 편다 —
+ * 미리 사 둘 수 있다. 다음 지역 장비는 보스 보상으로만 먼저 만진다.
  * 고유는 소재로만, **전설은 드랍으로만** 나온다 (T17_6). 높은 티어부터.
  */
-export function shopGear(level: number): Equipment[] {
+export function shopGear(region: number): Equipment[] {
   return EQUIPMENT.filter(
-    (e) => (SHOP_RARITIES as readonly string[]).includes(e.rarity) && e.level <= level,
+    (e) => (SHOP_RARITIES as readonly string[]).includes(e.rarity) && e.region === region,
   ).sort((a, b) => b.tier - a.tier);
 }
 

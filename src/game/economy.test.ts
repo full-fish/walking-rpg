@@ -56,9 +56,14 @@ test('고유 장비는 골드로 못 산다 — 소재로만 바꾼다 (§4.4)',
 test('전설은 상점에 없다 — 드랍으로만 나온다 (T17_6)', () => {
   expect(buyEquipment(rich(1_000_000), 'eq_t1_weapon_legendary', rng)).toBeNull();
   expect(buyEquipment(rich(1_000_000), 'eq_t1_weapon_epic', rng)).not.toBeNull();
-  expect(shopGear(50).some((e) => e.rarity === 'legendary')).toBe(false);
+  expect(shopGear(5).some((e) => e.rarity === 'legendary')).toBe(false);
   // 전에는 앞 12개만 보여서 하의가 안 보였다 — 목록 자체에는 7부위가 다 있어야 한다
   expect(new Set(shopGear(1).map((e) => e.slot)).size).toBe(7);
+});
+
+test('상점은 지금 지역의 티어 두 개만 판다 — 레벨이 아니라 지역이 정한다 (T17_6 검수)', () => {
+  expect([...new Set(shopGear(1).map((e) => e.tier))]).toEqual([2, 1]);
+  expect([...new Set(shopGear(2).map((e) => e.tier))]).toEqual([4, 3]);
 });
 
 test('낀 장비는 못 판다 — 실수로 알몸이 되는 경로를 없앤다', () => {

@@ -127,7 +127,7 @@ function wornPower(save: Save, slot: (typeof GEAR_SLOTS)[number]): number {
  * 돈이 모자라면 중요한 부위부터 한 점씩 산다.
  */
 export function buyGear(save: Save, rng: () => number): Save {
-  const set = gearSetFor(save.player.level);
+  const set = gearSetFor(save.player.level, save.regionProgress.current);
 
   // **사는 순서가 의미를 갖는다** (T16_1). 부위마다 성격이 갈린 뒤로 무기는 ATK만 주므로,
   // 무기부터 사면 더 세게 때리면서 더 빨리 죽는다. 버티는 부위를 먼저 산다.
@@ -149,7 +149,7 @@ export function buyGear(save: Save, rng: () => number): Save {
 }
 
 /** 지금 낀 것보다 센 새 물건들 — 사는 순서대로 (T16_1). 강화 예산에서 이만큼은 남긴다 */
-function wantedGear(save: Save, set = gearSetFor(save.player.level)) {
+function wantedGear(save: Save, set = gearSetFor(save.player.level, save.regionProgress.current)) {
   // **사는 순서가 의미를 갖는다** (T16_1). 부위마다 성격이 갈린 뒤로 무기는 ATK만 주므로,
   // 무기부터 사면 더 세게 때리면서 더 빨리 죽는다. 버티는 부위를 먼저 산다.
   const order = ['armor', 'helm', 'pants', 'boots', 'weapon', 'gloves', 'accessory'];
@@ -209,8 +209,8 @@ function enhanceGear(save: Save, reserve: number, rng: () => number) {
 }
 
 /**
- * 보스 벤치용 기준 세이브 (T17_5) — 그 레벨, 균등 배분(STR·VIT·AGI), 그 레벨 common 풀세트
- * (품질 100%, +0), 그 지역 물약 3개. 보스 배율은 **이 상태로 승률 50%** 가 되게 잡는다.
+ * 보스 벤치용 기준 세이브 (T17_5) — 그 레벨, 균등 배분(STR·VIT·AGI), **그 지역 상점에서 살 수
+ * 있는** 가장 좋은 common 풀세트(품질 100%, +0), 그 지역 물약 3개. 보스 배율은 **이 상태로 승률 50%** 가 되게 잡는다.
  * 강화·등급·품질은 전부 그 위의 이득이다 (§4.5).
  */
 export function baselineSave(level: number, region: number): Save {
@@ -223,7 +223,7 @@ export function baselineSave(level: number, region: number): Save {
     consumables: { [bestPotion(region).id]: POTION_CARRY_MAX },
     regionProgress: { current: region, unlocked: region, bosses: {} },
   };
-  for (const def of gearSetFor(level)) {
+  for (const def of gearSetFor(level, region)) {
     const item = { uid: String(save.inventory.length + 1), defId: def.id, quality: 1, enhance: 0 };
     save = equipItem(addItem(save, item), item.uid)!;
   }

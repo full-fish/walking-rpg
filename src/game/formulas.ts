@@ -77,8 +77,8 @@ export const BASE_STATS = {
 export const DAMAGE_K = 50;
 
 /** 기본 대미지에 곱하는 난수 폭 (§4.2). */
-export const DAMAGE_ROLL_MIN = 0.8;
-export const DAMAGE_ROLL_MAX = 1.2;
+export const DAMAGE_ROLL_MIN = 0.6;
+export const DAMAGE_ROLL_MAX = 1.4;
 
 /**
  * ATB 행동 비율 상·하한 (§4.2).

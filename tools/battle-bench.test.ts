@@ -30,15 +30,16 @@ const TARGET = { min: 20, max: 40 };
 const RUN_SIZES = [4, 6] as const;
 
 /**
- * Lv L 전사, **그 레벨 common 풀세트 착용** (§4.5).
+ * Lv L 전사, **그 레벨 common 풀세트 착용** (§4.5). 상점은 지금 지역 티어만 판다 (T17_6 검수) —
+ * 지역 끝 레벨이면 다음 지역 앞단을 낄 수 있어도 못 산다.
  *
  * 맨몸으로 재면 후반이 전멸한다 — 전투력의 85%가 장비에서 오는 게 설계라서다.
  * 기준선은 "그 지역에서 살 수 있는 common 한 벌"이고, 등급·품질·강화는 전부 그 위의 이득이다.
  * 스탯 계산은 화면과 같은 combatStats·setBonus를 쓴다 — 여기서 따로 세면 둘이 어긋난다.
  */
-function warrior(level: number): Combatant {
+function warrior(level: number, region?: number): Combatant {
   const stats = combatStats(level);
-  const gear = setBonus(gearSetFor(level));
+  const gear = setBonus(gearSetFor(level, region));
   const geared = {
     ...stats,
     maxHp: stats.maxHp + gear.maxHp,
@@ -149,13 +150,13 @@ test(`1:1 전투 — 하드캡 0%, 사냥터별 ${TARGET.min}~${TARGET.max}행�
       const pool = poolOf(field);
       const proper = fieldLevel(field);
       const cells = levels.map((level) => {
-        const s = averageOf(pool.map((m) => runPairing(warrior(level), m)));
+        const s = averageOf(pool.map((m) => runPairing(warrior(level, region.id), m)));
         expect.soft(s.hardcapRate, `${field.name} Lv${level} 하드캡`).toBe(0);
         const mark = level === proper ? '*' : ' ';
         return pad(`${s.avgActions.toFixed(0)}행동 HP-${pct(1 - s.avgHpLeft, 0)}${mark}`, 16);
       });
       // 적정 레벨의 행동 수는 진단만 한다 — 목표 자체가 낡았다. 아래 ※ 참고.
-      const at = averageOf(pool.map((m) => runPairing(warrior(proper), m)));
+      const at = averageOf(pool.map((m) => runPairing(warrior(proper, region.id), m)));
       offTarget.push([field.name, proper, at.avgActions]);
       console.log(`  ${padEnd(field.name, 16)}` + cells.join('') + ` 적정 Lv${proper}`);
     }
@@ -189,7 +190,7 @@ test('한 판 — 4·6마리 완주율 진단 (§4.4)', () => {
       const proper = fieldLevel(field);
       const cells = levels.map((level) => {
         const [four, six] = RUN_SIZES.map((n) =>
-          averageOf(pool.map((m) => runStreak(warrior(level), m, n))),
+          averageOf(pool.map((m) => runStreak(warrior(level, region.id), m, n))),
         );
         if (level === proper) atProper.push(four.clearRate);
         if (level === levels[0]) entry.push(four.clearRate);

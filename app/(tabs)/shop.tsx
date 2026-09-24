@@ -156,11 +156,10 @@ export default function Shop() {
   const bySlot = (s: GearSlot) => slot === null || s === slot;
   const equipped = new Set(Object.values(save.equipped));
 
-  // 낄 수 있는 것 중 **최근 두 티어**만 편다. 그 아래는 이미 지나온 물건이다 —
-  // 전에는 앞 12개만 잘라 보여서 부위 이름순으로 뒤에 있는 하의가 통째로 안 보였다
-  const wearable = shopGear(save.player.level);
-  const topTier = Math.max(0, ...wearable.map((e) => e.tier));
-  const onSale = wearable.filter((e) => e.tier >= topTier - 1 && bySlot(e.slot));
+  // **지금 지역의 티어 두 개**를 편다 (T17_6 검수). 레벨이 모자란 뒷단도 보여준다 — 미리 사 둔다
+  const stock = shopGear(region.id);
+  const tiers = stock.map((e) => e.tier);
+  const onSale = stock.filter((e) => bySlot(e.slot));
   const sellable = save.inventory.filter((i) => !equipped.has(i.uid) && bySlot(itemDef(i).slot));
   const upgradable = save.inventory.filter((i) => bySlot(itemDef(i).slot));
 
@@ -284,7 +283,7 @@ export default function Shop() {
             {viewBar}
 
             <Panel
-              title={`장비 — 티어 ${Math.max(1, topTier - 1)}~${topTier} (Lv${save.player.level})`}
+              title={`장비 — 티어 ${Math.min(...tiers)}~${Math.max(...tiers)} (${region.name})`}
             >
               <Text size="sm" dim>
                 전설은 팔지 않습니다 — 몬스터에게서만 나옵니다.
@@ -301,7 +300,10 @@ export default function Shop() {
                   <Row
                     icon={e}
                     title={e.name}
-                    detail={`${GEAR_SLOT_LABELS[e.slot]} · ${statText(e)} · ${e.price.toLocaleString()}G`}
+                    detail={
+                      `${GEAR_SLOT_LABELS[e.slot]} · ${statText(e)} · ${e.price.toLocaleString()}G` +
+                      (e.level > save.player.level ? ` · 요구 Lv${e.level}` : '')
+                    }
                     action="구매"
                     disabled={full || gold < e.price}
                     onPress={() => trade(trades.buyEquipment(e.id))}
