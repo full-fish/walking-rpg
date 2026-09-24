@@ -1,9 +1,11 @@
-import type { ReactNode } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { useState, type ReactNode } from 'react';
+import { Image, Modal, Pressable, StyleSheet, View } from 'react-native';
 
-import type { Equipment } from '@/content';
+import { GEAR_SLOT_LABELS, type Equipment } from '@/content';
+import { itemLabel, itemStats, statText } from '@/game/items';
 import type { ItemInstance } from '@/save/schema';
 import { itemIcons } from '@/ui/itemIcons';
+import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { border, colors, rarity, space } from '@/ui/theme';
 
@@ -23,9 +25,13 @@ export function ItemIcon({ def, size }: { def?: Equipment; size: number }) {
  * **테두리 색이 등급**이고, 그림 위 아래쪽에 한 줄(tag)을 겹쳐 박는다 —
  * 가방은 품질·강화, 상점은 값. 빈 칸이면 label(부위 이름)을 대신 보여준다.
  * 고른 칸은 바탕을 밝혀 표시한다 — 테두리는 등급 색이라 건드리지 않는다.
+ *
+ * **꾹 누르면 이름과 스탯이 뜬다** (T17_6 검수). 격자에는 그림과 한 줄뿐이라 뭔지 모른다.
+ * `item`을 주면 품질·강화가 붙은 개체 스탯, 없으면(상점) 정의 그대로다. 아무 데나 누르면 닫힌다.
  */
 export function ItemCell({
   def,
+  item,
   tag,
   label,
   dim,
@@ -33,28 +39,57 @@ export function ItemCell({
   onPress,
 }: {
   def?: Equipment;
+  item?: ItemInstance;
   tag?: string;
   label?: string;
   dim?: boolean;
   selected?: boolean;
   onPress?: () => void;
 }) {
+  const [info, setInfo] = useState(false);
   return (
-    <Pressable
-      onPress={onPress}
-      style={[
-        styles.cell,
-        { borderColor: def ? rarity[def.rarity] : colors.edge },
-        selected && styles.selected,
-      ]}
-    >
-      <ItemIcon def={def} size={CELL - border * 2} />
-      <View style={styles.tag}>
-        <Text size="sm" dim={dim || !def}>
-          {def ? (tag ?? '') : (label ?? '')}
-        </Text>
-      </View>
-    </Pressable>
+    <>
+      <Pressable
+        onPress={onPress}
+        onLongPress={def && (() => setInfo(true))}
+        style={[
+          styles.cell,
+          { borderColor: def ? rarity[def.rarity] : colors.edge },
+          selected && styles.selected,
+        ]}
+      >
+        <ItemIcon def={def} size={CELL - border * 2} />
+        <View style={styles.tag}>
+          <Text size="sm" dim={dim || !def}>
+            {def ? (tag ?? '') : (label ?? '')}
+          </Text>
+        </View>
+      </Pressable>
+      {/* 칸의 형제로 둔다 — 안에 두면 창 안을 누른 게 칸의 onPress까지 올라갈 수 있다 */}
+      {def && (
+        <Modal
+          transparent
+          visible={info}
+          animationType="fade"
+          onRequestClose={() => setInfo(false)}
+        >
+          <Pressable style={styles.backdrop} onPress={() => setInfo(false)}>
+            <Panel>
+              <View style={styles.infoHead}>
+                <ItemIcon def={def} size={48} />
+                <View style={styles.infoName}>
+                  <Text color={rarity[def.rarity]}>{item ? itemLabel(item) : def.name}</Text>
+                  <Text size="sm" dim>
+                    {GEAR_SLOT_LABELS[def.slot]} · 요구 Lv{def.level}
+                  </Text>
+                </View>
+              </View>
+              <Text>{statText(item ? itemStats(item) : def)}</Text>
+            </Panel>
+          </Pressable>
+        </Modal>
+      )}
+    </>
   );
 }
 
@@ -85,6 +120,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   selected: { backgroundColor: colors.edgeLit },
+  backdrop: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: space.xl,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+  },
+  infoHead: { flexDirection: 'row', alignItems: 'center', gap: space.sm },
+  infoName: { gap: space.xs, flexShrink: 1 },
   // 그림 위에 겹쳐 박는다. 반투명 바탕이 없으면 밝은 그림에서 글씨가 안 보인다
   tag: {
     position: 'absolute',

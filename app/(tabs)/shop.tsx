@@ -84,6 +84,7 @@ function ItemList<T>({
   grid,
   keyOf,
   defOf,
+  instOf,
   tagOf,
   row,
   empty,
@@ -92,6 +93,8 @@ function ItemList<T>({
   grid: boolean;
   keyOf: (item: T) => string;
   defOf: (item: T) => Equipment;
+  /** 가진 물건이면 개체를 준다 — 꾹 눌렀을 때 품질·강화가 붙은 스탯이 뜬다 */
+  instOf?: (item: T) => ItemInstance;
   tagOf: (item: T) => string;
   row: (item: T) => ReactElement;
   empty: string;
@@ -121,6 +124,7 @@ function ItemList<T>({
           <ItemCell
             key={keyOf(item)}
             def={defOf(item)}
+            item={instOf?.(item)}
             tag={tagOf(item)}
             selected={keyOf(item) === picked}
             onPress={() => setPicked(keyOf(item))}
@@ -338,6 +342,7 @@ export default function Shop() {
                 grid={grid}
                 keyOf={(i) => i.uid}
                 defOf={itemDef}
+                instOf={(i) => i}
                 tagOf={(i) => `${sellPrice(i).toLocaleString()}G`}
                 empty="팔 게 없습니다."
                 row={(item) => (
@@ -368,6 +373,7 @@ export default function Shop() {
                 grid={grid}
                 keyOf={(i) => i.uid}
                 defOf={itemDef}
+                instOf={(i) => i}
                 tagOf={(i) => `${equipped.has(i.uid) ? '착용 ' : ''}${qualityTag(i)}`}
                 empty="강화할 장비가 없습니다."
                 row={enhanceRow}

@@ -441,6 +441,7 @@ function Slot({
   return (
     <ItemCell
       def={item && itemDef(item)}
+      item={item}
       tag={item && qualityTag(item)}
       label={label}
       dim={dim}
