@@ -26,8 +26,7 @@
 > 강철 검·강철 장검·강철 대검·강철 마검·강철 성검이 **같은 그림**을 씁니다. 등급은 게임 안에서
 > **테두리 색**으로 구분합니다. 표의 이름은 common 기준입니다.
 >
-> **고유 장비 35종은 여기 없습니다.** sprite id가 따로(`uniq_<사냥터 id>`)라 70장에 안 들어갑니다.
-> 지금은 그림 없이 빈 칸으로 보입니다.
+> **고유 장비 35종은 T17_7에 없앴습니다** — 반지로 바꿨습니다. 반지는 아직 그림이 없어 💍 글자로 보입니다.
 
 ### sword
 
@@ -709,6 +708,11 @@ Same art style as before, now a walking skeleton warrior with cracked bones and 
 
 T17_5부터 보스는 **그림을 따로** 씁니다(`boss_r{지역}`). 전에는 같은 티어 일반 몬스터와
 sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관문이라 일반 몬스터보다 크고 위압적으로.
+
+**T17_7부터 보스전 무대에 뜹니다.** 원본을 `img/boss/boss_N.png`(2048px, 투명 배경)로 넣고
+`node tools/crop-sprites.mjs boss` → `assets/images/monsters/boss_rN.png`(512px), 그다음 `src/ui/monsterIcons.ts`에 한 줄.
+무대에서 보스는 **왼쪽에 서서 오른쪽(나)을 봅니다** — boss_r1처럼 오른쪽을 보는 그림이면 그대로 맞습니다.
+지금 붙은 것: boss_r1. 나머지는 그림이 올 때까지 이름 상자로 보입니다.
 
 | sprite id | 파일명 | 이름 | 지역 | 원형 |
 |---|---|---|---|---|
