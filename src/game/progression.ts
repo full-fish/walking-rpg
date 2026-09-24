@@ -14,6 +14,7 @@ import {
   HP_REGEN_RATE,
   INDIVIDUAL_REWARD_RATE,
   POINTS_PER_LEVEL,
+  RING_SLOTS,
   SPENDABLE_STATS,
   STARTING_STATS,
   WP_COST,
@@ -21,7 +22,7 @@ import {
   type SpendableStat,
   type StatSpend,
 } from './formulas';
-import { bagFull, equippedBonusVs, equippedStats, itemByUid, itemDef, itemPower } from './items';
+import { bagFull, equippedStats, itemByUid, itemDef, itemPower, ringBonus } from './items';
 import { spendWp } from './wp';
 
 /** 몬스터 1마리를 잡고 받는 것. */
@@ -40,14 +41,28 @@ export type StatKey = SpendableStat;
 export function statsOf(save: Save) {
   // 평균을 넘게 넣은 몫은 절반만 든다 (T17_7 검수) — 균등 배분이 제일 세다
   const spend = effectiveSpend(save.statPoints);
+  const base = combatStats(save.player.level, 'warrior', spend, equippedStats(save));
+  // 반지 (T17_7) — 전투력 축 밖의 것만 준다. 입장 WP·자정 WP·6마리 판·클리어 보너스·물약은 쓰는 곳이 본다
   const stats = {
-    ...combatStats(save.player.level, 'warrior', spend, equippedStats(save)),
-    /** 고유 장비의 특효 (§4.5). battle.ts가 몬스터 traits와 맞춰 본다 */
-    bonusVs: equippedBonusVs(save),
+    ...base,
+    goldMult: base.goldMult + ringBonus(save, 'gold'),
+    dropMult: base.dropMult + ringBonus(save, 'drop'),
+    /** EXP 배율 — 반지만 올린다. 행운은 EXP에 안 붙는다 (§4.3) */
+    expMult: 1 + ringBonus(save, 'exp'),
+    /** 전투마다 HP보다 먼저 깎이는 보호막 */
+    shield: Math.round(base.maxHp * ringBonus(save, 'shield')),
+    /** 보스에게 더 주는 피해 비율 */
+    bossDamage: ringBonus(save, 'bossDamage'),
   };
   // 보스 버프 (T17_6 검수) — 그 판에만 붙는다. 전투 화면·시뮬·HP 막대가 전부 여기를 지나서 한 곳이면 된다
-  for (const stat of save.run?.buffs ?? []) stats[stat] *= BOSS_BUFF.mult;
+  const mult = bossBuffMult(save);
+  for (const stat of save.run?.buffs ?? []) stats[stat] *= mult;
   return stats;
+}
+
+/** 보스 버프 하나의 배율 — ×1.1에 반지(T17_7)가 더한다 */
+export function bossBuffMult(save: Save): number {
+  return BOSS_BUFF.mult + ringBonus(save, 'bossBuff');
 }
 
 /**
@@ -72,9 +87,10 @@ export function primaryStats(save: Save): StatSpend {
  * 기본값은 gen-content가 §6.2·§6.3 공식으로 뽑아 몬스터에 박아둔 값이다.
  * 여기서 다시 계산하면 JSON과 어긋날 수 있다.
  */
-export function killReward(base: Reward, goldMult = 1): Reward {
+export function killReward(base: Reward, goldMult = 1, expMult = 1): Reward {
   return {
-    exp: Math.round(base.exp * INDIVIDUAL_REWARD_RATE),
+    // EXP 반지(T17_7)만 EXP를 늘린다
+    exp: Math.round(base.exp * INDIVIDUAL_REWARD_RATE * expMult),
     // 행운은 골드에만 붙는다 (§4.3). EXP까지 늘리면 LUK이 성장 속도까지 사는 스탯이 된다
     gold: Math.round(base.gold * INDIVIDUAL_REWARD_RATE * goldMult),
   };
@@ -308,6 +324,23 @@ export function withStatChange(before: Save, next: Save): Save {
 
 function withGear(save: Save, equipped: Save['equipped']): Save {
   return withStatChange(save, { ...save, equipped });
+}
+
+/**
+ * 반지를 낀다 (T17_7). 다른 칸에 같은 반지가 있었으면 그 칸은 비운다 — 한 개를 두 칸에 못 낀다.
+ * 없는 uid나 없는 칸이면 null. 반지는 최대 HP를 안 건드려서 HP를 다시 맞출 게 없다.
+ */
+export function equipRing(save: Save, uid: string, slot: number): Save | null {
+  if (!save.rings.some((r) => r.uid === uid) || slot < 0 || slot >= RING_SLOTS) return null;
+  return {
+    ...save,
+    ringSlots: save.ringSlots.map((cur, i) => (i === slot ? uid : cur === uid ? null : cur)),
+  };
+}
+
+/** 그 반지 칸을 비운다 (T17_7). 반지는 가방 칸을 안 써서 언제든 뺀다 */
+export function unequipRing(save: Save, slot: number): Save {
+  return { ...save, ringSlots: save.ringSlots.map((cur, i) => (i === slot ? null : cur)) };
 }
 
 /** 인벤토리에 넣는다. 상한은 호출부(드랍은 T16)가 본다. */

@@ -10,7 +10,6 @@ import equipmentArchetypesRaw from './archetypes/equipment.json';
 import archetypesRaw from './archetypes/monsters.json';
 import regionsRaw from './archetypes/regions.json';
 import equipmentRaw from './data/items/equipment.json';
-import uniquesRaw from './data/items/unique.json';
 import region01 from './data/monsters/region-01.json';
 import region02 from './data/monsters/region-02.json';
 import region03 from './data/monsters/region-03.json';
@@ -106,11 +105,8 @@ export function monstersOfTier(tier: number): Monster[] {
 // 장비 (§4.5)
 // ─────────────────────────────────────────────────────────────
 
-/** 사냥터 고유 장비 35종 (§4.4). 상점에 안 뜨고 소재로만 바꾼다. */
-export const UNIQUES = EquipmentsSchema.parse(uniquesRaw);
-
-/** 장비 정의 385종 = 등급 그리드 350 + 고유 35. 인스턴스가 아니라 정의다. */
-export const EQUIPMENT = [...EquipmentsSchema.parse(equipmentRaw), ...UNIQUES];
+/** 장비 정의 350종 = 티어 10 × 부위 7 × 등급 5. 인스턴스가 아니라 정의다. 고유 장비는 T17_7에 없앴다 */
+export const EQUIPMENT = EquipmentsSchema.parse(equipmentRaw);
 
 /** 물약·엘릭서 (§4.5). 공식이 없어서 생성물이 아니라 창작물을 그대로 읽는다. */
 export const CONSUMABLES = ConsumablesSchema.parse(consumablesRaw);
@@ -121,7 +117,7 @@ export function consumableById(id: string): Consumable {
   return found;
 }
 
-/** 사냥터 35곳을 한 줄로. 상점 교환 탭과 검증이 쓴다. */
+/** 사냥터 35곳을 한 줄로. 검증이 쓴다. */
 export const FIELDS = REGIONS.flatMap((r) => r.fields);
 
 export function fieldById(id: string): Field {
@@ -160,7 +156,7 @@ export function gearSetFor(
   region = REGION_COUNT,
   rarity: Equipment['rarity'] = 'common',
 ): Equipment[] {
-  const grid = EQUIPMENT.filter((e) => e.rarity !== 'unique' && e.region <= region);
+  const grid = EQUIPMENT.filter((e) => e.region <= region);
   const tier = Math.max(...grid.filter((e) => e.level <= level).map((e) => e.tier));
   return grid.filter((e) => e.tier === tier && e.rarity === rarity);
 }
@@ -168,7 +164,7 @@ export function gearSetFor(
 /**
  * 상점 진열 — **지금 지역의 티어 두 개** (§4.5, T17_6 검수). 레벨이 아직 모자란 뒷단도 편다 —
  * 미리 사 둘 수 있다. 다음 지역 장비는 보스 보상으로만 먼저 만진다.
- * 고유는 소재로만, **전설은 드랍으로만** 나온다 (T17_6). 높은 티어부터.
+ * **전설은 드랍으로만** 나온다 (T17_6). 높은 티어부터.
  */
 export function shopGear(region: number): Equipment[] {
   return EQUIPMENT.filter(

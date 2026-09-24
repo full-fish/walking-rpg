@@ -7,11 +7,15 @@ import {
   GEAR_SLOTS,
   QUALITY_MAX,
   QUALITY_MIN,
+  RARITIES,
+  REGION_COUNT,
+  RING_KINDS,
+  RING_SLOTS,
   VAULT,
 } from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 10;
+export const SAVE_VERSION = 11;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
@@ -27,6 +31,20 @@ export const ItemInstanceSchema = z.object({
 });
 
 export type ItemInstance = z.infer<typeof ItemInstanceSchema>;
+
+/**
+ * 반지 하나 (T17_7). 장비 정의(defId)가 없다 — 효과·★·등급·강화가 전부다.
+ * ★는 그 반지를 올리는 소재의 지역이다. 품질은 없다 — 소재로 만든 물건이라 굴릴 게 없다.
+ */
+export const RingSchema = z.object({
+  uid: z.string().min(1),
+  kind: z.enum(RING_KINDS),
+  tier: z.int().min(1).max(REGION_COUNT),
+  rarity: z.enum(RARITIES),
+  enhance: z.int().min(0).max(ENHANCE_MAX),
+});
+
+export type Ring = z.infer<typeof RingSchema>;
 
 export const SaveSchema = z.object({
   version: z.literal(SAVE_VERSION),
@@ -63,6 +81,10 @@ export const SaveSchema = z.object({
   inventory: z.array(ItemInstanceSchema),
   /** 부위별로 낀 개체의 uid. 빈 칸은 null (§4.5) */
   equipped: z.record(z.enum(GEAR_SLOTS), z.string().nullable()),
+  /** 가진 반지 (T17_7). 가방 칸을 안 쓴다 */
+  rings: z.array(RingSchema),
+  /** 반지 칸 두 개에 낀 반지의 uid. 빈 칸은 null (T17_7) */
+  ringSlots: z.array(z.string().nullable()).length(RING_SLOTS),
   /**
    * 창고 (§3.7). **한도가 진짜 제약**이라 넘치는 만큼은 들고 다녀야 하고,
    * 죽으면 그중 10%를 잃는다. 여기 넣은 골드는 사망해도 면제다.
@@ -140,6 +162,8 @@ export function defaultSave(): Save {
     statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0, int: 0 },
     inventory: [],
     equipped: Object.fromEntries(GEAR_SLOTS.map((s) => [s, null])) as Save['equipped'],
+    rings: [],
+    ringSlots: Array.from({ length: RING_SLOTS }, () => null),
     vault: { gold: 0, capacity: VAULT.capacity, expansions: 0 },
     bag: { capacity: BAG.capacity, expansions: 0 },
     materials: {},

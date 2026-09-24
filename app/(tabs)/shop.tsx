@@ -9,9 +9,15 @@ import {
   shopConsumables,
   shopGear,
   type Equipment,
-  type Field,
 } from '@/content';
-import { depositNet, enhancePick, sellPrice } from '@/game/economy';
+import {
+  depositNet,
+  enhancePick,
+  ringEnhancePick,
+  ringNext,
+  ringPrice,
+  sellPrice,
+} from '@/game/economy';
 import { inTown } from '@/game/field';
 import {
   BAG,
@@ -22,12 +28,14 @@ import {
   enhanceMaterials,
   enhanceRate,
   GEAR_SLOTS,
+  RING_COST,
+  ringValue,
   VAULT,
   vaultExpandCost,
   type GearSlot,
 } from '@/game/formulas';
 import { bagFull, bagItems, itemDef, itemLabel, statText } from '@/game/items';
-import type { ItemInstance } from '@/save/schema';
+import type { ItemInstance, Ring } from '@/save/schema';
 import { statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
@@ -35,9 +43,10 @@ import { Button } from '@/ui/Button';
 import { ItemCell, ItemGrid, ItemIcon, ItemInfo, Popup, qualityTag } from '@/ui/ItemCell';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
-import { colors, space } from '@/ui/theme';
+import { RARITY_LABEL, RING_INFO, ringName, ringText } from '@/ui/rings';
+import { colors, rarity, space } from '@/ui/theme';
 
-const TABS = ['상점', '강화', '여관', '창고', '특별 교환'] as const;
+const TABS = ['상점', '강화', '여관', '창고', '반지'] as const;
 type Tab = (typeof TABS)[number];
 
 /** 한 줄 = (그림) 이름·설명 + 버튼. 상점 전체가 이 모양이라 화면 안에 둔다. */
@@ -166,10 +175,13 @@ export default function Shop() {
   const save = usePlayer((s) => s.save);
   const trade = usePlayer((s) => s.trade);
   const enhance = usePlayer((s) => s.enhance);
+  const enhanceRing = usePlayer((s) => s.enhanceRing);
   const [tab, setTab] = useState<Tab>('상점');
   const [amount, setAmount] = useState(1_000);
   /** 마지막 강화 결과. 성공·실패를 한 줄로 보여주려고 들고 있는다 */
   const [lastEnhance, setLastEnhance] = useState<string | null>(null);
+  /** 반지 탭의 마지막 결과 한 줄 (T17_7) */
+  const [lastRing, setLastRing] = useState<string | null>(null);
   /** 장비 목록을 격자로 볼지 (T17_6). 가방 탭처럼 그림 쪽이 기본이다 */
   const [grid, setGrid] = useState(true);
   const [slot, setSlot] = useState<GearSlot | null>(null);
@@ -253,6 +265,79 @@ export default function Shop() {
       />
     );
   };
+  /** 그 지역에서 소재를 가진 사냥터 수 — 반지·강화는 "서로 다른 곳 N종"을 요구한다 */
+  const ownedKinds = (region: number) =>
+    regionById(region).fields.filter((f) => (save.materials[f.id] ?? 0) > 0).length;
+  const worn = new Set(save.ringSlots);
+
+  /** 반지 하나 (T17_7) — 이름·효과, 그 아래 [올리기] · [강화] */
+  const ringBlock = (ring: Ring) => {
+    const next = ringNext(ring);
+    const maxed = ring.enhance >= ENHANCE_MAX;
+    const step = ring.enhance + 1;
+    const cost = maxed ? 0 : enhanceCost(ringPrice(ring), step);
+    const need = maxed ? 0 : enhanceMaterials(step);
+    const region = regionById(ring.tier).name;
+    return (
+      <View key={ring.uid} style={styles.ring}>
+        <Text color={rarity[ring.rarity]}>
+          {ringName(ring)}
+          {worn.has(ring.uid) ? ' [착용]' : ''}
+        </Text>
+        <Text size="sm" dim>
+          {RARITY_LABEL[ring.rarity]} · {ringText(ring)}
+        </Text>
+        <Row
+          detail={
+            next
+              ? `→ ${RARITY_LABEL[next.rarity]}${next.tier !== ring.tier ? ` ★${next.tier}` : ''} (` +
+                RING_INFO[ring.kind].effect(ringValue(ring.kind, next.tier, next.rarity, 0)) +
+                `) · ${regionById(next.tier).name} 소재 ${next.cost}종 (가진 ${ownedKinds(next.tier)}종)` +
+                (ring.enhance > 0 ? ` · 강화 +${ring.enhance} → +0` : '')
+              : '★5 전설 — 더 못 올립니다'
+          }
+          action="올리기"
+          disabled={!next || ownedKinds(next.tier) < next.cost}
+          onPress={() =>
+            next &&
+            confirm(
+              '올릴까요?',
+              `${ringName(ring)} → ${RARITY_LABEL[next.rarity]} ★${next.tier}` +
+                (ring.enhance > 0 ? `\n강화 +${ring.enhance}는 +0으로 돌아갑니다` : ''),
+              '올리기',
+              () => {
+                if (trade(trades.upgradeRing(ring.uid))) {
+                  setLastRing(`올렸습니다 — ${RING_INFO[ring.kind].name} ★${next.tier}`);
+                }
+              },
+            )
+          }
+        />
+        <Row
+          detail={
+            maxed
+              ? '강화 최대 단계입니다'
+              : `+${step} 성공률 ${(enhanceRate(step) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
+                (need > 0 ? ` · ${region} 소재 ${need}종 (가진 ${ownedKinds(ring.tier)}종)` : '')
+          }
+          action="강화"
+          disabled={maxed || gold < cost || (need > 0 && ringEnhancePick(save, ring) === null)}
+          onPress={() => {
+            const r = enhanceRing(ring.uid);
+            if (!r) return;
+            setLastRing(
+              r.success
+                ? `성공! ${RING_INFO[ring.kind].name} +${r.step} (${r.cost.toLocaleString()}G` +
+                    (r.materials > 0 ? ` · 소재 ${r.materials}개` : '') +
+                    ')'
+                : `실패… +${r.step} 못 붙었습니다 (${r.cost.toLocaleString()}G — 소재는 그대로)`,
+            );
+          }}
+        />
+      </View>
+    );
+  };
+
   // 가방이 차면 사도 들어갈 데가 없다. 버튼만 안 먹으면 왜 안 되는지 모른다 (T17_3)
   const full = bagFull(save);
   const fullNote = full && (
@@ -521,35 +606,50 @@ export default function Shop() {
           </Panel>
         )}
 
-        {tab === '특별 교환' && (
-          <Panel title={`${region.name}의 사냥터 전용 장비`}>
-            <Text size="sm" dim>
-              소재는 6마리 판을 끝까지 깨면 하나 나옵니다.
-            </Text>
-            {fullNote}
-            {region.fields.map((field: Field) => {
-              const have = save.materials[field.id] ?? 0;
-              const { material, gold: cost } = field.reward.cost;
-              const item = equipmentById(field.reward.id);
-              return (
-                <Row
-                  key={field.id}
-                  title={`${field.reward.name} (${GEAR_SLOT_LABELS[item.slot]})`}
-                  detail={`${field.material.name} ${have}/${material} + ${cost.toLocaleString()}G · ${statText(item)}`}
-                  action="교환"
-                  disabled={full || have < material || gold < cost}
-                  onPress={() =>
-                    confirm(
-                      '교환할까요?',
-                      `${field.reward.name} · ${field.material.name} ${material}개 + ${cost.toLocaleString()}G`,
-                      '교환',
-                      () => trade(trades.exchange(field.id)),
-                    )
-                  }
-                />
-              );
-            })}
-          </Panel>
+        {tab === '반지' && (
+          <>
+            <Panel title="새 반지">
+              <Text size="sm" dim>
+                {regionById(1).name}의 서로 다른 사냥터 소재 {RING_COST.exchange}개로 ★1 일반 반지를
+                하나 받습니다. 무엇이 나올지는 모릅니다(11종). 같은 반지 두 개를 같이 껴도 됩니다.
+              </Text>
+              <Row
+                title="반지 교환"
+                detail={`${regionById(1).name} 소재 ${RING_COST.exchange}종 (가진 ${ownedKinds(1)}종)`}
+                action="교환"
+                tone="gold"
+                disabled={ownedKinds(1) < RING_COST.exchange}
+                onPress={() =>
+                  confirm(
+                    '교환할까요?',
+                    `${regionById(1).name} 소재 ${RING_COST.exchange}종 → 무작위 반지 ★1 일반`,
+                    '교환',
+                    () => {
+                      if (trade(trades.exchangeRing())) {
+                        const got = usePlayer.getState().save.rings.at(-1)!;
+                        setLastRing(`${ringName(got)}을(를) 받았습니다 — ${ringText(got)}`);
+                      }
+                    },
+                  )
+                }
+              />
+            </Panel>
+
+            <Panel title={`가진 반지 ${save.rings.length}개 — 끼는 곳은 캐릭터 탭 장비`}>
+              {lastRing && <Text color={colors.gold}>{lastRing}</Text>}
+              <Text size="sm" dim>
+                올리기: 등급을 하나씩, 전설 다음은 다음 지역 소재로 ★ 하나 위 일반이 됩니다 — 그
+                순간은 전보다 약하지만 더 높이 갑니다. 소재만 들고, 강화는 +0으로 돌아갑니다.
+              </Text>
+              {save.rings.length === 0 ? (
+                <Text size="sm" dim>
+                  아직 없습니다. 소재는 6마리 판을 끝까지 깨면 하나 나옵니다.
+                </Text>
+              ) : (
+                save.rings.map(ringBlock)
+              )}
+            </Panel>
+          </>
         )}
       </ScrollView>
     </SafeAreaView>
@@ -569,4 +669,5 @@ const styles = StyleSheet.create({
   },
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexShrink: 1 },
   name: { gap: space.xs, flexShrink: 1 },
+  ring: { gap: space.xs, paddingTop: space.sm, borderTopWidth: 1, borderTopColor: colors.edge },
 });

@@ -7,6 +7,7 @@ import { consumableById, fieldById } from '@/content';
 import {
   hpAfterLastHitBy,
   makeRng,
+  shieldLeft,
   simulateBattle,
   type BattleEvent,
   type BattleResult,
@@ -61,14 +62,19 @@ type Playback = {
   heals: { at: number; hp: number }[];
 };
 
-/** 지금 세이브 상태로 전투 한 구간을 뽑는다. `monsterHp`를 주면 그 체력에서 이어 싸운다. */
-function simulateFrom(save: Save, monsterHp?: number) {
+/**
+ * 지금 세이브 상태로 전투 한 구간을 뽑는다. `monsterHp`를 주면 그 체력에서 이어 싸운다.
+ * `shield`는 이어 싸울 때 남은 보호막이다 (T17_7) — 안 주면 새 전투라 반지 값 그대로 꽉 차 있다.
+ */
+function simulateFrom(save: Save, monsterHp?: number, shield?: number) {
   const picked = currentMonster(save);
   if (!picked) return null;
+  const stats = statsOf(save);
   const player: Combatant = {
     name: `Lv${save.player.level} 전사`,
     hp: save.player.hp,
-    ...statsOf(save),
+    ...stats,
+    shield: shield ?? stats.shield,
   };
   const monster: Combatant = { ...picked, hp: monsterHp ?? picked.maxHp };
   return { player, monster, result: simulateBattle(player, monster, makeRng(Date.now())) };
@@ -146,12 +152,14 @@ export default function Battle() {
   );
   const last = played.at(-1);
   const potions = Object.entries(save.run?.potions ?? {}).filter(([, n]) => n > 0);
+  // 보호막은 맞은 만큼 줄고 안 찬다 (T17_7). 물약으로 이어 붙인 구간까지 한 번에 센다
+  const shield = shieldLeft(played, battle.player.shield ?? 0);
 
   /** 지금 HP에서 회복하고, 남은 싸움을 새로 뽑아 **뒤에 잇는다**. 커서는 안 건드린다. */
   const onDrink = (id: string) => {
     if (!drink(id, playerHp)) return;
     const healed = usePlayer.getState().save;
-    const seg = simulateFrom(healed, monsterHp);
+    const seg = simulateFrom(healed, monsterHp, shield);
     if (!seg) return;
     const kept = battle.events.slice(0, cursor);
     setBattle({
@@ -194,6 +202,11 @@ export default function Battle() {
 
       <Panel title={battle.player.name}>
         <Bar label="HP" value={playerHp} max={battle.player.maxHp} color={colors.hp} />
+        {(battle.player.shield ?? 0) > 0 && (
+          <Text size="sm" color={shield > 0 ? colors.exp : colors.dim}>
+            보호막 {shield} / {battle.player.shield}
+          </Text>
+        )}
         <View style={styles.popup}>
           {last?.actor === 'monster' && (
             <Text size="xl" color={eventColor(last)}>

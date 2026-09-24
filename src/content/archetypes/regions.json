@@ -45,15 +45,6 @@
         "material": {
           "id": "mat_r1_meadow",
           "name": "들판의 마른 풀"
-        },
-        "reward": {
-          "id": "uniq_r1_meadow",
-          "name": "풀잎을 감은 단검",
-          "cost": {
-            "material": 3,
-            "gold": 1300
-          },
-          "slot": "weapon"
         }
       },
       {
@@ -81,15 +72,6 @@
         "material": {
           "id": "mat_r1_windmill",
           "name": "멈추지 않는 바람개비"
-        },
-        "reward": {
-          "id": "uniq_r1_windmill",
-          "name": "바람개비 끈을 맨 신",
-          "cost": {
-            "material": 3,
-            "gold": 1300
-          },
-          "slot": "boots"
         }
       },
       {
@@ -117,15 +99,6 @@
         "material": {
           "id": "mat_r1_mushroom",
           "name": "마르지 않는 홀씨"
-        },
-        "reward": {
-          "id": "uniq_r1_mushroom",
-          "name": "홀씨가 붙은 장갑",
-          "cost": {
-            "material": 3,
-            "gold": 1300
-          },
-          "slot": "gloves"
         }
       },
       {
@@ -153,15 +126,6 @@
         "material": {
           "id": "mat_r1_bramble",
           "name": "부러지지 않는 가시"
-        },
-        "reward": {
-          "id": "uniq_r1_bramble",
-          "name": "가시를 엮은 갑옷",
-          "cost": {
-            "material": 3,
-            "gold": 1300
-          },
-          "slot": "armor"
         }
       },
       {
@@ -189,15 +153,6 @@
         "material": {
           "id": "mat_r1_goblin",
           "name": "고블린이 훔친 천 조각"
-        },
-        "reward": {
-          "id": "uniq_r1_goblin",
-          "name": "훔친 천으로 기운 바지",
-          "cost": {
-            "material": 3,
-            "gold": 1300
-          },
-          "slot": "pants"
         }
       },
       {
@@ -225,15 +180,6 @@
         "material": {
           "id": "mat_r1_tower",
           "name": "금이 간 초석"
-        },
-        "reward": {
-          "id": "uniq_r1_tower",
-          "name": "초석을 얹은 투구",
-          "cost": {
-            "material": 3,
-            "gold": 1300
-          },
-          "slot": "helm"
         }
       },
       {
@@ -261,15 +207,6 @@
         "material": {
           "id": "mat_r1_camp",
           "name": "빼앗긴 인장"
-        },
-        "reward": {
-          "id": "uniq_r1_camp",
-          "name": "인장이 박힌 반지",
-          "cost": {
-            "material": 3,
-            "gold": 1300
-          },
-          "slot": "accessory"
         }
       }
     ],
@@ -322,15 +259,6 @@
         "material": {
           "id": "mat_r2_cave",
           "name": "빛나는 동굴 이끼"
-        },
-        "reward": {
-          "id": "uniq_r2_cave",
-          "name": "이끼로 덮인 장화",
-          "cost": {
-            "material": 3,
-            "gold": 2700
-          },
-          "slot": "boots"
         }
       },
       {
@@ -358,15 +286,6 @@
         "material": {
           "id": "mat_r2_oldwood",
           "name": "말을 거는 나뭇잎"
-        },
-        "reward": {
-          "id": "uniq_r2_oldwood",
-          "name": "고목 껍질을 덧댄 바지",
-          "cost": {
-            "material": 3,
-            "gold": 2700
-          },
-          "slot": "pants"
         }
       },
       {
@@ -394,15 +313,6 @@
         "material": {
           "id": "mat_r2_web",
           "name": "끊어지지 않는 거미줄"
-        },
-        "reward": {
-          "id": "uniq_r2_web",
-          "name": "거미줄로 짠 장갑",
-          "cost": {
-            "material": 3,
-            "gold": 2700
-          },
-          "slot": "gloves"
         }
       },
       {
@@ -430,15 +340,6 @@
         "material": {
           "id": "mat_r2_grave",
           "name": "삭지 않은 수의 조각"
-        },
-        "reward": {
-          "id": "uniq_r2_grave",
-          "name": "수의를 덧댄 외투",
-          "cost": {
-            "material": 3,
-            "gold": 2700
-          },
-          "slot": "armor"
         }
       },
       {
@@ -466,15 +367,6 @@
         "material": {
           "id": "mat_r2_logging",
           "name": "타다 만 장작"
-        },
-        "reward": {
-          "id": "uniq_r2_logging",
-          "name": "장작을 벼린 도끼",
-          "cost": {
-            "material": 3,
-            "gold": 2700
-          },
-          "slot": "weapon"
         }
       },
       {
@@ -502,15 +394,6 @@
         "material": {
           "id": "mat_r2_quarry",
           "name": "결이 고운 석재"
-        },
-        "reward": {
-          "id": "uniq_r2_quarry",
-          "name": "석재를 물린 투구",
-          "cost": {
-            "material": 3,
-            "gold": 2700
-          },
-          "slot": "helm"
         }
       },
       {
@@ -538,15 +421,6 @@
         "material": {
           "id": "mat_r2_marsh",
           "name": "걷히지 않는 늪안개"
-        },
-        "reward": {
-          "id": "uniq_r2_marsh",
-          "name": "늪안개를 담은 목걸이",
-          "cost": {
-            "material": 3,
-            "gold": 2700
-          },
-          "slot": "accessory"
         }
       }
     ],
@@ -599,15 +473,6 @@
         "material": {
           "id": "mat_r3_oasis",
           "name": "마지막 한 모금의 물"
-        },
-        "reward": {
-          "id": "uniq_r3_oasis",
-          "name": "신기루를 걷는 바지",
-          "cost": {
-            "material": 3,
-            "gold": 4000
-          },
-          "slot": "pants"
         }
       },
       {
@@ -635,15 +500,6 @@
         "material": {
           "id": "mat_r3_cliff",
           "name": "절벽의 부서진 뼈대"
-        },
-        "reward": {
-          "id": "uniq_r3_cliff",
-          "name": "절벽을 딛는 각반",
-          "cost": {
-            "material": 3,
-            "gold": 4000
-          },
-          "slot": "boots"
         }
       },
       {
@@ -671,15 +527,6 @@
         "material": {
           "id": "mat_r3_riverbed",
           "name": "마른 강바닥의 흔적"
-        },
-        "reward": {
-          "id": "uniq_r3_riverbed",
-          "name": "강바닥의 휜 마검",
-          "cost": {
-            "material": 3,
-            "gold": 4000
-          },
-          "slot": "weapon"
         }
       },
       {
@@ -707,15 +554,6 @@
         "material": {
           "id": "mat_r3_fossil",
           "name": "돌이 된 송곳니"
-        },
-        "reward": {
-          "id": "uniq_r3_fossil",
-          "name": "화석 두개골 투구",
-          "cost": {
-            "material": 3,
-            "gold": 4000
-          },
-          "slot": "helm"
         }
       },
       {
@@ -743,15 +581,6 @@
         "material": {
           "id": "mat_r3_saltflat",
           "name": "굳은 소금 결정"
-        },
-        "reward": {
-          "id": "uniq_r3_saltflat",
-          "name": "소금에 절인 흉갑",
-          "cost": {
-            "material": 3,
-            "gold": 4000
-          },
-          "slot": "armor"
         }
       },
       {
@@ -779,15 +608,6 @@
         "material": {
           "id": "mat_r3_ridge",
           "name": "능선의 마른 깃털"
-        },
-        "reward": {
-          "id": "uniq_r3_ridge",
-          "name": "바람을 가르는 손아귀",
-          "cost": {
-            "material": 3,
-            "gold": 4000
-          },
-          "slot": "gloves"
         }
       },
       {
@@ -815,15 +635,6 @@
         "material": {
           "id": "mat_r3_outpost",
           "name": "초소의 녹슨 열쇠"
-        },
-        "reward": {
-          "id": "uniq_r3_outpost",
-          "name": "초소장의 낡은 인장",
-          "cost": {
-            "material": 3,
-            "gold": 4000
-          },
-          "slot": "accessory"
         }
       }
     ],
@@ -876,15 +687,6 @@
         "material": {
           "id": "mat_r4_crater",
           "name": "식지 않는 분화구 재"
-        },
-        "reward": {
-          "id": "uniq_r4_crater",
-          "name": "재를 머금은 장갑",
-          "cost": {
-            "material": 3,
-            "gold": 5300
-          },
-          "slot": "gloves"
         }
       },
       {
@@ -912,15 +714,6 @@
         "material": {
           "id": "mat_r4_hotspring",
           "name": "식지 않는 온천석"
-        },
-        "reward": {
-          "id": "uniq_r4_hotspring",
-          "name": "온천석을 박은 바지",
-          "cost": {
-            "material": 3,
-            "gold": 5300
-          },
-          "slot": "pants"
         }
       },
       {
@@ -948,15 +741,6 @@
         "material": {
           "id": "mat_r4_ashfield",
           "name": "들판에 쌓인 화산재"
-        },
-        "reward": {
-          "id": "uniq_r4_ashfield",
-          "name": "잿빛 사슬 갑옷",
-          "cost": {
-            "material": 3,
-            "gold": 5300
-          },
-          "slot": "armor"
         }
       },
       {
@@ -988,15 +772,6 @@
         "material": {
           "id": "mat_r4_lavatube",
           "name": "식은 용암 덩이"
-        },
-        "reward": {
-          "id": "uniq_r4_lavatube",
-          "name": "용암으로 벼린 대검",
-          "cost": {
-            "material": 3,
-            "gold": 5300
-          },
-          "slot": "weapon"
         }
       },
       {
@@ -1024,15 +799,6 @@
         "material": {
           "id": "mat_r4_hideout",
           "name": "피로 맺은 서약서"
-        },
-        "reward": {
-          "id": "uniq_r4_hideout",
-          "name": "검은 손의 반지",
-          "cost": {
-            "material": 3,
-            "gold": 5300
-          },
-          "slot": "accessory"
         }
       },
       {
@@ -1060,15 +826,6 @@
         "material": {
           "id": "mat_r4_obsidian",
           "name": "깨진 흑요석 조각"
-        },
-        "reward": {
-          "id": "uniq_r4_obsidian",
-          "name": "흑요석을 박은 투구",
-          "cost": {
-            "material": 3,
-            "gold": 5300
-          },
-          "slot": "helm"
         }
       },
       {
@@ -1100,15 +857,6 @@
         "material": {
           "id": "mat_r4_forge",
           "name": "꺼지지 않은 불씨"
-        },
-        "reward": {
-          "id": "uniq_r4_forge",
-          "name": "대장장이의 무쇠 장화",
-          "cost": {
-            "material": 3,
-            "gold": 5300
-          },
-          "slot": "boots"
         }
       }
     ],
@@ -1161,15 +909,6 @@
         "material": {
           "id": "mat_r5_abyss",
           "name": "심연에서 건진 조각"
-        },
-        "reward": {
-          "id": "uniq_r5_abyss",
-          "name": "심연을 담은 단검",
-          "cost": {
-            "material": 3,
-            "gold": 6700
-          },
-          "slot": "weapon"
         }
       },
       {
@@ -1197,15 +936,6 @@
         "material": {
           "id": "mat_r5_temple",
           "name": "물에 불은 기도서"
-        },
-        "reward": {
-          "id": "uniq_r5_temple",
-          "name": "익사한 사제의 장갑",
-          "cost": {
-            "material": 3,
-            "gold": 6700
-          },
-          "slot": "gloves"
         }
       },
       {
@@ -1233,15 +963,6 @@
         "material": {
           "id": "mat_r5_frost",
           "name": "녹지 않는 서리"
-        },
-        "reward": {
-          "id": "uniq_r5_frost",
-          "name": "서리로 짠 망토",
-          "cost": {
-            "material": 3,
-            "gold": 6700
-          },
-          "slot": "armor"
         }
       },
       {
@@ -1269,15 +990,6 @@
         "material": {
           "id": "mat_r5_hall",
           "name": "대전의 깨진 왕관"
-        },
-        "reward": {
-          "id": "uniq_r5_hall",
-          "name": "대전을 지킨 각반",
-          "cost": {
-            "material": 3,
-            "gold": 6700
-          },
-          "slot": "boots"
         }
       },
       {
@@ -1309,15 +1021,6 @@
         "material": {
           "id": "mat_r5_root",
           "name": "세계수의 잔뿌리"
-        },
-        "reward": {
-          "id": "uniq_r5_root",
-          "name": "뿌리를 엮은 팔찌",
-          "cost": {
-            "material": 3,
-            "gold": 6700
-          },
-          "slot": "accessory"
         }
       },
       {
@@ -1345,15 +1048,6 @@
         "material": {
           "id": "mat_r5_rift",
           "name": "공허의 파편"
-        },
-        "reward": {
-          "id": "uniq_r5_rift",
-          "name": "공허를 걷는 바지",
-          "cost": {
-            "material": 3,
-            "gold": 6700
-          },
-          "slot": "pants"
         }
       },
       {
@@ -1381,15 +1075,6 @@
         "material": {
           "id": "mat_r5_throne",
           "name": "폐왕의 부러진 홀"
-        },
-        "reward": {
-          "id": "uniq_r5_throne",
-          "name": "폐왕의 대관 투구",
-          "cost": {
-            "material": 3,
-            "gold": 6700
-          },
-          "slot": "helm"
         }
       }
     ],

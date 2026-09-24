@@ -12,17 +12,13 @@ export const colors = {
   exp: '#4A8FD4',
 } as const;
 
-/**
- * 등급 테두리 색 (§4.5). 키는 formulas.ts의 ALL_RARITIES와 같다.
- * 흔한 것일수록 어둡고, 고유만 색 계열이 다르다 — 그리드 밖의 물건이라서다.
- */
+/** 등급 테두리 색 (§4.5). 키는 formulas.ts의 RARITIES와 같다. 흔한 것일수록 어둡다 */
 export const rarity = {
   common: '#8C7FA6',
   uncommon: '#54B47A',
   rare: '#4A8FD4',
   epic: '#A15CD0',
   legendary: '#E8B44A',
-  unique: '#D4674A',
 } as const;
 
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 } as const;

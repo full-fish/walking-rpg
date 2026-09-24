@@ -1,18 +1,19 @@
 import { expect, test } from 'vitest';
 
-import { consumableById, equipmentById, fieldById, monstersOfField } from '../content';
-import { defaultSave, type Save } from '../save/schema';
-import { makeRng, simulateBattle, type Combatant } from './battle';
+import { consumableById, fieldById, monstersOfField } from '../content';
+import { defaultSave, type Ring, type Save } from '../save/schema';
+import { makeRng, shieldLeft, simulateBattle, type Combatant } from './battle';
 import {
   carriedPotions,
   currentMonster,
   enterField,
+  fieldEntryCost,
   inTown,
   packPotions,
   settleRun,
   drinkPotion,
 } from './field';
-import { CLEAR_BONUS_RATE, POTION_CARRY_MAX, UNIQUE_TRAIT_BONUS, WP_COST } from './formulas';
+import { CLEAR_BONUS_RATE, POTION_CARRY_MAX, WP_COST } from './formulas';
 import { statsOf } from './progression';
 
 const FIELD = 'f_r1_meadow';
@@ -211,23 +212,79 @@ test('소재는 6마리 완주만 준다 — 그 아래는 행운을 몰빵해�
   expect(sixMaterial, '6마리는 전부 나온다').toBe(six);
 });
 
-test('고유 장비는 그 사냥터 몬스터에게만 특효다 (§4.5)', () => {
-  const unique = equipmentById('uniq_r1_meadow');
-  expect(unique.vs, '그 사냥터 풀의 traits를 들고 있다').toBeDefined();
+test('반지 — 입장 WP 할인(상한 50%) · 6마리 판 · 클리어 보너스 · EXP (T17_7)', () => {
+  const ring = (kind: Ring['kind'], uid: string, over: Partial<Ring> = {}): Ring => ({
+    uid,
+    kind,
+    tier: 1,
+    rarity: 'common',
+    enhance: 0,
+    ...over,
+  });
+  const wearing = (...rings: Ring[]): Save =>
+    ready({ rings, ringSlots: [rings[0]?.uid ?? null, rings[1]?.uid ?? null] });
 
-  // 같은 무기라도 태그가 안 맞으면 보너스가 없다
-  const traits = monstersOfField(fieldById(FIELD)).flatMap((m) => m.traits);
-  expect(unique.vs!.some((t) => traits.includes(t))).toBe(true);
+  // 입장 WP −4%. 끝까지 올린 두 개(각 −51%)를 껴도 절반까지만 깎인다
+  expect(fieldEntryCost(wearing(ring('fieldWp', '1')), 1)).toBe(
+    Math.round(WP_COST.fieldEntry(1) * 0.96),
+  );
+  const max = { tier: 5, rarity: 'legendary' as const, enhance: 10 };
+  expect(fieldEntryCost(wearing(ring('fieldWp', '1', max), ring('fieldWp', '2', max)), 1)).toBe(
+    Math.round(WP_COST.fieldEntry(1) * 0.5),
+  );
 
-  const base: Combatant = { name: '', hp: 1e9, maxHp: 1e9, atk: 100, def: 0, spd: 10, cri: 0, crd: 1.5, eva: 0 };
-  const target: Combatant = { ...base, hp: 1e6, maxHp: 1e6, atk: 0, traits: [unique.vs![0]] };
-  const plain = totalDamage(base, target);
-  const armed = totalDamage({ ...base, bonusVs: { [unique.vs![0]]: UNIQUE_TRAIT_BONUS } }, target);
+  // 6마리 판이 늘어난다 — ★5 전설 +10 두 개면 10% → 약 35%
+  const sixRate = (save: Save) => {
+    let six = 0;
+    for (let seed = 1; seed <= 2_000; seed++)
+      if (enterField(save, FIELD, makeRng(seed))!.run!.size === 6) six++;
+    return six / 2_000;
+  };
+  expect(sixRate(ready())).toBeCloseTo(0.1, 1);
+  expect(sixRate(wearing(ring('bigRun', '1', max), ring('bigRun', '2', max)))).toBeGreaterThan(0.3);
 
-  expect(armed / plain).toBeCloseTo(1 + UNIQUE_TRAIT_BONUS, 1);
-  // 태그가 다르면 그대로다
-  const other = totalDamage({ ...base, bonusVs: { 없는태그: UNIQUE_TRAIT_BONUS } }, target);
-  expect(other / plain).toBeCloseTo(1, 1);
+  // 클리어 보너스·EXP — 같은 판을 반지 있이/없이 깨서 비교한다
+  const clear = (save: Save) => {
+    let result = settleRun(enterField(save, FIELD, makeRng(4))!, 'win', 1e6, mid, 0);
+    while (!result.over) result = settleRun(result.save, 'win', 1e6, mid, 0);
+    return result;
+  };
+  const base = clear(ready());
+  const bonus = clear(wearing(ring('clearBonus', '1')));
+  expect(bonus.bonus.gold).toBe(Math.round(base.bonus.gold * 1.05));
+  const exp = clear(wearing(ring('exp', '1', { rarity: 'legendary' })));
+  expect(exp.gained.exp).toBeGreaterThan(base.gained.exp * 1.02);
+});
+
+test('반지 — 보호막은 HP보다 먼저 깎이고, 보스 피해는 보스에게만 (T17_7)', () => {
+  const base: Combatant = {
+    name: '',
+    hp: 100,
+    maxHp: 100,
+    atk: 10,
+    def: 0,
+    spd: 10,
+    cri: 0,
+    crd: 1.5,
+    eva: 0,
+  };
+  const foe: Combatant = { ...base, hp: 1e6, maxHp: 1e6 };
+  // 같은 난수면 같은 전투 — 보호막 30이면 끝 HP가 정확히 30 높다(보호막이 남지 않을 만큼 맞는 동안)
+  const plain = simulateBattle(base, foe, makeRng(1));
+  const shielded = simulateBattle({ ...base, shield: 30 }, foe, makeRng(1));
+  expect(shielded.events.length).toBeGreaterThan(plain.events.length);
+  const cut = plain.events.findIndex((e) => e.actor === 'monster' && e.hpAfter < 60);
+  expect(shielded.events[cut].hpAfter).toBe(Math.min(100, plain.events[cut].hpAfter + 30));
+  expect(shieldLeft(plain.events.slice(0, 1), 30)).toBe(
+    30 - (plain.events[0].actor === 'monster' ? plain.events[0].value : 0),
+  );
+
+  // 보스 피해 +15%는 보스에게만
+  const boss: Combatant = { ...foe, boss: true };
+  const tank = { ...base, hp: 1e9, maxHp: 1e9 };
+  const hitter = { ...tank, bossDamage: 0.15 };
+  expect(totalDamage(hitter, boss) / totalDamage(tank, boss)).toBeCloseTo(1.15, 1);
+  expect(totalDamage(hitter, foe) / totalDamage(tank, foe)).toBeCloseTo(1, 1);
 });
 
 /** 1,000회 때려서 총 피해를 잰다. 난수 폭(0.8~1.2)이 평균에서 지워진다. */

@@ -6,24 +6,26 @@
  * React를 import하지 않는다 — Node에서 돌아야 한다.
  */
 import { equipmentById, type Equipment } from '../content';
-import type { ItemInstance, Save } from '../save/schema';
+import type { ItemInstance, Ring, Save } from '../save/schema';
 import {
   ENHANCE_MULT,
   GEAR_SLOTS,
   gearShare,
   itemStat,
   RARITY_MULT,
+  RING_FIELD_WP_CAP,
+  ringValue,
   rollQuality,
-  UNIQUE_TRAIT_BONUS,
   type GearSlot,
+  type RingKind,
 } from './formulas';
 
 export type GearBonus = { atk: number; maxHp: number; def: number; spd: number; luk: number };
 
 const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0, spd: 0, luk: 0 };
 
-/** 세이브 안에서만 유일하면 된다. 가진 것 중 가장 큰 번호 + 1. */
-export function nextUid(inventory: ItemInstance[]): string {
+/** 세이브 안에서만 유일하면 된다. 가진 것 중 가장 큰 번호 + 1. 반지 목록에도 쓴다 (T17_7) */
+export function nextUid(inventory: { uid: string }[]): string {
   const max = inventory.reduce((m, i) => Math.max(m, Number(i.uid) || 0), 0);
   return String(max + 1);
 }
@@ -127,18 +129,27 @@ export function equippedStats(save: Save): GearBonus {
   }, NONE);
 }
 
+/** 반지 하나의 효과 값 (T17_7) — ★ · 등급 · 강화를 다 반영한다 */
+export function ringEffect(ring: Ring): number {
+  return ringValue(ring.kind, ring.tier, ring.rarity, ring.enhance);
+}
+
+/** 낀 반지들 (T17_7). 빈 칸과 세이브가 깨져 uid가 떠 있는 칸은 건너뛴다 */
+export function equippedRings(save: Save): Ring[] {
+  return save.ringSlots
+    .map((uid) => save.rings.find((r) => r.uid === uid))
+    .filter((r): r is Ring => r !== undefined);
+}
+
 /**
- * 낀 고유 장비들이 주는 특효 모음 (§4.5). 태그 → 추가 피해 비율.
- * 같은 태그를 여러 부위가 덮어도 **제일 큰 것 하나만** 남긴다 — 곱해서 쌓이면 안 된다.
+ * 낀 반지들이 주는 그 효과의 합 (T17_7). 같은 반지 두 개면 더한다.
+ * 입장 WP 할인만 상한이 있다 — 끝까지 올린 두 개를 껴도 절반까지다.
  */
-export function equippedBonusVs(save: Save): Record<string, number> {
-  const bonus: Record<string, number> = {};
-  for (const inst of equippedItems(save)) {
-    for (const trait of itemDef(inst).vs ?? []) {
-      bonus[trait] = Math.max(bonus[trait] ?? 0, UNIQUE_TRAIT_BONUS);
-    }
-  }
-  return bonus;
+export function ringBonus(save: Save, kind: RingKind): number {
+  const sum = equippedRings(save)
+    .filter((r) => r.kind === kind)
+    .reduce((total, r) => total + ringEffect(r), 0);
+  return kind === 'fieldWp' ? Math.min(sum, RING_FIELD_WP_CAP) : sum;
 }
 
 /**

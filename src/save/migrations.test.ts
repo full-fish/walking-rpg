@@ -202,3 +202,21 @@ test('v9 → v10: 진행 중인 판에 보스 버프 칸이 비어서 생긴다 
   // 마을에 있던 세이브는 그대로 마을이다
   expect(SaveSchema.parse(migrate({ ...defaultSave(), version: 9, run: null })).run).toBeNull();
 });
+
+test('v10 → v11: 고유 장비는 가방·장비 칸에서 지워지고 반지 칸이 빈 채로 생긴다 (T17_7)', () => {
+  const v10 = {
+    ...defaultSave(),
+    version: 10,
+    inventory: [
+      { uid: '1', defId: 'eq_t1_armor_common', quality: 1, enhance: 0 },
+      { uid: '2', defId: 'uniq_r1_meadow', quality: 1, enhance: 3 },
+      { uid: '3', defId: 'uniq_r1_windmill', quality: 1, enhance: 0 },
+    ],
+    equipped: { ...defaultSave().equipped, weapon: '2', armor: '1', boots: '3' },
+  };
+  const v11 = SaveSchema.parse(migrate(v10));
+  expect(v11.inventory.map((i) => i.uid)).toEqual(['1']);
+  expect(v11.equipped).toMatchObject({ weapon: null, armor: '1', boots: null });
+  expect(v11.rings).toEqual([]);
+  expect(v11.ringSlots).toEqual([null, null]);
+});

@@ -497,7 +497,7 @@
   },
   {
     "id": "eq_t1_accessory_uncommon",
-    "name": "낡은 반지",
+    "name": "낡은 팔찌",
     "tier": 1,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -1057,7 +1057,7 @@
   },
   {
     "id": "eq_t2_accessory_uncommon",
-    "name": "무쇠 반지",
+    "name": "무쇠 팔찌",
     "tier": 2,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -1617,7 +1617,7 @@
   },
   {
     "id": "eq_t3_accessory_uncommon",
-    "name": "강철 반지",
+    "name": "강철 팔찌",
     "tier": 3,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -2177,7 +2177,7 @@
   },
   {
     "id": "eq_t4_accessory_uncommon",
-    "name": "은빛 반지",
+    "name": "은빛 팔찌",
     "tier": 4,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -2737,7 +2737,7 @@
   },
   {
     "id": "eq_t5_accessory_uncommon",
-    "name": "흑철 반지",
+    "name": "흑철 팔찌",
     "tier": 5,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -3297,7 +3297,7 @@
   },
   {
     "id": "eq_t6_accessory_uncommon",
-    "name": "용린 반지",
+    "name": "용린 팔찌",
     "tier": 6,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -3857,7 +3857,7 @@
   },
   {
     "id": "eq_t7_accessory_uncommon",
-    "name": "수정 반지",
+    "name": "수정 팔찌",
     "tier": 7,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -4417,7 +4417,7 @@
   },
   {
     "id": "eq_t8_accessory_uncommon",
-    "name": "흑요석 반지",
+    "name": "흑요석 팔찌",
     "tier": 8,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -4977,7 +4977,7 @@
   },
   {
     "id": "eq_t9_accessory_uncommon",
-    "name": "월광 반지",
+    "name": "월광 팔찌",
     "tier": 9,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -5537,7 +5537,7 @@
   },
   {
     "id": "eq_t10_accessory_uncommon",
-    "name": "심연 반지",
+    "name": "심연 팔찌",
     "tier": 10,
     "slot": "accessory",
     "rarity": "uncommon",

@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest';
 
-import { equipmentById, fieldById, regionById, shopGear } from '../content';
+import { equipmentById, regionById, shopGear } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import { makeRng } from './battle';
 import {
@@ -9,8 +9,12 @@ import {
   buyEquipment,
   depositNet,
   enhanceItem,
-  exchangeUnique,
+  enhanceRing,
+  exchangeRing,
+  potionHeal,
+  ringNext,
   sellItem,
+  upgradeRing,
   sellPrice,
   stayInn,
   consumeItem,
@@ -26,6 +30,7 @@ import {
   enhanceCost,
   enhanceExpected,
   innCost,
+  RING_COST,
   VAULT,
   vaultExpandCost,
 } from './formulas';
@@ -47,10 +52,6 @@ test('장비 구매 — 골드가 모자라면 아무것도 안 바뀐다', () =
   expect(bought.player.gold).toBeLessThan(10_000);
   // 품질이 붙는다 — 같은 이름이라도 개체마다 다르다 (§4.5)
   expect(bought.inventory[0].quality).toBeGreaterThanOrEqual(0.8);
-});
-
-test('고유 장비는 골드로 못 산다 — 소재로만 바꾼다 (§4.4)', () => {
-  expect(buyEquipment(rich(1_000_000), 'uniq_r1_meadow', rng)).toBeNull();
 });
 
 test('전설은 상점에 없다 — 드랍으로만 나온다 (T17_6)', () => {
@@ -165,17 +166,80 @@ test('★ 사망해도 창고 골드는 면제다 (§4.5)', () => {
   expect(dead.goldLost, '소지 골드 10%').toBe(Math.floor(put.player.gold * DEATH_GOLD_LOSS));
 });
 
-test('고유 교환 — 소재 3개 + 골드. 소재가 모자라면 거부 (§4.4)', () => {
-  const field = fieldById('f_r1_meadow');
-  const save = rich(10_000);
+/** 그 지역 사냥터 소재를 곳마다 n개씩 */
+function materialsOf(region: number, n: number): Record<string, number> {
+  return Object.fromEntries(regionById(region).fields.map((f) => [f.id, n]));
+}
 
-  expect(exchangeUnique(save, 'f_r1_meadow', rng), '소재 0개').toBeNull();
+test('반지 교환 — 초원 소재 서로 다른 3곳 → ★1 일반, 효과는 무작위 (T17_7)', () => {
+  const [a, b, c] = regionById(1).fields.map((f) => f.id);
+  // 한 곳 소재만 잔뜩 있어도 안 된다 — 서로 다른 사냥터에서 하나씩이다
+  expect(exchangeRing({ ...rich(0), materials: { [a]: 9 } }, rng)).toBeNull();
 
-  const withMats = { ...save, materials: { f_r1_meadow: 3 } };
-  const got = exchangeUnique(withMats, 'f_r1_meadow', makeRng(1))!;
-  expect(got.inventory[0].defId).toBe(field.reward.id);
-  expect(got.materials.f_r1_meadow, '다 쓰면 항목이 사라진다').toBeUndefined();
-  expect(got.player.gold).toBe(10_000 - field.reward.cost.gold);
+  const got = exchangeRing({ ...rich(0), materials: { [a]: 2, [b]: 1, [c]: 1 } }, makeRng(3))!;
+  expect(got.rings).toHaveLength(1);
+  expect(got.rings[0]).toMatchObject({ tier: 1, rarity: 'common', enhance: 0 });
+  expect(got.materials, '곳마다 하나씩 뺀다').toEqual({ [a]: 1 });
+  expect(got.player.gold, '골드는 안 든다').toBe(0);
+
+  // 무작위라 여러 번 바꾸면 여러 종류가 나온다 — 같은 게 또 나와도 된다
+  const kinds = new Set<string>();
+  let save: Save = { ...rich(0), materials: materialsOf(1, 99) };
+  for (let i = 0; i < 30; i++) {
+    save = exchangeRing(save, makeRng(i))!;
+    kinds.add(save.rings.at(-1)!.kind);
+  }
+  expect(kinds.size).toBeGreaterThan(5);
+});
+
+test('반지 올리기 — 소재만 들고, 강화는 +0으로. 전설 다음은 다음 지역 소재로 ★2 일반 (T17_7)', () => {
+  const ring = { uid: '1', kind: 'gold' as const, tier: 1, rarity: 'common' as const, enhance: 4 };
+  const save: Save = { ...rich(0), rings: [ring], materials: materialsOf(1, 9) };
+
+  expect(ringNext(ring)).toEqual({ tier: 1, rarity: 'uncommon', cost: RING_COST.rarity[0] });
+  const up = upgradeRing(save, '1')!;
+  expect(up.rings[0]).toMatchObject({ tier: 1, rarity: 'uncommon', enhance: 0 });
+
+  // 전설 → ★2 일반은 숲(지역 2) 소재가 든다. 초원 소재만으로는 못 간다
+  const legend = { ...ring, rarity: 'legendary' as const };
+  expect(ringNext(legend)).toEqual({ tier: 2, rarity: 'common', cost: RING_COST.tier });
+  expect(upgradeRing({ ...save, rings: [legend] }, '1')).toBeNull();
+  const tier2 = upgradeRing({ ...save, rings: [legend], materials: materialsOf(2, 1) }, '1')!;
+  expect(tier2.rings[0]).toMatchObject({ tier: 2, rarity: 'common', enhance: 0 });
+
+  // ★5 전설이 끝이다
+  expect(ringNext({ ...ring, tier: 5, rarity: 'legendary' })).toBeNull();
+});
+
+test('반지 강화 — 장비와 같은 표. +6부터 그 ★ 지역 소재가 성공할 때만 든다 (T17_7)', () => {
+  const ring = { uid: '1', kind: 'exp' as const, tier: 1, rarity: 'rare' as const, enhance: 5 };
+  const save: Save = { ...rich(10_000_000), rings: [ring] };
+  // 소재가 없으면 +6을 못 두드린다
+  expect(enhanceRing(save, '1', () => 0)).toBeNull();
+
+  const mats = { ...save, materials: materialsOf(1, 1) };
+  const fail = enhanceRing(mats, '1', () => 0.99)!;
+  expect(fail.success).toBe(false);
+  expect(fail.save.materials, '실패하면 소재는 그대로').toEqual(mats.materials);
+  const ok = enhanceRing(mats, '1', () => 0)!;
+  expect(ok.save.rings[0].enhance).toBe(6);
+  expect(ok.materials).toBe(1);
+  expect(ok.cost).toBe(fail.cost);
+});
+
+test('물약 반지는 회복량을 늘린다 — 마을·사냥터가 같은 값을 본다 (T17_7)', () => {
+  const ring = {
+    uid: '1',
+    kind: 'potion' as const,
+    tier: 1,
+    rarity: 'common' as const,
+    enhance: 0,
+  };
+  const plain: Save = { ...rich(0), consumables: { pot_small: 1 } };
+  const worn: Save = { ...plain, rings: [ring], ringSlots: ['1', null] };
+  expect(potionHeal(worn, 'pot_small')).toBe(Math.round(potionHeal(plain, 'pot_small') * 1.1));
+  // 가지고만 있고 안 끼면 아무 일도 없다
+  expect(potionHeal({ ...plain, rings: [ring] }, 'pot_small')).toBe(potionHeal(plain, 'pot_small'));
 });
 
 test('강화 — §4.5 표 그대로. 실패해도 단계가 안 내려간다', () => {

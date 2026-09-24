@@ -8,7 +8,7 @@
  * §7.4 7번(스프라이트 파일 존재)은 아직 파일이 하나도 없어서 넣지 않았다.
  */
 import raw from '../src/content/archetypes/monsters.json';
-import { CONSUMABLES, EQUIPMENT, MONSTERS, monstersOfField, REGIONS, UNIQUES } from '../src/content';
+import { CONSUMABLES, EQUIPMENT, MONSTERS, monstersOfField, REGIONS } from '../src/content';
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
 import {
   combatStats,
@@ -18,19 +18,11 @@ import {
   GEAR_SLOTS,
   GEAR_LUK_BASE,
   GEAR_SPD_RATE,
-  FIELDS_PER_REGION,
   innCost,
   powerScale,
-  RARITY_MULT,
 } from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
-import {
-  generateAll,
-  generateEquipment,
-  gearTierLevels,
-  generateUniques,
-  tierInRegion,
-} from './gen-content';
+import { generateAll, generateEquipment, gearTierLevels, tierInRegion } from './gen-content';
 
 /** 키 순서에 안 흔들리게 비교한다 — zod parse는 스키마 순서로 키를 다시 깐다. */
 function canonical(value: unknown): string {
@@ -183,13 +175,9 @@ export function validateGenerated(): string[] {
     }
   }
 
-  // §7.4 #6 — 사냥터마다 고유 소재/장비가 1:1로 있는가 (#8)
+  // §7.4 #6 — 사냥터마다 고유 소재가 1:1로 있는가 (#8)
   const fields = REGIONS.flatMap((r) => r.fields);
-  const ids = [
-    ...fields.map((f) => f.id),
-    ...fields.map((f) => f.material.id),
-    ...fields.map((f) => f.reward.id),
-  ];
+  const ids = [...fields.map((f) => f.id), ...fields.map((f) => f.material.id)];
   for (const id of duplicates(ids)) errors.push(`[사냥터 ID 중복] ${id}`);
 
   errors.push(...validateEquipment());
@@ -222,43 +210,6 @@ function validateEconomy(): string[] {
     }
   }
 
-  // §4.4 — 사냥터 35곳에 고유 장비가 1:1로 있고, 지역마다 7부위가 안 겹친다
-  if (UNIQUES.length !== REGIONS.length * FIELDS_PER_REGION) {
-    errors.push(`[고유 장비 수] ${UNIQUES.length}종 (사냥터 ${REGIONS.length * FIELDS_PER_REGION}곳)`);
-  }
-  if (canonical(UNIQUES) !== canonical(generateUniques())) {
-    errors.push('[생성물 낡음] 고유 장비 — npm run gen을 다시 돌려라');
-  }
-  for (const region of REGIONS) {
-    const slots = region.fields.map((f) => f.reward.slot);
-    if (new Set(slots).size !== slots.length) {
-      errors.push(`[고유 장비 부위 겹침] 지역 ${region.id} — ${slots.join(', ')}`);
-    }
-    for (const field of region.fields) {
-      if (!UNIQUES.some((u) => u.id === field.reward.id)) {
-        errors.push(`[참조 깨짐] ${field.id}의 고유 장비 ${field.reward.id}가 없다`);
-      }
-    }
-  }
-
-  // §4.5 — 고유 장비는 같은 티어 common보다 세고 rare보다 약하다
-  for (const u of UNIQUES) {
-    const peers = EQUIPMENT.filter((e) => e.tier === u.tier && e.slot === u.slot);
-    const common = peers.find((e) => e.rarity === 'common');
-    const rare = peers.find((e) => e.rarity === 'rare');
-    if (!common || !rare) continue;
-    // 낮은 티어는 스탯이 한 자릿수라 정수 반올림이 배율 차이를 먹는다. 순서만 본다
-    const power = (e: typeof u) => e.atk + e.maxHp + e.def;
-    if (power(u) < power(common) || power(u) > power(rare)) {
-      errors.push(
-        `[고유 장비 성능] ${u.name} — common ${power(common)} ≤ ${power(u)} ≤ rare ${power(rare)}이어야 한다`,
-      );
-    }
-  }
-  if (RARITY_MULT.unique <= RARITY_MULT.common || RARITY_MULT.unique >= RARITY_MULT.rare) {
-    errors.push(`[고유 배율] ${RARITY_MULT.unique} — common과 rare 사이여야 한다`);
-  }
-
   return errors;
 }
 
@@ -276,9 +227,7 @@ const PRICE_TOLERANCE = 0.02;
 function validateEquipment(): string[] {
   const errors: string[] = [];
 
-  // 등급 그리드만 본다. 고유 35종은 그리드 밖이라 validateEconomy가 따로 본다
-  const grid = EQUIPMENT.filter((e) => e.rarity !== 'unique');
-  if (canonical(grid) !== canonical(generateEquipment())) {
+  if (canonical(EQUIPMENT) !== canonical(generateEquipment())) {
     errors.push('[생성물 낡음] 장비 — npm run gen을 다시 돌려라');
   }
 

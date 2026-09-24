@@ -41,11 +41,18 @@ function seedInstall(state: WpState, steps: DailySteps, now: Date): WpState {
  * - HC가 뒤로 가도 WP는 깎이지 않는다.
  * - 자정 1,000은 날짜별 1회. 미접속일도 창 안이면 소급된다.
  *
+ * `midnight`는 하루 기본 지급량이다 — 새벽의 반지(T17_7)가 더한 값을 부르는 쪽이 넘긴다.
+ *
  * 시계를 앞으로 돌렸다가 되돌리면 미래 날짜 기록이 남아 재지급을 막는다.
  * ponytail: 시계를 계속 앞으로 밀면 창 하나씩 더 받을 수 있다. 글로벌 랭킹이 없어
  * 방치했다(§3.2). 서버 검증을 넣게 되면 그때 막는다.
  */
-export function grantWp(state: WpState, steps: DailySteps, now: Date): GrantResult {
+export function grantWp(
+  state: WpState,
+  steps: DailySteps,
+  now: Date,
+  midnight = MIDNIGHT_WP,
+): GrantResult {
   const base = state.lastMidnightGrantAt === '' ? seedInstall(state, steps, now) : state;
   const keys = windowKeys(now);
   const today = keys[keys.length - 1];
@@ -66,7 +73,7 @@ export function grantWp(state: WpState, steps: DailySteps, now: Date): GrantResu
 
   let fromMidnight = 0;
   for (const date of keys) {
-    if (date > base.lastMidnightGrantAt) fromMidnight += MIDNIGHT_WP;
+    if (date > base.lastMidnightGrantAt) fromMidnight += midnight;
   }
   // 시계를 뒤로 돌려도 기준일이 되돌아가지 않게 한다.
   const lastMidnightGrantAt =

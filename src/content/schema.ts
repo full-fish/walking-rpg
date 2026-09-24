@@ -5,7 +5,6 @@
 import { z } from 'zod';
 
 import {
-  ALL_RARITIES,
   FIELDS_PER_REGION,
   GEAR_SLOTS,
   GEAR_TIERS,
@@ -72,18 +71,8 @@ export const FieldSchema = z.object({
   /** 사냥터 컨셉 한 줄. 모험 탭 목록에 이름 아래로 보인다 (T17_4) */
   desc: z.string().min(1),
   pool: z.array(z.tuple([z.string(), tier])).min(2),
-  /** 6마리 완주 시 확정 드랍. 사냥터마다 다르다 (§4.4) */
+  /** 6마리 완주 시 확정 드랍. 사냥터마다 다르다 (§4.4). 강화 +6~·보스 버프·반지에 쓴다 */
   material: z.object({ id: z.string().regex(/^mat_/), name: z.string().min(1) }),
-  /**
-   * 그 소재로만 바꿀 수 있는 전용 장비 (§4.5).
-   * 지역마다 사냥터 7곳이 **서로 다른 부위**를 준다 — 한 지역을 다 돌면 7부위 한 벌이다.
-   */
-  reward: z.object({
-    id: z.string().regex(/^uniq_/),
-    name: z.string().min(1),
-    slot: z.enum(GEAR_SLOTS),
-    cost: z.object({ material: z.int().min(1), gold: z.int().min(0) }),
-  }),
 });
 
 /** 지역 하나 (§7.2⑤). 티어 대역을 나눠 갖고, 사냥터 7개와 보스 1마리를 가진다. */
@@ -150,7 +139,7 @@ export type Monster = z.infer<typeof MonsterSchema>;
 // ─────────────────────────────────────────────────────────────
 
 const slot = z.enum(GEAR_SLOTS);
-const rarity = z.enum(ALL_RARITIES);
+const rarity = z.enum(RARITIES);
 
 /**
  * 장비 원형 — 부위 하나. 수치는 하나도 없다.
@@ -173,7 +162,7 @@ export const EquipmentArchetypesSchema = z.object({
 
 /** gen-content.ts가 뽑아내는 장비 정의 하나. 인스턴스가 아니라 **정의**다 (§4.5). */
 export const EquipmentSchema = z.object({
-  id: z.string().regex(/^(eq_t\d+_[a-z]+_[a-z]+|uniq_r\d_[a-z]+)$/),
+  id: z.string().regex(/^eq_t\d+_[a-z]+_[a-z]+$/),
   name: z.string().min(1),
   /** 장비 티어 1~10 */
   tier: z.int().min(1).max(GEAR_TIERS),
@@ -190,8 +179,6 @@ export const EquipmentSchema = z.object({
   spd: z.number().min(0),
   /** 장신구만 준다 (§4.5). 소수 한 자리 — spd와 같은 이유다. 치명·드랍·골드가 같이 오른다 */
   luk: z.number().min(0),
-  /** 이 traits를 가진 몬스터에게 특효 (§4.5). 고유 장비만 가진다 */
-  vs: z.array(z.string().min(1)).optional(),
   price: z.int().min(1),
 });
 

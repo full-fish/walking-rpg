@@ -355,8 +355,8 @@ export const REGION_COUNT = 5;
 export const TIERS_PER_REGION = 5;
 export const MAX_TIER = REGION_COUNT * TIERS_PER_REGION;
 /**
- * 지역마다 사냥터 7개 (§4.4, T17_4). **부위 수와 같다** — 사냥터마다 고유 장비 한 부위씩이라
- * 한 지역을 다 돌면 7부위가 한 벌이 된다.
+ * 지역마다 사냥터 7개 (§4.4, T17_4). 사냥터마다 소재가 하나씩 따로 나온다 — +10 강화와
+ * 전설 반지가 그 지역 일곱 곳을 전부 요구한다 (T17_6 검수, T17_7).
  */
 export const FIELDS_PER_REGION = 7;
 
@@ -496,14 +496,19 @@ export function rollRarity(
   return entries.at(-1)![0];
 }
 
-/** 한 판의 마릿수를 뽑는다. 입장 시점에 정해지고 끝까지 안 보여준다 (§4.4). */
-export function rollRunSize(rng: () => number): number {
+/**
+ * 한 판의 마릿수를 뽑는다. 입장 시점에 정해지고 끝까지 안 보여준다 (§4.4).
+ * `extraSix`는 반지(T17_7) — 6마리 칸을 그만큼(%p) 늘리고 나머지 칸을 같은 비율로 줄인다.
+ */
+export function rollRunSize(rng: () => number, extraSix = 0): number {
+  const [biggest, six] = RUN_SIZE_WEIGHTS.at(-1)!;
+  const rest = (1 - six - extraSix) / (1 - six);
   let r = rng();
   for (const [size, weight] of RUN_SIZE_WEIGHTS) {
-    r -= weight;
+    r -= size === biggest ? six + extraSix : weight * rest;
     if (r < 0) return size;
   }
-  return RUN_SIZE_WEIGHTS.at(-1)![0];
+  return biggest;
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -531,37 +536,26 @@ export const RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as c
 export type GridRarity = (typeof RARITIES)[number];
 /** 상점이 파는 등급 (T17_6). **전설은 드랍으로만 나온다** — 사서 끼는 물건이 아니다 */
 export const SHOP_RARITIES: readonly GridRarity[] = ['common', 'uncommon', 'rare', 'epic'];
-/**
- * 사냥터 고유 장비 (§4.4, §4.5). 그리드 밖이라 따로 둔다 —
- * 티어 × 부위로 뽑는 게 아니라 **사냥터 35곳에 1:1로 붙는다.**
- */
-export const UNIQUE_RARITY = 'unique';
-export const ALL_RARITIES = [...RARITIES, UNIQUE_RARITY] as const;
-export type Rarity = (typeof ALL_RARITIES)[number];
 
 /**
  * 등급 배율 (§4.5). common이 밸런스 기준선이다 —
  * 시뮬레이터도 검증도 "그 지역 common 풀세트"로 잰다. 위 등급은 전부 초과 이득이다.
  */
-export const RARITY_MULT: Record<Rarity, number> = {
+export const RARITY_MULT: Record<GridRarity, number> = {
   common: 1.0,
   uncommon: 1.15,
   rare: 1.35,
   epic: 1.6,
   legendary: 1.9,
-  // §4.5 — "같은 tier common보다 높고 rare보다 낮다". 소재를 모아야 얻는 대신 확정이다
-  unique: 1.25,
 };
 
 /** 등급별 가격 배율. 위 등급은 드랍으로 먹는 것이지 사는 게 아니라 가파르다. */
-export const RARITY_PRICE: Record<Rarity, number> = {
+export const RARITY_PRICE: Record<GridRarity, number> = {
   common: 1,
   uncommon: 2.2,
   rare: 5,
   epic: 12,
   legendary: 30,
-  // 고유 장비는 골드로 못 산다. 이 값은 **판매가 계산에만** 쓰인다
-  unique: 6,
 };
 
 /**
@@ -631,15 +625,6 @@ export const SLOT_PRICE: Record<GearSlot, number> = {
 export const QUALITY_MIN = 0.8;
 export const QUALITY_MAX = 1.2;
 
-/**
- * 사냥터 고유 장비가 **그 사냥터 몬스터에게** 더 주는 피해 (§4.5).
- *
- * 등급으로는 common과 rare 사이(1.25배)지만, 제자리에서는 rare를 넘는다 —
- * "여기 전용"이라는 말이 숫자로 성립해야 소재를 모을 이유가 생긴다.
- * 여러 부위가 같은 traits를 덮어도 **제일 큰 것 하나만** 적용한다. 곱해서 쌓이면 안 된다.
- */
-export const UNIQUE_TRAIT_BONUS = 0.2;
-
 /** 강화 (§4.5). 최종 스탯 = 기본 × quality × 1.1^강화. */
 export const ENHANCE_MAX = 10;
 export const ENHANCE_MULT = 1.1;
@@ -699,6 +684,87 @@ export const BOSS_BUFF = { max: 3, mult: 1.1 } as const;
 export const BOSS_BUFF_STATS = ['atk', 'def', 'spd', 'cri', 'crd', 'eva'] as const;
 export type BossBuffStat = (typeof BOSS_BUFF_STATS)[number];
 
+// ─────────────────────────────────────────────────────────────
+// 반지 (T17_7) — 고유 장비 대신. 특수 소재로만 얻고 올린다
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * 반지 효과 11종 (T17_7). **전부 전투력 축 밖이다** — ATK·HP·DEF는 장비의 몫이라 반지가 올리면 또 겹친다.
+ * 한 반지에 효과 하나. 두 칸에 같은 반지를 끼면 더해진다.
+ */
+export const RING_KINDS = [
+  'fieldWp',
+  'midnightWp',
+  'bigRun',
+  'clearBonus',
+  'exp',
+  'gold',
+  'drop',
+  'potion',
+  'shield',
+  'bossBuff',
+  'bossDamage',
+] as const;
+export type RingKind = (typeof RING_KINDS)[number];
+
+/**
+ * ★1 일반 +0의 값 (T17_7) — 계획서 T17_7 표의 common 값. ★5 전설 +0이 이것의 약 5배(표의 legendary)다.
+ * 입장 WP 4% 할인 · 자정 WP +100 · 6마리 판 +1%p · 클리어 보너스 +5% · EXP +2% · 골드 +3% ·
+ * 장비 드랍 +5% · 물약 회복 +10% · 전투 시작 보호막(최대 HP의 3%) · 보스 버프 배율 +0.02 · 보스 피해 +3%
+ */
+export const RING_BASE: Record<RingKind, number> = {
+  fieldWp: 0.04,
+  midnightWp: 100,
+  bigRun: 0.01,
+  clearBonus: 0.05,
+  exp: 0.02,
+  gold: 0.03,
+  drop: 0.05,
+  potion: 0.1,
+  shield: 0.03,
+  bossBuff: 0.02,
+  bossDamage: 0.03,
+};
+
+/**
+ * ★와 등급 배율 (T17_7). ★N은 **지역 N의 소재로 올리는 반지**다 — ★1은 초원 소재로 일반에서 전설까지 가고,
+ * 전설이 되면 숲 소재로 ★2 일반이 된다. **올라간 순간은 전보다 약하다**(★1 전설 1.5 > ★2 일반 1.35).
+ * 대신 ★2 전설은 2.03이라 고점이 높다. ★5 전설이 4.95 — 표의 legendary(5배)다.
+ */
+export const RING_TIER_MULT = [1, 1.35, 1.8, 2.45, 3.3] as const;
+export const RING_RARITY_MULT: Record<GridRarity, number> = {
+  common: 1,
+  uncommon: 1.125,
+  rare: 1.25,
+  epic: 1.375,
+  legendary: 1.5,
+};
+
+/** 반지 칸 (T17_7). 장비 7부위와 따로다 */
+export const RING_SLOTS = 2;
+
+/**
+ * 반지에 드는 소재 (T17_7) — **그 ★ 지역의 서로 다른 사냥터에서 하나씩**. 골드는 안 든다.
+ * 교환(새 반지 = ★1 일반, 효과는 무작위) 3 · 등급 올리기 → uncommon 3 / rare 4 / epic 5 / legendary 7 ·
+ * ★ 올리기(전설 → 다음 ★ 일반, **다음 지역** 소재) 3. 올리면 강화는 +0으로 돌아간다.
+ */
+export const RING_COST = { exchange: 3, rarity: [3, 4, 5, 7], tier: 3 } as const;
+
+/** 사냥터 입장 WP 할인 상한 (T17_7) — 같은 반지 두 개를 끝까지 올려도 공짜가 되지는 않는다 */
+export const RING_FIELD_WP_CAP = 0.5;
+
+/** 반지 하나의 값 (T17_7) = 기본 × ★ × 등급 × 1.1^강화. 강화는 장비와 같은 표(성공률·값·소재)를 쓴다 */
+export function ringValue(
+  kind: RingKind,
+  tier: number,
+  rarity: GridRarity,
+  enhance: number,
+): number {
+  return (
+    RING_BASE[kind] * RING_TIER_MULT[tier - 1] * RING_RARITY_MULT[rarity] * ENHANCE_MULT ** enhance
+  );
+}
+
 /** `next`단계로 올릴 확률. 상한을 넘으면 0 — 호출부가 더 못 올린다는 걸 이걸로 안다. */
 export function enhanceRate(next: number): number {
   return ENHANCE_RATE[next - 1] ?? 0;
@@ -746,7 +812,7 @@ export function itemStat(base: number, quality: number, enhance: number): number
  * SPD와 LUK만 계산이 다르다 — 둘 다 맨몸이 선형(또는 고정)이라 비례시킬 바닥이 없다.
  * 회피는 여전히 안 준다. AGI가 SPD와 회피를 다 잃으면 배분할 이유가 없어진다.
  */
-export function gearStats(level: number, slot: GearSlot, rarity: Rarity) {
+export function gearStats(level: number, slot: GearSlot, rarity: GridRarity) {
   const naked = combatStats(level);
   const share = gearShare(level) * RARITY_MULT[rarity];
   const bias = SLOT_BIAS[slot];
@@ -807,7 +873,7 @@ export function gearSetPrice(refLevel: number): number {
 }
 
 /** 장비 한 점의 값. 풀세트를 다 더하면 gearSetPrice가 된다 (SLOT_PRICE 합이 부위 수). */
-export function gearPrice(refLevel: number, slot: GearSlot, rarity: Rarity): number {
+export function gearPrice(refLevel: number, slot: GearSlot, rarity: GridRarity): number {
   return Math.round(
     (gearSetPrice(refLevel) / GEAR_SLOTS.length) * SLOT_PRICE[slot] * RARITY_PRICE[rarity],
   );

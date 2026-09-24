@@ -9,8 +9,8 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { expect, test } from 'vitest';
 
 import { EquipmentsSchema, MonstersSchema } from '../src/content/schema';
-import { FIELDS_PER_REGION, GEAR_SLOTS } from '../src/game/formulas';
-import { generateAll, generateEquipment, generateUniques, REGIONS } from './gen-content';
+import { GEAR_SLOTS } from '../src/game/formulas';
+import { generateAll, generateEquipment, REGIONS } from './gen-content';
 
 const OUT = 'src/content/data/monsters';
 const ITEMS = 'src/content/data/items';
@@ -50,18 +50,4 @@ test('gen — 장비 정의 JSON을 쓴다 (§4.5)', () => {
       ` HP +${set.reduce((s, e) => s + e.maxHp, 0)}` +
       ` / ${set.reduce((s, e) => s + e.price, 0).toLocaleString()}골드`,
   );
-});
-
-test('gen — 사냥터 고유 장비 — 사냥터마다 한 종 (§4.4)', () => {
-  mkdirSync(ITEMS, { recursive: true });
-
-  const uniques = generateUniques();
-  expect(EquipmentsSchema.safeParse(uniques).success).toBe(true);
-  expect(uniques).toHaveLength(REGIONS.length * FIELDS_PER_REGION);
-
-  const file = `${ITEMS}/unique.json`;
-  writeFileSync(file, JSON.stringify(uniques, null, 2) + '\n');
-
-  const first = uniques[0];
-  console.log(`${file}  ${uniques.length}종  예) ${first.name} (Lv${first.level} ${first.slot}) ATK +${first.atk} HP +${first.maxHp}`);
 });

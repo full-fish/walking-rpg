@@ -1,12 +1,12 @@
 /**
- * 경제 (§4.5, §3.7) — 상점·여관·창고·고유 교환.
+ * 경제 (§4.5, §3.7) — 상점·여관·창고·강화·반지.
  *
  * 전부 **실패하면 null**을 돌려준다. spendPoint·equipItem과 같은 규약이라
  * 호출부가 "살 수 있나"를 따로 묻지 않고 결과만 확인하면 된다.
  * React를 import하지 않는다 — Node에서 돌아야 한다.
  */
-import { consumableById, equipmentById, fieldById, regionById } from '../content';
-import type { ItemInstance, Save } from '../save/schema';
+import { consumableById, equipmentById, gridItem, regionById } from '../content';
+import type { ItemInstance, Ring, Save } from '../save/schema';
 import {
   ENHANCE_MAX,
   enhanceCost,
@@ -14,12 +14,18 @@ import {
   enhanceRate,
   BAG,
   bagExpandCost,
+  GEAR_TIERS_PER_REGION,
+  RARITIES,
+  REGION_COUNT,
+  RING_COST,
+  RING_KINDS,
   SELL_RATE,
   SHOP_RARITIES,
   VAULT,
   vaultExpandCost,
+  type GridRarity,
 } from './formulas';
-import { bagFull, itemDef, makeItem } from './items';
+import { bagFull, itemDef, makeItem, nextUid, ringBonus } from './items';
 import { addItem, statsOf, withStatChange } from './progression';
 
 /** 골드를 더하고 뺀다. 음수 잔고는 여기서 막는다. */
@@ -82,7 +88,7 @@ export function spendMaterials(save: Save, ids: string[]): Save {
  */
 export function buyEquipment(save: Save, defId: string, rng: () => number): Save | null {
   const def = equipmentById(defId);
-  // 고유 장비는 소재로만(§4.4), 전설은 드랍으로만 나온다 (T17_6)
+  // 전설은 드랍으로만 나온다 (T17_6)
   if (!(SHOP_RARITIES as readonly string[]).includes(def.rarity)) return null;
   if (bagFull(save)) return null;
 
@@ -121,6 +127,16 @@ export function buyConsumable(save: Save, id: string, amount = 1): Save | null {
 }
 
 /**
+ * 물약 한 병의 회복량 (§4.5). 절대값(heal) 또는 최대 HP 비율(엘릭서)에 물약 반지(T17_7)를 곱한다.
+ * 마을·사냥터·전투 화면이 전부 이걸 본다 — 따로 세면 화면의 "+N"과 실제가 어긋난다.
+ */
+export function potionHeal(save: Save, id: string): number {
+  const def = consumableById(id);
+  const raw = def.heal + statsOf(save).maxHp * def.healRatio;
+  return Math.round(raw * (1 + ringBonus(save, 'potion')));
+}
+
+/**
  * 물약을 쓴다 (§4.5). 절대값 회복(heal) 또는 최대 HP 비율(엘릭서).
  * 이름이 useConsumable이 아닌 건 lint가 React 훅으로 오해하기 때문이다.
  * 이미 만피면 안 쓴다 — 누르자마자 한 병이 증발하는 게 제일 억울하다.
@@ -128,11 +144,10 @@ export function buyConsumable(save: Save, id: string, amount = 1): Save | null {
 export function consumeItem(save: Save, id: string): Save | null {
   if (count(save.consumables, id) <= 0) return null;
 
-  const def = consumableById(id);
   const maxHp = statsOf(save).maxHp;
   if (save.player.hp >= maxHp) return null;
 
-  const healed = def.heal + Math.round(maxHp * def.healRatio);
+  const healed = potionHeal(save, id);
   return {
     ...save,
     player: { ...save.player, hp: Math.min(maxHp, save.player.hp + healed) },
@@ -217,31 +232,6 @@ export function bagExpand(save: Save): Save | null {
 }
 
 // ─────────────────────────────────────────────────────────────
-// 고유 장비 교환 (§4.4, §4.5)
-// ─────────────────────────────────────────────────────────────
-
-/**
- * 사냥터 소재 + 골드 → 그 사냥터 전용 장비.
- *
- * 소재는 6마리 완주 시 확정 드랍인데 그건 T16이라, 지금은 설정 탭의 개발용 버튼으로만 들어온다.
- */
-export function exchangeUnique(save: Save, fieldId: string, rng: () => number): Save | null {
-  const field = fieldById(fieldId);
-  const { material, gold } = field.reward.cost;
-  if (count(save.materials, fieldId) < material) return null;
-  if (bagFull(save)) return null;
-
-  const paid = withGold(save, -gold);
-  if (!paid) return null;
-
-  const item = makeItem(paid.inventory, field.reward.id, rng);
-  return {
-    ...addItem(paid, item),
-    materials: bump(paid.materials, fieldId, -material),
-  };
-}
-
-// ─────────────────────────────────────────────────────────────
 // 강화 (§4.5) — T15
 // ─────────────────────────────────────────────────────────────
 
@@ -262,6 +252,37 @@ export function enhancePick(save: Save, item: ItemInstance): string[] | null {
 }
 
 /**
+ * 강화 한 번의 공통 규칙 (§4.5, T17_7) — 장비와 반지가 같이 쓴다. 규칙이 둘로 갈리면 안 된다.
+ * 골드는 두드릴 때 나가고, +6부터 드는 소재는 **성공했을 때만** 뺀다. 성공하면 `bump`로 단계를 올린다.
+ */
+function tryEnhance(
+  save: Save,
+  from: number,
+  price: number,
+  region: number,
+  rng: () => number,
+  bump: (paid: Save) => Save,
+): EnhanceResult | null {
+  if (from >= ENHANCE_MAX) return null;
+  const step = from + 1;
+  const picked = pickMaterials(save, region, enhanceMaterials(step), true);
+  if (!picked) return null;
+  const cost = enhanceCost(price, step);
+  const paid = withGold(save, -cost);
+  if (!paid) return null;
+
+  const success = rng() < enhanceRate(step);
+  if (!success) return { save: paid, success, cost, step, materials: 0 };
+  return {
+    save: bump(spendMaterials(paid, picked)),
+    success,
+    cost,
+    step,
+    materials: picked.length,
+  };
+}
+
+/**
  * 장비 한 점을 한 단계 올려 본다 (§4.5).
  *
  * **실패해도 골드만 없어진다** — 단계가 내려가지도, 장비가 깨지지도 않는다.
@@ -271,23 +292,89 @@ export function enhancePick(save: Save, item: ItemInstance): string[] | null {
  */
 export function enhanceItem(save: Save, uid: string, rng: () => number): EnhanceResult | null {
   const item = save.inventory.find((i) => i.uid === uid);
-  if (!item || item.enhance >= ENHANCE_MAX) return null;
+  if (!item) return null;
+  const def = itemDef(item);
+  return tryEnhance(save, item.enhance, def.price, def.region, rng, (paid) =>
+    // 낀 장비를 강화하면 최대 HP가 늘어난다. 현재 HP도 같이 올린다 (장착과 같은 규칙)
+    withStatChange(paid, {
+      ...paid,
+      inventory: paid.inventory.map((i) => (i.uid === uid ? { ...i, enhance: i.enhance + 1 } : i)),
+    }),
+  );
+}
 
-  const step = item.enhance + 1;
-  // +6부터는 소재가 있어야 두드릴 수 있다. 쓰는 건 성공했을 때뿐이다 (T17_6 검수)
-  const picked = enhancePick(save, item);
+// ─────────────────────────────────────────────────────────────
+// 반지 (T17_7) — 고유 장비 대신. 특수 소재로만 얻고 올린다
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * 반지의 다음 한 단계 (T17_7) — 등급을 하나 올리고, 전설이면 다음 ★ 일반으로. 끝(★5 전설)이면 null.
+ * 소재는 **올라갈 ★의 지역**에서 든다 — 등급은 지금 ★ 지역, ★ 올리기는 다음 지역이다.
+ */
+export function ringNext(ring: Ring): { tier: number; rarity: GridRarity; cost: number } | null {
+  const i = RARITIES.indexOf(ring.rarity);
+  if (i < RARITIES.length - 1) {
+    return { tier: ring.tier, rarity: RARITIES[i + 1], cost: RING_COST.rarity[i] };
+  }
+  if (ring.tier < REGION_COUNT)
+    return { tier: ring.tier + 1, rarity: 'common', cost: RING_COST.tier };
+  return null;
+}
+
+/**
+ * 새 반지 (T17_7) — **초원(지역 1) 소재를 서로 다른 사냥터에서 3개** 내고 ★1 일반을 받는다.
+ * 어느 반지가 나올지는 무작위다 — 같은 반지가 또 나와도 두 칸에 같이 낄 수 있다.
+ */
+export function exchangeRing(save: Save, rng: () => number): Save | null {
+  const picked = pickMaterials(save, 1, RING_COST.exchange, true);
   if (!picked) return null;
-  const cost = enhanceCost(itemDef(item).price, step);
-  const paid = withGold(save, -cost);
-  if (!paid) return null;
-
-  const success = rng() < enhanceRate(step);
-  if (!success) return { save: paid, success, cost, step, materials: 0 };
-
-  const next: Save = {
-    ...spendMaterials(paid, picked),
-    inventory: paid.inventory.map((i) => (i.uid === uid ? { ...i, enhance: step } : i)),
+  const ring: Ring = {
+    uid: nextUid(save.rings),
+    kind: RING_KINDS[Math.floor(rng() * RING_KINDS.length)],
+    tier: 1,
+    rarity: 'common',
+    enhance: 0,
   };
-  // 낀 장비를 강화하면 최대 HP가 늘어난다. 현재 HP도 같이 올린다 (장착과 같은 규칙)
-  return { save: withStatChange(paid, next), success, cost, step, materials: picked.length };
+  return { ...spendMaterials(save, picked), rings: [...save.rings, ring] };
+}
+
+/**
+ * 반지를 한 단계 올린다 (T17_7). 소재만 들고 실패는 없다. **강화는 +0으로 돌아간다** —
+ * 강화를 먼저 할지, 끝까지 올린 뒤에 할지가 고를 거리다.
+ */
+export function upgradeRing(save: Save, uid: string): Save | null {
+  const ring = save.rings.find((r) => r.uid === uid);
+  const next = ring && ringNext(ring);
+  if (!next) return null;
+  const picked = pickMaterials(save, next.tier, next.cost, true);
+  if (!picked) return null;
+  return {
+    ...spendMaterials(save, picked),
+    rings: save.rings.map((r) =>
+      r.uid === uid ? { ...r, tier: next.tier, rarity: next.rarity, enhance: 0 } : r,
+    ),
+  };
+}
+
+/**
+ * 반지 강화의 기준 값 (T17_7) — 그 ★ 지역 뒷단 장신구의 같은 등급 값. 장비와 같은 골드 곡선을 탄다.
+ * 반지는 팔 수 없어서 이 값은 강화 비용에만 쓴다.
+ */
+export function ringPrice(ring: Ring): number {
+  return gridItem(ring.tier * GEAR_TIERS_PER_REGION, 'accessory', ring.rarity).price;
+}
+
+/** 반지 강화에 쓸 소재 — +6부터 그 ★ 지역의 서로 다른 사냥터에서 (T17_7). 모자라면 null */
+export function ringEnhancePick(save: Save, ring: Ring): string[] | null {
+  return pickMaterials(save, ring.tier, enhanceMaterials(ring.enhance + 1), true);
+}
+
+/** 반지를 한 단계 강화해 본다 (T17_7) — 장비 강화와 같은 성공률·값·소재 규칙이다 */
+export function enhanceRing(save: Save, uid: string, rng: () => number): EnhanceResult | null {
+  const ring = save.rings.find((r) => r.uid === uid);
+  if (!ring) return null;
+  return tryEnhance(save, ring.enhance, ringPrice(ring), ring.tier, rng, (paid) => ({
+    ...paid,
+    rings: paid.rings.map((r) => (r.uid === uid ? { ...r, enhance: r.enhance + 1 } : r)),
+  }));
 }

@@ -19,6 +19,7 @@ import {
 import {
   hpAfterLastHitBy,
   makeRng,
+  shieldLeft,
   simulateBattle,
   type Combatant,
   type Outcome,
@@ -330,9 +331,11 @@ export function fight(
   monster: Monster = currentMonster(save)!,
 ): { save: Save; outcome: Outcome; playerHp: number } {
   let monsterHp = monster.maxHp;
+  // 보호막 반지(T17_7) — 물약으로 끊고 다시 뽑을 때 남은 만큼만 이어 준다. 화면과 같은 규칙이다
+  let shield = statsOf(save).shield;
   for (;;) {
     const stats = statsOf(save);
-    const player: Combatant = { name: '', hp: save.player.hp, ...stats };
+    const player: Combatant = { name: '', hp: save.player.hp, ...stats, shield };
     const battle = simulateBattle(player, { ...monster, hp: monsterHp }, rng);
 
     const potion = Object.keys(save.run!.potions)[0];
@@ -346,6 +349,7 @@ export function fight(
     if (!drunk) return { save, outcome: battle.outcome, playerHp: battle.playerHp };
 
     monsterHp = hpAfterLastHitBy(battle.events.slice(0, cut + 1), 'player', monsterHp);
+    shield = shieldLeft(battle.events.slice(0, cut + 1), shield);
     save = drunk;
   }
 }

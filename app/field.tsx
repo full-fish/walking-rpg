@@ -3,9 +3,10 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { consumableById, fieldById, regionById } from '@/content';
+import { potionHeal } from '@/game/economy';
 import { currentMonster } from '@/game/field';
-import { BOSS_BUFF, type BossBuffStat } from '@/game/formulas';
-import { statsOf } from '@/game/progression';
+import { type BossBuffStat } from '@/game/formulas';
+import { bossBuffMult, statsOf } from '@/game/progression';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
@@ -23,13 +24,14 @@ const BUFF_LABEL: Record<BossBuffStat, string> = {
   eva: '회피',
 };
 
-/** ["atk", "cri", "atk"] → "ATK ×1.21 · 치명 ×1.10" — 같은 게 겹치면 곱해서 한 번에 보여준다 */
-function buffText(buffs: BossBuffStat[]): string {
+/**
+ * ["atk", "cri", "atk"] → "ATK ×1.21 · 치명 ×1.10" — 같은 게 겹치면 곱해서 한 번에 보여준다.
+ * 배율은 결의의 반지(T17_7)가 올릴 수 있어서 받는다.
+ */
+function buffText(buffs: BossBuffStat[], mult: number): string {
   const counts = new Map<BossBuffStat, number>();
   for (const b of buffs) counts.set(b, (counts.get(b) ?? 0) + 1);
-  return [...counts]
-    .map(([b, n]) => `${BUFF_LABEL[b]} ×${(BOSS_BUFF.mult ** n).toFixed(2)}`)
-    .join(' · ');
+  return [...counts].map(([b, n]) => `${BUFF_LABEL[b]} ×${(mult ** n).toFixed(2)}`).join(' · ');
 }
 
 /**
@@ -80,7 +82,9 @@ export default function Field() {
         }
       >
         <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
-        {run.buffs.length > 0 && <Text color={colors.gold}>버프 — {buffText(run.buffs)}</Text>}
+        {run.buffs.length > 0 && (
+          <Text color={colors.gold}>버프 — {buffText(run.buffs, bossBuffMult(save))}</Text>
+        )}
         <Text size="sm" dim>
           {run.boss
             ? '물러설 곳이 없다.'
@@ -99,7 +103,7 @@ export default function Field() {
         ) : (
           potions.map(([id, n]) => {
             const def = consumableById(id);
-            const heal = def.heal + Math.round(stats.maxHp * def.healRatio);
+            const heal = potionHeal(save, id);
             return (
               <View key={id} style={styles.row}>
                 <View style={styles.name}>

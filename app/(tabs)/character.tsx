@@ -14,6 +14,7 @@ import {
 import {
   bagFull,
   bagItems,
+  equippedRings,
   equippedStats,
   itemDef,
   itemPower,
@@ -28,11 +29,12 @@ import {
   type StatKey,
 } from '@/game/progression';
 import type { ItemInstance } from '@/save/schema';
-import { usePlayer } from '@/stores/usePlayer';
+import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
-import { EmptyCell, ItemCell, ItemGrid, ItemIcon, qualityTag } from '@/ui/ItemCell';
+import { EmptyCell, ItemCell, ItemGrid, ItemIcon, qualityTag, RingCell } from '@/ui/ItemCell';
 import { Panel } from '@/ui/Panel';
+import { ringName, ringText } from '@/ui/rings';
 import { Text } from '@/ui/Text';
 import { colors, rarity, space } from '@/ui/theme';
 
@@ -80,13 +82,13 @@ const STATS: { key: StatKey; label: string; effect: string }[] = [
 
 /**
  * 인형 배치 (T17_1). 3열 × 4행에 부위를 사람 모양으로 앉힌다. 하의는 다리 자리다 (T17_4).
- * null은 빈 칸 — 무기가 손 위치에 오려면 양옆이 비어 있어야 한다.
+ * null은 빈 칸 — 무기가 손 위치에 오려면 양옆이 비어 있어야 한다. 숫자는 반지 칸 번호다 (T17_7).
  */
-const DOLL: (GearSlot | null)[][] = [
+const DOLL: (GearSlot | number | null)[][] = [
   [null, 'helm', null],
   ['weapon', 'armor', 'accessory'],
   ['gloves', 'pants', null],
-  [null, 'boots', null],
+  [0, 'boots', 1],
 ];
 
 /** 장비가 얹어준 몫. 맨몸이 얼마인지 보여야 장비 값어치가 보인다 (§4.5). */
@@ -100,6 +102,7 @@ export default function Character() {
   const respec = usePlayer((s) => s.respec);
   const equip = usePlayer((s) => s.equip);
   const unequip = usePlayer((s) => s.unequip);
+  const trade = usePlayer((s) => s.trade);
   const sortBag = usePlayer((s) => s.sortBag);
 
   const [tab, setTab] = useState<Tab>('캐릭터');
@@ -109,6 +112,8 @@ export default function Character() {
   const [filter, setFilter] = useState<GearSlot | null>(null);
   /** 빈 칸을 누르면 그 부위에 낄 수 있는 것들을 편다 (T17_2) */
   const [picking, setPicking] = useState<GearSlot | null>(null);
+  /** 빈 반지 칸을 누르면 안 낀 반지들을 편다 (T17_7) */
+  const [pickingRing, setPickingRing] = useState<number | null>(null);
 
   const stats = statsOf(save);
   const { unspent } = save.statPoints;
@@ -142,7 +147,21 @@ export default function Character() {
     } else {
       setPicking((cur) => (cur === slot ? null : slot));
     }
+    setPickingRing(null);
   };
+
+  const ringIn = (slot: number) => save.rings.find((r) => r.uid === save.ringSlots[slot]);
+  /** 낀 반지 칸은 빼고, 빈 칸은 안 낀 반지를 편다 (T17_7) */
+  const onRing = (slot: number) => {
+    if (ringIn(slot)) {
+      trade(trades.unequipRing(slot));
+      setPickingRing(null);
+    } else {
+      setPickingRing((cur) => (cur === slot ? null : slot));
+    }
+    setPicking(null);
+  };
+  const spareRings = save.rings.filter((r) => !save.ringSlots.includes(r.uid));
 
   /** 그 부위에 지금 낄 수 있는 것들. 센 것부터 — 고르려고 여는 목록이라서다 */
   const candidates = (slot: GearSlot) =>
@@ -250,6 +269,12 @@ export default function Character() {
                 장비 드랍 +{((stats.dropMult - 1) * 100).toFixed(1)}% · 골드 +
                 {((stats.goldMult - 1) * 100).toFixed(1)}%
               </Text>
+              {/* 반지 (T17_7) — 전투력 축 밖의 효과라 한 줄씩 따로 적는다 */}
+              {equippedRings(save).map((ring, i) => (
+                <Text key={i} size="sm" color={rarity[ring.rarity]}>
+                  {ringName(ring)} — {ringText(ring)}
+                </Text>
+              ))}
             </Panel>
           </>
         )}
@@ -275,6 +300,8 @@ export default function Character() {
                       {line.map((slot, j) =>
                         slot === null ? (
                           <EmptyCell key={j} />
+                        ) : typeof slot === 'number' ? (
+                          <RingCell key={j} ring={ringIn(slot)} onPress={() => onRing(slot)} />
                         ) : (
                           <Slot
                             key={j}
@@ -316,6 +343,28 @@ export default function Character() {
                     </View>
                   );
                 })}
+                {save.ringSlots.map((_, slot) => {
+                  const ring = ringIn(slot);
+                  return (
+                    <View key={`ring${slot}`} style={styles.row}>
+                      <View style={styles.name}>
+                        <Text color={ring && rarity[ring.rarity]}>
+                          반지 {slot + 1} — {ring ? ringName(ring) : '비어 있음'}
+                        </Text>
+                        {ring ? (
+                          <Text size="sm" dim>
+                            {ringText(ring)}
+                          </Text>
+                        ) : null}
+                      </View>
+                      <Button
+                        label={ring ? '해제' : '고르기'}
+                        disabled={!ring && spareRings.length === 0}
+                        onPress={() => onRing(slot)}
+                      />
+                    </View>
+                  );
+                })}
               </Panel>
             )}
 
@@ -324,6 +373,37 @@ export default function Character() {
                 가방이 꽉 차서 벗을 수 없습니다 ({unworn.length}/{save.bag.capacity}) — 상점에서
                 팔거나 가방을 늘리세요.
               </Text>
+            )}
+
+            {/* 빈 반지 칸을 눌렀을 때만 뜬다 (T17_7). 반지는 상점의 반지 탭에서 바꾸고 올린다 */}
+            {pickingRing !== null && (
+              <Panel title={`반지 ${pickingRing + 1} — 낄 수 있는 것`}>
+                {spareRings.length === 0 ? (
+                  <Text size="sm" dim>
+                    안 낀 반지가 없습니다. 상점의 반지 탭에서 소재로 바꿉니다.
+                  </Text>
+                ) : (
+                  spareRings.map((ring) => (
+                    <View key={ring.uid} style={styles.row}>
+                      <View style={styles.name}>
+                        <Text color={rarity[ring.rarity]}>{ringName(ring)}</Text>
+                        <Text size="sm" dim>
+                          {ringText(ring)}
+                        </Text>
+                      </View>
+                      <Button
+                        label="장착"
+                        tone="gold"
+                        onPress={() => {
+                          trade(trades.equipRing(ring.uid, pickingRing));
+                          setPickingRing(null);
+                        }}
+                      />
+                    </View>
+                  ))
+                )}
+                <Button label="닫기" onPress={() => setPickingRing(null)} />
+              </Panel>
             )}
 
             {/* 빈 칸을 눌렀을 때만 뜬다. 낄 수 있는 것만, 센 것부터 (T17_2) */}

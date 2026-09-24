@@ -26,10 +26,12 @@ export type Combatant = {
    * 피해배율의 K를 같이 키워서 DEF의 감소율이 레벨을 타지 않게 한다.
    */
   scale?: number;
-  /** 몬스터의 성질 태그 (§7.2). 고유 장비의 특효가 이걸 본다 */
-  traits?: string[];
-  /** 그 traits 상대로 더 주는 피해 비율 (§4.5). 고유 장비를 꼈을 때만 있다 */
-  bonusVs?: Record<string, number>;
+  /** 보스인가 (T17_5). 반지의 보스 피해가 이걸 본다 */
+  boss?: boolean;
+  /** 보스에게 더 주는 피해 비율 (T17_7 반지) */
+  bossDamage?: number;
+  /** 전투를 시작할 때 HP보다 먼저 깎이는 보호막 (T17_7 반지). 이 전투가 끝나면 사라진다 */
+  shield?: number;
 };
 
 export type BattleEvent = {
@@ -71,22 +73,13 @@ export function makeRng(seed: number): () => number {
   };
 }
 
-/**
- * 고유 장비의 특효 배율 (§4.5). 여러 부위가 같은 태그를 덮어도 **제일 큰 것 하나만** 쓴다 —
- * 곱해서 쌓이면 한 사냥터만 전용 장비로 도배하는 게 최적이 된다.
- */
-function specialty(attacker: Combatant, target: Combatant): number {
-  if (!attacker.bonusVs || !target.traits) return 1;
-  const best = Math.max(0, ...target.traits.map((t) => attacker.bonusVs![t] ?? 0));
-  return 1 + best;
-}
-
 /** 공격 한 번. 판정 순서는 회피 → 기본 대미지 → 크리 → 최소 1 보장 (§4.2). */
 function strike(attacker: Combatant, target: Combatant, rng: () => number) {
   if (rng() < target.eva) return { type: 'miss' as const, value: 0 };
 
   const roll = DAMAGE_ROLL_MIN + rng() * (DAMAGE_ROLL_MAX - DAMAGE_ROLL_MIN);
-  let damage = attacker.atk * damageMultiplier(target.def, target.scale) * roll * specialty(attacker, target);
+  let damage = attacker.atk * damageMultiplier(target.def, target.scale) * roll;
+  if (target.boss) damage *= 1 + (attacker.bossDamage ?? 0);
 
   const critical = rng() < attacker.cri;
   if (critical) damage *= attacker.crd;
@@ -121,6 +114,15 @@ export function hpAfterLastHitBy(
   return initial;
 }
 
+/**
+ * 그 이벤트들이 지나간 뒤 남은 보호막 (T17_7 반지). 보호막은 맞을 때마다 먼저 깎이고 차지 않으므로
+ * 몬스터가 준 피해의 합만큼 줄어 있다. 물약으로 끊고 다시 뽑을 때 이어 붙이는 값이다.
+ */
+export function shieldLeft(events: BattleEvent[], shield: number): number {
+  const taken = events.reduce((sum, e) => sum + (e.actor === 'monster' ? e.value : 0), 0);
+  return Math.max(0, shield - taken);
+}
+
 export function simulateBattle(
   player: Combatant,
   monster: Combatant,
@@ -129,6 +131,7 @@ export function simulateBattle(
   const events: BattleEvent[] = [];
   let playerHp = player.hp;
   let monsterHp = monster.hp;
+  let shield = player.shield ?? 0;
 
   const step = 1 / actionRatio(player.spd, monster.spd);
   let tPlayer = step;
@@ -151,7 +154,10 @@ export function simulateBattle(
       monsterHp = Math.max(0, monsterHp - value);
       tPlayer += step;
     } else {
-      playerHp = Math.max(0, playerHp - value);
+      // 보호막이 먼저 받는다. 이벤트의 value는 준 피해 그대로다 — 화면은 막힌 몫을 따로 보여준다
+      const blocked = Math.min(shield, value);
+      shield -= blocked;
+      playerHp = Math.max(0, playerHp - (value - blocked));
       tMonster += 1;
     }
 

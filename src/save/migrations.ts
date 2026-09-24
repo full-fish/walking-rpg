@@ -1,4 +1,4 @@
-import { BAG, GEAR_SLOTS, POINTS_PER_LEVEL, VAULT } from '../game/formulas';
+import { BAG, GEAR_SLOTS, POINTS_PER_LEVEL, RING_SLOTS, VAULT } from '../game/formulas';
 import { SAVE_VERSION } from './schema';
 
 /** vN 세이브를 v(N+1) 모양으로 바꾼다. version 필드는 migrate()가 알아서 올린다. */
@@ -99,6 +99,30 @@ export const migrations: Record<number, Migration> = {
 
   /** v9 → v10: 보스 버프 (T17_6 검수). 진행 중인 판에는 아직 버프가 없다 */
   9: (s) => ({ ...s, run: s.run ? { ...(s.run as object), buffs: [] } : null }),
+
+  /**
+   * v10 → v11: 반지 (T17_7). 고유 장비는 없앴다 — **가진 것도 지우고 낀 칸은 비운다**
+   * (정의가 없어서 남겨 두면 읽는 순간 죽는다). 반지 칸 두 개를 빈 채로 연다.
+   */
+  10: (s) => {
+    const inventory = (s.inventory as { uid: string; defId: string }[]).filter(
+      (i) => !i.defId.startsWith('uniq_'),
+    );
+    const kept = new Set(inventory.map((i) => i.uid));
+    const equipped = Object.fromEntries(
+      Object.entries(s.equipped as Record<string, string | null>).map(([slot, uid]) => [
+        slot,
+        uid !== null && kept.has(uid) ? uid : null,
+      ]),
+    );
+    return {
+      ...s,
+      inventory,
+      equipped,
+      rings: [],
+      ringSlots: Array.from({ length: RING_SLOTS }, () => null),
+    };
+  },
 };
 
 /**

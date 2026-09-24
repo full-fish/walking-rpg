@@ -34,7 +34,8 @@ import {
   rollRunSize,
   WP_COST,
 } from './formulas';
-import { bagFull, makeItem } from './items';
+import { potionHeal } from './economy';
+import { bagFull, makeItem, ringBonus } from './items';
 import {
   addItem,
   killReward,
@@ -102,6 +103,11 @@ export function openRun(save: Save, run: Omit<Run, 'potions'>): Save {
   return { ...save, consumables, run: { ...run, potions: packed } };
 }
 
+/** 사냥터 입장 WP (§4.1). 나그네의 반지(T17_7)만큼 깎는다 — 모험 탭 버튼도 이 값을 쓴다 */
+export function fieldEntryCost(save: Save, region: number): number {
+  return Math.round(WP_COST.fieldEntry(region) * (1 - ringBonus(save, 'fieldWp')));
+}
+
 /**
  * 사냥터에 들어간다 (§4.4). WP를 내고 마릿수를 뽑는다.
  *
@@ -111,14 +117,15 @@ export function openRun(save: Save, run: Omit<Run, 'potions'>): Save {
 export function enterField(save: Save, fieldId: string, rng: () => number): Save | null {
   if (save.run !== null) return null;
 
-  const wp = spendWp(save.wp, WP_COST.fieldEntry(regionOfField(fieldId).id));
+  const wp = spendWp(save.wp, fieldEntryCost(save, regionOfField(fieldId).id));
   if (!wp) return null;
 
   return openRun(
     { ...save, wp },
     {
       fieldId,
-      size: rollRunSize(rng),
+      // 사냥꾼의 반지(T17_7)는 6마리 판을 늘린다 — 소재가 더 나온다
+      size: rollRunSize(rng, ringBonus(save, 'bigRun')),
       killed: 0,
       earned: { exp: 0, gold: 0 },
       monsterId: pickMonster(fieldId, rng).id,
@@ -152,8 +159,7 @@ export function drinkPotion(save: Save, id: string, atHp = save.player.hp): Save
   const maxHp = statsOf(save).maxHp;
   if (atHp >= maxHp) return null;
 
-  const def = consumableById(id);
-  const healed = def.heal + Math.round(maxHp * def.healRatio);
+  const healed = potionHeal(save, id);
   const potions = { ...run.potions, [id]: run.potions[id] - 1 };
   if (potions[id] <= 0) delete potions[id];
 
@@ -231,7 +237,11 @@ function settleBoss(
     return { ...settled, ...done, ...NO_DROP, save: back };
   }
 
-  const reward = { exp: boss.exp, gold: Math.round(boss.gold * statsOf(save).goldMult) };
+  const stats = statsOf(save);
+  const reward = {
+    exp: Math.round(boss.exp * stats.expMult),
+    gold: Math.round(boss.gold * stats.goldMult),
+  };
   const settled = settleBattle(save, 'win', playerHp, reward, now);
   const progress = {
     ...settled.save.regionProgress,
@@ -295,7 +305,7 @@ export function settleRun(
   }
 
   const stats = statsOf(save);
-  const gained = killReward(monster, stats.goldMult);
+  const gained = killReward(monster, stats.goldMult, stats.expMult);
   const won = settleBattle(save, 'win', playerHp, gained, now);
   // 드랍은 처치 즉시 들어온다 — 개별 보상처럼 도망·사망해도 남는다 (T17_6)
   const loot = rollDrop(won.save, monster, run.fieldId, rng);
@@ -317,8 +327,8 @@ export function settleRun(
     };
   }
 
-  // 완주 — 클리어 보너스 = 개별 합 × 0.2 × 마릿수 (§4.4)
-  const rate = CLEAR_BONUS_RATE * run.size;
+  // 완주 — 클리어 보너스 = 개별 합 × 0.2 × 마릿수 (§4.4). 정복자의 반지(T17_7)가 더 얹는다
+  const rate = CLEAR_BONUS_RATE * run.size * (1 + ringBonus(save, 'clearBonus'));
   const bonus: Reward = {
     exp: Math.round(earned.exp * rate),
     gold: Math.round(earned.gold * rate),

@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-import { EQUIPMENT, gearSetFor } from '@/content';
+import { EQUIPMENT, gearSetFor, REGIONS } from '@/content';
 import type { Outcome } from '@/game/battle';
 import { enterField, settleRun, drinkPotion, type RunResult } from '@/game/field';
 import {
@@ -8,7 +8,8 @@ import {
   bagExpand,
   buyEquipment,
   enhanceItem,
-  exchangeUnique,
+  enhanceRing,
+  exchangeRing,
   type EnhanceResult,
   sellItem,
   stayInn,
@@ -16,9 +17,10 @@ import {
   vaultDeposit,
   vaultExpand,
   vaultWithdraw,
+  upgradeRing,
 } from '@/game/economy';
-import type { GearSlot } from '@/game/formulas';
-import { makeItem } from '@/game/items';
+import { MIDNIGHT_WP, type GearSlot } from '@/game/formulas';
+import { makeItem, ringBonus } from '@/game/items';
 import { enterBoss, travel, unlockNext } from '@/game/region';
 import { grantWp, spendWp } from '@/game/wp';
 import {
@@ -26,11 +28,13 @@ import {
   applyRegen,
   equipAll,
   equipItem,
+  equipRing,
   settleBattle,
   respec,
   sortInventory,
   spendPoint,
   statsOf,
+  unequipRing,
   unequipSlot,
   type Reward,
   type Settlement,
@@ -77,15 +81,19 @@ type PlayerStore = {
   trade: (change: (save: Save) => Save | null) => boolean;
   /** 실기기 확인용 — 지금 레벨의 common 풀세트를 공짜로 준다 */
   grantGearSet: () => void;
-  /** 실기기 확인용 — 그림(sprite)마다 장비 하나씩 가방에 넣는다. 고유 장비 포함 */
+  /** 실기기 확인용 — 그림(sprite)마다 장비 하나씩 가방에 넣는다 */
   grantAllSprites: () => void;
   /** 실기기 확인용 — 가방 칸 수를 바로 정한다 */
   setBagCapacity: (capacity: number) => void;
+  /** 실기기 확인용 — 모든 사냥터 소재를 n개씩 더 준다 (반지·강화 +6 확인, T17_7) */
+  grantMaterials: (n: number) => void;
   /**
    * 장비 한 점을 한 단계 올려 본다 (§4.5). 성공·실패를 화면이 보여줘야 해서
    * trade()와 달리 결과를 그대로 돌려준다. 골드가 모자라면 null.
    */
   enhance: (uid: string) => EnhanceResult | null;
+  /** 반지를 한 단계 강화해 본다 (T17_7). 결과를 화면이 보여준다 */
+  enhanceRing: (uid: string) => EnhanceResult | null;
   reset: () => void;
 };
 
@@ -105,7 +113,9 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
 
   grantFromSteps: (steps) => {
     const { save } = get();
-    const { state, granted } = grantWp(save.wp, steps, new Date());
+    // 새벽의 반지(T17_7)는 자정 지급을 늘린다
+    const midnight = MIDNIGHT_WP + Math.round(ringBonus(save, 'midnightWp'));
+    const { state, granted } = grantWp(save.wp, steps, new Date(), midnight);
     // 받을 게 없으면 저장도 리렌더도 하지 않는다. 60초마다 불리는 경로다.
     if (granted === 0) return;
     set({ save: persist({ ...save, wp: state }) });
@@ -217,7 +227,7 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     let save = get().save;
     const seen = new Set<string>();
     for (const def of EQUIPMENT) {
-      // 고유 장비도 넣는다 — 그림이 따로(uniq_…)라 한 종씩 따로 들어온다. 설정의 [가방 300칸]과 짝이다
+      // 설정의 [가방 300칸]과 짝이다
       if (seen.has(def.sprite)) continue;
       seen.add(def.sprite);
       save = addItem(save, makeItem(save.inventory, def.id, Math.random));
@@ -230,8 +240,22 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     set({ save: persist({ ...save, bag: { ...save.bag, capacity } }) });
   },
 
+  grantMaterials: (n) => {
+    const { save } = get();
+    const materials = { ...save.materials };
+    for (const f of REGIONS.flatMap((r) => r.fields)) materials[f.id] = (materials[f.id] ?? 0) + n;
+    set({ save: persist({ ...save, materials }) });
+  },
+
   enhance: (uid) => {
     const result = enhanceItem(get().save, uid, Math.random);
+    if (!result) return null;
+    set({ save: persist(result.save) });
+    return result;
+  },
+
+  enhanceRing: (uid) => {
+    const result = enhanceRing(get().save, uid, Math.random);
     if (!result) return null;
     set({ save: persist(result.save) });
     return result;
@@ -254,7 +278,11 @@ export const trades = {
   withdraw: (amount: number) => (save: Save) => vaultWithdraw(save, amount),
   expand: () => (save: Save) => vaultExpand(save),
   expandBag: () => (save: Save) => bagExpand(save),
-  exchange: (fieldId: string) => (save: Save) => exchangeUnique(save, fieldId, Math.random),
+  /** 반지 (T17_7) — 교환은 무작위, 올리기는 소재만. 끼고 빼는 것도 여기로 지난다 */
+  exchangeRing: () => (save: Save) => exchangeRing(save, Math.random),
+  upgradeRing: (uid: string) => (save: Save) => upgradeRing(save, uid),
+  equipRing: (uid: string, slot: number) => (save: Save) => equipRing(save, uid, slot),
+  unequipRing: (slot: number) => (save: Save) => unequipRing(save, slot),
   /** 지역 관문 (T17_5) — 보스 도전 · 해금 · 이동은 따로 낸다 */
   /** 소재를 쓰면 하나에 하나씩 무작위 버프 (T17_6 검수) */
   challengeBoss: (materials: number) => (save: Save) => enterBoss(save, materials),

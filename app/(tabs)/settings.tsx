@@ -16,6 +16,7 @@ export default function Settings() {
   const grantGearSet = usePlayer((s) => s.grantGearSet);
   const grantAllSprites = usePlayer((s) => s.grantAllSprites);
   const setBagCapacity = usePlayer((s) => s.setBagCapacity);
+  const grantMaterials = usePlayer((s) => s.grantMaterials);
   const reset = usePlayer((s) => s.reset);
 
   return (
@@ -45,7 +46,7 @@ export default function Settings() {
           <Button label="장비 한 벌" onPress={grantGearSet} />
           <Button label="초기화" onPress={reset} />
         </View>
-        {/* 아이콘 전수 확인용 — 그림 70종 + 고유 35종이 가방에 다 들어가게 칸부터 늘린다 */}
+        {/* 아이콘 전수 확인용 — 그림 70종이 가방에 다 들어가게 칸부터 늘린다 */}
         <View style={styles.row}>
           <Button label="골드 +1000" tone="gold" onPress={() => addGold(1_000)} />
           <Button label="WP +10000" tone="gold" onPress={() => addWp(10_000)} />
@@ -53,6 +54,10 @@ export default function Settings() {
         <View style={styles.row}>
           <Button label="가방 300칸" onPress={() => setBagCapacity(300)} />
           <Button label="그림별 장비 1개씩" onPress={grantAllSprites} />
+        </View>
+        {/* 반지·강화 +6 확인용 (T17_7) — 6마리 판을 몇십 번 돌아야 모이는 걸 한 번에 준다 */}
+        <View style={styles.row}>
+          <Button label="소재 전부 +3" onPress={() => grantMaterials(3)} />
         </View>
         <Text size="sm" dim>
           앱을 완전히 끄고 다시 켜도 값이 남아 있어야 합니다.

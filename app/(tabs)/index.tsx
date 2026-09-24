@@ -5,9 +5,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { bossOf, REGIONS, regionById, type Field } from '@/content';
 import { regionMaterials } from '@/game/economy';
+import { fieldEntryCost } from '@/game/field';
 import { BOSS_BUFF, REGION_COUNT, WP_COST } from '@/game/formulas';
 import { bagFull } from '@/game/items';
-import { statsOf } from '@/game/progression';
+import { bossBuffMult, statsOf } from '@/game/progression';
 import { bossCost, bossState, unlockCost } from '@/game/region';
 import { useSteps } from '@/health/useSteps';
 import { trades, usePlayer } from '@/stores/usePlayer';
@@ -40,7 +41,8 @@ export default function Adventure() {
   const trade = usePlayer((s) => s.trade);
   const stats = statsOf(save);
   const region = regionById(save.regionProgress.current);
-  const entryCost = WP_COST.fieldEntry(region.id);
+  // 나그네의 반지(T17_7)만큼 깎인 값 — 실제로 내는 값을 보여준다
+  const entryCost = fieldEntryCost(save, region.id);
   const { unlocked } = save.regionProgress;
   const boss = bossOf(region.id);
   const bossNow = bossState(save, region.id);
@@ -152,8 +154,8 @@ export default function Adventure() {
               {bossNow !== 'cleared' && (
                 <>
                   <Text size="sm" dim>
-                    소재를 쓰면 하나에 하나씩 무작위 버프(전투력 값 ×{BOSS_BUFF.mult}) — 이 지역
-                    소재 {haveMaterials}개
+                    소재를 쓰면 하나에 하나씩 무작위 버프(전투력 값 ×
+                    {+bossBuffMult(save).toFixed(3)}) — 이 지역 소재 {haveMaterials}개
                   </Text>
                   <View style={styles.row}>
                     {Array.from({ length: BOSS_BUFF.max + 1 }, (_, n) => (

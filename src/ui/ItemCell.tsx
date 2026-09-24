@@ -3,7 +3,7 @@ import { Image, Modal, Pressable, StyleSheet, View } from 'react-native';
 
 import { GEAR_SLOT_LABELS, type Equipment } from '@/content';
 import { itemLabel, itemStats, statText } from '@/game/items';
-import type { ItemInstance } from '@/save/schema';
+import type { ItemInstance, Ring } from '@/save/schema';
 import { itemIcons } from '@/ui/itemIcons';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
@@ -123,6 +123,28 @@ export function qualityTag(item: ItemInstance): string {
 /** 칸을 줄 맞춰 까는 틀. 칸 사이 간격까지 여기서 정한다. */
 export function ItemGrid({ children }: { children: ReactNode }) {
   return <View style={styles.grid}>{children}</View>;
+}
+
+/**
+ * 반지 칸 (T17_7). 반지 그림이 아직 없어서 글자로 그린다 — 테두리 색이 등급, 아래 한 줄이 ★·강화다.
+ * 비어 있으면 "반지"라고만 쓴다.
+ */
+export function RingCell({ ring, onPress }: { ring?: Ring; onPress?: () => void }) {
+  return (
+    <Pressable
+      onPress={onPress}
+      style={[styles.cell, { borderColor: ring ? rarity[ring.rarity] : colors.edge }]}
+    >
+      <Text size="xl" dim={!ring}>
+        {ring ? '💍' : ''}
+      </Text>
+      <View style={styles.tag}>
+        <Text size="sm" dim={!ring}>
+          {ring ? `★${ring.tier}${ring.enhance > 0 ? ` +${ring.enhance}` : ''}` : '반지'}
+        </Text>
+      </View>
+    </Pressable>
+  );
 }
 
 /** 빈 자리 — 인형 배치에서 칸이 없는 곳을 채운다. */
