@@ -16,11 +16,12 @@ import {
 } from '@/game/battle';
 import { currentMonster, type RunResult } from '@/game/field';
 import { POINTS_PER_LEVEL } from '@/game/formulas';
-import { itemDef, itemLabel } from '@/game/items';
+import { equippedIn, itemDef, itemLabel } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import type { Save } from '@/save/schema';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
+import { BossStage } from '@/ui/BossStage';
 import { Button } from '@/ui/Button';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
@@ -60,6 +61,8 @@ type Playback = {
   result: BattleResult;
   /** 물약을 마신 지점 — events 인덱스 → 그 순간 내 HP. 회복은 이벤트가 아니라서 따로 센다 */
   heals: { at: number; hp: number }[];
+  /** 상대의 그림 — 보스전 무대가 쓴다 (T17_7) */
+  sprite: string;
 };
 
 /**
@@ -77,7 +80,12 @@ function simulateFrom(save: Save, monsterHp?: number, shield?: number) {
     shield: shield ?? stats.shield,
   };
   const monster: Combatant = { ...picked, hp: monsterHp ?? picked.maxHp };
-  return { player, monster, result: simulateBattle(player, monster, makeRng(Date.now())) };
+  return {
+    player,
+    monster,
+    sprite: picked.sprite,
+    result: simulateBattle(player, monster, makeRng(Date.now())),
+  };
 }
 
 function startPlayback(save: Save): Playback | null {
@@ -154,6 +162,9 @@ export default function Battle() {
   const potions = Object.entries(save.run?.potions ?? {}).filter(([, n]) => n > 0);
   // 보호막은 맞은 만큼 줄고 안 찬다 (T17_7). 물약으로 이어 붙인 구간까지 한 번에 센다
   const shield = shieldLeft(played, battle.player.shield ?? 0);
+  // 보스전은 그림이 공방을 주고받는 무대로 보여준다 (T17_7). 숫자도 무대에 뜬다
+  const boss = battle.monster.boss === true;
+  const weapon = equippedIn(save, 'weapon');
 
   /** 지금 HP에서 회복하고, 남은 싸움을 새로 뽑아 **뒤에 잇는다**. 커서는 안 건드린다. */
   const onDrink = (id: string) => {
@@ -165,6 +176,7 @@ export default function Battle() {
     setBattle({
       player: battle.player,
       monster: battle.monster,
+      sprite: battle.sprite,
       events: [...kept, ...seg.result.events],
       result: seg.result,
       heals: [
@@ -191,13 +203,23 @@ export default function Battle() {
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <Panel title={battle.monster.name}>
         <Bar label="HP" value={monsterHp} max={battle.monster.maxHp} color={colors.hp} />
-        <View style={styles.popup}>
-          {last?.actor === 'player' && (
-            <Text size="xl" color={eventColor(last)}>
-              {damageText(last)}
-            </Text>
-          )}
-        </View>
+        {boss ? (
+          <BossStage
+            sprite={battle.sprite}
+            name={battle.monster.name}
+            weapon={weapon && itemDef(weapon)}
+            last={last}
+            step={cursor}
+          />
+        ) : (
+          <View style={styles.popup}>
+            {last?.actor === 'player' && (
+              <Text size="xl" color={eventColor(last)}>
+                {damageText(last)}
+              </Text>
+            )}
+          </View>
+        )}
       </Panel>
 
       <Panel title={battle.player.name}>
@@ -207,13 +229,15 @@ export default function Battle() {
             보호막 {shield} / {battle.player.shield}
           </Text>
         )}
-        <View style={styles.popup}>
-          {last?.actor === 'monster' && (
-            <Text size="xl" color={eventColor(last)}>
-              {damageText(last)}
-            </Text>
-          )}
-        </View>
+        {!boss && (
+          <View style={styles.popup}>
+            {last?.actor === 'monster' && (
+              <Text size="xl" color={eventColor(last)}>
+                {damageText(last)}
+              </Text>
+            )}
+          </View>
+        )}
       </Panel>
 
       <Panel title="전투 기록">
