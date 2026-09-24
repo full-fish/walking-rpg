@@ -41,6 +41,7 @@ import {
   expToNext,
   GEAR_SLOTS,
   MIDNIGHT_WP,
+  POINTS_PER_LEVEL,
   POTION_CARRY_MAX,
   REGION_COUNT,
   SPENDABLE_STATS,
@@ -70,6 +71,9 @@ export const BUILDS: Build[] = [
   { name: '힘·체력', weights: { str: 1, vit: 1, agi: 0, luk: 0 } },
   { name: '힘·민첩', weights: { str: 1, vit: 0, agi: 1, luk: 0 } },
   { name: '전투 3종', weights: { str: 2, vit: 2, agi: 2, luk: 1 } },
+  // 행운을 빼거나 더 넣은 균등 (T17_7 검수) — 행운까지 고르게 나눈 게 제일 빠른지 본다
+  { name: '3종 균등', weights: { str: 1, vit: 1, agi: 1, luk: 0 } },
+  { name: '행운 편중', weights: { str: 1, vit: 1, agi: 1, luk: 2 } },
 ];
 
 const STATS = SPENDABLE_STATS;
@@ -235,15 +239,15 @@ export function expectedSet(level: number, region: number): ItemInstance[] {
 }
 
 /**
- * 보스 벤치용 기준 세이브 (T17_5) — 그 레벨, 균등 배분(STR·VIT·AGI), 그 지역 **보통으로 투자한**
+ * 보스 벤치용 기준 세이브 (T17_5) — 그 레벨, 네 스탯 균등 배분(T17_7 검수), 그 지역 **보통으로 투자한**
  * 한 벌(expectedSet), 그 지역 물약 3개. 보스 배율은 **이 상태로 승률 50%** 가 되게 잡는다 (T17_6 검수).
  */
 export function baselineSave(level: number, region: number): Save {
-  const ups = level - 1;
+  const none = { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0, int: 0 };
   let save: Save = {
     ...defaultSave(),
     player: { level, exp: 0, gold: 0, hp: 1 },
-    statPoints: { unspent: 0, str: ups, vit: ups, agi: ups, luk: 0, int: 0 },
+    statPoints: allocate(none, BUILDS[0], (level - 1) * POINTS_PER_LEVEL),
     wp: { current: 1_000_000, grantedByDate: {}, lastMidnightGrantAt: '' },
     consumables: { [bestPotion(region).id]: POTION_CARRY_MAX },
     regionProgress: { current: region, unlocked: region, bosses: {} },

@@ -18,7 +18,7 @@ import {
   type Region,
 } from '../src/content';
 import { makeRng, simulateBattle, type Combatant } from '../src/game/battle';
-import { combatStats, EXPECTED_GEAR } from '../src/game/formulas';
+import { combatStats, evenSpend, EXPECTED_GEAR } from '../src/game/formulas';
 import { itemStats } from '../src/game/items';
 import { bossTrial, expectedSet } from './simulate';
 
@@ -29,24 +29,24 @@ const TARGET = { min: 20, max: 40 };
 const RUN_SIZES = [4, 6] as const;
 
 /**
- * Lv L 전사, **그 지역 보통으로 투자한 한 벌** 착용 (EXPECTED_GEAR, T17_6 검수) — 지역 1 common +0 ·
- * 2 common +3 · 3~5 uncommon +3/+4/+5. 상점은 지금 지역 티어만 판다 — 지역 끝 레벨이면 다음 지역
- * 앞단을 낄 수 있어도 못 산다.
+ * Lv L 전사, **네 스탯 균등 배분**(T17_7 검수) · **그 지역 보통으로 투자한 한 벌** 착용 (EXPECTED_GEAR,
+ * T17_6 검수) — 지역 1 common +0 · 2 common +3 · 3 uncommon +3 · 4 uncommon +4 · 5 rare +3.
+ * 상점은 지금 지역 티어만 판다 — 지역 끝 레벨이면 다음 지역 앞단을 낄 수 있어도 못 산다.
  *
  * 맨몸으로 재면 후반이 전멸한다 — 전투력의 85%가 장비에서 오는 게 설계라서다.
  * 스탯 계산은 화면과 같은 combatStats·itemStats를 쓴다 — 여기서 따로 세면 둘이 어긋난다.
  */
 function warrior(level: number, region = 1): Combatant {
-  const stats = combatStats(level);
-  const gear = expectedSet(level, region).map(itemStats);
-  const sum = (k: 'maxHp' | 'atk' | 'def' | 'spd') => gear.reduce((s, g) => s + g[k], 0);
-  const geared = {
-    ...stats,
-    maxHp: stats.maxHp + sum('maxHp'),
-    atk: stats.atk + sum('atk'),
-    def: stats.def + sum('def'),
-    spd: stats.spd + sum('spd'),
-  };
+  const gear = expectedSet(level, region)
+    .map(itemStats)
+    .reduce((a, g) => ({
+      atk: a.atk + g.atk,
+      maxHp: a.maxHp + g.maxHp,
+      def: a.def + g.def,
+      spd: a.spd + g.spd,
+      luk: a.luk + g.luk,
+    }));
+  const geared = combatStats(level, 'warrior', evenSpend(level), gear);
   return { name: `Lv${level} 전사`, hp: geared.maxHp, ...geared };
 }
 

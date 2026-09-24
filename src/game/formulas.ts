@@ -139,11 +139,18 @@ export const JOB_GROWTH = {
 
 export type JobId = keyof typeof JOB_GROWTH;
 
-/** 1차 스탯 1포인트당 효과 (§4.3). */
+/**
+ * 1차 스탯 1포인트당 효과 (§4.3).
+ *
+ * `gear*`는 **낀 장비가 주는 몫에 %로 붙는다** (T17_7 검수) — 힘 1점이면 장비 ATK +0.8%.
+ * 장비가 전투력의 85%를 대는데 1점이 맨몸에만 더해지면 뒤로 갈수록 묽어진다. 장비는 ATK·HP를
+ * 7배로 키우고 SPD는 1.15배만 키우므로, Lv50에서 힘 1점은 ATK의 0.13%, 민첩 1점은 SPD의 0.62%였다 —
+ * 민첩 몰빵이 1등이고 힘·체력 위주가 꼴찌(154~230일)였던 이유다. 장비 몫에도 붙이면 셋이 같이 자란다.
+ */
 export const STAT_PER_POINT = {
-  str: { atk: 2 },
-  vit: { maxHp: 10, def: 0.5 },
-  agi: { spd: 1.5, eva: 0.0015 },
+  str: { atk: 2, gearAtk: 0.008 },
+  vit: { maxHp: 10, def: 0.5, gearHp: 0.008 },
+  agi: { spd: 1.5, eva: 0.0015, gearSpd: 0.008 },
   /**
    * 치명 확률만으로는 너무 얇아서 몰빵이 Lv50에 못 갔다 (T13 시뮬 400일 미달).
    * 확률과 배율을 같이 올리고 골드·드랍까지 준다 — 기댓값을 증폭하는 스탯이라는 성격 그대로,
@@ -176,6 +183,35 @@ export type StatSpend = {
 /** 레벨업 포인트를 실제로 넣을 수 있는 스탯 (§4.3). INT는 T18에 합류한다. */
 export const SPENDABLE_STATS = ['str', 'vit', 'agi', 'luk'] as const;
 export type SpendableStat = (typeof SPENDABLE_STATS)[number];
+
+/**
+ * 한 스탯에 **네 스탯 평균보다 많이** 넣으면 넘는 몫은 이만큼만 든다 (T17_7 검수) —
+ * 고르게 나눈 사람이 제일 세게 하려는 규칙이다. 1점의 값이 스탯끼리 두 배 안쪽이면 이 규칙만으로
+ * 균등이 최선이 된다(넘는 1점은 반값이라 모자란 스탯에 넣는 게 낫다). 시작 스탯은 안 센다 — 직업 몫이다.
+ */
+export const OVER_SHARE_RATE = 0.5;
+
+/** 배분한 포인트 → 실제로 드는 포인트. 평균을 넘는 몫만 깎는다 (T17_7 검수). */
+export function effectiveSpend(spend: StatSpend): StatSpend {
+  const share = SPENDABLE_STATS.reduce((sum, k) => sum + spend[k], 0) / SPENDABLE_STATS.length;
+  const cut = (n: number) => n - (1 - OVER_SHARE_RATE) * Math.max(0, n - share);
+  return {
+    str: cut(spend.str),
+    vit: cut(spend.vit),
+    agi: cut(spend.agi),
+    luk: cut(spend.luk),
+    int: spend.int,
+  };
+}
+
+/**
+ * 네 스탯에 똑같이 나눈 배분 (T17_7 검수) — **밸런스 기준 플레이어**다. 레벨당 3점이라 소수가 나온다.
+ * 장비 값(gearStats)·보스 배율·벤치가 전부 이 사람을 기준으로 잰다.
+ */
+export function evenSpend(level: number): StatSpend {
+  const each = (Math.max(0, level - 1) * POINTS_PER_LEVEL) / SPENDABLE_STATS.length;
+  return { str: each, vit: each, agi: each, luk: each, int: 0 };
+}
 
 /**
  * 진행 단계별 기대 전투력 배수 (§4.3, §4.5).
@@ -215,14 +251,24 @@ export function gearShare(level: number): number {
   return powerScale(level) - 1 + GEAR_FLOOR;
 }
 
+/** 장비가 더해주는 몫. items.ts의 GearBonus와 같은 모양이다 (formulas는 items를 import하지 않는다) */
+type Gear = { atk: number; maxHp: number; def: number; spd: number; luk: number };
+const NO_GEAR: Gear = { atk: 0, maxHp: 0, def: 0, spd: 0, luk: 0 };
+
 /**
- * 레벨과 배분으로 **맨몸** 전투 스탯을 만든다 (§4.3). 장비는 statsOf()가 더한다.
+ * 레벨·배분·장비로 전투 스탯을 만든다 (§4.3, §4.5). 화면·전투·벤치가 전부 여기를 지난다.
  *
- * 1차 스탯 = 직업 시작값 + 배분한 포인트. 배분을 안 주면 STR/VIT/AGI에 균등하게
- * 넣은 것으로 친다 — 밸런스 기준선이다.
- * 여기서 나오는 값은 전부 표에 적힌 그대로다. 숨은 배수는 없다.
+ * 1차 스탯 = 직업 시작값 + 배분한 포인트(+ 장신구 LUK). 배분은 **주는 그대로** 쓴다 —
+ * 평균 넘는 몫을 깎는 건 세이브를 읽는 statsOf가 effectiveSpend로 먼저 한다.
+ * 배분을 안 주면 STR/VIT/AGI에 레벨당 1점씩 넣은 것으로 친다 — **장비 곡선의 기준 맨몸**이다(T12부터).
+ * 장비 몫은 1차 스탯만큼 %로 커진다 (STAT_PER_POINT의 gear*). 그 밖에 숨은 배수는 없다.
  */
-export function combatStats(level: number, job: JobId = 'warrior', spend?: StatSpend) {
+export function combatStats(
+  level: number,
+  job: JobId = 'warrior',
+  spend?: StatSpend,
+  gear: Gear = NO_GEAR,
+) {
   const ups = Math.max(0, level - 1);
   const growth = JOB_GROWTH[job];
   const start = STARTING_STATS[job];
@@ -231,18 +277,27 @@ export function combatStats(level: number, job: JobId = 'warrior', spend?: StatS
     str: start.str + put.str,
     vit: start.vit + put.vit,
     agi: start.agi + put.agi,
-    luk: start.luk + put.luk,
+    // 장신구가 주는 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3, T16_1)
+    luk: start.luk + put.luk + gear.luk,
     int: start.int + put.int,
   };
+  // 1차 스탯이 장비 몫을 %로 키운다 (T17_7 검수)
+  const worn = {
+    maxHp: gear.maxHp * (1 + STAT_PER_POINT.vit.gearHp * s.vit),
+    atk: gear.atk * (1 + STAT_PER_POINT.str.gearAtk * s.str),
+    spd: gear.spd * (1 + STAT_PER_POINT.agi.gearSpd * s.agi),
+  };
   return {
-    maxHp: Math.round(BASE_STATS.maxHp + growth.maxHp * ups + STAT_PER_POINT.vit.maxHp * s.vit),
+    maxHp: Math.round(
+      BASE_STATS.maxHp + growth.maxHp * ups + STAT_PER_POINT.vit.maxHp * s.vit + worn.maxHp,
+    ),
     /** 스킬 자원. 쓰는 곳은 T18 */
     maxMp: Math.round(BASE_STATS.maxMp + growth.maxMp * ups + STAT_PER_POINT.int.maxMp * s.int),
-    atk: BASE_STATS.atk + growth.atk * ups + STAT_PER_POINT.str.atk * s.str,
+    atk: BASE_STATS.atk + growth.atk * ups + STAT_PER_POINT.str.atk * s.str + worn.atk,
     /** 마법 공격력. 평타는 아직 ATK만 쓴다 — 마법 평타·스킬은 T18 */
     matk: BASE_STATS.matk + growth.matk * ups + STAT_PER_POINT.int.matk * s.int,
-    def: BASE_STATS.def + growth.def * ups + STAT_PER_POINT.vit.def * s.vit,
-    spd: BASE_STATS.spd + growth.spd * ups + STAT_PER_POINT.agi.spd * s.agi,
+    def: BASE_STATS.def + growth.def * ups + STAT_PER_POINT.vit.def * s.vit + gear.def,
+    spd: BASE_STATS.spd + growth.spd * ups + STAT_PER_POINT.agi.spd * s.agi + worn.spd,
     cri: BASE_STATS.cri + STAT_PER_POINT.luk.cri * s.luk,
     crd: BASE_STATS.crd + STAT_PER_POINT.luk.crd * s.luk,
     eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * s.agi,
@@ -695,13 +750,26 @@ export function gearStats(level: number, slot: GearSlot, rarity: Rarity) {
   const naked = combatStats(level);
   const share = gearShare(level) * RARITY_MULT[rarity];
   const bias = SLOT_BIAS[slot];
+  // 1차 스탯이 장비 몫을 %로 키우므로(STAT_PER_POINT의 gear*, T17_7 검수) **균등 배분한 사람이
+  // 끼었을 때** 예전 값이 되게 그만큼 덜어 둔다 — 그 사람의 전투 스탯·밸런스는 그대로고,
+  // 한쪽으로 쏠린 배분만 달라진다
+  const even = evenSpend(level);
+  const start = STARTING_STATS.warrior;
+  const boost = (rate: number, points: number) => 1 + rate * points;
   return {
-    atk: Math.round(naked.atk * share * bias.atk),
-    maxHp: Math.round(naked.maxHp * share * bias.maxHp),
+    atk: Math.round(
+      (naked.atk * share * bias.atk) / boost(STAT_PER_POINT.str.gearAtk, start.str + even.str),
+    ),
+    maxHp: Math.round(
+      (naked.maxHp * share * bias.maxHp) / boost(STAT_PER_POINT.vit.gearHp, start.vit + even.vit),
+    ),
     def: Math.round(naked.def * share * bias.def),
     // SPD는 gearShare를 안 쓴다 — 레벨이 올라도 "풀세트 = +15%"로 일정하다.
     // 소수 한 자리로 두는 건 정수로 자르면 낮은 티어 신발이 통째로 +0이 되기 때문이다
-    spd: round1(naked.spd * GEAR_SPD_RATE * RARITY_MULT[rarity] * bias.spd),
+    spd: round1(
+      (naked.spd * GEAR_SPD_RATE * RARITY_MULT[rarity] * bias.spd) /
+        boost(STAT_PER_POINT.agi.gearSpd, start.agi + even.agi),
+    ),
     // LUK도 맨몸에 비례시키지 않는다 — 행운 0점이면 곱할 바닥이 4뿐이다.
     // SPD와 같은 이유로 소수 한 자리다: 정수로 반올림하면 티어 1~2가 둘 다 +2가 되어
     // 부적을 갈아도 아무 일이 안 일어난다

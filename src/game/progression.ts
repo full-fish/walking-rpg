@@ -4,6 +4,7 @@ import type { Outcome } from './battle';
 import {
   BOSS_BUFF,
   combatStats,
+  effectiveSpend,
   GEAR_SLOTS,
   DEATH_GOLD_LOSS,
   DEATH_HP_RATIO,
@@ -15,7 +16,6 @@ import {
   POINTS_PER_LEVEL,
   SPENDABLE_STATS,
   STARTING_STATS,
-  STAT_PER_POINT,
   WP_COST,
   type GearSlot,
   type SpendableStat,
@@ -38,19 +38,10 @@ export type StatKey = SpendableStat;
  * Lv50 기준 전투력의 85%가 장비 몫이다. 맨몸으로 후반 사냥터에 가면 그래서 안 된다.
  */
 export function statsOf(save: Save) {
-  const base = combatStats(save.player.level, 'warrior', save.statPoints);
-  const gear = equippedStats(save);
+  // 평균을 넘게 넣은 몫은 절반만 든다 (T17_7 검수) — 균등 배분이 제일 세다
+  const spend = effectiveSpend(save.statPoints);
   const stats = {
-    ...base,
-    maxHp: base.maxHp + gear.maxHp,
-    atk: base.atk + gear.atk,
-    def: base.def + gear.def,
-    spd: base.spd + gear.spd,
-    // 장신구가 주는 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3, T16_1)
-    cri: base.cri + STAT_PER_POINT.luk.cri * gear.luk,
-    crd: base.crd + STAT_PER_POINT.luk.crd * gear.luk,
-    dropMult: base.dropMult + STAT_PER_POINT.luk.dropRate * gear.luk,
-    goldMult: base.goldMult + STAT_PER_POINT.luk.goldFind * gear.luk,
+    ...combatStats(save.player.level, 'warrior', spend, equippedStats(save)),
     /** 고유 장비의 특효 (§4.5). battle.ts가 몬스터 traits와 맞춰 본다 */
     bonusVs: equippedBonusVs(save),
   };

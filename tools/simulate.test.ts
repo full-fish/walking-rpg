@@ -7,7 +7,7 @@
 import { expect, test } from 'vitest';
 
 import { gearSetFor } from '../src/content';
-import { combatStats } from '../src/game/formulas';
+import { combatStats, evenSpend } from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
 import { BUILDS, dayAtLevel, simulate, type Build, type DayLog } from './simulate';
 
@@ -245,25 +245,30 @@ test('빌드별 편차 — 배분을 어떻게 하든 굴러가야 한다 (§4.3
   // T13까지는 행운 몰빵이 400일 안에 못 끝냈다.
   const stuck = reached.filter((r) => r.day === undefined).map((r) => r.name);
   expect(stuck, 'Lv50에 못 간 빌드').toEqual([]);
-  // 빌드 11개 × 시드 — 기본 5초를 넘는다
+  // **네 스탯 균등 배분이 제일 빠르다** (T17_7 검수) — 평균 넘는 몫은 절반만 들고(effectiveSpend)
+  // 장비 몫에도 %로 붙어서다(STAT_PER_POINT gear*). 이게 깨지면 1점의 값이 스탯끼리 두 배 넘게 벌어진 것이다
+  const fastest = reached.reduce((a, b) => (a.day! <= b.day! ? a : b));
+  expect(fastest.name, '제일 빠른 빌드').toBe(balanced.name);
+  // 빌드 13개 × 시드 — 기본 5초를 넘는다
 }, 30_000);
 
 test('장비가 전투력의 85%를 댄다 (§4.5) — 맨몸 성장은 선형으로 남는다', () => {
-  console.log('\n■ 맨몸 vs 장비 (그 레벨 common 풀세트)');
+  console.log('\n■ 맨몸 vs 장비 (균등 배분 · 그 레벨 common 풀세트)');
   console.log('  레벨   맨몸HP   +장비HP   맨몸ATK  +장비ATK   장비 몫');
   console.log('  ' + '─'.repeat(52));
 
   const shares: number[] = [];
   for (const level of [1, 10, 20, 30, 40, 50]) {
-    const naked = combatStats(level);
-    const gear = setBonus(gearSetFor(level));
-    const hp = naked.maxHp + gear.maxHp;
-    const atk = naked.atk + gear.atk;
-    const share = gear.atk / atk;
+    // 장비 몫은 1차 스탯만큼 %로 커진다 (T17_7 검수) — 기준 플레이어(균등 배분)로 잰다
+    const naked = combatStats(level, 'warrior', evenSpend(level));
+    const geared = combatStats(level, 'warrior', evenSpend(level), setBonus(gearSetFor(level)));
+    const hp = geared.maxHp;
+    const atk = geared.atk;
+    const share = (geared.atk - naked.atk) / atk;
     if (level >= 10) shares.push(share);
 
     console.log(
-      `  Lv${pad(level, 2)} ${pad(naked.maxHp, 8)} ${pad(hp, 8)} ${pad(naked.atk, 9)} ${pad(atk, 9)}` +
+      `  Lv${pad(level, 2)} ${pad(naked.maxHp, 8)} ${pad(hp, 8)} ${pad(naked.atk.toFixed(0), 9)} ${pad(atk.toFixed(0), 9)}` +
         ` ${pad((share * 100).toFixed(0) + '%', 8)}`,
     );
   }

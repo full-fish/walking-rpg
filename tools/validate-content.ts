@@ -12,6 +12,7 @@ import { CONSUMABLES, EQUIPMENT, MONSTERS, monstersOfField, REGIONS, UNIQUES } f
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
 import {
   combatStats,
+  evenSpend,
   gearSetPrice,
   gearShare,
   GEAR_SLOTS,
@@ -295,7 +296,17 @@ function validateEquipment(): string[] {
 
     // 기준선: 맨몸 + common 풀세트 = 맨몸 × powerScale
     const naked = combatStats(refLevel);
-    const gear = setBonus(set);
+    // 장비 몫은 1차 스탯만큼 %로 커진다 (T17_7 검수) — **균등 배분한 사람이 꼈을 때** 기준선이어야 한다
+    const even = evenSpend(refLevel);
+    const bare = combatStats(refLevel, 'warrior', even);
+    const worn = combatStats(refLevel, 'warrior', even, setBonus(set));
+    const gear = {
+      atk: worn.atk - bare.atk,
+      maxHp: worn.maxHp - bare.maxHp,
+      def: worn.def - bare.def,
+      spd: worn.spd - bare.spd,
+      luk: setBonus(set).luk,
+    };
     // 목표 배수 = 1 + gearShare (powerScale에 GEAR_FLOOR가 더 얹힌다, §4.5)
     const target = 1 + gearShare(refLevel);
     // SPD만 목표가 다르다 — gearShare를 안 쓰고 레벨과 무관하게 +15%다 (§4.5)

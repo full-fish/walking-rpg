@@ -3,7 +3,14 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GEAR_SLOT_LABELS } from '@/content';
-import { expToNext, GEAR_SLOTS, STAT_PER_POINT, type GearSlot } from '@/game/formulas';
+import {
+  effectiveSpend,
+  expToNext,
+  GEAR_SLOTS,
+  OVER_SHARE_RATE,
+  STAT_PER_POINT,
+  type GearSlot,
+} from '@/game/formulas';
 import {
   bagFull,
   bagItems,
@@ -43,16 +50,24 @@ const pct = (v: number) => `${+(v * 100).toFixed(2)}%`;
  * 2종만 적혀 있었다 (T16_1).
  */
 const STATS: { key: StatKey; label: string; effect: string }[] = [
-  { key: 'str', label: '힘 STR', effect: `ATK +${STAT_PER_POINT.str.atk}` },
+  {
+    key: 'str',
+    label: '힘 STR',
+    effect: `ATK +${STAT_PER_POINT.str.atk} · 장비 ATK +${pct(STAT_PER_POINT.str.gearAtk)}`,
+  },
   {
     key: 'vit',
     label: '체력 VIT',
-    effect: `HP +${STAT_PER_POINT.vit.maxHp} · DEF +${STAT_PER_POINT.vit.def}`,
+    effect:
+      `HP +${STAT_PER_POINT.vit.maxHp} · DEF +${STAT_PER_POINT.vit.def}` +
+      ` · 장비 HP +${pct(STAT_PER_POINT.vit.gearHp)}`,
   },
   {
     key: 'agi',
     label: '민첩 AGI',
-    effect: `SPD +${STAT_PER_POINT.agi.spd} · 회피 +${pp(STAT_PER_POINT.agi.eva)}`,
+    effect:
+      `SPD +${STAT_PER_POINT.agi.spd} · 회피 +${pp(STAT_PER_POINT.agi.eva)}` +
+      ` · 장비 SPD +${pct(STAT_PER_POINT.agi.gearSpd)}`,
   },
   {
     key: 'luk',
@@ -98,6 +113,8 @@ export default function Character() {
   const stats = statsOf(save);
   const { unspent } = save.statPoints;
   const primary = primaryStats(save);
+  /** 평균을 넘게 넣은 몫은 절반만 든다 (T17_7 검수) — 깎인 스탯은 실제로 드는 값을 옆에 붙인다 */
+  const effective = effectiveSpend(save.statPoints);
   const cost = respecCost(save.player.level);
   const spent = STATS.reduce((sum, { key }) => sum + save.statPoints[key], 0);
 
@@ -174,6 +191,9 @@ export default function Character() {
                   <View style={styles.name}>
                     <Text>
                       {label} {primary[key]}
+                      {effective[key] < save.statPoints[key]
+                        ? ` (실효 ${(primary[key] - save.statPoints[key] + effective[key]).toFixed(1)})`
+                        : ''}
                     </Text>
                     <Text size="sm" dim>
                       {effect}
@@ -190,6 +210,11 @@ export default function Character() {
                   </Text>
                 </View>
               </View>
+
+              <Text size="sm" dim>
+                네 스탯 평균보다 많이 넣은 몫은 {OVER_SHARE_RATE * 100}%만 듭니다 — 고르게 올릴수록
+                셉니다.
+              </Text>
 
               {/* 재분배 (§4.3). 되돌리면 현재 HP가 새 최대치로 잘린다 — 비율은 안 지킨다 */}
               <View style={styles.row}>

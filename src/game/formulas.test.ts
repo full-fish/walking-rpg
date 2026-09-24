@@ -3,6 +3,8 @@ import { expect, test } from 'vitest';
 import { makeRng } from './battle';
 import {
   combatStats,
+  effectiveSpend,
+  evenSpend,
   gearPrice,
   gearSetPrice,
   gearShare,
@@ -57,13 +59,44 @@ test('장비가 채우는 몫 — 그 레벨 common 풀세트가 기대 배수�
 
   for (const level of [10, 25, 50]) {
     const naked = combatStats(level);
-    const set = GEAR_SLOTS.map((slot) => gearStats(level, slot, 'common'));
-    const atk = set.reduce((s, g) => s + g.atk, 0);
-    const maxHp = set.reduce((s, g) => s + g.maxHp, 0);
+    const set = GEAR_SLOTS.map((slot) => ({ ...gearStats(level, slot, 'common'), luk: 0 }));
+    const sum = set.reduce((a, g) => ({
+      atk: a.atk + g.atk,
+      maxHp: a.maxHp + g.maxHp,
+      def: a.def + g.def,
+      spd: a.spd + g.spd,
+      luk: 0,
+    }));
+    // 장비 몫은 1차 스탯만큼 %로 커진다 (T17_7 검수) — **균등 배분한 사람이 꼈을 때** 몫이 된다
+    const even = evenSpend(level);
+    const worn = combatStats(level, 'warrior', even, sum);
+    const bare = combatStats(level, 'warrior', even);
     // 부위 몫(SLOT_BIAS)의 합이 1.0이므로 풀세트 = 그 레벨의 장비 몫 전체가 된다
-    expect((naked.atk + atk) / naked.atk).toBeCloseTo(1 + gearShare(level), 1);
-    expect((naked.maxHp + maxHp) / naked.maxHp).toBeCloseTo(1 + gearShare(level), 1);
+    expect((naked.atk + worn.atk - bare.atk) / naked.atk).toBeCloseTo(1 + gearShare(level), 1);
+    expect((naked.maxHp + worn.maxHp - bare.maxHp) / naked.maxHp).toBeCloseTo(
+      1 + gearShare(level),
+      1,
+    );
   }
+});
+
+test('균등 배분이 제일 세다 — 평균 넘는 몫은 절반, 장비 몫은 1차 스탯만큼 커진다 (T17_7 검수)', () => {
+  // 평균을 넘는 몫만 깎는다. 넷이 같으면 그대로다
+  expect(effectiveSpend({ str: 10, vit: 10, agi: 10, luk: 10, int: 0 })).toEqual({
+    str: 10,
+    vit: 10,
+    agi: 10,
+    luk: 10,
+    int: 0,
+  });
+  // 40점을 힘에만 → 평균 10을 넘는 30은 절반 = 25점
+  expect(effectiveSpend({ str: 40, vit: 0, agi: 0, luk: 0, int: 0 }).str).toBe(25);
+
+  // 같은 장비라도 힘이 높으면 장비 ATK가 더 커진다 — 1점당 장비 몫 +0.8%
+  const gear = { atk: 1000, maxHp: 0, def: 0, spd: 0, luk: 0 };
+  const lo = combatStats(20, 'warrior', { str: 0, vit: 0, agi: 0, luk: 0, int: 0 }, gear);
+  const hi = combatStats(20, 'warrior', { str: 10, vit: 0, agi: 0, luk: 0, int: 0 }, gear);
+  expect(hi.atk - lo.atk).toBeCloseTo(10 * 2 + 1000 * 0.008 * 10);
 });
 
 test('등급이 오르면 세진다. 품질·강화는 그 위에 곱해진다 (§4.5)', () => {

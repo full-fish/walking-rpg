@@ -141,16 +141,26 @@ test('스탯 배분 — 포인트가 있어야 쓰이고 VIT는 현재 HP도 올
     statPoints: { unspent: 2, str: 0, vit: 0, agi: 0, luk: 0, int: 0 },
   };
 
+  // 한 스탯에만 넣으면 네 스탯 평균(0.25)을 넘는 0.75는 절반만 든다 (T17_7 검수) — 1점이 0.625점이다
   const vit = spendPoint(save, 'vit');
   expect(vit?.statPoints).toMatchObject({ unspent: 1, vit: 1 });
-  expect(statsOf(vit!).maxHp - statsOf(save).maxHp).toBe(10);
-  expect(vit!.player.hp).toBe(60);
+  expect(statsOf(vit!).maxHp - statsOf(save).maxHp).toBe(6);
+  expect(vit!.player.hp).toBe(56);
 
   // STR은 최대 HP와 무관하므로 현재 HP를 건드리지 않는다
   const str = spendPoint(save, 'str');
   expect(str!.player.hp).toBe(50);
-  // 포인트 1점 = ATK +2. 레벨 배수가 곱해지므로 Lv2에서는 2 × 1.04다 (§4.3)
-  expect(statsOf(str!).atk - statsOf(save).atk).toBe(2);
+  expect(statsOf(str!).atk - statsOf(save).atk).toBeCloseTo(2 * 0.625);
+
+  // 네 스탯에 하나씩 넣으면 평균을 넘는 게 없어서 표 그대로다 — VIT 1점 = HP +10, STR 1점 = ATK +2
+  const even: Save = {
+    ...save,
+    statPoints: { unspent: 0, str: 1, vit: 1, agi: 1, luk: 1, int: 0 },
+  };
+  const noVit: Save = { ...even, statPoints: { ...even.statPoints, vit: 0 } };
+  const noStr: Save = { ...even, statPoints: { ...even.statPoints, str: 0 } };
+  expect(statsOf(even).maxHp - statsOf(noVit).maxHp).toBe(10);
+  expect(statsOf(even).atk - statsOf(noStr).atk).toBe(2);
 
   // 포인트가 없으면 null
   expect(spendPoint({ ...save, statPoints: { ...save.statPoints, unspent: 0 } }, 'str')).toBeNull();
