@@ -138,18 +138,18 @@ test('등급이 오르면 세진다. 품질·강화는 그 위에 곱해진다 (
   }
 });
 
-test('품질은 0.8~1.2 삼각분포 — 1.0 근처가 흔하다 (§4.5)', () => {
+test('품질은 0.80~1.20 41칸 균등 — 1.20도 1.00만큼 나온다 (§4.5, T19 검수 2차)', () => {
   const rng = makeRng(7);
-  const rolls = Array.from({ length: 20_000 }, () => rollQuality(rng));
+  const rolls = Array.from({ length: 41_000 }, () => rollQuality(rng));
 
-  expect(Math.min(...rolls)).toBeGreaterThanOrEqual(QUALITY_MIN);
-  expect(Math.max(...rolls)).toBeLessThanOrEqual(QUALITY_MAX);
+  expect(Math.min(...rolls)).toBe(QUALITY_MIN);
+  expect(Math.max(...rolls)).toBe(QUALITY_MAX);
   expect(rolls.reduce((s, q) => s + q, 0) / rolls.length).toBeCloseTo(1.0, 2);
 
-  // 가운데 0.1 폭이 바깥 0.1 폭보다 훨씬 흔해야 삼각분포다
-  const mid = rolls.filter((q) => q >= 0.95 && q <= 1.05).length;
-  const edge = rolls.filter((q) => q < 0.85 || q > 1.15).length;
-  expect(mid).toBeGreaterThan(edge * 2);
+  // 칸마다 약 1,000번 — 양 끝도 가운데와 같다
+  const count = (q: number) => rolls.filter((r) => r === q).length;
+  for (const q of [0.8, 1.0, 1.2]) expect(count(q)).toBeGreaterThan(850);
+  expect(new Set(rolls).size).toBe(41);
 });
 
 test('장비 값은 성능에 비례한다 — 골드당 얻는 게 티어마다 같다 (§4.5)', () => {

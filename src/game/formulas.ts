@@ -556,7 +556,8 @@ export const RARITY_MULT: Record<GridRarity, number> = {
   uncommon: 1.15,
   rare: 1.35,
   epic: 1.6,
-  legendary: 1.9,
+  // 드랍으로만 나오고 하루 0.1개도 안 돼서 한 칸 더 벌렸다 (T19 검수 2차, 1.9 → 2)
+  legendary: 2.0,
 };
 
 /** 등급별 가격 배율. 위 등급은 드랍으로 먹는 것이지 사는 게 아니라 가파르다. */
@@ -624,7 +625,7 @@ export const SLOT_PRICE: Record<GearSlot, number> = {
   accessory: 0.8,
 };
 
-/** 품질 범위 (§4.5). 삼각분포라 1.0 근처가 흔하고 양 끝이 드물다. */
+/** 품질 범위 (§4.5). 0.01 단위로 고르게 나온다 — 1.2도 0.8도 1.0만큼 흔하다 (T19 검수 2차, 전에는 삼각분포) */
 export const QUALITY_MIN = 0.8;
 export const QUALITY_MAX = 1.2;
 
@@ -792,10 +793,13 @@ export function enhanceExpected(price: number, target = ENHANCE_MAX, bonus = 0) 
   return { tries, gold: Math.round(gold) };
 }
 
-/** 품질을 뽑는다. 난수 둘의 평균이 삼각분포가 된다 — 표를 따로 들 필요가 없다 (§4.5). */
+/**
+ * 품질을 뽑는다 — 0.80 ~ 1.20의 41칸 중 하나를 똑같은 확률로 (T19 검수 2차).
+ * 연속값을 반올림하면 양 끝 칸만 반쪽 폭이라 1.20이 남의 절반밖에 안 나온다 — 칸을 먼저 고른다.
+ */
 export function rollQuality(rng: () => number): number {
-  const t = (rng() + rng()) / 2;
-  return Math.round((QUALITY_MIN + (QUALITY_MAX - QUALITY_MIN) * t) * 100) / 100;
+  const cells = Math.round((QUALITY_MAX - QUALITY_MIN) * 100) + 1;
+  return Math.round(QUALITY_MIN * 100 + Math.floor(rng() * cells)) / 100;
 }
 
 /**
