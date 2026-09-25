@@ -21,7 +21,21 @@ import {
   rollQuality,
   rollRunSize,
   RUN_SIZE_WEIGHTS,
+  STARTING_STATS,
+  STAT_PER_POINT,
 } from './formulas';
+
+/** 그 레벨 common 한 벌의 합 (품질 100%·강화 0) */
+function commonSet(level: number) {
+  return GEAR_SLOTS.map((slot) => gearStats(level, slot, 'common')).reduce((a, g) => ({
+    atk: a.atk + g.atk,
+    maxHp: a.maxHp + g.maxHp,
+    def: a.def + g.def,
+    str: a.str + g.str,
+    agi: a.agi + g.agi,
+    luk: a.luk + g.luk,
+  }));
+}
 
 test('한 판 마릿수는 §4.4 삼각분포를 따른다 (평균 4.0)', () => {
   const rng = makeRng(1);
@@ -58,20 +72,30 @@ test('장비가 채우는 몫 — 그 레벨 common 풀세트가 기대 배수�
 
   for (const level of [10, 25, 50]) {
     const naked = combatStats(level);
-    const set = GEAR_SLOTS.map((slot) => ({ ...gearStats(level, slot, 'common'), luk: 0 }));
-    const sum = set.reduce((a, g) => ({
-      atk: a.atk + g.atk,
-      maxHp: a.maxHp + g.maxHp,
-      def: a.def + g.def,
-      spd: a.spd + g.spd,
-      luk: 0,
-    }));
-    const worn = combatStats(level, 'warrior', evenSpend(level), sum);
-    // 부위 몫(SLOT_BIAS)의 합이 1.0이므로 풀세트 = 그 레벨의 장비 몫 전체가 된다. SPD도 같다 (T17_7 검수 4차)
+    const gear = commonSet(level);
+    const worn = combatStats(level, 'warrior', evenSpend(level), gear);
+    // 부위 몫(SLOT_BIAS)의 합이 1.0이므로 풀세트 = 그 레벨의 장비 몫 전체가 된다.
+    // 장갑 STR·신발 AGI가 combatStats를 지나 ATK·SPD가 된다 (T17_7 검수 5차)
     for (const key of ['atk', 'maxHp', 'spd'] as const) {
       expect(worn[key] / naked[key], `Lv${level} ${key}`).toBeCloseTo(1 + gearShare(level), 1);
     }
+    // LUK도 맨몸 LUK의 같은 배수다 (T17_7 검수 5차)
+    const luk = STARTING_STATS.warrior.luk + evenSpend(level).luk;
+    expect(gear.luk / luk, `Lv${level} LUK`).toBeCloseTo(gearShare(level), 1);
   }
+});
+
+test('치명 배율 — Lv1 1.5배에서 힘이 올려 Lv50 균등 + common 한 벌이 3배쯤 (T17_7 검수 5차)', () => {
+  const none = { str: 0, vit: 0, agi: 0, luk: 0, int: 0 };
+  expect(combatStats(1, 'warrior', none).crd).toBeCloseTo(1.5, 5);
+  const lv50 = combatStats(50, 'warrior', evenSpend(50), commonSet(50));
+  expect(lv50.crd).toBeGreaterThan(2.8);
+  expect(lv50.crd).toBeLessThan(3.3);
+  // 힘 1점 = ATK +2 · 배율 +0.025
+  const one = combatStats(50, 'warrior', { ...none, str: 1 });
+  const zero = combatStats(50, 'warrior', none);
+  expect(one.atk - zero.atk).toBe(STAT_PER_POINT.str.atk);
+  expect(one.crd - zero.crd).toBeCloseTo(STAT_PER_POINT.str.crd, 5);
 });
 
 test('레벨업은 포인트만 준다 — 몰빵은 제 스탯이 균등의 약 2배, 나머지는 0.6배 (T17_7 검수 4차)', () => {
@@ -88,13 +112,7 @@ test('레벨업은 포인트만 준다 — 몰빵은 제 스탯이 균등의 약
   expect([lv1.maxHp, lv1.atk, lv1.def, lv1.spd]).toEqual([100, 20, 5, 15]);
 
   // Lv50 common 풀세트를 끼고 — 장비는 네 스탯에 같은 배수를 얹으므로 몰빵의 이득이 대칭이다
-  const gear = GEAR_SLOTS.map((slot) => gearStats(50, slot, 'common')).reduce((a, g) => ({
-    atk: a.atk + g.atk,
-    maxHp: a.maxHp + g.maxHp,
-    def: a.def + g.def,
-    spd: a.spd + g.spd,
-    luk: a.luk + g.luk,
-  }));
+  const gear = commonSet(50);
   const all = 49 * 3;
   const even = combatStats(50, 'warrior', evenSpend(50), gear);
   const agi = combatStats(50, 'warrior', { ...none, agi: all }, gear);

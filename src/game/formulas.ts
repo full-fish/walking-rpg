@@ -67,8 +67,11 @@ export const BASE_STATS = {
   spd: 9,
   /** 크리 확률 */
   cri: 0.04,
-  /** 크리 배율 — 고정이다. 행운은 확률만 올린다 (T17_7 검수 4차) */
-  crd: 3,
+  /**
+   * 크리 배율의 바닥 — 힘이 올린다(STAT_PER_POINT.str.crd, T17_7 검수 5차). 전사 시작 힘 5를 더해
+   * Lv1 맨몸이 **1.5배**이고, Lv50 균등 + 보통 장비(장갑 STR 포함)가 약 3.1배다
+   */
+  crd: 1.375,
   /** 회피 확률 */
   eva: 0.024,
 } as const;
@@ -139,25 +142,25 @@ export type JobId = keyof typeof JOB_GROWTH;
 /**
  * 1차 스탯 1포인트당 효과 (§4.3). 이 값이 곧 캐릭터 몫이다 — 레벨 자동 성장이 없다(JOB_GROWTH).
  *
- * **네 스탯에 고르게 찍는 게 제일 세다** (T17_7 검수 4차). 장비는 기준 맨몸(네 스탯 균등)의
- * 같은 배수를 ATK·HP·DEF·SPD에 똑같이 얹는다(gearStats) — 스탯마다 "포인트 말고 깔린 몫"의
- * 비율이 같으면, 곱해지는 값들은 고르게 나눌 때 곱이 제일 크다. 몰빵은 그 스탯이 균등의 약 2배가
- * 되는 대신 나머지가 0.6배로 떨어져 손해다.
+ * 장비는 기준 맨몸(네 스탯 균등)의 같은 배수를 ATK·HP·DEF·SPD·LUK에 똑같이 얹는다(gearStats) —
+ * 스탯마다 "포인트 말고 깔린 몫"의 비율이 같으면, 곱해지는 값들은 고르게 나눌 때 곱이 제일 크다.
+ * **힘만 예외다** (T17_7 검수 5차) — ATK와 치명 배율을 둘 다 올려 곱이 두 번 걸리므로, 힘을 조금 더
+ * 찍은 배분이 제일 세다. 사용자 결정이다("힘이 제일 세도 되지만 차이가 너무 나면 안 된다").
  */
 export const STAT_PER_POINT = {
-  str: { atk: 2 },
+  /** 치명 배율 +0.025 — 1.5배에서 시작해 Lv50 균등이 3배 남짓 (T17_7 검수 5차) */
+  str: { atk: 2, crd: 0.025 },
   vit: { maxHp: 10, def: 0.5 },
   agi: { spd: 1.5, eva: 0.001 },
   /**
    * 기댓값을 증폭하는 스탯 — 치명 확률과 골드·드랍 (T13, T17_4).
-   * **치명 확률만 올리고 배율은 ×3 고정이다** (T17_7 검수 4차). 둘 다 오르면 곱이라 점수가 쌓일수록
-   * 더 붙어서, 초반엔 쓸모없고 후반 몰빵은 매번 6배로 터졌다. 확률만 오르면 1점 값이 일정하다.
-   * **상한은 두지 않는다** — 확률이 100%를 넘으면 늘 터질 뿐이다(Lv50 행운 몰빵쯤).
-   * 치명은 평타 몫이 늘 깔려 있어 전투만 보면 힘·체력·민첩 1점보다 조금 약하다. 골드·드랍이 그 몫이다.
-   * 드랍·골드는 1점당 **+2%**, 가산이다. dropRate는 몬스터 장비 드랍과
-   * 4·5마리 판의 소재 확률에 곱한다 (MATERIAL_CHANCE).
+   * **확률만 올린다. 배율은 힘이 올린다** (T17_7 검수 5차).
+   * **상한은 두지 않는다** — 확률이 100%를 넘으면 늘 터질 뿐이다.
+   * 1점 값이 **0.4%p · +1%**인 건 장신구가 다른 부위처럼 맨몸의 같은 배수를 주게 되면서(T17_7 검수 5차)
+   * 기준 플레이어의 LUK이 약 3배가 됐기 때문이다 — 그대로 두면 Lv50 치명 확률이 100%를 넘고
+   * 골드 수입이 거의 두 배가 된다. dropRate는 몬스터 장비 드랍과 4·5마리 판의 소재 확률에 곱한다 (MATERIAL_CHANCE).
    */
-  luk: { cri: 0.008, dropRate: 0.02, goldFind: 0.02 },
+  luk: { cri: 0.004, dropRate: 0.01, goldFind: 0.01 },
   /** 마법사용. 쓸 데가 생기는 건 스킬이 들어오는 T18이라 아직 배분 대상이 아니다 */
   int: { maxMp: 10, matk: 2 },
 } as const;
@@ -224,14 +227,17 @@ export function gearShare(level: number): number {
   return powerScale(level) - 1 + GEAR_FLOOR;
 }
 
-/** 장비가 더해주는 몫. items.ts의 GearBonus와 같은 모양이다 (formulas는 items를 import하지 않는다) */
-type Gear = { atk: number; maxHp: number; def: number; spd: number; luk: number };
-const NO_GEAR: Gear = { atk: 0, maxHp: 0, def: 0, spd: 0, luk: 0 };
+/**
+ * 장비가 더해주는 몫. items.ts의 GearBonus와 같은 모양이다 (formulas는 items를 import하지 않는다).
+ * STR·AGI·LUK은 1차 스탯이라 포인트처럼 파생 값에 전부 얹힌다 — 장갑 STR은 치명 배율도, 신발 AGI는 회피도 올린다 (T17_7 검수 5차)
+ */
+type Gear = { atk: number; maxHp: number; def: number; str: number; agi: number; luk: number };
+const NO_GEAR: Gear = { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 };
 
 /**
  * 레벨·배분·장비로 전투 스탯을 만든다 (§4.3, §4.5). 화면·전투·벤치가 전부 여기를 지난다.
  *
- * 1차 스탯 = 직업 시작값 + 배분한 포인트(+ 장신구 LUK). 장비는 그 위에 **더하기만** 한다.
+ * 1차 스탯 = 직업 시작값 + 배분한 포인트 + 장비(장갑 STR · 신발 AGI · 장신구 LUK). 장비는 그 위에 **더하기만** 한다.
  * 배분을 안 주면 네 스탯 균등(evenSpend)으로 친다 — **장비 곡선의 기준 맨몸**이다.
  * 여기서 나오는 값은 전부 표에 적힌 그대로다. 숨은 배수는 없다.
  */
@@ -245,10 +251,9 @@ export function combatStats(
   const growth = JOB_GROWTH[job];
   const start = STARTING_STATS[job];
   const s = {
-    str: start.str + spend.str,
+    str: start.str + spend.str + gear.str,
     vit: start.vit + spend.vit,
-    agi: start.agi + spend.agi,
-    // 장신구가 주는 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3, T16_1)
+    agi: start.agi + spend.agi + gear.agi,
     luk: start.luk + spend.luk + gear.luk,
     int: start.int + spend.int,
   };
@@ -260,9 +265,9 @@ export function combatStats(
     /** 마법 공격력. 평타는 아직 ATK만 쓴다 — 마법 평타·스킬은 T18 */
     matk: BASE_STATS.matk + growth.matk * ups + STAT_PER_POINT.int.matk * s.int,
     def: BASE_STATS.def + STAT_PER_POINT.vit.def * s.vit + gear.def,
-    spd: BASE_STATS.spd + STAT_PER_POINT.agi.spd * s.agi + gear.spd,
+    spd: BASE_STATS.spd + STAT_PER_POINT.agi.spd * s.agi,
     cri: BASE_STATS.cri + STAT_PER_POINT.luk.cri * s.luk,
-    crd: BASE_STATS.crd,
+    crd: BASE_STATS.crd + STAT_PER_POINT.str.crd * s.str,
     eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * s.agi,
     /** 드랍 배율 — 장비 드랍과 4·5마리 판의 소재 확률에 곱한다 (T19, T17_7 검수 4차) */
     dropMult: 1 + STAT_PER_POINT.luk.dropRate * s.luk,
@@ -331,29 +336,23 @@ export const FIELDS_PER_REGION = 7;
  * 이제 플레이어 쪽(1점 값·장비 몫)을 바꾸면 몬스터가 저절로 따라온다.
  */
 export function referencePlayer(level: number, region: number) {
-  const naked = combatStats(level);
   const { rarity, enhance } = EXPECTED_GEAR[region - 1];
   const worn = gearShare(level) * RARITY_MULT[rarity] * ENHANCE_MULT ** enhance;
-  return combatStats(level, 'warrior', evenSpend(level), {
-    atk: naked.atk * worn,
-    maxHp: naked.maxHp * worn,
-    def: naked.def * worn,
-    spd: naked.spd * worn,
-    luk: GEAR_LUK_BASE * worn,
-  });
+  return combatStats(level, 'warrior', evenSpend(level), gearPart(level, worn, FULL_SET_BIAS));
 }
 
 /**
  * 기준 몬스터 (§7.2④) — 기준 플레이어에 대한 배수다.
  *
  *   hp   기준 플레이어의 한 방(치명 기댓값 포함) 몇 대 분량인가
- *   atk  한 방이 기준 플레이어 HP의 몇 할인가 (그 사람의 DEF로 깎인 뒤)
+ *   atk  한 방이 기준 플레이어 HP의 몇 할인가 (그 사람의 DEF·회피로 깎인 뒤)
  *   def  피해 감소율을 정한다 — def/K가 일정해서 몬스터 DEF는 어디서나 약 8%를 깎는다
  *   spd  기준 플레이어 SPD의 1/1.2 — **균등 배분이 1.2배 빠르다** (T17_7 검수 4차)
  *
  * hp·atk는 T17_7 검수 4차에 벤치로 다시 맞췄다 — 적정 레벨 1:1에서 전과 같은 만큼 잃는다.
+ * 5차에 atk를 0.016 → 0.0152로 내렸다 — 회피를 치게 되면서(1 − eva로 나눈다) 전과 같은 손실이 되게.
  */
-export const MONSTER_BASE = { hp: 5.5, atk: 0.016, def: 4.2, spd: 1 / 1.2 } as const;
+export const MONSTER_BASE = { hp: 5.5, atk: 0.0152, def: 4.2, spd: 1 / 1.2 } as const;
 
 /**
  * 뒤로 갈수록 싸움이 길어진다 — Lv50에서 **2.2배** (§7.2④). HP는 이만큼 늘리고 ATK는 이만큼 줄여서
@@ -381,12 +380,21 @@ export function monsterStats(
   const common = difficulty * power;
   const length = MONSTER_LENGTH_GROWTH ** Math.max(0, level - 1);
   return {
-    // 치명타 기댓값까지 친 한 방 — 행운 값을 바꿔도 몬스터가 같이 따라온다
+    // 치명타 기댓값까지 친 한 방 — 행운·힘 값을 바꿔도 몬스터가 같이 따라온다
     maxHp: Math.round(
-      MONSTER_BASE.hp * length * ref.atk * (1 + ref.cri * (ref.crd - 1)) * common * bias.hp,
+      MONSTER_BASE.hp *
+        length *
+        ref.atk *
+        (1 + Math.min(1, ref.cri) * (ref.crd - 1)) *
+        common *
+        bias.hp,
     ),
+    // 회피도 친다 — 신발이 AGI를 주면서(T17_7 검수 5차) 기준 플레이어의 회피가 후반 18%쯤 된다
     atk: round2(
-      ((MONSTER_BASE.atk * ref.maxHp) / damageMultiplier(ref.def, ref.scale) / length) *
+      ((MONSTER_BASE.atk * ref.maxHp) /
+        damageMultiplier(ref.def, ref.scale) /
+        (1 - ref.eva) /
+        length) *
         common *
         bias.atk,
     ),
@@ -545,43 +553,48 @@ export const RARITY_PRICE: Record<GridRarity, number> = {
 
 /**
  * 부위가 가져가는 몫 (§4.5). **스탯마다 합이 1.0**이라 7부위 풀세트가 곧 그 티어의 몫이다.
+ * `str`·`agi`는 **ATK·SPD 몫을 1차 스탯으로 바꿔서** 주는 부분이다 (T17_7 검수 5차) — 장갑의 ATK 몫이
+ * STR로(치명 배율까지 오른다), 신발의 SPD 몫이 AGI로(회피까지 오른다) 들어온다. ATK 몫은 무기 0.75 + 장갑 0.25다.
  *
  * T16_1에서 부위마다 **성격을 뾰족하게** 다시 갈랐다. 전에는 무기만 빼면 여섯 칸이
  * 다 비슷해서, 어느 부위를 갈든 같은 물건을 하나 더 끼는 느낌이었다.
  * 0이 많은 건 실수가 아니라 정체성이다 — 신발을 안 끼면 장비 SPD가 통째로 없고,
  * 장신구를 안 끼면 LUK이 통째로 없다.
  *
- *   무기   공격력만            장갑   셋 다 조금씩
- *   투구   HP 많이 · DEF 조금   신발   SPD 전부 · DEF 조금
+ *   무기   공격력만            장갑   STR · HP · DEF 조금씩
+ *   투구   HP 많이 · DEF 조금   신발   AGI 전부 · DEF 조금
  *   갑옷   DEF 많이 · HP 조금   장신구 LUK 전부
  *   하의   HP · DEF 반반
  *
  * 하의(T17_4)는 투구·갑옷·장갑의 HP·DEF를 조금씩 떼어 만들었다. 풀세트 합은 그대로라
  * 밸런스 기준선이 안 움직이고, 대신 **하의를 안 입으면 HP·DEF가 5분의 1쯤 빈다.**
  */
-export const SLOT_BIAS: Record<
-  GearSlot,
-  { atk: number; maxHp: number; def: number; spd: number; luk: number }
-> = {
-  weapon: { atk: 0.75, maxHp: 0, def: 0, spd: 0, luk: 0 },
-  helm: { atk: 0, maxHp: 0.4, def: 0.1, spd: 0, luk: 0 },
-  armor: { atk: 0, maxHp: 0.25, def: 0.35, spd: 0, luk: 0 },
-  pants: { atk: 0, maxHp: 0.2, def: 0.2, spd: 0, luk: 0 },
-  gloves: { atk: 0.25, maxHp: 0.15, def: 0.1, spd: 0, luk: 0 },
-  boots: { atk: 0, maxHp: 0, def: 0.25, spd: 1, luk: 0 },
-  accessory: { atk: 0, maxHp: 0, def: 0, spd: 0, luk: 1 },
+type SlotBias = { atk: number; maxHp: number; def: number; str: number; agi: number; luk: number };
+export const SLOT_BIAS: Record<GearSlot, SlotBias> = {
+  weapon: { atk: 0.75, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 },
+  helm: { atk: 0, maxHp: 0.4, def: 0.1, str: 0, agi: 0, luk: 0 },
+  armor: { atk: 0, maxHp: 0.25, def: 0.35, str: 0, agi: 0, luk: 0 },
+  pants: { atk: 0, maxHp: 0.2, def: 0.2, str: 0, agi: 0, luk: 0 },
+  gloves: { atk: 0, maxHp: 0.15, def: 0.1, str: 0.25, agi: 0, luk: 0 },
+  boots: { atk: 0, maxHp: 0, def: 0.25, str: 0, agi: 1, luk: 0 },
+  accessory: { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 1 },
 };
 
-/**
- * 풀 장신구가 주는 LUK의 기준값 (§4.5, T16_1). gearShare에 비례한다.
- *
- * LUK은 배분 포인트라 다른 스탯처럼 "맨몸의 몇 배"로 못 잡는다 — 행운을 안 찍은
- * 캐릭터는 맨몸 LUK이 4에서 멈춰 있어 비례시킬 바닥이 없다. 그래서 절대값을 놓고
- * 장비 몫(gearShare)만큼 키운다: 티어 1 +1.6 → 티어 10 +4.3 (Lv50 장비 몫 1.5, T17_7 검수 4차).
- *
- * 장신구는 행운을 거들 뿐 배분을 대신하지 않는다 — Lv50 행운 몰빵(151)의 3%다.
- */
-export const GEAR_LUK_BASE = 3;
+/** 일곱 부위를 다 낀 몫 — 기준 플레이어(referencePlayer)가 입는 한 벌 */
+const FULL_SET_BIAS: SlotBias = GEAR_SLOTS.reduce(
+  (sum, slot) => {
+    const b = SLOT_BIAS[slot];
+    return {
+      atk: sum.atk + b.atk,
+      maxHp: sum.maxHp + b.maxHp,
+      def: sum.def + b.def,
+      str: sum.str + b.str,
+      agi: sum.agi + b.agi,
+      luk: sum.luk + b.luk,
+    };
+  },
+  { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 },
+);
 
 /** 부위별 가격 몫. 합이 부위 수(7.0)라 "풀세트 = 세트 가격"이 그대로 성립한다. */
 export const SLOT_PRICE: Record<GearSlot, number> = {
@@ -614,16 +627,17 @@ export const ENHANCE_RATE = [1, 1, 0.9, 0.75, 0.6, 0.45, 0.3, 0.2, 0.15, 0.1] as
  * (referencePlayer). 그 레벨 장비 몫을 이 등급·강화로 한 벌(품질 100%) 입은 사람이다.
  * 몬스터는 이 사람이 적정 레벨 1:1에서 T17_6과 같은 만큼 잃게 regions.json의 difficulty로 맞췄고,
  * 보스 배율은 "지역 끝 레벨 · 이 장비 · 물약 3개로 승률 30%"다 (T17_7 검수 4차).
- * common 한 벌의 1 / 1.21 / 1.39 / 1.53 / 1.63배. **시뮬 투자형이 관문에서 실제로 가진 세기**에 맞췄다 —
- * 신발이 SPD의 60%를 주게 되면서(T17_7 검수 4차) 장비가 뒤처지면 ATK·HP·SPD가 같이 떨어져,
- * 예전 값(… uncommon +4 · rare +3)으로는 시뮬 투자형이 기준보다 18% 약해 보스에서 몇 주씩 막혔다.
+ * common 한 벌의 1 / 1.21 / 1.53 / 1.68 / 1.80배. **시뮬 투자형이 Lv50 126일 · 유지비 25% 안팎**이 되게 맞췄다
+ * (T17_7 검수 5차). 지역 사이 한 칸이 7~10%를 넘으면 안 된다 — 지역 5를 희귀 +4(1.98)로 두었더니
+ * 새 지역에 막 들어간 시뮬이 지역 4 장비로 버티지 못해 지역 5 유지비가 50%로 뛰었다.
+ * 4차에 한 단계씩 낮췄던 건 itemPower가 맨몸을 빼고 재서 시뮬이 옛 영웅 장비를 계속 끼던 탓이었다(T17_7 검수 5차에 고침).
  */
 export const EXPECTED_GEAR: readonly { rarity: GridRarity; enhance: number }[] = [
   { rarity: 'common', enhance: 0 },
   { rarity: 'common', enhance: 2 },
-  { rarity: 'uncommon', enhance: 2 },
   { rarity: 'uncommon', enhance: 3 },
-  { rarity: 'rare', enhance: 2 },
+  { rarity: 'uncommon', enhance: 4 },
+  { rarity: 'rare', enhance: 3 },
 ];
 
 /** 비용 곡선 (§4.5). 장비가격 × 0.3 × 1.5^(N-1) — 단계마다 1.5배씩 비싸진다. */
@@ -718,10 +732,11 @@ export const RING_SLOTS = 2;
 
 /**
  * 반지에 드는 소재 (T17_7) — **그 ★ 지역의 서로 다른 사냥터에서 하나씩**. 골드는 안 든다.
- * 교환(새 반지 = ★1 일반, 효과는 무작위) 3 · 등급 올리기 → uncommon 3 / rare 4 / epic 5 / legendary 7 ·
- * ★ 올리기(전설 → 다음 ★ 일반, **다음 지역** 소재) 3. 올리면 강화는 +0으로 돌아간다.
+ * 교환(새 반지 = ★1 일반, 효과는 무작위) 3 · 등급 올리기 → uncommon 1 / rare 2 / epic 3 / legendary 7
+ * (T17_7 검수 5차 — 3·4·5·7에서 앞쪽을 낮췄다) · ★ 올리기(전설 → 다음 ★ 일반, **다음 지역** 소재) 3.
+ * 올려도 강화 단계는 그대로다 (검수 4차).
  */
-export const RING_COST = { exchange: 3, rarity: [3, 4, 5, 7], tier: 3 } as const;
+export const RING_COST = { exchange: 3, rarity: [1, 2, 3, 7], tier: 3 } as const;
 
 /** 사냥터 입장 WP 할인 상한 (T17_7) — 같은 반지 두 개를 끝까지 올려도 공짜가 되지는 않는다 */
 export const RING_FIELD_WP_CAP = 0.5;
@@ -778,28 +793,39 @@ export function itemStat(base: number, quality: number, enhance: number): number
 }
 
 /**
- * 장비 한 점의 기본 스탯 (§4.5).
+ * 장비 몫 (§4.5) = 기준 맨몸(네 스탯 균등) × `mult` × 부위몫. 반올림 전 값이다 —
+ * 한 점(gearStats)과 기준 플레이어의 한 벌(referencePlayer)이 같이 쓴다.
  *
- * 기준은 **그 레벨의 맨몸 스탯**(네 스탯 균등)이다. gearShare(level)만큼을 7부위가 나눠 가지므로
- * common 풀세트를 갖춰 입으면 ATK·HP·DEF·SPD가 정확히 (1 + gearShare)배가 된다.
- * **SPD도 같은 배수다** (T17_7 검수 4차) — 전에는 +15%만 줘서 SPD만 "포인트 말고 깔린 몫"이
- * 작았고, 그래서 민첩 1점이 다른 1점보다 몇 배 셌다. 넷이 같은 배수라야 균등이 최선이다.
- * LUK만 계산이 다르다 — 절대값 기준이다(GEAR_LUK_BASE). 회피는 안 준다.
+ * common 풀세트를 갖춰 입으면 ATK·HP·DEF·SPD가 정확히 (1 + gearShare)배가 된다 — **SPD도 같은 배수다**
+ * (T17_7 검수 4차). 넷이 같은 배수라야 "포인트 말고 깔린 몫"이 스탯마다 같다.
+ * 장갑 STR·신발 AGI는 그 몫을 1점 값으로 나눠 1차 스탯으로 준다 (T17_7 검수 5차).
+ * **LUK도 맨몸 LUK의 같은 배수다** (T17_7 검수 5차) — 전에는 절대값(티어 10 +4)이라 무기(힘 환산 +47)에
+ * 비해 너무 작았다. 그래서 행운 1점 값을 반으로 줄였다(STAT_PER_POINT.luk).
  */
-export function gearStats(level: number, slot: GearSlot, rarity: GridRarity) {
+function gearPart(level: number, mult: number, bias: SlotBias): Gear {
   const naked = combatStats(level);
-  const share = gearShare(level) * RARITY_MULT[rarity];
-  const bias = SLOT_BIAS[slot];
+  const luk = STARTING_STATS.warrior.luk + evenSpend(level).luk;
   return {
-    atk: Math.round(naked.atk * share * bias.atk),
-    maxHp: Math.round(naked.maxHp * share * bias.maxHp),
-    def: Math.round(naked.def * share * bias.def),
-    // 소수 한 자리로 두는 건 정수로 자르면 낮은 티어 신발 차이가 반올림에 먹히기 때문이다
-    spd: round1(naked.spd * share * bias.spd),
-    // LUK도 맨몸에 비례시키지 않는다 — 행운 0점이면 곱할 바닥이 4뿐이다.
-    // SPD와 같은 이유로 소수 한 자리다: 정수로 반올림하면 티어 1~2가 둘 다 +2가 되어
-    // 부적을 갈아도 아무 일이 안 일어난다
-    luk: round1(GEAR_LUK_BASE * share * bias.luk),
+    atk: naked.atk * mult * bias.atk,
+    maxHp: naked.maxHp * mult * bias.maxHp,
+    def: naked.def * mult * bias.def,
+    str: (naked.atk * mult * bias.str) / STAT_PER_POINT.str.atk,
+    agi: (naked.spd * mult * bias.agi) / STAT_PER_POINT.agi.spd,
+    luk: luk * mult * bias.luk,
+  };
+}
+
+/** 장비 한 점의 기본 스탯 (§4.5). 그 레벨의 장비 몫(gearShare) × 등급 배율을 부위가 나눠 갖는다 */
+export function gearStats(level: number, slot: GearSlot, rarity: GridRarity) {
+  const g = gearPart(level, gearShare(level) * RARITY_MULT[rarity], SLOT_BIAS[slot]);
+  return {
+    atk: Math.round(g.atk),
+    maxHp: Math.round(g.maxHp),
+    def: Math.round(g.def),
+    // 1차 스탯은 소수 한 자리 — 정수로 자르면 낮은 티어의 차이가 반올림에 먹힌다
+    str: round1(g.str),
+    agi: round1(g.agi),
+    luk: round1(g.luk),
   };
 }
 

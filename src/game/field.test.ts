@@ -183,13 +183,13 @@ test('소재 — 6마리 확정 · 5마리 50% · 4마리 20%에 드랍 배율, 
   expect(materialChance(5, 4), '1을 넘지 않는다').toBe(1);
   expect(materialChance(3, 10), '3마리 이하는 행운이 아무리 높아도 0').toBe(0);
 
-  // 실제 판에서도 — 행운 몰빵(드랍 ×4.02)이면 5마리도 확정, 4마리는 80%, 3마리 이하는 0
+  // 실제 판에서도 — 행운 몰빵(드랍 ×2.51)이면 5마리도 확정, 4마리는 50%, 3마리 이하는 0
   const lucky: Save = {
     ...ready(),
     player: { ...ready().player, level: 50 },
     statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 147, int: 0 },
   };
-  expect(statsOf(lucky).dropMult).toBeCloseTo(4.02);
+  expect(statsOf(lucky).dropMult).toBeCloseTo(2.51);
   const runs = new Map<number, { n: number; got: number }>();
   for (let seed = 1; seed <= 300; seed++) {
     const rng = makeRng(seed);
@@ -204,8 +204,8 @@ test('소재 — 6마리 확정 · 5마리 50% · 4마리 20%에 드랍 배율, 
   expect(runs.get(5)!.got).toBe(runs.get(5)!.n);
   expect(runs.get(6)!.got).toBe(runs.get(6)!.n);
   const four = runs.get(4)!;
-  expect(four.got / four.n).toBeGreaterThan(0.65);
-  expect(four.got / four.n).toBeLessThan(0.95);
+  expect(four.got / four.n).toBeGreaterThan(0.35);
+  expect(four.got / four.n).toBeLessThan(0.65);
 });
 
 test('반지 — 입장 WP 할인(상한 50%) · 6마리 판 · 클리어 보너스 · EXP (T17_7)', () => {

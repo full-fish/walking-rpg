@@ -245,10 +245,11 @@ test('빌드별 편차 — 배분을 어떻게 하든 굴러가야 한다 (§4.3
   // T13까지는 행운 몰빵이 400일 안에 못 끝냈다.
   const stuck = reached.filter((r) => r.day === undefined).map((r) => r.name);
   expect(stuck, 'Lv50에 못 간 빌드').toEqual([]);
-  // **네 스탯 균등 배분이 제일 빠르다** (T17_7 검수 4차) — 장비가 네 스탯에 같은 배수를 얹고
-  // 레벨 자동 성장이 없어서, 1점의 값이 스탯끼리 같다. 행운은 전투가 조금 약한 대신 골드·소재를 준다
+  // **힘 쪽이 조금 빨라도 되지만 균등과 크게 벌어지면 안 된다** (T17_7 검수 5차) — 힘이 ATK와 치명 배율을
+  // 둘 다 올려서 힘을 조금 더 찍은 배분이 제일 세다. 사용자 결정: "힘이 제일 세도 되지만 차이가 너무 나면 안 된다"
   const fastest = reached.reduce((a, b) => (a.day! <= b.day! ? a : b));
-  expect(fastest.name, '제일 빠른 빌드').toBe(balanced.name);
+  const even = reached.find((r) => r.name === balanced.name)!;
+  expect(even.day! / fastest.day!, `균등 vs 제일 빠른 빌드(${fastest.name})`).toBeLessThan(1.08);
   // 빌드 13개 × 시드 — 기본 5초를 넘는다
 }, 30_000);
 

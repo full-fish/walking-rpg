@@ -137,7 +137,8 @@ test('HP가 0인 채로 들어가면 바로 진다', () => {
 test('레벨 스탯은 §4.3 표 그대로 — 시작 스탯 + 네 스탯 균등 배분 (자동 성장 없음)', () => {
   // §4.3 "Lv1 기본값"은 전사 기준 합계다. 시작 스탯(STR5 VIT6 AGI4 LUK4)을 포함한 값 (T17_7 검수 4차)
   expect(combatStats(1)).toMatchObject({ maxHp: 100, atk: 20, def: 5, spd: 15 });
-  expect(combatStats(1).cri).toBeCloseTo(0.072, 6);
+  expect(combatStats(1).cri).toBeCloseTo(0.056, 6);
+  expect(combatStats(1).crd).toBeCloseTo(1.5, 6);
   expect(combatStats(1).eva).toBeCloseTo(0.028, 6);
 
   // 전사 Lv2 = 3점을 넷에 0.75씩 — HP +7.5, ATK +1.5, DEF +0.375, SPD +1.125. 숨은 배수는 없다

@@ -12,11 +12,12 @@ import { CONSUMABLES, EQUIPMENT, MONSTERS, monstersOfField, REGIONS } from '../s
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
 import {
   combatStats,
+  evenSpend,
   gearSetPrice,
   gearShare,
   GEAR_SLOTS,
-  GEAR_LUK_BASE,
   innCost,
+  STARTING_STATS,
 } from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
 import { generateAll, generateEquipment, gearTierLevels, tierInRegion } from './gen-content';
@@ -241,18 +242,20 @@ function validateEquipment(): string[] {
     }
 
     // 기준선: 맨몸(네 스탯 균등) + common 풀세트 = 맨몸 × (1 + gearShare)
+    // 장갑 STR·신발 AGI·장신구 LUK은 1차 스탯이라 combatStats를 지나야 ATK·SPD가 된다 (T17_7 검수 5차)
     const naked = combatStats(refLevel);
-    const gear = setBonus(set);
-    // 목표 배수 = 1 + gearShare (powerScale에 GEAR_FLOOR가 더 얹힌다, §4.5). SPD도 같다 (T17_7 검수 4차)
+    const worn = combatStats(refLevel, 'warrior', evenSpend(refLevel), setBonus(set));
+    const nakedLuk = STARTING_STATS.warrior.luk + evenSpend(refLevel).luk;
+    // 목표 배수 = 1 + gearShare (powerScale에 GEAR_FLOOR가 더 얹힌다, §4.5). 다섯 다 같다
     const target = 1 + gearShare(refLevel);
-    for (const [label, got, base, want] of [
-      ['ATK', naked.atk + gear.atk, naked.atk, naked.atk * target],
-      ['HP', naked.maxHp + gear.maxHp, naked.maxHp, naked.maxHp * target],
-      ['DEF', naked.def + gear.def, naked.def, naked.def * target],
-      ['SPD', naked.spd + gear.spd, naked.spd, naked.spd * target],
-      // LUK은 맨몸에 비례하지 않는다 — 절대값 기준이라 base를 1로 둔다 (§4.5)
-      ['LUK', gear.luk, 1, GEAR_LUK_BASE * gearShare(refLevel)],
+    for (const [label, got, base] of [
+      ['ATK', worn.atk, naked.atk],
+      ['HP', worn.maxHp, naked.maxHp],
+      ['DEF', worn.def, naked.def],
+      ['SPD', worn.spd, naked.spd],
+      ['LUK', nakedLuk + setBonus(set).luk, nakedLuk],
     ] as const) {
+      const want = base * target;
       // 부위마다 정수로 반올림하므로 최악이 7칸 × 0.5 = 3.5다. 그만큼은 봐준다 —
       // 티어 1 DEF처럼 몫 자체가 1도 안 되는 칸이 여기 걸린다
       const slack = Math.max(GEAR_SLOTS.length / 2, want * GEAR_TOLERANCE);
@@ -277,7 +280,7 @@ function validateEquipment(): string[] {
       (a, b) => a.tier - b.tier,
     );
     for (let i = 1; i < line.length; i++) {
-      const sum = (e: (typeof line)[number]) => e.atk + e.maxHp + e.def + e.spd + e.luk;
+      const sum = (e: (typeof line)[number]) => e.atk + e.maxHp + e.def + e.str + e.agi + e.luk;
       if (sum(line[i]) <= sum(line[i - 1])) {
         errors.push(`[장비 단조 증가 깨짐] ${line[i - 1].name} → ${line[i].name}`);
       }

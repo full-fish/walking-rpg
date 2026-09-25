@@ -30,7 +30,7 @@ const RUN_SIZES = [4, 6] as const;
 
 /**
  * Lv L 전사, **네 스탯 균등 배분**(T17_7 검수) · **그 지역 보통으로 투자한 한 벌** 착용 (EXPECTED_GEAR,
- * T17_7 검수 4차) — 지역 1 common +0 · 2 common +2 · 3 uncommon +2 · 4 uncommon +3 · 5 rare +2.
+ * T17_7 검수 5차) — 지역 1 common +0 · 2 common +2 · 3 uncommon +3 · 4 uncommon +4 · 5 rare +3.
  * 상점은 지금 지역 티어만 판다 — 지역 끝 레벨이면 다음 지역 앞단을 낄 수 있어도 못 산다.
  *
  * 맨몸으로 재면 후반이 전멸한다 — Lv50 전투력의 60%가 장비에서 오는 게 설계라서다.
@@ -43,7 +43,8 @@ function warrior(level: number, region = 1): Combatant {
       atk: a.atk + g.atk,
       maxHp: a.maxHp + g.maxHp,
       def: a.def + g.def,
-      spd: a.spd + g.spd,
+      str: a.str + g.str,
+      agi: a.agi + g.agi,
       luk: a.luk + g.luk,
     }));
   const geared = combatStats(level, 'warrior', evenSpend(level), gear);

@@ -29,28 +29,35 @@ function geared(level: number, seed = 1): Save {
   return equipAll(save, uids);
 }
 
-test('부위마다 성격이 다르다 — 무기는 ATK만, 장신구는 LUK만 (§4.5, T16_1)', () => {
+test('부위마다 성격이 다르다 — 무기는 ATK만, 장갑 STR · 신발 AGI · 장신구 LUK (§4.5, T17_7 검수 5차)', () => {
   const set = gearSetFor(30);
   const bySlot = (slot: string) => set.find((e) => e.slot === slot)!;
 
   expect(bySlot('weapon').maxHp, '무기는 HP를 안 준다').toBe(0);
   expect(bySlot('weapon').def).toBe(0);
-  expect(bySlot('boots').spd, '신발이 장비 SPD를 전부 갖는다').toBeGreaterThan(0);
-  for (const slot of GEAR_SLOTS) {
-    if (slot === 'boots') continue;
-    expect(bySlot(slot).spd, `${slot}은 SPD를 안 준다`).toBe(0);
-    if (slot !== 'accessory') expect(bySlot(slot).luk, `${slot}은 LUK을 안 준다`).toBe(0);
+  // 1차 스탯은 한 부위가 전부 갖는다 — 신발 AGI · 장갑 STR · 장신구 LUK
+  for (const [key, owner] of [
+    ['agi', 'boots'],
+    ['str', 'gloves'],
+    ['luk', 'accessory'],
+  ] as const) {
+    for (const slot of GEAR_SLOTS) {
+      const v = bySlot(slot)[key];
+      if (slot === owner) expect(v, `${slot}이 ${key}를 준다`).toBeGreaterThan(0);
+      else expect(v, `${slot}은 ${key}를 안 준다`).toBe(0);
+    }
   }
-  expect(bySlot('accessory').luk, '장신구가 LUK을 전부 갖는다').toBeGreaterThan(0);
+  expect(bySlot('gloves').atk, '장갑은 ATK 대신 STR').toBe(0);
 
-  // 장신구의 LUK은 1차 스탯이라 파생 4종에 전부 얹힌다 (§4.3)
+  // 장신구의 LUK은 1차 스탯이라 파생 값에 전부 얹힌다 (§4.3)
   const naked = statsOf({ ...defaultSave(), player: { ...defaultSave().player, level: 30 } });
   const full = statsOf(geared(30));
   expect(full.dropMult).toBeGreaterThan(naked.dropMult);
   expect(full.goldMult).toBeGreaterThan(naked.goldMult);
   expect(full.cri).toBeGreaterThan(naked.cri);
-  // 치명 배율은 고정이다 — 행운은 확률만 올린다 (T17_7 검수 4차)
-  expect(full.crd).toBe(naked.crd);
+  // 장갑 STR은 치명 배율을, 신발 AGI는 회피를 같이 올린다 (T17_7 검수 5차)
+  expect(full.crd).toBeGreaterThan(naked.crd);
+  expect(full.eva).toBeGreaterThan(naked.eva);
 });
 
 test('uid는 세이브 안에서만 안 겹치면 된다 — 가진 것 중 가장 큰 번호 + 1', () => {
@@ -137,8 +144,8 @@ test('itemPower — 품질·강화가 붙은 순서대로 정렬된다 (T17_1)',
 });
 
 test('statText — 장신구가 "ATK +0 HP +0 DEF +0"으로 보이지 않는다 (T17_3)', () => {
-  // 장신구는 LUK만, 신발은 SPD·DEF만 준다. 0인 칸을 찍으면 거짓말이 된다
+  // 장신구는 LUK만, 신발은 AGI·DEF만 준다. 0인 칸을 찍으면 거짓말이 된다
   expect(statText(equipmentById('eq_t7_accessory_common'))).toMatch(/^LUK \+[\d.]+$/);
-  expect(statText(equipmentById('eq_t7_boots_common'))).toMatch(/^DEF \+\d+ SPD \+[\d.]+$/);
-  expect(statText({ atk: 0, maxHp: 0, def: 0, spd: 0, luk: 0 })).toBe('스탯 없음');
+  expect(statText(equipmentById('eq_t7_boots_common'))).toMatch(/^DEF \+\d+ AGI \+[\d.]+$/);
+  expect(statText({ atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 })).toBe('스탯 없음');
 });

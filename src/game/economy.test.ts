@@ -231,14 +231,14 @@ test('소재를 고른 대로 쓴다 — 그 지역 · 정확한 개수 · 가�
   // 안 고르면 가진 게 많은 곳부터 알아서 고른다 — 시뮬과 같은 길
   expect(chooseMaterials(save, 1, 1, true)).toEqual([a]);
 
-  // 반지 올리기에 고른 소재가 그대로 빠진다
+  // 반지 올리기에 고른 소재가 그대로 빠진다 — 일반 → 고급은 1개 (T17_7 검수 5차)
   const ring = { uid: '1', kind: 'gold' as const, tier: 1, rarity: 'common' as const, enhance: 0 };
   const up = upgradeRing(
     { ...save, materials: { [a]: 2, [b]: 1, [c]: 1, [d]: 1 }, rings: [ring] },
     '1',
-    [b, c, d],
+    [b],
   )!;
-  expect(up.materials).toEqual({ [a]: 2 });
+  expect(up.materials).toEqual({ [a]: 2, [c]: 1, [d]: 1 });
 });
 
 test('반지 강화 — 장비와 같은 표. +6부터 그 ★ 지역 소재가 성공할 때만 든다 (T17_7)', () => {

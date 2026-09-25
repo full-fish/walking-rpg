@@ -63,7 +63,9 @@ import {
   WP_COST,
 } from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
+import { statsOf } from '../src/game/progression';
 import { enterBoss } from '../src/game/region';
+import type { Save } from '../src/save/schema';
 import { RARITY_LABEL, RING_INFO } from '../src/ui/rings';
 import { baselineSave, BUILDS, dayAtLevel, fight, simulate, type DayLog } from './simulate';
 
@@ -98,6 +100,56 @@ function regionDays(log: DayLog[], from: number, to: number) {
     clear: avg((d) => d.clearRate),
   };
 }
+
+/** 그 빌드로 배분한 기준 세이브 — 장비·물약은 baselineSave 그대로 */
+function buildSave(level: number, region: number, weights: Record<string, number>): Save {
+  const base = baselineSave(level, region);
+  const total = (level - 1) * POINTS_PER_LEVEL;
+  const keys = ['str', 'vit', 'agi', 'luk'] as const;
+  const sum = keys.reduce((a, k) => a + weights[k], 0);
+  const pts = Object.fromEntries(keys.map((k) => [k, Math.floor((total * weights[k]) / sum)]));
+  let left = total - keys.reduce((a, k) => a + pts[k], 0);
+  for (const k of keys) {
+    if (left > 0 && weights[k] > 0) {
+      pts[k] += 1;
+      left -= 1;
+    }
+  }
+  const save: Save = { ...base, statPoints: { ...base.statPoints, ...pts } };
+  return { ...save, player: { ...save.player, hp: statsOf(save).maxHp } };
+}
+
+/** 빌드마다 버프 없이 보스를 30% 이기는 보스 배율을 이분 탐색으로 — 균등 대비 */
+function buildPower(level: number, region: number, runs = 300): number[] {
+  const boss = bossOf(region);
+  const found = BUILDS.map((b) => {
+    const save = buildSave(level, region, b.weights);
+    const rate = (f: number) => {
+      const m = {
+        ...boss,
+        maxHp: Math.round(boss.maxHp * f),
+        atk: boss.atk * f,
+        def: boss.def * f,
+      };
+      let wins = 0;
+      for (let seed = 1; seed <= runs; seed++) {
+        if (fight(enterBoss(save)!, makeRng(seed), m).outcome === 'win') wins++;
+      }
+      return wins / runs;
+    };
+    let lo = 0.3;
+    let hi = 2.5;
+    for (let i = 0; i < 9; i++) {
+      const mid = (lo + hi) / 2;
+      if (rate(mid) > 0.3) lo = mid;
+      else hi = mid;
+    }
+    return (lo + hi) / 2;
+  });
+  return found.map((f) => f / found[0]);
+}
+
+const transpose = (cols: number[][]) => cols[0].map((_, i) => cols.map((c) => c[i]));
 
 /** 보스 승률 — 지역 끝 레벨 · 네 스탯 균등 · 보통 투자 한 벌 · 물약 3개 · 버프 n개 */
 function bossRate(region: number, buffs: number, runs = 500): number {
@@ -166,7 +218,11 @@ test('balance.md — 게임 숫자 한눈에', () => {
     table(
       ['1차 스탯', '1점 효과', '전사 시작값'],
       [
-        ['힘 STR', `ATK +${STAT_PER_POINT.str.atk}`, STARTING_STATS.warrior.str],
+        [
+          '힘 STR',
+          `ATK +${STAT_PER_POINT.str.atk} · 치명 피해 +${STAT_PER_POINT.str.crd}배`,
+          STARTING_STATS.warrior.str,
+        ],
         [
           '체력 VIT',
           `HP +${STAT_PER_POINT.vit.maxHp} · DEF +${STAT_PER_POINT.vit.def}`,
@@ -186,7 +242,8 @@ test('balance.md — 게임 숫자 한눈에', () => {
     ),
   );
   out.push(
-    `\n치명 피해는 ×${BASE_STATS.crd} 고정 · 치명 확률 기본 ${pct(BASE_STATS.cri)} · 회피 기본 ${pct(BASE_STATS.eva, 1)} · 치명 확률 상한 없음(100% 넘으면 늘 터짐)\n`,
+    `\n치명 피해 = ${BASE_STATS.crd} + 힘 × ${STAT_PER_POINT.str.crd} (전사 Lv1 ×${combatStats(1).crd}) · 치명 확률 기본 ${pct(BASE_STATS.cri)} · 회피 기본 ${pct(BASE_STATS.eva, 1)} · 치명 확률 상한 없음(100% 넘으면 늘 터짐)\n` +
+      '장비도 1차 스탯을 준다 — 장갑 STR(치명 피해까지) · 신발 AGI(회피까지) · 장신구 LUK. 아래 표의 치명은 그걸 다 친 값이다.\n',
   );
 
   out.push('\n**기준 플레이어 — 네 스탯 균등** (맨몸 → common 풀세트 → 그 지역 보통 투자 한 벌)\n');
@@ -201,11 +258,17 @@ test('balance.md — 게임 숫자 한눈에', () => {
       `${n0(naked.atk)} / ${n0(common.atk)} / ${n0(ref.atk)}`,
       `${n1(naked.def)} / ${n1(common.def)} / ${n1(ref.def)}`,
       `${n0(naked.spd)} / ${n0(common.spd)} / ${n0(ref.spd)}`,
-      pct(naked.cri, 1),
+      `${pct(ref.cri)} ×${ref.crd.toFixed(2)}`,
+      pct(ref.eva, 1),
       n0(expToNext(level)),
     ];
   });
-  out.push(table(['레벨', 'HP', 'ATK', 'DEF', 'SPD', '치명', '다음 레벨 EXP'], refRows));
+  out.push(
+    table(
+      ['레벨', 'HP', 'ATK', 'DEF', 'SPD', '치명 (보통 투자)', '회피', '다음 레벨 EXP'],
+      refRows,
+    ),
+  );
 
   out.push('\n**몰빵하면** — Lv50, common 풀세트, 147점을 한 스탯에 (균등 대비)\n');
   const gear50 = setBonus(gearSetFor(50));
@@ -213,7 +276,7 @@ test('balance.md — 게임 숫자 한눈에', () => {
   const none = { str: 0, vit: 0, agi: 0, luk: 0, int: 0 };
   out.push(
     table(
-      ['몰빵', 'HP', 'ATK', 'SPD', '치명'],
+      ['몰빵', 'HP', 'ATK', 'SPD', '치명', '치명 피해'],
       (['str', 'vit', 'agi', 'luk'] as const).map((k) => {
         const s = combatStats(50, 'warrior', { ...none, [k]: 147 }, gear50);
         const r = (a: number, b: number) => `${(a / b).toFixed(2)}배`;
@@ -223,6 +286,7 @@ test('balance.md — 게임 숫자 한눈에', () => {
           r(s.atk, even50.atk),
           r(s.spd, even50.spd),
           pct(s.cri),
+          `×${s.crd.toFixed(2)}`,
         ];
       }),
     ),
@@ -249,6 +313,23 @@ test('balance.md — 게임 숫자 한눈에', () => {
           pct(mean(log.map((d) => d.clearRate))),
         ];
       }),
+    ),
+  );
+
+  out.push(
+    '\n**빌드별 전투력** — 같은 장비(보통 투자 한 벌)로 버프 없이 **보스를 30% 이기는 보스 세기** (균등 = 1.00, HP·ATK·DEF를 같이 곱한 배율)\n',
+  );
+  const powerLevels = [
+    [26, 3],
+    [50, 5],
+  ] as const;
+  out.push(
+    table(
+      ['빌드', ...powerLevels.map(([lv]) => `Lv${lv}`)],
+      transpose(powerLevels.map(([lv, region]) => buildPower(lv, region))).map((row, i) => [
+        BUILDS[i].name,
+        ...row.map((v) => v.toFixed(2)),
+      ]),
     ),
   );
 
@@ -300,8 +381,8 @@ test('balance.md — 게임 숫자 한눈에', () => {
         '투구 HP',
         '갑옷 DEF',
         '하의 HP/DEF',
-        '장갑 ATK/HP',
-        '신발 SPD',
+        '장갑 STR/HP',
+        '신발 AGI',
         '장신구 LUK',
       ],
       tiers.map((t) => {
@@ -312,8 +393,8 @@ test('balance.md — 게임 숫자 한눈에', () => {
           g('helm').maxHp,
           g('armor').def,
           `${g('pants').maxHp}/${g('pants').def}`,
-          `${g('gloves').atk}/${g('gloves').maxHp}`,
-          g('boots').spd,
+          `${g('gloves').str}/${g('gloves').maxHp}`,
+          g('boots').agi,
           g('accessory').luk,
         ];
       }),

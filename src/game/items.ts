@@ -8,6 +8,7 @@
 import { equipmentById, type Equipment } from '../content';
 import type { ItemInstance, Ring, Save } from '../save/schema';
 import {
+  combatStats,
   ENHANCE_MULT,
   GEAR_SLOTS,
   gearShare,
@@ -20,9 +21,16 @@ import {
   type RingKind,
 } from './formulas';
 
-export type GearBonus = { atk: number; maxHp: number; def: number; spd: number; luk: number };
+export type GearBonus = {
+  atk: number;
+  maxHp: number;
+  def: number;
+  str: number;
+  agi: number;
+  luk: number;
+};
 
-const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0, spd: 0, luk: 0 };
+const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 };
 
 /** 세이브 안에서만 유일하면 된다. 가진 것 중 가장 큰 번호 + 1. 반지 목록에도 쓴다 (T17_7) */
 export function nextUid(inventory: { uid: string }[]): string {
@@ -51,22 +59,27 @@ export function itemDef(inst: ItemInstance): Equipment {
 export function itemStats(inst: ItemInstance): GearBonus {
   const def = itemDef(inst);
   const scaled = (base: number) => Math.round(itemStat(base, inst.quality, inst.enhance));
+  // 1차 스탯은 소수 한 자리를 남긴다. 반올림하면 낮은 티어에서 전부 0이 된다
+  const primary = (base: number) => round1(itemStat(base, inst.quality, inst.enhance));
   return {
     atk: scaled(def.atk),
     maxHp: scaled(def.maxHp),
     def: scaled(def.def),
-    // SPD만 소수 한 자리를 남긴다. 반올림하면 낮은 티어에서 전부 0이 된다
-    spd: Math.round(itemStat(def.spd, inst.quality, inst.enhance) * 10) / 10,
-    luk: Math.round(itemStat(def.luk, inst.quality, inst.enhance) * 10) / 10,
+    str: primary(def.str),
+    agi: primary(def.agi),
+    luk: primary(def.luk),
   };
 }
 
 /**
- * 정렬용 한 숫자 (T17_1) — **그 개체가 만들어진 배율**이다.
+ * 정렬용 한 숫자 (T17_1) — **그 개체의 스탯 크기**다.
  *
  * `gearStats`가 `맨몸 × gearShare(레벨) × 등급배율 × 부위몫`으로 뽑으므로(§4.5),
  * 거기서 부위몫만 뺀 게 이 값이다. 부위몫은 애초에 부위끼리 비교가 안 되는 부분이라
  * (무기의 ATK 0.75와 투구의 HP 0.5는 같은 눈금이 아니다) 빼는 게 맞다.
+ * **맨몸은 빼면 안 된다** (T17_7 검수 5차) — 맨몸이 레벨 따라 두 배쯤 자라서, 빼면 티어 5 영웅 +5 검(ATK 68)이
+ * 티어 10 일반 검(ATK 95)보다 세게 나와 성능순 정렬과 시뮬의 갈아입기가 둘 다 틀렸다.
+ * 맨몸은 네 스탯 모두 "포인트 단위"로 같은 크기라 ATK로 잰다(BASE_STATS).
  *
  * **값(price)으로는 못 잰다** — 전설은 값이 30배인데 스탯은 1.9배라, 값으로 줄 세우면
  * 티어 2 전설이 티어 8 일반보다 위로 온다.
@@ -74,12 +87,16 @@ export function itemStats(inst: ItemInstance): GearBonus {
 export function itemPower(inst: ItemInstance): number {
   const def = itemDef(inst);
   return (
-    gearShare(def.level) * RARITY_MULT[def.rarity] * inst.quality * ENHANCE_MULT ** inst.enhance
+    combatStats(def.level).atk *
+    gearShare(def.level) *
+    RARITY_MULT[def.rarity] *
+    inst.quality *
+    ENHANCE_MULT ** inst.enhance
   );
 }
 
 /**
- * "ATK +12 HP +40 SPD +1.2" — 0인 항목은 뺀다. 정의(상점)든 개체(가방)든 같은 모양을 받는다.
+ * "ATK +12 HP +40 AGI +1.2" — 0인 항목은 뺀다. 정의(상점)든 개체(가방)든 같은 모양을 받는다.
  * **한 곳에서만 만든다** — 화면마다 따로 적었더니 SPD·LUK을 빠뜨린 곳이 두 번 나왔고
  * (T17 가방, T17_3 상점), 장신구가 "ATK +0 HP +0 DEF +0"으로 보였다.
  */
@@ -89,7 +106,8 @@ export function statText(s: GearBonus): string {
       s.atk > 0 ? `ATK +${s.atk}` : '',
       s.maxHp > 0 ? `HP +${s.maxHp}` : '',
       s.def > 0 ? `DEF +${s.def}` : '',
-      s.spd > 0 ? `SPD +${s.spd}` : '',
+      s.str > 0 ? `STR +${s.str}` : '',
+      s.agi > 0 ? `AGI +${s.agi}` : '',
       s.luk > 0 ? `LUK +${s.luk}` : '',
     ]
       .filter(Boolean)
@@ -123,7 +141,8 @@ export function equippedStats(save: Save): GearBonus {
       atk: sum.atk + s.atk,
       maxHp: sum.maxHp + s.maxHp,
       def: sum.def + s.def,
-      spd: round1(sum.spd + s.spd),
+      str: round1(sum.str + s.str),
+      agi: round1(sum.agi + s.agi),
       luk: round1(sum.luk + s.luk),
     };
   }, NONE);
@@ -179,7 +198,8 @@ export function setBonus(defs: Equipment[]): GearBonus {
       atk: sum.atk + e.atk,
       maxHp: sum.maxHp + e.maxHp,
       def: sum.def + e.def,
-      spd: round1(sum.spd + e.spd),
+      str: round1(sum.str + e.str),
+      agi: round1(sum.agi + e.agi),
       luk: round1(sum.luk + e.luk),
     }),
     NONE,

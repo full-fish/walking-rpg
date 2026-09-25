@@ -45,7 +45,11 @@ const pct = (v: number) => `${+(v * 100).toFixed(2)}%`;
  * 2종만 적혀 있었다 (T16_1).
  */
 const STATS: { key: StatKey; label: string; effect: string }[] = [
-  { key: 'str', label: '힘 STR', effect: `ATK +${STAT_PER_POINT.str.atk}` },
+  {
+    key: 'str',
+    label: '힘 STR',
+    effect: `ATK +${STAT_PER_POINT.str.atk} · 치명 피해 +${STAT_PER_POINT.str.crd}배`,
+  },
   {
     key: 'vit',
     label: '체력 VIT',
@@ -108,6 +112,13 @@ export default function Character() {
   const spent = STATS.reduce((sum, { key }) => sum + save.statPoints[key], 0);
 
   const gear = equippedStats(save);
+  /** 장비가 주는 1차 스탯 — 장갑 STR · 신발 AGI · 장신구 LUK (T17_7 검수 5차). 체력은 안 준다 */
+  const gearPrimary: Record<StatKey, number> = {
+    str: gear.str,
+    vit: 0,
+    agi: gear.agi,
+    luk: gear.luk,
+  };
 
   const equippedIn = (slot: GearSlot) => {
     const uid = save.equipped[slot];
@@ -201,6 +212,7 @@ export default function Character() {
                   <View style={styles.name}>
                     <Text>
                       {label} {primary[key]}
+                      {bonus(gearPrimary[key])}
                     </Text>
                     <Text size="sm" dim>
                       {effect}
