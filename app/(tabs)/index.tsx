@@ -4,7 +4,6 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { bossOf, REGIONS, regionById, type Field } from '@/content';
-import { regionMaterials } from '@/game/economy';
 import { fieldEntryCost } from '@/game/field';
 import { BOSS_BUFF, REGION_COUNT, WP_COST } from '@/game/formulas';
 import { bagFull } from '@/game/items';
@@ -14,6 +13,7 @@ import { useSteps } from '@/health/useSteps';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
+import { MaterialPicker } from '@/ui/MaterialPicker';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
@@ -46,10 +46,9 @@ export default function Adventure() {
   const { unlocked } = save.regionProgress;
   const boss = bossOf(region.id);
   const bossNow = bossState(save, region.id);
-  /** 보스 버프에 쓸 소재 수 (T17_6 검수). 가진 것보다 많이 고를 수는 없다 */
-  const [buffs, setBuffs] = useState(0);
-  const haveMaterials = regionMaterials(save, region.id);
-  const useMaterials = Math.min(buffs, haveMaterials);
+  /** 보스 버프에 쓸 소재 — 고른 것 (T17_6 검수, 고르기는 T17_7 검수 4차). 다른 지역 것은 안 센다 */
+  const [buffs, setBuffs] = useState<string[]>([]);
+  const useMaterials = buffs.filter((id) => region.fields.some((f) => f.id === id));
 
   // 걸음이 갱신될 때마다(=60초 폴링/센서) 지급과 HP 회복을 함께 반영한다.
   // 둘 다 받을 게 없으면 아무것도 저장하지 않으므로 그냥 매번 불러도 된다.
@@ -145,7 +144,9 @@ export default function Adventure() {
                       bagFull(save)
                     }
                     onPress={() => {
-                      if (trade(trades.challengeBoss(useMaterials))) router.push('/field');
+                      if (!trade(trades.challengeBoss(useMaterials))) return;
+                      setBuffs([]);
+                      router.push('/field');
                     }}
                   />
                 </View>
@@ -155,19 +156,16 @@ export default function Adventure() {
                 <>
                   <Text size="sm" dim>
                     소재를 쓰면 하나에 하나씩 무작위 버프(전투력 값 ×
-                    {+bossBuffMult(save).toFixed(3)}) — 이 지역 소재 {haveMaterials}개
+                    {+bossBuffMult(save).toFixed(3)}) — {BOSS_BUFF.max}개까지. 쓸 소재를 누르세요
                   </Text>
-                  <View style={styles.row}>
-                    {Array.from({ length: BOSS_BUFF.max + 1 }, (_, n) => (
-                      <Button
-                        key={n}
-                        label={`소재 ${n}`}
-                        tone={n === useMaterials ? 'gold' : 'normal'}
-                        disabled={n > haveMaterials}
-                        onPress={() => setBuffs(n)}
-                      />
-                    ))}
-                  </View>
+                  <MaterialPicker
+                    region={region.id}
+                    need={BOSS_BUFF.max}
+                    distinct={false}
+                    owned={save.materials}
+                    picked={useMaterials}
+                    onChange={setBuffs}
+                  />
                 </>
               )}
             </Panel>

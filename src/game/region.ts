@@ -8,7 +8,7 @@
  */
 import { bossOf } from '../content';
 import type { Save } from '../save/schema';
-import { pickMaterials, spendMaterials } from './economy';
+import { chooseMaterials, pickMaterials, spendMaterials } from './economy';
 import { BOSS_BUFF, BOSS_BUFF_STATS, REGION_COUNT, WP_COST } from './formulas';
 import { openRun } from './field';
 import { bagFull } from './items';
@@ -45,14 +45,24 @@ export function travel(save: Save, region: number): Save | null {
  * **가방이 차 있으면 못 들어간다** — 이기면 장비를 확정으로 주는데 받을 칸이 없으면
  * 관문 값을 치른 보상이 통째로 날아간다.
  *
- * `materials`만큼 그 지역 소재를 쓰면(최대 3개) 하나에 하나씩 무작위 버프가 붙는다 (T17_6 검수).
- * 소재가 모자라면 못 들어간다 — 화면이 가진 만큼만 고르게 한다.
+ * 그 지역 소재를 쓰면(최대 3개) 하나에 하나씩 무작위 버프가 붙는다 (T17_6 검수).
+ * `materials`는 개수(알아서 고름 — 시뮬)거나 **고른 소재 목록**이다 (T17_7 검수 4차 — 화면).
+ * 소재가 모자라면 못 들어간다.
  */
-export function enterBoss(save: Save, materials = 0, rng: () => number = Math.random): Save | null {
+export function enterBoss(
+  save: Save,
+  materials: number | readonly string[] = 0,
+  rng: () => number = Math.random,
+): Save | null {
   const region = save.regionProgress.current;
   if (save.run !== null || bagFull(save) || bossState(save, region) === 'cleared') return null;
 
-  const used = pickMaterials(save, region, Math.min(materials, BOSS_BUFF.max), false);
+  const used =
+    typeof materials === 'number'
+      ? pickMaterials(save, region, Math.min(materials, BOSS_BUFF.max), false)
+      : materials.length <= BOSS_BUFF.max
+        ? chooseMaterials(save, region, materials.length, false, materials)
+        : null;
   if (!used) return null;
   const wp = spendWp(save.wp, bossCost(save, region));
   if (!wp) return null;

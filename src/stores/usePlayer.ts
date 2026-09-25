@@ -91,9 +91,9 @@ type PlayerStore = {
    * 장비 한 점을 한 단계 올려 본다 (§4.5). 성공·실패를 화면이 보여줘야 해서
    * trade()와 달리 결과를 그대로 돌려준다. 골드가 모자라면 null.
    */
-  enhance: (uid: string) => EnhanceResult | null;
-  /** 반지를 한 단계 강화해 본다 (T17_7). 결과를 화면이 보여준다 */
-  enhanceRing: (uid: string) => EnhanceResult | null;
+  enhance: (uid: string, materials?: readonly string[]) => EnhanceResult | null;
+  /** 반지를 한 단계 강화해 본다 (T17_7). 결과를 화면이 보여준다. `materials`는 고른 소재 */
+  enhanceRing: (uid: string, materials?: readonly string[]) => EnhanceResult | null;
   reset: () => void;
 };
 
@@ -247,15 +247,15 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     set({ save: persist({ ...save, materials }) });
   },
 
-  enhance: (uid) => {
-    const result = enhanceItem(get().save, uid, Math.random);
+  enhance: (uid, materials) => {
+    const result = enhanceItem(get().save, uid, Math.random, materials);
     if (!result) return null;
     set({ save: persist(result.save) });
     return result;
   },
 
-  enhanceRing: (uid) => {
-    const result = enhanceRing(get().save, uid, Math.random);
+  enhanceRing: (uid, materials) => {
+    const result = enhanceRing(get().save, uid, Math.random, materials);
     if (!result) return null;
     set({ save: persist(result.save) });
     return result;
@@ -278,14 +278,16 @@ export const trades = {
   withdraw: (amount: number) => (save: Save) => vaultWithdraw(save, amount),
   expand: () => (save: Save) => vaultExpand(save),
   expandBag: () => (save: Save) => bagExpand(save),
-  /** 반지 (T17_7) — 교환은 무작위, 올리기는 소재만. 끼고 빼는 것도 여기로 지난다 */
-  exchangeRing: () => (save: Save) => exchangeRing(save, Math.random),
-  upgradeRing: (uid: string) => (save: Save) => upgradeRing(save, uid),
+  /** 반지 (T17_7) — 교환은 무작위, 올리기는 소재만. 끼고 빼는 것도 여기로 지난다. 소재는 고른 것 */
+  exchangeRing: (materials: readonly string[]) => (save: Save) =>
+    exchangeRing(save, Math.random, materials),
+  upgradeRing: (uid: string, materials: readonly string[]) => (save: Save) =>
+    upgradeRing(save, uid, materials),
   equipRing: (uid: string, slot: number) => (save: Save) => equipRing(save, uid, slot),
   unequipRing: (slot: number) => (save: Save) => unequipRing(save, slot),
   /** 지역 관문 (T17_5) — 보스 도전 · 해금 · 이동은 따로 낸다 */
-  /** 소재를 쓰면 하나에 하나씩 무작위 버프 (T17_6 검수) */
-  challengeBoss: (materials: number) => (save: Save) => enterBoss(save, materials),
+  /** 고른 소재 하나에 하나씩 무작위 버프 (T17_6 검수, 고르기는 T17_7 검수 4차) */
+  challengeBoss: (materials: readonly string[]) => (save: Save) => enterBoss(save, materials),
   unlockRegion: () => (save: Save) => unlockNext(save),
   travel: (region: number) => (save: Save) => travel(save, region),
 };

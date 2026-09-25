@@ -74,6 +74,27 @@ export function pickMaterials(
   return picked;
 }
 
+/**
+ * 소재를 **고른 대로** 쓸 수 있는지 본다 (T17_7 검수 4차) — 그 지역 사냥터 것 정확히 n개, 가진 만큼,
+ * `distinct`면 한 곳에서 하나씩. 맞으면 고른 그대로, 틀리면 null. 안 고르면 pickMaterials가 대신 고른다 —
+ * 시뮬과 [자동] 버튼이 그쪽을 쓴다.
+ */
+export function chooseMaterials(
+  save: Save,
+  region: number,
+  n: number,
+  distinct: boolean,
+  chosen?: readonly string[],
+): string[] | null {
+  if (!chosen) return pickMaterials(save, region, n, distinct);
+  const ids = new Set(regionById(region).fields.map((f) => f.id));
+  if (chosen.length !== n || chosen.some((id) => !ids.has(id))) return null;
+  if (distinct && new Set(chosen).size !== n) return null;
+  const want = chosen.reduce<Record<string, number>>((m, id) => bump(m, id, 1), {});
+  const enough = Object.entries(want).every(([id, k]) => count(save.materials, id) >= k);
+  return enough ? [...chosen] : null;
+}
+
 export function spendMaterials(save: Save, ids: string[]): Save {
   return { ...save, materials: ids.reduce((m, id) => bump(m, id, -1), save.materials) };
 }
@@ -254,6 +275,7 @@ export function enhancePick(save: Save, item: ItemInstance): string[] | null {
 /**
  * 강화 한 번의 공통 규칙 (§4.5, T17_7) — 장비와 반지가 같이 쓴다. 규칙이 둘로 갈리면 안 된다.
  * 골드는 두드릴 때 나가고, +6부터 드는 소재는 **성공했을 때만** 뺀다. 성공하면 `bump`로 단계를 올린다.
+ * `chosen`은 플레이어가 고른 소재다 (T17_7 검수 4차). 안 주면 가진 게 많은 곳부터 고른다.
  */
 function tryEnhance(
   save: Save,
@@ -262,10 +284,11 @@ function tryEnhance(
   region: number,
   rng: () => number,
   bump: (paid: Save) => Save,
+  chosen?: readonly string[],
 ): EnhanceResult | null {
   if (from >= ENHANCE_MAX) return null;
   const step = from + 1;
-  const picked = pickMaterials(save, region, enhanceMaterials(step), true);
+  const picked = chooseMaterials(save, region, enhanceMaterials(step), true, chosen);
   if (!picked) return null;
   const cost = enhanceCost(price, step);
   const paid = withGold(save, -cost);
@@ -290,16 +313,30 @@ function tryEnhance(
  * 강화는 **인스턴스 단위**다. 같은 이름의 장비 두 개가 서로 다른 단계를 가진다.
  * 난수를 주입받는 건 기대 시도 횟수를 테스트로 재현해야 하기 때문이다.
  */
-export function enhanceItem(save: Save, uid: string, rng: () => number): EnhanceResult | null {
+export function enhanceItem(
+  save: Save,
+  uid: string,
+  rng: () => number,
+  chosen?: readonly string[],
+): EnhanceResult | null {
   const item = save.inventory.find((i) => i.uid === uid);
   if (!item) return null;
   const def = itemDef(item);
-  return tryEnhance(save, item.enhance, def.price, def.region, rng, (paid) =>
-    // 낀 장비를 강화하면 최대 HP가 늘어난다. 현재 HP도 같이 올린다 (장착과 같은 규칙)
-    withStatChange(paid, {
-      ...paid,
-      inventory: paid.inventory.map((i) => (i.uid === uid ? { ...i, enhance: i.enhance + 1 } : i)),
-    }),
+  return tryEnhance(
+    save,
+    item.enhance,
+    def.price,
+    def.region,
+    rng,
+    (paid) =>
+      // 낀 장비를 강화하면 최대 HP가 늘어난다. 현재 HP도 같이 올린다 (장착과 같은 규칙)
+      withStatChange(paid, {
+        ...paid,
+        inventory: paid.inventory.map((i) =>
+          i.uid === uid ? { ...i, enhance: i.enhance + 1 } : i,
+        ),
+      }),
+    chosen,
   );
 }
 
@@ -325,8 +362,12 @@ export function ringNext(ring: Ring): { tier: number; rarity: GridRarity; cost: 
  * 새 반지 (T17_7) — **초원(지역 1) 소재를 서로 다른 사냥터에서 3개** 내고 ★1 일반을 받는다.
  * 어느 반지가 나올지는 무작위다 — 같은 반지가 또 나와도 두 칸에 같이 낄 수 있다.
  */
-export function exchangeRing(save: Save, rng: () => number): Save | null {
-  const picked = pickMaterials(save, 1, RING_COST.exchange, true);
+export function exchangeRing(
+  save: Save,
+  rng: () => number,
+  chosen?: readonly string[],
+): Save | null {
+  const picked = chooseMaterials(save, 1, RING_COST.exchange, true, chosen);
   if (!picked) return null;
   const ring: Ring = {
     uid: nextUid(save.rings),
@@ -339,19 +380,19 @@ export function exchangeRing(save: Save, rng: () => number): Save | null {
 }
 
 /**
- * 반지를 한 단계 올린다 (T17_7). 소재만 들고 실패는 없다. **강화는 +0으로 돌아간다** —
- * 강화를 먼저 할지, 끝까지 올린 뒤에 할지가 고를 거리다.
+ * 반지를 한 단계 올린다 (T17_7). 소재만 들고 실패는 없다. **강화 단계는 그대로다** (T17_7 검수 4차 —
+ * 전에는 +0으로 돌아갔다). 강화한 값은 새 등급 값에 그대로 곱해진다.
  */
-export function upgradeRing(save: Save, uid: string): Save | null {
+export function upgradeRing(save: Save, uid: string, chosen?: readonly string[]): Save | null {
   const ring = save.rings.find((r) => r.uid === uid);
   const next = ring && ringNext(ring);
   if (!next) return null;
-  const picked = pickMaterials(save, next.tier, next.cost, true);
+  const picked = chooseMaterials(save, next.tier, next.cost, true, chosen);
   if (!picked) return null;
   return {
     ...spendMaterials(save, picked),
     rings: save.rings.map((r) =>
-      r.uid === uid ? { ...r, tier: next.tier, rarity: next.rarity, enhance: 0 } : r,
+      r.uid === uid ? { ...r, tier: next.tier, rarity: next.rarity } : r,
     ),
   };
 }
@@ -370,11 +411,24 @@ export function ringEnhancePick(save: Save, ring: Ring): string[] | null {
 }
 
 /** 반지를 한 단계 강화해 본다 (T17_7) — 장비 강화와 같은 성공률·값·소재 규칙이다 */
-export function enhanceRing(save: Save, uid: string, rng: () => number): EnhanceResult | null {
+export function enhanceRing(
+  save: Save,
+  uid: string,
+  rng: () => number,
+  chosen?: readonly string[],
+): EnhanceResult | null {
   const ring = save.rings.find((r) => r.uid === uid);
   if (!ring) return null;
-  return tryEnhance(save, ring.enhance, ringPrice(ring), ring.tier, rng, (paid) => ({
-    ...paid,
-    rings: paid.rings.map((r) => (r.uid === uid ? { ...r, enhance: r.enhance + 1 } : r)),
-  }));
+  return tryEnhance(
+    save,
+    ring.enhance,
+    ringPrice(ring),
+    ring.tier,
+    rng,
+    (paid) => ({
+      ...paid,
+      rings: paid.rings.map((r) => (r.uid === uid ? { ...r, enhance: r.enhance + 1 } : r)),
+    }),
+    chosen,
+  );
 }

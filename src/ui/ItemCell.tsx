@@ -129,11 +129,23 @@ export function ItemGrid({ children }: { children: ReactNode }) {
  * 반지 칸 (T17_7). 반지 그림이 아직 없어서 글자로 그린다 — 테두리 색이 등급, 아래 한 줄이 ★·강화다.
  * 비어 있으면 "반지"라고만 쓴다.
  */
-export function RingCell({ ring, onPress }: { ring?: Ring; onPress?: () => void }) {
+export function RingCell({
+  ring,
+  selected,
+  onPress,
+}: {
+  ring?: Ring;
+  selected?: boolean;
+  onPress?: () => void;
+}) {
   return (
     <Pressable
       onPress={onPress}
-      style={[styles.cell, { borderColor: ring ? rarity[ring.rarity] : colors.edge }]}
+      style={[
+        styles.cell,
+        { borderColor: ring ? rarity[ring.rarity] : colors.edge },
+        selected && styles.selected,
+      ]}
     >
       <Text size="xl" dim={!ring}>
         {ring ? '💍' : ''}

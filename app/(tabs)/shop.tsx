@@ -13,6 +13,7 @@ import {
 import {
   depositNet,
   enhancePick,
+  pickMaterials,
   ringEnhancePick,
   ringNext,
   ringPrice,
@@ -40,7 +41,8 @@ import { statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
-import { ItemCell, ItemGrid, ItemIcon, ItemInfo, Popup, qualityTag } from '@/ui/ItemCell';
+import { ItemCell, ItemGrid, ItemIcon, ItemInfo, Popup, qualityTag, RingCell } from '@/ui/ItemCell';
+import { MaterialPicker, usePicked } from '@/ui/MaterialPicker';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { RARITY_LABEL, RING_INFO, ringName, ringText } from '@/ui/rings';
@@ -82,6 +84,51 @@ function Row({
       </View>
       <Button label={action} disabled={disabled} tone={tone} onPress={onPress} />
     </View>
+  );
+}
+
+/**
+ * 한 줄 + 쓸 소재 고르기 (T17_7 검수 4차) — 장비 강화 · 반지 교환 · 올리기 · 강화가 같이 쓴다.
+ * 소재가 드는 줄이면 아래에 고르는 칸이 붙는다. 처음엔 가진 게 많은 곳부터 채워 두니 그냥 눌러도 된다.
+ * **부르는 쪽이 key에 단계를 넣는다** — 성공해서 단계가 오르면(쓸 개수가 바뀌면) 새로 채운다.
+ */
+function PickRow({
+  region,
+  need,
+  auto,
+  disabled,
+  onPress,
+  ...row
+}: {
+  title?: string;
+  detail: string;
+  action: string;
+  tone?: 'normal' | 'gold';
+  icon?: Equipment;
+  disabled?: boolean;
+  region: number;
+  /** 쓸 소재 수. 0이면 고르는 칸이 없다 */
+  need: number;
+  /** 알아서 고른 것 — 처음에 채워 둔다. 모자라면 null */
+  auto: readonly string[] | null;
+  onPress: (picked: string[]) => void;
+}) {
+  const owned = usePlayer((s) => s.save.materials);
+  const [picked, setPicked] = usePicked(auto);
+  return (
+    <>
+      <Row {...row} disabled={disabled || picked.length < need} onPress={() => onPress(picked)} />
+      {need > 0 && (
+        <MaterialPicker
+          region={region}
+          need={need}
+          distinct
+          owned={owned}
+          picked={picked}
+          onChange={setPicked}
+        />
+      )}
+    </>
   );
 }
 
@@ -185,6 +232,8 @@ export default function Shop() {
   /** 장비 목록을 격자로 볼지 (T17_6). 가방 탭처럼 그림 쪽이 기본이다 */
   const [grid, setGrid] = useState(true);
   const [slot, setSlot] = useState<GearSlot | null>(null);
+  /** 강화 탭 격자에서 연 반지 (T17_7 검수 4차) */
+  const [openRing, setOpenRing] = useState<string | null>(null);
 
   const region = regionById(save.regionProgress.current);
   const stats = statsOf(save);
@@ -229,13 +278,12 @@ export default function Shop() {
     const next = item.enhance + 1;
     const maxed = item.enhance >= ENHANCE_MAX;
     const cost = maxed ? 0 : enhanceCost(def.price, next);
-    // +6부터는 그 장비 지역의 서로 다른 사냥터 소재가 든다 (T17_6 검수)
+    // +6부터는 그 장비 지역의 서로 다른 사냥터 소재가 든다 (T17_6 검수) — 쓸 것을 고른다 (4차)
     const need = maxed ? 0 : enhanceMaterials(next);
-    const owned = regionById(def.region).fields.filter((f) => save.materials[f.id] > 0).length;
-    const short = need > 0 && enhancePick(save, item) === null;
     const worn = equipped.has(item.uid);
     return (
-      <Row
+      <PickRow
+        key={`${item.uid}-${item.enhance}`}
         icon={compact ? undefined : def}
         title={compact ? undefined : `${worn ? '[착용] ' : ''}${itemLabel(item)}`}
         detail={
@@ -243,16 +291,16 @@ export default function Shop() {
           (maxed
             ? '최대 단계입니다'
             : `+${next} 성공률 ${(enhanceRate(next) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
-              (need > 0
-                ? ` · ${regionById(def.region).name} 소재 ${need}종 (가진 ${owned}종)`
-                : '') +
               ` · +10까지 기대 ${enhanceExpected(def.price).gold.toLocaleString()}G`)
         }
         action={maxed ? '완료' : '강화'}
         tone={worn ? 'gold' : 'normal'}
-        disabled={maxed || gold < cost || short}
-        onPress={() => {
-          const r = enhance(item.uid);
+        disabled={maxed || gold < cost}
+        region={def.region}
+        need={need}
+        auto={need > 0 ? enhancePick(save, item) : null}
+        onPress={(picked) => {
+          const r = enhance(item.uid, need > 0 ? picked : undefined);
           if (!r) return;
           setLastEnhance(
             r.success
@@ -265,21 +313,20 @@ export default function Shop() {
       />
     );
   };
-  /** 그 지역에서 소재를 가진 사냥터 수 — 반지·강화는 "서로 다른 곳 N종"을 요구한다 */
-  const ownedKinds = (region: number) =>
-    regionById(region).fields.filter((f) => (save.materials[f.id] ?? 0) > 0).length;
   const worn = new Set(save.ringSlots);
 
-  /** 반지 하나 (T17_7) — 이름·효과, 그 아래 [올리기] · [강화] */
+  /**
+   * 반지 하나 (T17_7) — 이름·효과, 그 아래 [올리기] · [강화]. 강화 탭의 장신구에 같이 선다 (T17_7 검수 4차).
+   * 올려도 강화 단계는 그대로다 — 다음 등급 값에 지금 강화가 곱해진 값을 미리 보여준다.
+   */
   const ringBlock = (ring: Ring) => {
     const next = ringNext(ring);
     const maxed = ring.enhance >= ENHANCE_MAX;
     const step = ring.enhance + 1;
     const cost = maxed ? 0 : enhanceCost(ringPrice(ring), step);
     const need = maxed ? 0 : enhanceMaterials(step);
-    const region = regionById(ring.tier).name;
     return (
-      <View key={ring.uid} style={styles.ring}>
+      <>
         <Text color={rarity[ring.rarity]}>
           {ringName(ring)}
           {worn.has(ring.uid) ? ' [착용]' : ''}
@@ -287,43 +334,50 @@ export default function Shop() {
         <Text size="sm" dim>
           {RARITY_LABEL[ring.rarity]} · {ringText(ring)}
         </Text>
-        <Row
+        <PickRow
+          key={`up-${ring.uid}-${ring.tier}-${ring.rarity}`}
           detail={
             next
               ? `→ ${RARITY_LABEL[next.rarity]}${next.tier !== ring.tier ? ` ★${next.tier}` : ''} (` +
-                RING_INFO[ring.kind].effect(ringValue(ring.kind, next.tier, next.rarity, 0)) +
-                `) · ${regionById(next.tier).name} 소재 ${next.cost}종 (가진 ${ownedKinds(next.tier)}종)` +
-                (ring.enhance > 0 ? ` · 강화 +${ring.enhance} → +0` : '')
+                RING_INFO[ring.kind].effect(
+                  ringValue(ring.kind, next.tier, next.rarity, ring.enhance),
+                ) +
+                ')'
               : '★5 전설 — 더 못 올립니다'
           }
           action="올리기"
-          disabled={!next || ownedKinds(next.tier) < next.cost}
-          onPress={() =>
+          disabled={!next}
+          region={next?.tier ?? ring.tier}
+          need={next?.cost ?? 0}
+          auto={next ? pickMaterials(save, next.tier, next.cost, true) : null}
+          onPress={(picked) =>
             next &&
             confirm(
               '올릴까요?',
-              `${ringName(ring)} → ${RARITY_LABEL[next.rarity]} ★${next.tier}` +
-                (ring.enhance > 0 ? `\n강화 +${ring.enhance}는 +0으로 돌아갑니다` : ''),
+              `${ringName(ring)} → ${RARITY_LABEL[next.rarity]} ★${next.tier}`,
               '올리기',
               () => {
-                if (trade(trades.upgradeRing(ring.uid))) {
+                if (trade(trades.upgradeRing(ring.uid, picked))) {
                   setLastRing(`올렸습니다 — ${RING_INFO[ring.kind].name} ★${next.tier}`);
                 }
               },
             )
           }
         />
-        <Row
+        <PickRow
+          key={`en-${ring.uid}-${ring.enhance}`}
           detail={
             maxed
               ? '강화 최대 단계입니다'
-              : `+${step} 성공률 ${(enhanceRate(step) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
-                (need > 0 ? ` · ${region} 소재 ${need}종 (가진 ${ownedKinds(ring.tier)}종)` : '')
+              : `+${step} 성공률 ${(enhanceRate(step) * 100).toFixed(0)}% · ${cost.toLocaleString()}G`
           }
           action="강화"
-          disabled={maxed || gold < cost || (need > 0 && ringEnhancePick(save, ring) === null)}
-          onPress={() => {
-            const r = enhanceRing(ring.uid);
+          disabled={maxed || gold < cost}
+          region={ring.tier}
+          need={need}
+          auto={need > 0 ? ringEnhancePick(save, ring) : null}
+          onPress={(picked) => {
+            const r = enhanceRing(ring.uid, need > 0 ? picked : undefined);
             if (!r) return;
             setLastRing(
               r.success
@@ -334,9 +388,10 @@ export default function Shop() {
             );
           }}
         />
-      </View>
+      </>
     );
   };
+  const shownRing = save.rings.find((r) => r.uid === openRing);
 
   // 가방이 차면 사도 들어갈 데가 없다. 버튼만 안 먹으면 왜 안 되는지 모른다 (T17_3)
   const full = bagFull(save);
@@ -508,7 +563,7 @@ export default function Shop() {
               </Text>
               <Text size="sm" dim>
                 +6부터는 그 장비 지역의 소재가 서로 다른 사냥터에서 1 · 2 · 3 · 4 · 7종 듭니다 —
-                성공했을 때만 씁니다.
+                성공했을 때만 씁니다. 쓸 소재는 눌러서 고릅니다.
               </Text>
               <ItemList
                 items={upgradable}
@@ -522,6 +577,45 @@ export default function Shop() {
                 note={lastEnhance && <Text color={colors.gold}>{lastEnhance}</Text>}
               />
             </Panel>
+
+            {/* 반지는 장신구다 (T17_7 검수 4차) — 올리기와 강화를 여기서 한다 */}
+            {(slot === null || slot === 'accessory') && (
+              <Panel title={`반지 ${save.rings.length}개 — 올리기 · 강화`}>
+                {lastRing && <Text color={colors.gold}>{lastRing}</Text>}
+                <Text size="sm" dim>
+                  올리기: 등급을 하나씩, 전설 다음은 다음 지역 소재로 ★ 하나 위 일반이 됩니다 — 그
+                  순간은 전보다 약하지만 더 높이 갑니다. 소재만 들고, 강화 단계는 그대로입니다.
+                </Text>
+                {save.rings.length === 0 ? (
+                  <Text size="sm" dim>
+                    아직 없습니다. 반지 탭에서 소재로 바꿉니다.
+                  </Text>
+                ) : grid ? (
+                  <>
+                    <ItemGrid>
+                      {save.rings.map((ring) => (
+                        <RingCell
+                          key={ring.uid}
+                          ring={ring}
+                          selected={ring.uid === openRing}
+                          onPress={() => setOpenRing(ring.uid)}
+                        />
+                      ))}
+                    </ItemGrid>
+                    <Popup visible={shownRing !== undefined} onClose={() => setOpenRing(null)}>
+                      {shownRing && ringBlock(shownRing)}
+                      {lastRing && <Text color={colors.gold}>{lastRing}</Text>}
+                    </Popup>
+                  </>
+                ) : (
+                  save.rings.map((ring) => (
+                    <View key={ring.uid} style={styles.ring}>
+                      {ringBlock(ring)}
+                    </View>
+                  ))
+                )}
+              </Panel>
+            )}
           </>
         )}
 
@@ -606,50 +700,42 @@ export default function Shop() {
           </Panel>
         )}
 
+        {/* 반지 탭은 교환만 한다 (T17_7 검수 4차) — 올리기·강화는 강화 탭의 장신구, 끼기는 캐릭터 탭 */}
         {tab === '반지' && (
-          <>
-            <Panel title="새 반지">
-              <Text size="sm" dim>
-                {regionById(1).name}의 서로 다른 사냥터 소재 {RING_COST.exchange}개로 ★1 일반 반지를
-                하나 받습니다. 무엇이 나올지는 모릅니다(11종). 같은 반지 두 개를 같이 껴도 됩니다.
-              </Text>
-              <Row
-                title="반지 교환"
-                detail={`${regionById(1).name} 소재 ${RING_COST.exchange}종 (가진 ${ownedKinds(1)}종)`}
-                action="교환"
-                tone="gold"
-                disabled={ownedKinds(1) < RING_COST.exchange}
-                onPress={() =>
-                  confirm(
-                    '교환할까요?',
-                    `${regionById(1).name} 소재 ${RING_COST.exchange}종 → 무작위 반지 ★1 일반`,
-                    '교환',
-                    () => {
-                      if (trade(trades.exchangeRing())) {
-                        const got = usePlayer.getState().save.rings.at(-1)!;
-                        setLastRing(`${ringName(got)}을(를) 받았습니다 — ${ringText(got)}`);
-                      }
-                    },
-                  )
-                }
-              />
-            </Panel>
-
-            <Panel title={`가진 반지 ${save.rings.length}개 — 끼는 곳은 캐릭터 탭 장비`}>
-              {lastRing && <Text color={colors.gold}>{lastRing}</Text>}
-              <Text size="sm" dim>
-                올리기: 등급을 하나씩, 전설 다음은 다음 지역 소재로 ★ 하나 위 일반이 됩니다 — 그
-                순간은 전보다 약하지만 더 높이 갑니다. 소재만 들고, 강화는 +0으로 돌아갑니다.
-              </Text>
-              {save.rings.length === 0 ? (
-                <Text size="sm" dim>
-                  아직 없습니다. 소재는 6마리 판을 끝까지 깨면 하나 나옵니다.
-                </Text>
-              ) : (
-                save.rings.map(ringBlock)
-              )}
-            </Panel>
-          </>
+          <Panel title="새 반지">
+            <Text size="sm" dim>
+              {regionById(1).name}의 서로 다른 사냥터 소재 {RING_COST.exchange}개로 ★1 일반 반지를
+              하나 받습니다. 무엇이 나올지는 모릅니다(11종). 같은 반지 두 개를 같이 껴도 됩니다.
+            </Text>
+            {lastRing && <Text color={colors.gold}>{lastRing}</Text>}
+            <PickRow
+              key={`ex-${save.rings.length}`}
+              title="반지 교환"
+              detail="무작위 반지 ★1 일반"
+              action="교환"
+              tone="gold"
+              region={1}
+              need={RING_COST.exchange}
+              auto={pickMaterials(save, 1, RING_COST.exchange, true)}
+              onPress={(picked) =>
+                confirm(
+                  '교환할까요?',
+                  `${regionById(1).name} 소재 ${RING_COST.exchange}종 → 무작위 반지 ★1 일반`,
+                  '교환',
+                  () => {
+                    if (trade(trades.exchangeRing(picked))) {
+                      const got = usePlayer.getState().save.rings.at(-1)!;
+                      setLastRing(`${ringName(got)}을(를) 받았습니다 — ${ringText(got)}`);
+                    }
+                  },
+                )
+              }
+            />
+            <Text size="sm" dim>
+              가진 반지 {save.rings.length}개 — 올리기·강화는 강화 탭의 [장신구], 끼는 곳은 캐릭터
+              탭입니다.
+            </Text>
+          </Panel>
         )}
       </ScrollView>
     </SafeAreaView>

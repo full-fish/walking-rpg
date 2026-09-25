@@ -6,6 +6,7 @@ import { makeRng } from './battle';
 import {
   bagExpand,
   buyConsumable,
+  chooseMaterials,
   buyEquipment,
   depositNet,
   enhanceItem,
@@ -192,23 +193,52 @@ test('반지 교환 — 초원 소재 서로 다른 3곳 → ★1 일반, 효과
   expect(kinds.size).toBeGreaterThan(5);
 });
 
-test('반지 올리기 — 소재만 들고, 강화는 +0으로. 전설 다음은 다음 지역 소재로 ★2 일반 (T17_7)', () => {
+test('반지 올리기 — 소재만 들고, 강화는 그대로. 전설 다음은 다음 지역 소재로 ★2 일반 (T17_7)', () => {
   const ring = { uid: '1', kind: 'gold' as const, tier: 1, rarity: 'common' as const, enhance: 4 };
   const save: Save = { ...rich(0), rings: [ring], materials: materialsOf(1, 9) };
 
   expect(ringNext(ring)).toEqual({ tier: 1, rarity: 'uncommon', cost: RING_COST.rarity[0] });
   const up = upgradeRing(save, '1')!;
-  expect(up.rings[0]).toMatchObject({ tier: 1, rarity: 'uncommon', enhance: 0 });
+  // 강화 단계는 안 떨어진다 (T17_7 검수 4차 — 전에는 +0)
+  expect(up.rings[0]).toMatchObject({ tier: 1, rarity: 'uncommon', enhance: 4 });
 
   // 전설 → ★2 일반은 숲(지역 2) 소재가 든다. 초원 소재만으로는 못 간다
   const legend = { ...ring, rarity: 'legendary' as const };
   expect(ringNext(legend)).toEqual({ tier: 2, rarity: 'common', cost: RING_COST.tier });
   expect(upgradeRing({ ...save, rings: [legend] }, '1')).toBeNull();
   const tier2 = upgradeRing({ ...save, rings: [legend], materials: materialsOf(2, 1) }, '1')!;
-  expect(tier2.rings[0]).toMatchObject({ tier: 2, rarity: 'common', enhance: 0 });
+  expect(tier2.rings[0]).toMatchObject({ tier: 2, rarity: 'common', enhance: 4 });
 
   // ★5 전설이 끝이다
   expect(ringNext({ ...ring, tier: 5, rarity: 'legendary' })).toBeNull();
+});
+
+test('소재를 고른 대로 쓴다 — 그 지역 · 정확한 개수 · 가진 만큼 · 서로 다른 곳 (T17_7 검수 4차)', () => {
+  const [a, b, c, d] = regionById(1).fields.map((f) => f.id);
+  const save: Save = { ...rich(0), materials: { [a]: 2, [b]: 1, [c]: 1, [d]: 0 } };
+  expect(chooseMaterials(save, 1, 3, true, [a, b, c])).toEqual([a, b, c]);
+  expect(chooseMaterials(save, 1, 3, true, [a, a, b]), '서로 다른 곳이어야 한다').toBeNull();
+  expect(chooseMaterials(save, 1, 3, false, [a, a, b]), '보스 버프는 같은 곳도 된다').toEqual([
+    a,
+    a,
+    b,
+  ]);
+  expect(chooseMaterials(save, 1, 3, false, [b, b, a]), '가진 것보다 많이').toBeNull();
+  expect(chooseMaterials(save, 1, 2, true, [a, d]), '없는 소재').toBeNull();
+  expect(chooseMaterials(save, 1, 2, true, [a]), '개수가 모자람').toBeNull();
+  const forest = regionById(2).fields[0].id;
+  expect(chooseMaterials({ ...save, materials: { [forest]: 5 } }, 1, 1, true, [forest])).toBeNull();
+  // 안 고르면 가진 게 많은 곳부터 알아서 고른다 — 시뮬과 같은 길
+  expect(chooseMaterials(save, 1, 1, true)).toEqual([a]);
+
+  // 반지 올리기에 고른 소재가 그대로 빠진다
+  const ring = { uid: '1', kind: 'gold' as const, tier: 1, rarity: 'common' as const, enhance: 0 };
+  const up = upgradeRing(
+    { ...save, materials: { [a]: 2, [b]: 1, [c]: 1, [d]: 1 }, rings: [ring] },
+    '1',
+    [b, c, d],
+  )!;
+  expect(up.materials).toEqual({ [a]: 2 });
 });
 
 test('반지 강화 — 장비와 같은 표. +6부터 그 ★ 지역 소재가 성공할 때만 든다 (T17_7)', () => {

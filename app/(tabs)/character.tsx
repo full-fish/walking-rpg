@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GEAR_SLOT_LABELS } from '@/content';
+import { GEAR_SLOT_LABELS, REGIONS } from '@/content';
 import { expToNext, GEAR_SLOTS, STAT_PER_POINT, type GearSlot } from '@/game/formulas';
 import {
   bagFull,
@@ -94,7 +94,8 @@ export default function Character() {
   /** 장비·가방 모두 보기 방식을 고를 수 있다 (T17_1). 취향이라 기본은 그림 쪽으로 둔다 */
   const [doll, setDoll] = useState(true);
   const [grid, setGrid] = useState(true);
-  const [filter, setFilter] = useState<GearSlot | null>(null);
+  /** 부위 · 전체(null) · 소재 (T17_7 검수 4차 — 가방에서 소재를 본다) */
+  const [filter, setFilter] = useState<GearSlot | '소재' | null>(null);
   /** 빈 칸을 누르면 그 부위에 낄 수 있는 것들을 편다 (T17_2) */
   const [picking, setPicking] = useState<GearSlot | null>(null);
   /** 빈 반지 칸을 누르면 안 낀 반지들을 편다 (T17_7) */
@@ -145,6 +146,13 @@ export default function Character() {
     setPicking(null);
   };
   const spareRings = save.rings.filter((r) => !save.ringSlots.includes(r.uid));
+  /** 가방의 반지 — 안 낀 것. 장신구라 전체·장신구에 같이 선다 (T17_7 검수 4차). 칸은 안 쓴다 */
+  const bagRings = filter === null || filter === 'accessory' ? spareRings : [];
+  /** 가방에서 반지를 누르면 빈 반지 칸에, 둘 다 차 있으면 첫 칸에 낀다 */
+  const wearRing = (uid: string) => {
+    const empty = save.ringSlots.indexOf(null);
+    trade(trades.equipRing(uid, empty < 0 ? 0 : empty));
+  };
 
   /** 그 부위에 지금 낄 수 있는 것들. 센 것부터 — 고르려고 여는 목록이라서다 */
   const candidates = (slot: GearSlot) =>
@@ -444,53 +452,99 @@ export default function Character() {
                   onPress={() => setFilter(slot)}
                 />
               ))}
+              <Button
+                label="소재"
+                tone={filter === '소재' ? 'gold' : 'normal'}
+                onPress={() => setFilter('소재')}
+              />
             </View>
 
-            <Panel title={`가방 ${unworn.length} / ${save.bag.capacity}`}>
-              {bag.length === 0 ? (
-                <Text size="sm" dim>
-                  비어 있습니다.
-                </Text>
-              ) : grid ? (
-                <ItemGrid>
-                  {bag.map((item) => {
-                    const locked = save.player.level < itemDef(item).level;
-                    return (
-                      <Slot
-                        key={item.uid}
-                        item={item}
-                        dim={locked}
-                        onPress={() => !locked && equip(item.uid)}
+            {/* 소재 (T17_7 검수 4차) — 지역마다 사냥터 일곱 곳의 소재와 가진 수. 칸은 안 쓴다 */}
+            {filter === '소재' ? (
+              REGIONS.map((region) => (
+                <Panel
+                  key={region.id}
+                  title={`${region.id}. ${region.name} — ${region.fields.reduce((n, f) => n + (save.materials[f.id] ?? 0), 0)}개`}
+                >
+                  {region.fields.map((f) => (
+                    <View key={f.id} style={styles.row}>
+                      <Text size="sm" dim={!save.materials[f.id]}>
+                        {f.material.name}
+                      </Text>
+                      <Text size="sm" dim={!save.materials[f.id]}>
+                        {f.name} · {save.materials[f.id] ?? 0}개
+                      </Text>
+                    </View>
+                  ))}
+                </Panel>
+              ))
+            ) : (
+              <Panel title={`가방 ${unworn.length} / ${save.bag.capacity}`}>
+                {bag.length === 0 && bagRings.length === 0 ? (
+                  <Text size="sm" dim>
+                    비어 있습니다.
+                  </Text>
+                ) : grid ? (
+                  <ItemGrid>
+                    {bag.map((item) => {
+                      const locked = save.player.level < itemDef(item).level;
+                      return (
+                        <Slot
+                          key={item.uid}
+                          item={item}
+                          dim={locked}
+                          onPress={() => !locked && equip(item.uid)}
+                        />
+                      );
+                    })}
+                    {bagRings.map((ring) => (
+                      <RingCell
+                        key={`ring${ring.uid}`}
+                        ring={ring}
+                        onPress={() => wearRing(ring.uid)}
                       />
-                    );
-                  })}
-                </ItemGrid>
-              ) : (
-                bag.map((item) => {
-                  const def = itemDef(item);
-                  const locked = save.player.level < def.level;
-                  return (
-                    <View key={item.uid} style={styles.row}>
-                      <View style={styles.itemRow}>
-                        <Icon item={item} size={36} />
+                    ))}
+                  </ItemGrid>
+                ) : (
+                  <>
+                    {bagRings.map((ring) => (
+                      <View key={`ring${ring.uid}`} style={styles.row}>
                         <View style={styles.name}>
-                          <Text color={rarity[def.rarity]}>
-                            {def.name}
-                            {item.enhance > 0 ? ` +${item.enhance}` : ''} (
-                            {Math.round(item.quality * 100)}%)
-                          </Text>
+                          <Text color={rarity[ring.rarity]}>{ringName(ring)}</Text>
                           <Text size="sm" dim>
-                            {GEAR_SLOT_LABELS[def.slot]} · {statLine(item)}
-                            {locked ? ` · 요구 Lv${def.level}` : ''}
+                            반지 · {ringText(ring)}
                           </Text>
                         </View>
+                        <Button label="장착" onPress={() => wearRing(ring.uid)} />
                       </View>
-                      <Button label="장착" disabled={locked} onPress={() => equip(item.uid)} />
-                    </View>
-                  );
-                })
-              )}
-            </Panel>
+                    ))}
+                    {bag.map((item) => {
+                      const def = itemDef(item);
+                      const locked = save.player.level < def.level;
+                      return (
+                        <View key={item.uid} style={styles.row}>
+                          <View style={styles.itemRow}>
+                            <Icon item={item} size={36} />
+                            <View style={styles.name}>
+                              <Text color={rarity[def.rarity]}>
+                                {def.name}
+                                {item.enhance > 0 ? ` +${item.enhance}` : ''} (
+                                {Math.round(item.quality * 100)}%)
+                              </Text>
+                              <Text size="sm" dim>
+                                {GEAR_SLOT_LABELS[def.slot]} · {statLine(item)}
+                                {locked ? ` · 요구 Lv${def.level}` : ''}
+                              </Text>
+                            </View>
+                          </View>
+                          <Button label="장착" disabled={locked} onPress={() => equip(item.uid)} />
+                        </View>
+                      );
+                    })}
+                  </>
+                )}
+              </Panel>
+            )}
           </>
         )}
       </ScrollView>
