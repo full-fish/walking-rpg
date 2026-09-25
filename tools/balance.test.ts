@@ -11,6 +11,7 @@ import { expect, test } from 'vitest';
 
 import {
   bossOf,
+  consumableById,
   CONSUMABLES,
   fieldDropTier,
   fieldLevel,
@@ -21,10 +22,14 @@ import {
   REGIONS,
 } from '../src/content';
 import { makeRng } from '../src/game/battle';
+import { regionPotion, rewardGold } from '../src/game/daily';
+import { DEX_MONSTERS, dexStat } from '../src/game/dex';
 import {
   BASE_STATS,
   BOSS_DROP_RARITY,
   combatStats,
+  DEX,
+  DEX_MAX,
   DROP_RARITY,
   DROP_RATE,
   enhanceCost,
@@ -58,14 +63,20 @@ import {
   RUN_SIZE_WEIGHTS,
   SHOP_RARITIES,
   SPD_RATIO_MAX,
+  SPENDABLE_STATS,
   STARTING_STATS,
   STAT_PER_POINT,
+  STEP_GOAL,
+  STEP_GOAL_REWARDS,
+  STREAK_REWARDS,
   WP_COST,
+  type DailyReward,
 } from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
 import { statsOf } from '../src/game/progression';
 import { enterBoss } from '../src/game/region';
 import type { Save } from '../src/save/schema';
+import { DEX_REVEAL, STAT_LABEL } from '../src/ui/dexText';
 import { RARITY_LABEL, RING_INFO } from '../src/ui/rings';
 import { baselineSave, BUILDS, dayAtLevel, fight, simulate, type DayLog } from './simulate';
 
@@ -617,6 +628,86 @@ test('balance.md — 게임 숫자 한눈에', () => {
     ),
   );
   out.push('\n강화 +6~+10(장비 한 점 17개)과 보스 버프(관문마다 3개)도 같은 소재를 쓴다.\n');
+
+  // ── 걸음 목표 · 출석 · 도감 (T19)
+  const reward = (r: DailyReward, region: number) =>
+    [
+      r.gold && `${n0(rewardGold(r, region))}G`,
+      r.potion && `${consumableById(regionPotion(region)).name} ${r.potion}`,
+      r.material && `소재 ${r.material}`,
+      r.gear && '장비 (희귀 50 · 영웅 30 · 전설 20%)',
+    ]
+      .filter(Boolean)
+      .join(' + ');
+  h(
+    '11. 걸음 목표 · 출석 · 도감 (T19)',
+    '둘 다 [받기]를 눌러야 들어온다. 값은 받는 날 있는 지역 기준. 시뮬은 매일 켜서 1만 보 → 목표 두 칸 + 출석을 받는다.',
+  );
+  out.push(
+    table(
+      ['걸음 목표', '지역 1', '지역 5'],
+      STEP_GOAL_REWARDS.map((r, i) => [
+        `${n0((i + 1) * STEP_GOAL)}보`,
+        reward(r, 1),
+        reward(r, REGIONS.length),
+      ]),
+    ),
+  );
+  out.push('\n');
+  out.push(
+    table(
+      ['출석 (연속)', '지역 1', '지역 5'],
+      STREAK_REWARDS.map((r, i) => [`${i + 1}일째`, reward(r, 1), reward(r, REGIONS.length)]),
+    ),
+  );
+  out.push('\n하루라도 빠지면 1일째부터. 7일째 다음 날은 다시 1일째 칸.\n');
+
+  const dexAt = (min: number) =>
+    REGIONS.map((r) =>
+      n1(
+        mean(
+          balanced.map(
+            (run) => DEX_MONSTERS.get(r.id)!.filter((m) => (run.save.dex[m.id] ?? 0) >= min).length,
+          ),
+        ),
+      ),
+    );
+  out.push('\n**도감 단계** — 테두리는 장비 등급 색\n');
+  out.push(
+    table(
+      ['처치', '테두리', '열리는 것'],
+      DEX.steps.map((s, i) => [s, RARITY_LABEL[RARITIES[i]], DEX_REVEAL[i]]),
+    ),
+  );
+  out.push(
+    `\n사냥터 하나를 다 채우면 스탯 포인트 +${DEX.fieldPoints}, 지역 하나를 다 채우면 네 스탯 +${DEX.regionStat}. ` +
+      `보스는 한 번 잡으면 끝 단계(스탯 없음).\n`,
+  );
+  const species = [...DEX_MONSTERS.values()].flat();
+  out.push('\n**원형 → 100마리 스탯**\n');
+  out.push(
+    table(
+      ['스탯', '종 수'],
+      SPENDABLE_STATS.map((k) => [STAT_LABEL[k], species.filter((m) => dexStat(m) === k).length]),
+    ),
+  );
+  const all =
+    species.length * DEX.cardStat + REGIONS.length * SPENDABLE_STATS.length * DEX.regionStat;
+  out.push(
+    `\n다 채우면 1차 스탯 +${all} · 스탯 포인트 +${REGIONS.flatMap((r) => r.fields).length * DEX.fieldPoints}.\n`,
+  );
+  out.push('\n**Lv50에 닿았을 때 도감** (시뮬 균등, 종 수)\n');
+  out.push(
+    table(
+      ['', ...REGIONS.map((r) => `지역 ${r.id}`)],
+      [
+        ['종', ...REGIONS.map((r) => DEX_MONSTERS.get(r.id)!.length)],
+        ['1마리+', ...dexAt(1)],
+        [`${DEX.dropAt}마리+ (드랍 ×${DEX.dropMult})`, ...dexAt(DEX.dropAt)],
+        [`${DEX_MAX}마리 (스탯)`, ...dexAt(DEX_MAX)],
+      ],
+    ),
+  );
 
   writeFileSync(OUT, out.join('\n') + '\n');
   expect(lv50(balanced)).toBeDefined();

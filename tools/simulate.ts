@@ -32,6 +32,7 @@ import {
   sellItem,
   stayInn,
 } from '../src/game/economy';
+import { claimGoals, claimStreak } from '../src/game/daily';
 import { currentMonster, drinkPotion, enterField, settleRun } from '../src/game/field';
 import {
   MATERIAL_BUFF,
@@ -53,6 +54,7 @@ import {
 import { bagItems, equippedItems, itemDef, itemPower, makeItem } from '../src/game/items';
 import { addItem, applyRegen, equipItem, newGame, statsOf } from '../src/game/progression';
 import { bossCost, bossState, enterBoss, travel, unlockCost, unlockNext } from '../src/game/region';
+import { dayKey } from '../src/health/steps';
 import { defaultSave, type ItemInstance, type Save } from '../src/save/schema';
 
 type StatPoints = Save['statPoints'];
@@ -440,7 +442,18 @@ export function simulate(opts: SimOptions, seed = 1) {
   const log: DayLog[] = [];
 
   for (let day = 1; day <= opts.maxDays && save.player.level < opts.maxLevel; day++) {
-    save = { ...save, wp: { ...save.wp, current: save.wp.current + opts.steps + MIDNIGHT_WP } };
+    // 걸음 목표 · 출석 (T19) — 기준선은 매일 켜서 아침에 받는다. 1만 보면 목표 두 칸
+    const date = new Date(day * 86_400_000);
+    save = {
+      ...save,
+      wp: {
+        ...save.wp,
+        current: save.wp.current + opts.steps + MIDNIGHT_WP,
+        grantedByDate: { [dayKey(date)]: opts.steps },
+      },
+    };
+    save = claimGoals(save, date, rng)?.save ?? save;
+    save = claimStreak(save, date, rng)?.save ?? save;
 
     const today = {
       entries: 0,
