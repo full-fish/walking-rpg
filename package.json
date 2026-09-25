@@ -19,7 +19,8 @@
     "gen": "vitest run tools/gen-content.test.ts --disable-console-intercept",
     "bench": "vitest run tools/battle-bench.test.ts --disable-console-intercept",
     "sim": "vitest run tools/simulate.test.ts --disable-console-intercept",
-    "validate": "vitest run tools/validate-content.test.ts --disable-console-intercept"
+    "validate": "vitest run tools/validate-content.test.ts --disable-console-intercept",
+    "balance": "vitest run tools/balance.test.ts --disable-console-intercept"
   },
   "dependencies": {
     "expo": "~57.0.24",
