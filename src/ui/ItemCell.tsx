@@ -6,6 +6,7 @@ import { itemLabel, itemStats, statText } from '@/game/items';
 import type { ItemInstance, Ring } from '@/save/schema';
 import { itemIcons } from '@/ui/itemIcons';
 import { Panel } from '@/ui/Panel';
+import { RARITY_LABEL, ringName, ringText } from '@/ui/rings';
 import { Text } from '@/ui/Text';
 import { border, colors, rarity, space } from '@/ui/theme';
 
@@ -18,6 +19,28 @@ export function ItemIcon({ def, size }: { def?: Equipment; size: number }) {
   const box = { width: size, height: size };
   if (!source) return <View style={box} />;
   return <Image source={source} style={box} resizeMode="contain" />;
+}
+
+/**
+ * 목록 줄 앞의 그림 (T17_7 검수 5차) — 격자 칸처럼 **테두리 색이 등급**이다.
+ * 전에는 목록에서 이름 글자색만 등급을 따라서 한눈에 안 갈렸다. 반지는 그림이 없어 💍로 그린다.
+ */
+export function ListIcon({
+  def,
+  ring,
+  size = 36,
+}: {
+  def?: Equipment;
+  ring?: Ring;
+  size?: number;
+}) {
+  const tone = def?.rarity ?? ring?.rarity;
+  const box = { width: size + border * 2, height: size + border * 2 };
+  return (
+    <View style={[styles.listIcon, box, { borderColor: tone ? rarity[tone] : colors.edge }]}>
+      {ring ? <Text>💍</Text> : <ItemIcon def={def} size={size} />}
+    </View>
+  );
 }
 
 /**
@@ -127,7 +150,7 @@ export function ItemGrid({ children }: { children: ReactNode }) {
 
 /**
  * 반지 칸 (T17_7). 반지 그림이 아직 없어서 글자로 그린다 — 테두리 색이 등급, 아래 한 줄이 ★·강화다.
- * 비어 있으면 "반지"라고만 쓴다.
+ * 비어 있으면 "반지"라고만 쓴다. **꾹 누르면 이름과 효과가 뜬다** — 장비 칸과 같다 (T17_7 검수 5차).
  */
 export function RingCell({
   ring,
@@ -138,24 +161,42 @@ export function RingCell({
   selected?: boolean;
   onPress?: () => void;
 }) {
+  const [info, setInfo] = useState(false);
   return (
-    <Pressable
-      onPress={onPress}
-      style={[
-        styles.cell,
-        { borderColor: ring ? rarity[ring.rarity] : colors.edge },
-        selected && styles.selected,
-      ]}
-    >
-      <Text size="xl" dim={!ring}>
-        {ring ? '💍' : ''}
-      </Text>
-      <View style={styles.tag}>
-        <Text size="sm" dim={!ring}>
-          {ring ? `★${ring.tier}${ring.enhance > 0 ? ` +${ring.enhance}` : ''}` : '반지'}
+    <>
+      <Pressable
+        onPress={onPress}
+        onLongPress={ring && (() => setInfo(true))}
+        style={[
+          styles.cell,
+          { borderColor: ring ? rarity[ring.rarity] : colors.edge },
+          selected && styles.selected,
+        ]}
+      >
+        <Text size="xl" dim={!ring}>
+          {ring ? '💍' : ''}
         </Text>
-      </View>
-    </Pressable>
+        <View style={styles.tag}>
+          <Text size="sm" dim={!ring}>
+            {ring ? `★${ring.tier}${ring.enhance > 0 ? ` +${ring.enhance}` : ''}` : '반지'}
+          </Text>
+        </View>
+      </Pressable>
+      {ring && (
+        <Popup visible={info} onClose={() => setInfo(false)}>
+          <View style={styles.infoHead}>
+            <ListIcon ring={ring} />
+            <View style={styles.infoName}>
+              <Text color={rarity[ring.rarity]}>{ringName(ring)}</Text>
+              <Text size="sm" dim>
+                반지 · {RARITY_LABEL[ring.rarity]}
+              </Text>
+            </View>
+          </View>
+          <Text>{ringText(ring)}</Text>
+        </Popup>
+      )}
+    </>
   );
 }
 
@@ -176,6 +217,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   selected: { backgroundColor: colors.edgeLit },
+  listIcon: { borderWidth: border, alignItems: 'center', justifyContent: 'center' },
   backdrop: {
     flex: 1,
     justifyContent: 'center',

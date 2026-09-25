@@ -5,7 +5,7 @@ import type { Equipment } from '@/content';
 import type { BattleEvent } from '@/game/battle';
 import { monsterIcons } from '@/ui/monsterIcons';
 import { Text } from '@/ui/Text';
-import { border, colors } from '@/ui/theme';
+import { border, colors, critColor } from '@/ui/theme';
 
 /** 무대 높이와 보스 그림 크기 (T17_7 검수 4차). 보스가 한가운데 — 나는 화면 이쪽(카메라)이다 */
 const STAGE = 260;
@@ -73,7 +73,8 @@ function streak(draw: Animated.Value, fade: Animated.Value, ms: number, peak = 1
  * `step`이 바뀔 때마다 한 번 움직인다(물약으로 이어 붙인 구간은 seq가 0부터 다시 세서 seq로는 못 가른다).
  *
  *   내 공격  보스 위로 하얀 베기 자국 → 보스가 떨며 하얗게 번쩍인다. 숫자가 보스 위로 뜬다
- *   치명타   X자로 두 번 긋는 금색 자국. 떨림이 크고 무대 전체가 번쩍인다
+ *   치명타   X자로 두 번 긋는 자국. 색은 치명 배율(`crd`)을 따른다 — 2배 미만 금색 → 2 · 2.5 · 3배에서 붉어진다
+ *            (T17_7 검수 5차). 떨림이 크고 무대 전체가 번쩍인다
  *   빗나감   자국이 흐리게 지나가고 보스가 옆으로 비킨다
  *   보스 공격 보스가 화면 쪽으로 덮쳐 오고 → 붉은 할퀸 자국 셋 · 화면이 흔들리며 붉게 번쩍인다. 숫자는 아래
  *   회피     보스가 덮쳐 오는데 화면(내 시점)이 옆으로 비킨다
@@ -83,9 +84,12 @@ export function BossStage({
   name,
   last,
   step,
+  crd,
 }: {
   sprite: string;
   name: string;
+  /** 내 치명 배율 — 치명타 X자 색을 정한다 */
+  crd: number;
   /** 칼 버전(BossStageSword)과 같은 모양으로 받으려고 둔다 — 여기서는 안 쓴다 */
   weapon?: Equipment;
   last?: BattleEvent;
@@ -108,8 +112,8 @@ export function BossStage({
   const crit = last?.type === 'crit';
   // 무대 번쩍임 색 — 내가 치명타를 내면 하얗게, 내가 맞으면 붉게
   const tint = last?.actor === 'monster' ? colors.hp : colors.text;
-  // 베기 자국 색 — 치명타는 금색
-  const edge = crit ? colors.gold : colors.text;
+  // 베기 자국 색 — 치명타는 배율 따라 금색에서 붉은색으로
+  const edge = crit ? critColor(crd) : colors.text;
 
   useEffect(() => {
     if (!last) return;

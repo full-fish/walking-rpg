@@ -2,7 +2,7 @@
  * 반지 이름과 효과 문구 (T17_7). 상점·캐릭터 탭이 같이 쓴다 — 화면마다 적으면 갈라진다.
  * 값은 formulas의 ringValue가 정하고, 여기서는 읽는 말로만 바꾼다.
  */
-import { BOSS_BUFF, type GridRarity, type RingKind } from '@/game/formulas';
+import { MATERIAL_BUFF, type GridRarity, type RingKind } from '@/game/formulas';
 import { ringEffect } from '@/game/items';
 import type { Ring } from '@/save/schema';
 
@@ -21,7 +21,8 @@ export const RING_INFO: Record<RingKind, { name: string; effect: (v: number) => 
   shield: { name: '수호자의 반지', effect: (v) => `전투 시작 보호막 — 최대 HP의 ${pct(v)}` },
   bossBuff: {
     name: '결의의 반지',
-    effect: (v) => `보스 버프 하나가 ×${BOSS_BUFF.mult} → ×${(BOSS_BUFF.mult + v).toFixed(3)}`,
+    effect: (v) =>
+      `소재 버프 하나가 ×${MATERIAL_BUFF.mult} → ×${(MATERIAL_BUFF.mult + v).toFixed(3)}`,
   },
   bossDamage: { name: '용사의 반지', effect: (v) => `보스에게 주는 피해 +${pct(v)}` },
 };

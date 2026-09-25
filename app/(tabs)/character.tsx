@@ -25,7 +25,7 @@ import type { ItemInstance } from '@/save/schema';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
-import { EmptyCell, ItemCell, ItemGrid, ItemIcon, qualityTag, RingCell } from '@/ui/ItemCell';
+import { EmptyCell, ItemCell, ItemGrid, ListIcon, qualityTag, RingCell } from '@/ui/ItemCell';
 import { Panel } from '@/ui/Panel';
 import { ringName, ringText } from '@/ui/rings';
 import { Text } from '@/ui/Text';
@@ -342,15 +342,18 @@ export default function Character() {
                   const ring = ringIn(slot);
                   return (
                     <View key={`ring${slot}`} style={styles.row}>
-                      <View style={styles.name}>
-                        <Text color={ring && rarity[ring.rarity]}>
-                          반지 {slot + 1} — {ring ? ringName(ring) : '비어 있음'}
-                        </Text>
-                        {ring ? (
-                          <Text size="sm" dim>
-                            {ringText(ring)}
+                      <View style={styles.itemRow}>
+                        <ListIcon ring={ring} />
+                        <View style={styles.name}>
+                          <Text color={ring && rarity[ring.rarity]}>
+                            반지 {slot + 1} — {ring ? ringName(ring) : '비어 있음'}
                           </Text>
-                        ) : null}
+                          {ring ? (
+                            <Text size="sm" dim>
+                              {ringText(ring)}
+                            </Text>
+                          ) : null}
+                        </View>
                       </View>
                       <Button
                         label={ring ? '해제' : '고르기'}
@@ -380,11 +383,14 @@ export default function Character() {
                 ) : (
                   spareRings.map((ring) => (
                     <View key={ring.uid} style={styles.row}>
-                      <View style={styles.name}>
-                        <Text color={rarity[ring.rarity]}>{ringName(ring)}</Text>
-                        <Text size="sm" dim>
-                          {ringText(ring)}
-                        </Text>
+                      <View style={styles.itemRow}>
+                        <ListIcon ring={ring} />
+                        <View style={styles.name}>
+                          <Text color={rarity[ring.rarity]}>{ringName(ring)}</Text>
+                          <Text size="sm" dim>
+                            {ringText(ring)}
+                          </Text>
+                        </View>
                       </View>
                       <Button
                         label="장착"
@@ -521,11 +527,14 @@ export default function Character() {
                   <>
                     {bagRings.map((ring) => (
                       <View key={`ring${ring.uid}`} style={styles.row}>
-                        <View style={styles.name}>
-                          <Text color={rarity[ring.rarity]}>{ringName(ring)}</Text>
-                          <Text size="sm" dim>
-                            반지 · {ringText(ring)}
-                          </Text>
+                        <View style={styles.itemRow}>
+                          <ListIcon ring={ring} />
+                          <View style={styles.name}>
+                            <Text color={rarity[ring.rarity]}>{ringName(ring)}</Text>
+                            <Text size="sm" dim>
+                              반지 · {ringText(ring)}
+                            </Text>
+                          </View>
                         </View>
                         <Button label="장착" onPress={() => wearRing(ring.uid)} />
                       </View>
@@ -564,9 +573,9 @@ export default function Character() {
   );
 }
 
-/** 개체 아이콘. 그림은 정의(sprite)를 따른다. */
+/** 목록 줄의 개체 아이콘 — 그림은 정의(sprite), 테두리는 등급 (T17_7 검수 5차) */
 function Icon({ item, size }: { item?: ItemInstance; size: number }) {
-  return <ItemIcon def={item && itemDef(item)} size={size} />;
+  return <ListIcon def={item && itemDef(item)} size={size} />;
 }
 
 /**

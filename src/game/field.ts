@@ -22,19 +22,21 @@ import type { ItemInstance, Save } from '../save/schema';
 import type { Outcome } from './battle';
 import {
   BOSS_DROP_RARITY,
+  BUFF_STATS,
   CLEAR_BONUS_RATE,
   DROP_RARITY,
   DROP_RATE,
   GEAR_SLOTS,
   GEAR_TIERS,
   GEAR_TIERS_PER_REGION,
+  MATERIAL_BUFF,
   materialChance,
   POTION_CARRY_MAX,
   rollRarity,
   rollRunSize,
   WP_COST,
 } from './formulas';
-import { potionHeal } from './economy';
+import { chooseMaterials, pickMaterials, potionHeal, spendMaterials } from './economy';
 import { bagFull, makeItem, ringBonus } from './items';
 import {
   addItem,
@@ -168,6 +170,31 @@ export function drinkPotion(save: Save, id: string, atHp = save.player.hp): Save
     player: { ...save.player, hp: Math.min(maxHp, atHp + healed) },
     run: { ...run, potions },
   };
+}
+
+/**
+ * 판 안에서 소재를 써 버프를 붙인다 (MATERIAL_BUFF, T17_7 검수 5차) — 하나에 하나씩 무작위, 그 판이 끝날 때까지.
+ * 사냥터·보스 둘 다 여기를 지난다. 한 판에 3개까지, **지금 지역**의 소재만.
+ * `materials`는 개수(알아서 고름 — 시뮬)거나 **고른 소재 목록**(화면)이다. 판 밖이거나 모자라거나 자리가 없으면 null.
+ */
+export function addBuffs(
+  save: Save,
+  materials: number | readonly string[],
+  rng: () => number = Math.random,
+): Save | null {
+  const run = save.run;
+  if (!run) return null;
+  const room = MATERIAL_BUFF.max - run.buffs.length;
+  const region = save.regionProgress.current;
+  const n = typeof materials === 'number' ? materials : materials.length;
+  if (n <= 0 || n > room) return null;
+  const used =
+    typeof materials === 'number'
+      ? pickMaterials(save, region, n, false)
+      : chooseMaterials(save, region, n, false, materials);
+  if (!used) return null;
+  const rolled = used.map(() => BUFF_STATS[Math.floor(rng() * BUFF_STATS.length)]);
+  return { ...spendMaterials(save, used), run: { ...run, buffs: [...run.buffs, ...rolled] } };
 }
 
 export type RunResult = Settlement & {

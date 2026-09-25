@@ -210,6 +210,7 @@ export default function Battle() {
             weapon={weapon && itemDef(weapon)}
             last={last}
             step={cursor}
+            crd={battle.player.crd}
           />
         ) : (
           <View style={styles.popup}>

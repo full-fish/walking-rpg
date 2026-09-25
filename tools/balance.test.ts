@@ -23,7 +23,6 @@ import {
 import { makeRng } from '../src/game/battle';
 import {
   BASE_STATS,
-  BOSS_BUFF,
   BOSS_DROP_RARITY,
   combatStats,
   DROP_RARITY,
@@ -39,6 +38,7 @@ import {
   expToNext,
   gearShare,
   GEAR_SLOTS,
+  MATERIAL_BUFF,
   MATERIAL_CHANCE,
   materialChance,
   MIDNIGHT_WP,
@@ -155,7 +155,7 @@ const transpose = (cols: number[][]) => cols[0].map((_, i) => cols.map((c) => c[
 function bossRate(region: number, buffs: number, runs = 500): number {
   const r = REGIONS.find((x) => x.id === region)!;
   const base = baselineSave(r.levelRange[1], region);
-  const materials = Object.fromEntries(r.fields.slice(0, BOSS_BUFF.max).map((f) => [f.id, 1]));
+  const materials = Object.fromEntries(r.fields.slice(0, MATERIAL_BUFF.max).map((f) => [f.id, 1]));
   let wins = 0;
   for (let seed = 1; seed <= runs; seed++) {
     const rng = makeRng(seed);

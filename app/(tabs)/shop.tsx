@@ -41,7 +41,7 @@ import { statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
-import { ItemCell, ItemGrid, ItemIcon, ItemInfo, Popup, qualityTag, RingCell } from '@/ui/ItemCell';
+import { ItemCell, ItemGrid, ItemInfo, ListIcon, Popup, qualityTag, RingCell } from '@/ui/ItemCell';
 import { MaterialPicker, usePicked } from '@/ui/MaterialPicker';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
@@ -74,7 +74,7 @@ function Row({
   return (
     <View style={styles.row}>
       <View style={styles.itemRow}>
-        {icon && <ItemIcon def={icon} size={36} />}
+        {icon && <ListIcon def={icon} />}
         <View style={styles.name}>
           {title ? <Text>{title}</Text> : null}
           <Text size="sm" dim>

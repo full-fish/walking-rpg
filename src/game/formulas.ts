@@ -663,13 +663,14 @@ export function enhanceMaterials(next: number): number {
 }
 
 /**
- * 보스 버프 (T17_6 검수) — 보스에 들어갈 때 **그 지역 소재를 최대 3개** 쓰면 하나에 하나씩, 전투력 탭의
- * 값 중 하나가 무작위로 ×1.1이 된다(지금 값에 곱한다. 같은 게 두 번 나오면 ×1.21). 그 판에만 붙는다.
+ * 소재 버프 (T17_6 검수 → T17_7 검수 5차) — 판 안에서 **그 지역 소재를 최대 3개** 쓰면 하나에 하나씩, 전투력 탭의
+ * 값 중 하나가 무작위로 ×1.1이 된다(지금 값에 곱한다. 같은 게 두 번 나오면 ×1.21). **그 판이 끝날 때까지** 간다.
+ * 보스만 쓰던 것을 사냥터에서도 쓰게 했다 (T17_7 검수 5차) — 한 마리도 안 잡았을 때든 몇 마리 잡고서든 된다(늦게 쓰면 손해일 뿐).
  * 마법 공격은 뺐다 — 스킬(T18) 전에는 붙어도 아무 일이 없어서 소재만 버린다.
  */
-export const BOSS_BUFF = { max: 3, mult: 1.1 } as const;
-export const BOSS_BUFF_STATS = ['atk', 'def', 'spd', 'cri', 'crd', 'eva'] as const;
-export type BossBuffStat = (typeof BOSS_BUFF_STATS)[number];
+export const MATERIAL_BUFF = { max: 3, mult: 1.1 } as const;
+export const BUFF_STATS = ['atk', 'def', 'spd', 'cri', 'crd', 'eva'] as const;
+export type BuffStat = (typeof BUFF_STATS)[number];
 
 // ─────────────────────────────────────────────────────────────
 // 반지 (T17_7) — 고유 장비 대신. 특수 소재로만 얻고 올린다
@@ -697,7 +698,7 @@ export type RingKind = (typeof RING_KINDS)[number];
 /**
  * ★1 일반 +0의 값 (T17_7) — 계획서 T17_7 표의 common 값. ★5 전설 +0이 이것의 약 5배(표의 legendary)다.
  * 입장 WP 4% 할인 · 자정 WP +100 · 6마리 판 +1%p · 클리어 보너스 +5% · EXP +2% · 골드 +3% ·
- * 장비 드랍 +5% · 물약 회복 +10% · 전투 시작 보호막(최대 HP의 3%) · 보스 버프 배율 +0.02 · 보스 피해 +3%
+ * 장비 드랍 +5% · 물약 회복 +10% · 전투 시작 보호막(최대 HP의 3%) · 소재 버프 배율 +0.02 · 보스 피해 +3%
  */
 export const RING_BASE: Record<RingKind, number> = {
   fieldWp: 0.04,

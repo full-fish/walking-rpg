@@ -34,7 +34,7 @@ import {
 } from '../src/game/economy';
 import { currentMonster, drinkPotion, enterField, settleRun } from '../src/game/field';
 import {
-  BOSS_BUFF,
+  MATERIAL_BUFF,
   ENHANCE_MAX,
   EXPECTED_GEAR,
   enhanceCost,
@@ -206,7 +206,7 @@ function enhanceGear(save: Save, reserve: number, rng: () => number) {
   // 아직 못 잡은 보스가 있으면 그 지역 소재 3개는 보스 버프 몫으로 남긴다 (T17_7 검수 4차) —
   // 보스가 버프 없이는 잘 안 잡혀서, 강화에 다 쓰면 관문 앞에서 한참 막힌다. 사람도 남겨 둔다
   const here = next.regionProgress.current;
-  const keep = bossState(next, here) === 'cleared' ? 0 : BOSS_BUFF.max;
+  const keep = bossState(next, here) === 'cleared' ? 0 : MATERIAL_BUFF.max;
   const spares = (i: ItemInstance) =>
     itemDef(i).region !== here ||
     regionMaterials(next, here) - enhanceMaterials(i.enhance + 1) >= keep;
@@ -508,7 +508,7 @@ export function simulate(opts: SimOptions, seed = 1) {
         // 보스 — 다쳤는데 회복할 돈도 없으면 오늘은 접는다
         if (save.player.hp < statsOf(save).maxHp) break;
         // 남은 그 지역 소재는 보스 버프로 쓴다 (T17_6 검수). 강화에 먼저 쓰고 남은 만큼이다
-        const buffs = Math.min(BOSS_BUFF.max, regionMaterials(save, here.id));
+        const buffs = Math.min(MATERIAL_BUFF.max, regionMaterials(save, here.id));
         const inside = enterBoss(save, buffs, rng);
         if (!inside) break;
         materialsUsed.boss += buffs;

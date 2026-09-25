@@ -21,6 +21,20 @@ export const rarity = {
   legendary: '#E8B44A',
 } as const;
 
+/**
+ * 치명타 X자 색 (T17_7 검수 5차) — 치명 배율이 클수록 붉어진다. 2배 미만은 금색 그대로.
+ * 높은 문턱부터 적는다 — 처음 넘는 것이 그 색이다.
+ */
+const CRIT_TIERS = [
+  [3, '#FF0084'],
+  [2.5, '#BE3904'],
+  [2, '#BE8304'],
+] as const;
+
+export function critColor(crd: number): string {
+  return CRIT_TIERS.find(([min]) => crd >= min)?.[1] ?? colors.gold;
+}
+
 export const space = { xs: 4, sm: 8, md: 12, lg: 16, xl: 24 } as const;
 
 export const font = {

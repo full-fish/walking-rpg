@@ -2,7 +2,7 @@ import { create } from 'zustand';
 
 import { EQUIPMENT, gearSetFor, REGIONS } from '@/content';
 import type { Outcome } from '@/game/battle';
-import { enterField, settleRun, drinkPotion, type RunResult } from '@/game/field';
+import { addBuffs, enterField, settleRun, drinkPotion, type RunResult } from '@/game/field';
 import {
   buyConsumable,
   bagExpand,
@@ -285,9 +285,10 @@ export const trades = {
     upgradeRing(save, uid, materials),
   equipRing: (uid: string, slot: number) => (save: Save) => equipRing(save, uid, slot),
   unequipRing: (slot: number) => (save: Save) => unequipRing(save, slot),
-  /** 지역 관문 (T17_5) — 보스 도전 · 해금 · 이동은 따로 낸다 */
-  /** 고른 소재 하나에 하나씩 무작위 버프 (T17_6 검수, 고르기는 T17_7 검수 4차) */
-  challengeBoss: (materials: readonly string[]) => (save: Save) => enterBoss(save, materials),
+  /** 판 안에서 고른 소재 하나에 하나씩 무작위 버프 — 사냥터·보스 둘 다 (T17_7 검수 5차) */
+  buff: (materials: readonly string[]) => (save: Save) => addBuffs(save, materials),
+  /** 지역 관문 (T17_5) — 보스 도전 · 해금 · 이동은 따로 낸다. 버프는 들어가서 [버프] 창에서 */
+  challengeBoss: () => (save: Save) => enterBoss(save),
   unlockRegion: () => (save: Save) => unlockNext(save),
   travel: (region: number) => (save: Save) => travel(save, region),
 };

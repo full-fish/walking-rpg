@@ -10,7 +10,7 @@ import {
 } from '../content';
 import { defaultSave, SaveSchema, type Save } from '../save/schema';
 import { currentMonster, enterField, settleRun } from './field';
-import { BAG, BOSS_BUFF, WP_COST } from './formulas';
+import { BAG, MATERIAL_BUFF, WP_COST } from './formulas';
 import { makeItem } from './items';
 import { statsOf } from './progression';
 import { bossCost, bossState, enterBoss, travel, unlockCost, unlockNext } from './region';
@@ -84,7 +84,7 @@ test('보스 — 판 안이거나 가방이 차 있으면 못 들어간다', () 
   expect(enterBoss({ ...save, wp: { ...save.wp, current: 0 } })).toBeNull();
 });
 
-test('보스 버프 — 그 지역 소재 하나에 무작위 전투력 하나 ×1.1, 그 판에만 (T17_6 검수)', () => {
+test('보스 버프 — 그 지역 소재 하나에 무작위 전투력 하나 ×1.1, 그 판에만 (T17_6 검수, 시뮬은 들어가며 붙인다)', () => {
   const [a, b] = regionById(1).fields.map((f) => f.id);
   const save = ready({ materials: { [a]: 2, [b]: 1 } });
 
@@ -92,7 +92,7 @@ test('보스 버프 — 그 지역 소재 하나에 무작위 전투력 하나 �
   const inside = enterBoss(save, 3, always)!;
   expect(inside.run!.buffs).toEqual(['atk', 'atk', 'atk']);
   expect(inside.materials).toEqual({});
-  expect(statsOf(inside).atk).toBeCloseTo(statsOf(save).atk * BOSS_BUFF.mult ** 3);
+  expect(statsOf(inside).atk).toBeCloseTo(statsOf(save).atk * MATERIAL_BUFF.mult ** 3);
   expect(statsOf(inside).def).toBeCloseTo(statsOf(save).def);
 
   // 끝나면 사라진다

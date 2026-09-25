@@ -1,9 +1,10 @@
 import { expect, test } from 'vitest';
 
-import { consumableById, fieldById, monstersOfField } from '../content';
+import { consumableById, fieldById, monstersOfField, regionById } from '../content';
 import { defaultSave, type Ring, type Save } from '../save/schema';
 import { makeRng, shieldLeft, simulateBattle, type Combatant } from './battle';
 import {
+  addBuffs,
   carriedPotions,
   currentMonster,
   enterField,
@@ -13,7 +14,13 @@ import {
   settleRun,
   drinkPotion,
 } from './field';
-import { CLEAR_BONUS_RATE, materialChance, POTION_CARRY_MAX, WP_COST } from './formulas';
+import {
+  CLEAR_BONUS_RATE,
+  MATERIAL_BUFF,
+  materialChance,
+  POTION_CARRY_MAX,
+  WP_COST,
+} from './formulas';
 import { statsOf } from './progression';
 
 const FIELD = 'f_r1_meadow';
@@ -292,3 +299,31 @@ function totalDamage(attacker: Combatant, target: Combatant): number {
   }
   return sum;
 }
+
+test('소재 버프 — 사냥터에서도, 몇 마리 잡고서도 쓴다. 판이 끝날 때까지 · 한 판에 3개 (T17_7 검수 5차)', () => {
+  const [a, b] = regionById(1).fields.map((f) => f.id);
+  const save = ready({ materials: { [a]: 3, [b]: 2 } });
+  const always = () => 0; // 매번 첫 번째 = ATK
+
+  expect(addBuffs(save, [a], always), '판 밖에서는 못 쓴다').toBeNull();
+
+  // 한 마리 잡고 나서 — 고른 소재 그대로 빠지고 버프가 붙는다
+  const entered = { ...enterField(save, FIELD, makeRng(1))!, player: { ...save.player, hp: 1e6 } };
+  const one = settleRun(entered, 'win', 1e6, makeRng(1), 0).save;
+  const buffed = addBuffs(one, [b, b], always)!;
+  expect(buffed.run!.buffs).toEqual(['atk', 'atk']);
+  expect(buffed.materials).toEqual({ [a]: 3 });
+  expect(statsOf(buffed).atk).toBeCloseTo(statsOf(one).atk * MATERIAL_BUFF.mult ** 2);
+
+  // 남은 자리는 하나 — 둘은 못 쓴다. 다른 지역 소재·없는 소재도 안 된다
+  expect(addBuffs(buffed, [a, a], always)).toBeNull();
+  expect(addBuffs(buffed, [b], always), '다 쓴 소재').toBeNull();
+  const full = addBuffs(buffed, [a], always)!;
+  expect(full.run!.buffs).toHaveLength(MATERIAL_BUFF.max);
+  expect(addBuffs(full, [a], always), '한 판에 3개까지').toBeNull();
+
+  // 판이 끝나면 버프도 끝난다
+  const out = settleRun(full, 'flee', full.player.hp, always, 0).save;
+  expect(out.run).toBeNull();
+  expect(statsOf(out).atk).toBeCloseTo(statsOf(save).atk);
+});

@@ -8,9 +8,9 @@
  */
 import { bossOf } from '../content';
 import type { Save } from '../save/schema';
-import { chooseMaterials, pickMaterials, spendMaterials } from './economy';
-import { BOSS_BUFF, BOSS_BUFF_STATS, REGION_COUNT, WP_COST } from './formulas';
-import { openRun } from './field';
+import { pickMaterials } from './economy';
+import { MATERIAL_BUFF, REGION_COUNT, WP_COST } from './formulas';
+import { addBuffs, openRun } from './field';
 import { bagFull } from './items';
 import { spendWp } from './wp';
 
@@ -45,45 +45,36 @@ export function travel(save: Save, region: number): Save | null {
  * **가방이 차 있으면 못 들어간다** — 이기면 장비를 확정으로 주는데 받을 칸이 없으면
  * 관문 값을 치른 보상이 통째로 날아간다.
  *
- * 그 지역 소재를 쓰면(최대 3개) 하나에 하나씩 무작위 버프가 붙는다 (T17_6 검수).
- * `materials`는 개수(알아서 고름 — 시뮬)거나 **고른 소재 목록**이다 (T17_7 검수 4차 — 화면).
- * 소재가 모자라면 못 들어간다.
+ * 소재 버프는 들어간 뒤 판 안에서 붙인다(addBuffs, T17_7 검수 5차 — 화면은 [버프] 창).
+ * `materials`(개수)는 시뮬용이다 — 들어가면서 그만큼 알아서 골라 붙인다. 소재가 모자라면 못 들어간다.
  */
-export function enterBoss(
-  save: Save,
-  materials: number | readonly string[] = 0,
-  rng: () => number = Math.random,
-): Save | null {
+export function enterBoss(save: Save, materials = 0, rng: () => number = Math.random): Save | null {
   const region = save.regionProgress.current;
   if (save.run !== null || bagFull(save) || bossState(save, region) === 'cleared') return null;
 
-  const used =
-    typeof materials === 'number'
-      ? pickMaterials(save, region, Math.min(materials, BOSS_BUFF.max), false)
-      : materials.length <= BOSS_BUFF.max
-        ? chooseMaterials(save, region, materials.length, false, materials)
-        : null;
-  if (!used) return null;
+  const n = Math.min(materials, MATERIAL_BUFF.max);
+  if (n > 0 && !pickMaterials(save, region, n, false)) return null;
   const wp = spendWp(save.wp, bossCost(save, region));
   if (!wp) return null;
 
   const tried: Save = {
-    ...spendMaterials(save, used),
+    ...save,
     wp,
     regionProgress: {
       ...save.regionProgress,
       bosses: { ...save.regionProgress.bosses, [region]: 'tried' },
     },
   };
-  return openRun(tried, {
+  const opened = openRun(tried, {
     fieldId: `boss_r${region}`,
     size: 1,
     killed: 0,
     earned: { exp: 0, gold: 0 },
     monsterId: bossOf(region).id,
     boss: true,
-    buffs: used.map(() => BOSS_BUFF_STATS[Math.floor(rng() * BOSS_BUFF_STATS.length)]),
+    buffs: [],
   });
+  return n > 0 ? addBuffs(opened, n, rng) : opened;
 }
 
 /** 다음 지역의 해금 값 (§4.1). r은 지금까지 연 가장 높은 지역 — 그 보스를 잡았어야 한다. */

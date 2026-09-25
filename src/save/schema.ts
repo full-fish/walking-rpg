@@ -2,7 +2,7 @@ import { z } from 'zod';
 
 import {
   BAG,
-  BOSS_BUFF_STATS,
+  BUFF_STATS,
   ENHANCE_MAX,
   GEAR_SLOTS,
   QUALITY_MAX,
@@ -131,10 +131,10 @@ export const SaveSchema = z.object({
        */
       boss: z.boolean(),
       /**
-       * 보스 버프 (T17_6 검수) — 들어갈 때 소재 하나에 하나씩 뽑은 전투력 값. statsOf가 그 판에만
-       * ×1.1씩 곱한다. 같은 게 두 번이면 두 번 곱한다. 사냥터 판은 늘 빈 배열이다.
+       * 소재 버프 (T17_6 검수) — 판 안에서 소재 하나에 하나씩 뽑은 전투력 값. statsOf가 그 판에만
+       * ×1.1씩 곱한다. 같은 게 두 번이면 두 번 곱한다. 사냥터 판도 쓴다 (T17_7 검수 5차 — 모양은 그대로라 마이그레이션 없음).
        */
-      buffs: z.array(z.enum(BOSS_BUFF_STATS)),
+      buffs: z.array(z.enum(BUFF_STATS)),
     })
     .nullable(),
   /** 지역 진행도 (§4.1, T17_5). 해금 = 그 지역 보스 처치 + 해금 비용. 이동은 따로 낸다 */

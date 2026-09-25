@@ -2,7 +2,7 @@ import { gearSetFor } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import type { Outcome } from './battle';
 import {
-  BOSS_BUFF,
+  MATERIAL_BUFF,
   combatStats,
   GEAR_SLOTS,
   DEATH_GOLD_LOSS,
@@ -51,15 +51,15 @@ export function statsOf(save: Save) {
     /** 보스에게 더 주는 피해 비율 */
     bossDamage: ringBonus(save, 'bossDamage'),
   };
-  // 보스 버프 (T17_6 검수) — 그 판에만 붙는다. 전투 화면·시뮬·HP 막대가 전부 여기를 지나서 한 곳이면 된다
-  const mult = bossBuffMult(save);
+  // 소재 버프 (T17_6 검수, 사냥터는 T17_7 검수 5차) — 그 판에만 붙는다. 전투 화면·시뮬·HP 막대가 전부 여기를 지나서 한 곳이면 된다
+  const mult = buffMult(save);
   for (const stat of save.run?.buffs ?? []) stats[stat] *= mult;
   return stats;
 }
 
-/** 보스 버프 하나의 배율 — ×1.1에 반지(T17_7)가 더한다 */
-export function bossBuffMult(save: Save): number {
-  return BOSS_BUFF.mult + ringBonus(save, 'bossBuff');
+/** 소재 버프 하나의 배율 — ×1.1에 결의의 반지(T17_7)가 더한다 */
+export function buffMult(save: Save): number {
+  return MATERIAL_BUFF.mult + ringBonus(save, 'bossBuff');
 }
 
 /**
