@@ -165,7 +165,7 @@ export default function Field() {
         <Text>소재 버프</Text>
         <Text size="sm" dim>
           소재 하나에 무작위 버프 하나(전투력 값 ×{+buffMult(save).toFixed(3)}). 이 판이 끝날 때까지
-          갑니다. 한 판에 {MATERIAL_BUFF.max}개까지 — 남은 자리 {room}.
+          갑니다. 한 판에 {MATERIAL_BUFF.max}개까지.
         </Text>
         <MaterialPicker
           region={region.id}
