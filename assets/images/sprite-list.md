@@ -23,25 +23,26 @@
 슬롯 7종 × 티어 10단계. 파일명: `<sprite>.png`
 
 > **등급과 그림.** 70장이 **장비 350종 전부**를 덮습니다. sprite id에 등급이 없어서(`sword_3`),
-> 강철 검·강철 장검·강철 대검·강철 마검·강철 성검이 **같은 그림**을 씁니다. 등급은 게임 안에서
-> **테두리 색**으로 구분합니다. 표의 이름은 common 기준입니다.
+> 강철 장검은 일반부터 전설까지 **같은 그림 · 같은 이름**입니다(T17_7 검수 4차 — 전에는 등급마다
+> 장검·대검·마검처럼 이름만 바뀌어 그림과 어긋났습니다). 등급은 **테두리 색**으로 구분합니다.
+> 이름은 티어 1만 검·두건·옷·바지·손싸개·신·부적이고, 티어 2~10은 장검·투구·갑옷·하갑·건틀릿·각반·펜던트입니다.
 >
-> **고유 장비 35종은 T17_7에 없앴습니다** — 반지로 바꿨습니다. 반지는 아직 그림이 없어 💍 글자로 보입니다.
+> **고유 장비 35종은 T17_7에 없앴습니다** — 반지로 바꿨습니다. 반지 그림 프롬프트는 아래 "1-2. 반지"입니다.
 
 ### sword
 
 | sprite id | 파일명 | 이름(참고) |
 |---|---|---|
 | sword_1 | sword_1.png | 낡은 검 |
-| sword_2 | sword_2.png | 무쇠 검 |
-| sword_3 | sword_3.png | 강철 검 |
-| sword_4 | sword_4.png | 은빛 검 |
-| sword_5 | sword_5.png | 흑철 검 |
-| sword_6 | sword_6.png | 용린 검 |
-| sword_7 | sword_7.png | 수정 검 |
-| sword_8 | sword_8.png | 흑요석 검 |
-| sword_9 | sword_9.png | 월광 검 |
-| sword_10 | sword_10.png | 심연 검 |
+| sword_2 | sword_2.png | 무쇠 장검 |
+| sword_3 | sword_3.png | 강철 장검 |
+| sword_4 | sword_4.png | 은빛 장검 |
+| sword_5 | sword_5.png | 흑철 장검 |
+| sword_6 | sword_6.png | 용린 장검 |
+| sword_7 | sword_7.png | 수정 장검 |
+| sword_8 | sword_8.png | 흑요석 장검 |
+| sword_9 | sword_9.png | 월광 장검 |
+| sword_10 | sword_10.png | 심연 장검 |
 
 **프롬프트** — 같은 대화창에서 1번부터 차례로
 
@@ -110,15 +111,15 @@ Same art style as before, now an abyss sword (near-black blade with glowing teal
 | sprite id | 파일명 | 이름(참고) |
 |---|---|---|
 | helm_1 | helm_1.png | 낡은 두건 |
-| helm_2 | helm_2.png | 무쇠 두건 |
-| helm_3 | helm_3.png | 강철 두건 |
-| helm_4 | helm_4.png | 은빛 두건 |
-| helm_5 | helm_5.png | 흑철 두건 |
-| helm_6 | helm_6.png | 용린 두건 |
-| helm_7 | helm_7.png | 수정 두건 |
-| helm_8 | helm_8.png | 흑요석 두건 |
-| helm_9 | helm_9.png | 월광 두건 |
-| helm_10 | helm_10.png | 심연 두건 |
+| helm_2 | helm_2.png | 무쇠 투구 |
+| helm_3 | helm_3.png | 강철 투구 |
+| helm_4 | helm_4.png | 은빛 투구 |
+| helm_5 | helm_5.png | 흑철 투구 |
+| helm_6 | helm_6.png | 용린 투구 |
+| helm_7 | helm_7.png | 수정 투구 |
+| helm_8 | helm_8.png | 흑요석 투구 |
+| helm_9 | helm_9.png | 월광 투구 |
+| helm_10 | helm_10.png | 심연 투구 |
 
 **프롬프트** — 같은 대화창에서 1번부터 차례로
 
@@ -187,15 +188,15 @@ Same art style as before, now an abyss helmet (near-black with glowing teal crac
 | sprite id | 파일명 | 이름(참고) |
 |---|---|---|
 | armor_1 | armor_1.png | 낡은 옷 |
-| armor_2 | armor_2.png | 무쇠 옷 |
-| armor_3 | armor_3.png | 강철 옷 |
-| armor_4 | armor_4.png | 은빛 옷 |
-| armor_5 | armor_5.png | 흑철 옷 |
-| armor_6 | armor_6.png | 용린 옷 |
-| armor_7 | armor_7.png | 수정 옷 |
-| armor_8 | armor_8.png | 흑요석 옷 |
-| armor_9 | armor_9.png | 월광 옷 |
-| armor_10 | armor_10.png | 심연 옷 |
+| armor_2 | armor_2.png | 무쇠 갑옷 |
+| armor_3 | armor_3.png | 강철 갑옷 |
+| armor_4 | armor_4.png | 은빛 갑옷 |
+| armor_5 | armor_5.png | 흑철 갑옷 |
+| armor_6 | armor_6.png | 용린 갑옷 |
+| armor_7 | armor_7.png | 수정 갑옷 |
+| armor_8 | armor_8.png | 흑요석 갑옷 |
+| armor_9 | armor_9.png | 월광 갑옷 |
+| armor_10 | armor_10.png | 심연 갑옷 |
 
 **프롬프트** — 같은 대화창에서 1번부터 차례로
 
@@ -268,15 +269,15 @@ T17_4에서 들어온 부위입니다. 투구·갑옷·장갑에서 HP·DEF를 �
 | sprite id | 파일명 | 이름(참고) |
 |---|---|---|
 | pants_1 | pants_1.png | 낡은 바지 |
-| pants_2 | pants_2.png | 무쇠 바지 |
-| pants_3 | pants_3.png | 강철 바지 |
-| pants_4 | pants_4.png | 은빛 바지 |
-| pants_5 | pants_5.png | 흑철 바지 |
-| pants_6 | pants_6.png | 용린 바지 |
-| pants_7 | pants_7.png | 수정 바지 |
-| pants_8 | pants_8.png | 흑요석 바지 |
-| pants_9 | pants_9.png | 월광 바지 |
-| pants_10 | pants_10.png | 심연 바지 |
+| pants_2 | pants_2.png | 무쇠 하갑 |
+| pants_3 | pants_3.png | 강철 하갑 |
+| pants_4 | pants_4.png | 은빛 하갑 |
+| pants_5 | pants_5.png | 흑철 하갑 |
+| pants_6 | pants_6.png | 용린 하갑 |
+| pants_7 | pants_7.png | 수정 하갑 |
+| pants_8 | pants_8.png | 흑요석 하갑 |
+| pants_9 | pants_9.png | 월광 하갑 |
+| pants_10 | pants_10.png | 심연 하갑 |
 
 **프롬프트** — 같은 대화창에서 1번부터 차례로
 
@@ -344,16 +345,16 @@ Same art style as before, now a pair of abyss leg armor (near-black plates with 
 
 | sprite id | 파일명 | 이름(참고) |
 |---|---|---|
-| gloves_1 | gloves_1.png | 낡은 장갑 |
-| gloves_2 | gloves_2.png | 무쇠 장갑 |
-| gloves_3 | gloves_3.png | 강철 장갑 |
-| gloves_4 | gloves_4.png | 은빛 장갑 |
-| gloves_5 | gloves_5.png | 흑철 장갑 |
-| gloves_6 | gloves_6.png | 용린 장갑 |
-| gloves_7 | gloves_7.png | 수정 장갑 |
-| gloves_8 | gloves_8.png | 흑요석 장갑 |
-| gloves_9 | gloves_9.png | 월광 장갑 |
-| gloves_10 | gloves_10.png | 심연 장갑 |
+| gloves_1 | gloves_1.png | 낡은 손싸개 |
+| gloves_2 | gloves_2.png | 무쇠 건틀릿 |
+| gloves_3 | gloves_3.png | 강철 건틀릿 |
+| gloves_4 | gloves_4.png | 은빛 건틀릿 |
+| gloves_5 | gloves_5.png | 흑철 건틀릿 |
+| gloves_6 | gloves_6.png | 용린 건틀릿 |
+| gloves_7 | gloves_7.png | 수정 건틀릿 |
+| gloves_8 | gloves_8.png | 흑요석 건틀릿 |
+| gloves_9 | gloves_9.png | 월광 건틀릿 |
+| gloves_10 | gloves_10.png | 심연 건틀릿 |
 
 **프롬프트** — 같은 대화창에서 1번부터 차례로
 
@@ -422,15 +423,15 @@ Same art style as before, now a single abyss gauntlet (near-black with glowing t
 | sprite id | 파일명 | 이름(참고) |
 |---|---|---|
 | boots_1 | boots_1.png | 낡은 신 |
-| boots_2 | boots_2.png | 무쇠 신 |
-| boots_3 | boots_3.png | 강철 신 |
-| boots_4 | boots_4.png | 은빛 신 |
-| boots_5 | boots_5.png | 흑철 신 |
-| boots_6 | boots_6.png | 용린 신 |
-| boots_7 | boots_7.png | 수정 신 |
-| boots_8 | boots_8.png | 흑요석 신 |
-| boots_9 | boots_9.png | 월광 신 |
-| boots_10 | boots_10.png | 심연 신 |
+| boots_2 | boots_2.png | 무쇠 각반 |
+| boots_3 | boots_3.png | 강철 각반 |
+| boots_4 | boots_4.png | 은빛 각반 |
+| boots_5 | boots_5.png | 흑철 각반 |
+| boots_6 | boots_6.png | 용린 각반 |
+| boots_7 | boots_7.png | 수정 각반 |
+| boots_8 | boots_8.png | 흑요석 각반 |
+| boots_9 | boots_9.png | 월광 각반 |
+| boots_10 | boots_10.png | 심연 각반 |
 
 **프롬프트** — 같은 대화창에서 1번부터 차례로
 
@@ -499,15 +500,15 @@ Same art style as before, now a pair of abyss boots (near-black with glowing tea
 | sprite id | 파일명 | 이름(참고) |
 |---|---|---|
 | accessory_1 | accessory_1.png | 낡은 부적 |
-| accessory_2 | accessory_2.png | 무쇠 부적 |
-| accessory_3 | accessory_3.png | 강철 부적 |
-| accessory_4 | accessory_4.png | 은빛 부적 |
-| accessory_5 | accessory_5.png | 흑철 부적 |
-| accessory_6 | accessory_6.png | 용린 부적 |
-| accessory_7 | accessory_7.png | 수정 부적 |
-| accessory_8 | accessory_8.png | 흑요석 부적 |
-| accessory_9 | accessory_9.png | 월광 부적 |
-| accessory_10 | accessory_10.png | 심연 부적 |
+| accessory_2 | accessory_2.png | 무쇠 펜던트 |
+| accessory_3 | accessory_3.png | 강철 펜던트 |
+| accessory_4 | accessory_4.png | 은빛 펜던트 |
+| accessory_5 | accessory_5.png | 흑철 펜던트 |
+| accessory_6 | accessory_6.png | 용린 펜던트 |
+| accessory_7 | accessory_7.png | 수정 펜던트 |
+| accessory_8 | accessory_8.png | 흑요석 펜던트 |
+| accessory_9 | accessory_9.png | 월광 펜던트 |
+| accessory_10 | accessory_10.png | 심연 펜던트 |
 
 **프롬프트** — 같은 대화창에서 1번부터 차례로
 
@@ -584,6 +585,96 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 | sprite id | 파일명 | 프롬프트 |
 |---|---|---|
 | character_base | character_base.png | `flat 2D pixel art, 96x160, transparent background, front-facing humanoid adventurer standing with arms slightly out, plain undergarments only, no weapons or armor, no gradient shading, consistent light source from top-left` |
+
+---
+
+## 1-2. 반지 (11개, 아직 안 붙임)
+
+T17_7에 고유 장비 대신 들어온 반지 11종입니다. 지금은 💍 글자로 보입니다. **한 종에 한 장**이고,
+★(1~5)와 등급은 게임 안에서 테두리 색과 "★N +강화" 글자로 구분합니다 — 그래서 재질보다 **보석·문양으로 효과를** 말하게 잡았습니다.
+붙일 때는 원본을 `img/ring/ring_<종류>.png`로 두면 잘라서 넣는 스크립트와 `ringIcons` 한 줄을 만들겠습니다.
+
+| sprite id | 이름 | 효과 | 그림의 뜻 |
+|---|---|---|---|
+| ring_fieldWp | 나그네의 반지 | 사냥터 입장 WP 할인 | 나침반 문양 |
+| ring_midnightWp | 새벽의 반지 | 자정 WP 추가 | 떠오르는 해 |
+| ring_bigRun | 사냥꾼의 반지 | 6마리 판 확률 | 늑대 송곳니 |
+| ring_clearBonus | 정복자의 반지 | 클리어 보너스 | 월계관과 엇갈린 검 |
+| ring_exp | 현자의 반지 | EXP | 푸른 보석과 룬 |
+| ring_gold | 상인의 반지 | 골드 | 금화 |
+| ring_drop | 도굴꾼의 반지 | 드랍 (장비·소재) | 작은 열쇠와 원석 |
+| ring_potion | 약초꾼의 반지 | 물약 회복 | 덩굴과 붉은 물방울 |
+| ring_shield | 수호자의 반지 | 전투 시작 보호막 | 방패 문장 |
+| ring_bossBuff | 결의의 반지 | 보스 버프 배율 | 타오르는 불꽃 보석 |
+| ring_bossDamage | 용사의 반지 | 보스에게 주는 피해 | 루비 위의 검 |
+
+**프롬프트** — 같은 대화창에서 1번부터 차례로
+
+`ring_fieldWp.png`
+
+```
+Flat 2D pixel art game icon of a single fantasy ring seen at a slight angle, a plain worn bronze band with a small compass rose engraved on a flat round top, simple fantasy RPG accessory icon, solid magenta (#FF00FF) background, no pink or purple on the ring, no gradient shading, clean silhouette, centered, no text.
+```
+
+`ring_midnightWp.png`
+
+```
+Same art style as before, now a different ring: a silver band set with a pale golden stone shaped like a rising sun, thin rays engraved around it.
+```
+
+`ring_bigRun.png`
+
+```
+Same art style as before, now a different ring: a dark iron band wrapped in brown leather, with a white wolf fang set on top.
+```
+
+`ring_clearBonus.png`
+
+```
+Same art style as before, now a different ring: a heavy gold signet ring with a laurel wreath and two crossed swords on the seal.
+```
+
+`ring_exp.png`
+
+```
+Same art style as before, now a different ring: a silver band with a deep blue sapphire and tiny glowing white runes engraved along the band.
+```
+
+`ring_gold.png`
+
+```
+Same art style as before, now a different ring: a thick gold band with a shiny gold coin set flat on top.
+```
+
+`ring_drop.png`
+
+```
+Same art style as before, now a different ring: a tarnished bronze band set with a rough uncut green gem, a tiny old key hanging from it.
+```
+
+`ring_potion.png`
+
+```
+Same art style as before, now a different ring: a light wooden band wrapped in green vines and small leaves, with a red teardrop-shaped gem.
+```
+
+`ring_shield.png`
+
+```
+Same art style as before, now a different ring: a polished steel band with a small kite-shield crest holding a blue gem.
+```
+
+`ring_bossBuff.png`
+
+```
+Same art style as before, now a different ring: a black iron band with an orange gem that burns with a small flame.
+```
+
+`ring_bossDamage.png`
+
+```
+Same art style as before, now a different ring: a gold band with a red ruby and a tiny silver sword laid across the ruby.
+```
 
 ---
 
@@ -711,7 +802,8 @@ sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관�
 
 **T17_7부터 보스전 무대에 뜹니다.** 원본을 `img/boss/boss_N.png`(2048px, 투명 배경)로 넣고
 `node tools/crop-sprites.mjs boss` → `assets/images/monsters/boss_rN.png`(512px), 그다음 `src/ui/monsterIcons.ts`에 한 줄.
-무대에서 보스는 **왼쪽에 서서 오른쪽(나)을 봅니다** — boss_r1처럼 오른쪽을 보는 그림이면 그대로 맞습니다.
+무대는 **1인칭**이라(T17_7 검수 4차) 보스가 한가운데서 **화면(나)을 봅니다** — 정면이나 정면 3/4 그림이 맞습니다.
+(칼 버전 무대 BossStageSword는 보스가 왼쪽에서 오른쪽을 봤습니다.)
 지금 붙은 것: boss_r1. 나머지는 그림이 올 때까지 이름 상자로 보입니다.
 
 | sprite id | 파일명 | 이름 | 지역 | 원형 |
