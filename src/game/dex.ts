@@ -1,14 +1,17 @@
 /**
  * 도감 (T19) — 몬스터마다 잡은 수를 센다.
  *
- * 카드는 1 · 10 · 25 · 50 · 100마리에 한 단계씩 오르고(테두리가 등급 색), 정보가 하나씩 열린다.
+ * 카드는 1 · 10 · 25 · 50 · 100마리에 한 단계씩 오르고(테두리가 등급 색), 정보가 하나씩 열린다. 보스는 한 번에 한 단계.
  * 10마리부터 그 몬스터의 장비 드랍이 늘고, 100마리면 원형이 정한 1차 스탯이 1 오른다.
  * 사냥터 하나를 다 채우면 스탯 포인트, 지역 하나를 다 채우면 네 스탯이 오른다.
+ * 보스는 2번에 그 지역 장비 드랍 ×1.5, 3번에 EXP · 골드 +3%, 4번에 네 스탯 +1,
+ * 5번에 강화 성공률 +1%p · 그 지역 전설 비율 ×1.5 (검수 3차).
  * **보상은 전부 잡은 수에서 계산한다** — 받았다는 기록이 따로 없다. 사냥터 포인트만 넘는 순간 준다
  * (자유 배분이라 어디에 넣었는지를 세이브가 기억해야 해서다).
  * React를 import하지 않는다 — 시뮬도 settleRun으로 여기를 지난다.
  */
 import {
+  bossOf,
   MONSTER_ARCHETYPES,
   MONSTERS,
   REGIONS,
@@ -32,12 +35,14 @@ export function dexStat(monster: Monster): SpendableStat {
   return STAT_OF_ARCH.get(monster.arch)!;
 }
 
-/**
- * 카드 단계 0~5 (0 = 아직 못 잡음). **보스는 한 번 잡으면 바로 끝 단계**다 — 다시 못 싸운다.
- */
+/** 카드 단계를 가르는 처치 수. **보스는 잡을 때마다 한 단계**다 — 재사냥으로 채운다 (T19 검수) */
+export function dexSteps(monster: Monster): readonly number[] {
+  return monster.boss ? DEX.bossSteps : DEX.steps;
+}
+
+/** 카드 단계 0~5 (0 = 아직 못 잡음) */
 export function dexStage(monster: Monster, kills: number): number {
-  if (monster.boss) return kills > 0 ? DEX.steps.length : 0;
-  return DEX.steps.filter((s) => kills >= s).length;
+  return dexSteps(monster).filter((s) => kills >= s).length;
 }
 
 /** 그 몬스터를 잡은 수 */
@@ -59,7 +64,7 @@ export function regionDone(save: Save, region: number): boolean {
 const statsCache = new WeakMap<Save['dex'], Record<SpendableStat, number>>();
 
 /**
- * 도감이 주는 1차 스탯 — 100마리 카드 + 지역 완성. statsOf가 배분 포인트처럼 더한다.
+ * 도감이 주는 1차 스탯 — 100마리 카드 + 지역 완성 + 보스 4번. statsOf가 배분 포인트처럼 더한다.
  * 사냥터 완성은 스탯 포인트(자유 배분)로 줘서 여기 없다.
  * statsOf가 전투·시뮬에서 수없이 불려서 141종을 매번 훑지 않게 dex 객체마다 한 번만 센다.
  */
@@ -76,8 +81,46 @@ export function dexStats(save: Save): Record<SpendableStat, number> {
     }
     if (full === monsters.length) for (const k of SPENDABLE_STATS) out[k] += DEX.regionStat;
   }
+  // 보스 4번(영웅) — 네 스탯 +1 (T19 검수 3차)
+  for (const r of REGIONS) {
+    if (bossStage(save, r.id) < DEX.bossStatAt) continue;
+    for (const k of SPENDABLE_STATS) out[k] += DEX.bossStat;
+  }
   statsCache.set(save.dex, out);
   return out;
+}
+
+/** 그 지역 보스 카드의 단계 0~5 */
+export function bossStage(save: Save, region: number): number {
+  const boss = bossOf(region);
+  return dexStage(boss, dexKills(save, boss));
+}
+
+/**
+ * 보스 카드가 어디서나 주는 것 (T19 검수 3차) — 3번마다 EXP · 골드 +3%, 5번마다 강화 성공률 +1%p.
+ * 4번의 네 스탯 +1은 dexStats가, 2번 · 5번의 그 지역 드랍은 bossDrop이 준다.
+ */
+export function bossBonus(save: Save): { expGold: number; enhance: number } {
+  let expGold = 0;
+  let enhance = 0;
+  for (const r of REGIONS) {
+    const stage = bossStage(save, r.id);
+    if (stage >= DEX.bossExpGoldAt) expGold += DEX.bossExpGold;
+    if (stage === DEX.bossSteps.length) enhance += DEX.bossEnhance;
+  }
+  return { expGold, enhance };
+}
+
+/**
+ * 그 지역 사냥터 드랍에 보스 카드가 곱하는 것 (T19 검수 3차) — 2번이면 장비 드랍 ×1.5,
+ * 5번이면 전설 비율 ×1.5. 몬스터 도감(10마리) · 행운 배율과 곱한다.
+ */
+export function bossDrop(save: Save, region: number): { drop: number; legend: number } {
+  const stage = bossStage(save, region);
+  return {
+    drop: stage >= DEX.bossDropAt ? DEX.bossDropMult : 1,
+    legend: stage === DEX.bossSteps.length ? DEX.bossLegendMult : 1,
+  };
 }
 
 /** 장비 드랍 배율 — 그 몬스터를 10마리 넘게 잡았으면 ×1.5 */

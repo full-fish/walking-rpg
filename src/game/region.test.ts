@@ -5,12 +5,22 @@ import {
   equipmentById,
   fieldById,
   fieldDropTier,
+  MONSTERS,
   monstersOfField,
   regionById,
 } from '../content';
 import { defaultSave, SaveSchema, type Save } from '../save/schema';
 import { currentMonster, enterField, settleRun } from './field';
-import { BAG, MATERIAL_BUFF, WP_COST } from './formulas';
+import {
+  BAG,
+  DEX,
+  DROP_RARITY,
+  INDIVIDUAL_REWARD_RATE,
+  MATERIAL_BUFF,
+  REGION_COUNT,
+  withLegendary,
+  WP_COST,
+} from './formulas';
 import { makeItem } from './items';
 import { statsOf } from './progression';
 import { bossCost, bossState, enterBoss, travel, unlockCost, unlockNext } from './region';
@@ -63,9 +73,30 @@ test('보스를 잡으면 보상을 통째로 받고, 다음 지역 앞단 티�
   expect(drop.tier).toBe(3); // 지역 1을 넘으면 지역 2 앞단
   expect(['rare', 'epic', 'legendary']).toContain(drop.rarity);
   expect(won.save.inventory).toContainEqual(won.drop);
+});
 
-  // 잡은 보스는 다시 안 열린다
-  expect(enterBoss(won.save)).toBeNull();
+test('잡은 보스는 재사냥 — 재도전 값, EXP · 골드와 도감 한 단계만, 장비 · 해금 없음 (T19 검수)', () => {
+  const first = settleRun(enterBoss(ready())!, 'win', 100, always, 0).save;
+  const again = enterBoss(first)!;
+  expect(first.wp.current - again.wp.current).toBe(WP_COST.bossRetry(1));
+  expect(bossState(again, 1)).toBe('cleared');
+
+  const won = settleRun(again, 'win', 100, always, 0);
+  expect(won.gained.exp).toBe(bossOf(1).exp);
+  expect(won.drop).toBeNull();
+  expect(won.bossCleared).toBe(false);
+  expect(won.save.inventory).toEqual(first.inventory);
+  expect(won.dex?.stage).toBe(2);
+  // 져도 잡은 기록은 그대로
+  const lost = settleRun(enterBoss(won.save)!, 'lose', 0, always, 0).save;
+  expect(bossState(lost, 1)).toBe('cleared');
+
+  // 추억과 도감용 — WP당 EXP가 다음 지역 평균 판(4마리, 보너스 없이)보다 적어야 한다
+  for (let r = 1; r < REGION_COUNT; r++) {
+    const next = MONSTERS.filter((m) => m.region === r + 1 && !m.boss);
+    const run = (next.reduce((a, m) => a + m.exp, 0) / next.length) * INDIVIDUAL_REWARD_RATE * 4;
+    expect(bossOf(r).exp / WP_COST.bossRetry(r)).toBeLessThan(run / WP_COST.fieldEntry(r + 1));
+  }
 });
 
 test('보스 — 판 안이거나 가방이 차 있으면 못 들어간다', () => {
@@ -163,6 +194,23 @@ test('드랍 확률은 기본 3%에 LUK 배율을 곱한다 (T17_6)', () => {
   };
   expect(at(0)).toBeNull();
   expect(at(50)).not.toBeNull();
+});
+
+test('보스 카드 2번 — 그 지역 사냥터 드랍 ×1.5, 5번 — 전설 비율 ×1.5 (T19 검수 3차)', () => {
+  // 4%는 기본 행운(3.24%)으로는 안 뜨고, 지역 1 보스 2번이면(4.86%) 뜬다. 지역 2 보스는 상관없다
+  const at = (boss: string, kills: number, field = 'f_r1_meadow') => {
+    const entered = enterField(ready({ dex: { [boss]: kills } }), field, always)!;
+    return settleRun(entered, 'win', entered.player.hp, () => 0.04, 0).drop;
+  };
+  expect(at(bossOf(1).id, 1)).toBeNull();
+  expect(at(bossOf(1).id, 2)).not.toBeNull();
+  expect(at(bossOf(2).id, 2)).toBeNull();
+
+  // 전설만 7.5%로 — 나머지가 같은 비율로 줄어 합은 1
+  const table = withLegendary(DROP_RARITY, DEX.bossLegendMult);
+  expect(table.legendary).toBeCloseTo(DROP_RARITY.legendary! * DEX.bossLegendMult);
+  expect(Object.values(table).reduce((a, b) => a + b!, 0)).toBeCloseTo(1);
+  expect(table.common! / table.rare!).toBeCloseTo(DROP_RARITY.common! / DROP_RARITY.rare!);
 });
 
 test('사냥터마다 드랍 부위가 2~4개다 — 한 곳에서 전부 나오지 않는다 (T17_6)', () => {

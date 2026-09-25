@@ -34,9 +34,10 @@ import {
   POTION_CARRY_MAX,
   rollRarity,
   rollRunSize,
+  withLegendary,
   WP_COST,
 } from './formulas';
-import { dexDropMult, recordKill, type DexUp } from './dex';
+import { bossDrop, dexDropMult, recordKill, type DexUp } from './dex';
 import { chooseMaterials, pickMaterials, potionHeal, spendMaterials } from './economy';
 import { bagFull, makeItem, ringBonus } from './items';
 import {
@@ -232,16 +233,18 @@ function give(save: Save, defId: string, rng: () => number): Given {
 }
 
 /**
- * 몬스터 한 마리의 장비 드랍 (T17_6). 기본 3% × LUK 배율 × 도감 배율(10마리부터, T19), 처치마다 한 번.
+ * 몬스터 한 마리의 장비 드랍 (T17_6). 기본 3% × LUK 배율 × 도감 배율(10마리부터, T19)
+ * × 그 지역 보스 카드(2번, T19 검수 3차), 처치마다 한 번. 보스 카드 5번이면 전설 비율도 ×1.5다.
  * **부위는 몬스터가, 티어는 사냥터가 정한다** — 같은 몬스터라도 어디서 잡았느냐에 따라
  * 티어가 다를 수 있고, 사냥터마다 나오는 부위가 정해진다.
  */
 function rollDrop(save: Save, monster: Monster, fieldId: string, rng: () => number): Given {
-  if (!monster.drop || rng() >= DROP_RATE * statsOf(save).dropMult * dexDropMult(save, monster)) {
-    return { save, drop: null, lost: false };
-  }
+  const boss = bossDrop(save, regionOfField(fieldId).id);
+  const rate = DROP_RATE * statsOf(save).dropMult * dexDropMult(save, monster) * boss.drop;
+  if (!monster.drop || rng() >= rate) return { save, drop: null, lost: false };
   const tier = fieldDropTier(fieldById(fieldId));
-  return give(save, gridItem(tier, monster.drop, rollRarity(DROP_RARITY, rng)).id, rng);
+  const rarity = rollRarity(withLegendary(DROP_RARITY, boss.legend), rng);
+  return give(save, gridItem(tier, monster.drop, rarity).id, rng);
 }
 
 /**
@@ -275,6 +278,14 @@ function settleBoss(
   const won = settleBattle(save, 'win', playerHp, reward, now);
   const dex = recordKill(won.save, boss);
   const settled = { ...won, save: dex.save };
+
+  // 재사냥 (T19 검수) — EXP · 골드와 도감 한 단계만. 장비와 해금은 첫 처치 한 번이다.
+  // 재도전 값에 보스 한 마리 보상이라 WP당 그 지역 사냥보다도 한참 덜 번다 (balance.md 7장) — 추억과 도감용
+  if (save.regionProgress.bosses[boss.region] === 'cleared') {
+    const back = { ...settled.save, consumables: returnPotions(settled.save, run), run: null };
+    return { ...settled, ...done, ...NO_DROP, save: back, dex: dex.up };
+  }
+
   const progress = {
     ...settled.save.regionProgress,
     bosses: { ...settled.save.regionProgress.bosses, [boss.region]: 'cleared' as const },

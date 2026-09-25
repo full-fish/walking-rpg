@@ -2,7 +2,7 @@ import { expect, test } from 'vitest';
 
 import { defaultSave, type Save } from '../save/schema';
 import { claimGoals, claimStreak, goalCells, goalsReady, regionPotion, streakNext } from './daily';
-import { BAG, REGION_DAILY_GOLD, STREAK_REWARDS } from './formulas';
+import { BAG } from './formulas';
 
 const at = (day: number, hour = 10) => new Date(2026, 8, day, hour);
 const mid = () => 0.5;
@@ -24,7 +24,8 @@ test('걸음 목표 — 눌러야 들어오고, 두 번 눌러도 한 번이다'
   const r = claimGoals(save, at(21), mid)!;
   // 5,000 물약 1 · 10,000 하루 골드 10%
   expect(r.save.consumables[regionPotion(1)]).toBe(1);
-  expect(r.save.player.gold).toBe(Math.round(REGION_DAILY_GOLD[0] * 0.1));
+  // 하루 골드 2,020 × 10% = 202 → 10G 단위로 200 (T19 검수)
+  expect(r.save.player.gold).toBe(200);
   expect(r.save.daily['2026-09-21']).toBe(2);
   expect(claimGoals(r.save, at(21), mid)).toBeNull();
 
@@ -75,9 +76,8 @@ test('출석 — 이어 받으면 +1, 하루 빠지면 1일째, 같은 날은 �
   expect(streakNext(save, at(6))).toEqual({ count: 1, cell: 0 });
   const r = claimStreak(save, at(6), mid)!;
   expect(r.count).toBe(1);
-  expect(r.save.player.gold).toBe(
-    save.player.gold + Math.round(REGION_DAILY_GOLD[0] * STREAK_REWARDS[0].gold!),
-  );
+  // 2,020 × 5% = 101 → 100
+  expect(r.save.player.gold).toBe(save.player.gold + 100);
 });
 
 test('출석 — 7일째 다음 날은 다시 첫 칸이다 (연속 일수는 계속 센다)', () => {

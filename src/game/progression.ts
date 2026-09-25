@@ -1,7 +1,7 @@
 import { gearSetFor } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import type { Outcome } from './battle';
-import { dexStats } from './dex';
+import { bossBonus, dexStats } from './dex';
 import {
   MATERIAL_BUFF,
   combatStats,
@@ -51,12 +51,14 @@ export function statsOf(save: Save) {
   };
   const base = combatStats(save.player.level, 'warrior', spend, equippedStats(save));
   // 반지 (T17_7) — 전투력 축 밖의 것만 준다. 입장 WP·자정 WP·6마리 판·클리어 보너스·물약은 쓰는 곳이 본다
+  // 보스 도감 3번(T19 검수 2차)도 EXP · 골드에 같이 더한다
+  const boss = bossBonus(save).expGold;
   const stats = {
     ...base,
-    goldMult: base.goldMult + ringBonus(save, 'gold'),
+    goldMult: base.goldMult + ringBonus(save, 'gold') + boss,
     dropMult: base.dropMult + ringBonus(save, 'drop'),
-    /** EXP 배율 — 반지만 올린다. 행운은 EXP에 안 붙는다 (§4.3) */
-    expMult: 1 + ringBonus(save, 'exp'),
+    /** EXP 배율 — 반지와 보스 도감만 올린다. 행운은 EXP에 안 붙는다 (§4.3) */
+    expMult: 1 + ringBonus(save, 'exp') + boss,
     /** 전투마다 HP보다 먼저 깎이는 보호막 */
     shield: Math.round(base.maxHp * ringBonus(save, 'shield')),
     /** 보스에게 더 주는 피해 비율 */

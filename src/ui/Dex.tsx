@@ -12,10 +12,12 @@ import {
   type Monster,
 } from '@/content';
 import {
+  bossBonus,
   dexKills,
   dexStage,
   dexStat,
   dexStats,
+  dexSteps,
   DEX_MONSTERS,
   fieldDone,
   regionDone,
@@ -25,7 +27,7 @@ import { DEX, DEX_MAX } from '@/game/formulas';
 import type { Save } from '@/save/schema';
 
 import { Button } from './Button';
-import { DEX_REVEAL, STAT_LABEL } from './dexText';
+import { BOSS_REVEAL, BOSS_REWARDS, DEX_REVEAL, STAT_LABEL } from './dexText';
 import { Popup } from './ItemCell';
 import { monsterIcons } from './monsterIcons';
 import { Panel } from './Panel';
@@ -41,12 +43,14 @@ export function stageColor(stage: number): string {
   return stage === 0 ? colors.edge : STAGE_COLOR[stage - 1];
 }
 
+const revealOf = (m: Monster) => (m.boss ? BOSS_REVEAL : DEX_REVEAL);
+
 /** 전투 결과 한 줄 — "도감 초록 슬라임 10마리 — 원형 · 티어 · … 열림" */
 export function dexUpText(up: DexUp): string {
   const { monster, stage } = up;
-  if (monster.boss) return `도감 ${monster.name} — 처치 기록`;
   if (stage === 1) return `도감 ${monster.name} — 새로 올랐다`;
-  return `도감 ${monster.name} ${DEX.steps[stage - 1]}마리 — ${DEX_REVEAL[stage - 1]}`;
+  const n = dexSteps(monster)[stage - 1];
+  return `도감 ${monster.name} ${n}${monster.boss ? '번째 처치' : '마리'} — ${revealOf(monster)[stage - 1]}`;
 }
 
 function Card({
@@ -76,29 +80,40 @@ function Card({
         </Text>
       )}
       <Text size="sm" dim>
-        {monster.boss ? (stage > 0 ? '처치' : '보스') : `${kills}`}
+        {monster.boss ? (stage > 0 ? `처치 ${kills}` : '보스') : `${kills}`}
       </Text>
     </Pressable>
   );
 }
 
-/** 카드를 누르면 — 단계만큼 열린 정보와 다음 단계까지 */
+/** 카드를 누르면 — 큰 그림 아래로 단계만큼 열린 정보와 다음 단계까지 (카드 모양, T19 검수) */
 function Info({ save, monster }: { save: Save; monster: Monster }) {
   const kills = dexKills(save, monster);
   const stage = dexStage(monster, kills);
-  const next = DEX.steps.find((s) => kills < s);
+  const next = dexSteps(monster).find((s) => kills < s);
   const fields = FIELDS.filter((f) => monstersOfField(f).some((m) => m.id === monster.id));
   const art = monsterIcons[monster.sprite];
   return (
     <>
-      <View style={styles.head}>
-        {art && <Image source={art} style={styles.art} resizeMode="contain" />}
-        <View style={styles.headText}>
-          <Text color={stageColor(stage)}>{monster.name}</Text>
-          <Text size="sm" dim>
-            {monster.boss ? `지역 ${monster.region} 보스` : `잡은 수 ${kills} / ${DEX_MAX}`}
+      <View style={[styles.frame, { borderColor: stageColor(stage) }]}>
+        {art ? (
+          <Image source={art} style={styles.big} resizeMode="contain" />
+        ) : (
+          // 그림이 아직 없는 몬스터 — 자리는 그대로 두고 이름을 크게
+          <Text size="lg" dim style={styles.center}>
+            {monster.name}
           </Text>
-        </View>
+        )}
+      </View>
+      <View style={styles.title}>
+        <Text size="lg" color={stageColor(stage)}>
+          {monster.name}
+        </Text>
+        <Text size="sm" dim>
+          {monster.boss
+            ? `지역 ${monster.region} 보스 · 처치 ${kills}`
+            : `잡은 수 ${kills} / ${DEX_MAX}`}
+        </Text>
       </View>
       {stage >= 2 && (
         <>
@@ -117,6 +132,9 @@ function Info({ save, monster }: { save: Save; monster: Monster }) {
           EXP {monster.exp} · 골드 {monster.gold}
         </Text>
       )}
+      {stage >= 4 && monster.boss && (
+        <Text size="sm">첫 처치 보상 · 장비 1개 확정 (희귀 이상)</Text>
+      )}
       {stage >= 4 && monster.drop && <Text size="sm">드랍 · {GEAR_SLOT_LABELS[monster.drop]}</Text>}
       {stage >= 5 && (
         <Text size="sm">
@@ -130,9 +148,16 @@ function Info({ save, monster }: { save: Save; monster: Monster }) {
           {stage >= 5 ? ` · ${STAT_LABEL[dexStat(monster)]} +${DEX.cardStat}` : ''}
         </Text>
       )}
-      {!monster.boss && next !== undefined && (
+      {/* 보스 보상 (T19 검수 3차) — 받은 것까지 */}
+      {monster.boss && stage >= DEX.bossDropAt && (
+        <Text size="sm" color={colors.gold}>
+          {BOSS_REWARDS.slice(0, stage - 1).join(' · ')} (그 지역 = 지역 {monster.region})
+        </Text>
+      )}
+      {next !== undefined && (
         <Text size="sm" dim>
-          {next}마리 ({next - kills} 남음) — {DEX_REVEAL[stage]}
+          {next}
+          {monster.boss ? '번째 처치' : '마리'} ({next - kills} 남음) — {revealOf(monster)[stage]}
         </Text>
       )}
     </>
@@ -151,6 +176,7 @@ export function Dex({ save }: { save: Save }) {
   const seen = all.filter((m) => dexKills(save, m) > 0).length;
   const full = all.filter((m) => dexKills(save, m) >= DEX_MAX).length;
   const stats = dexStats(save);
+  const bonus = bossBonus(save);
   const statLine = (Object.keys(STAT_LABEL) as (keyof typeof STAT_LABEL)[])
     .map((k) => `${STAT_LABEL[k]} +${stats[k]}`)
     .join(' · ');
@@ -172,9 +198,14 @@ export function Dex({ save }: { save: Save }) {
         <Text size="sm" color={colors.gold}>
           도감 스탯 — {statLine}
         </Text>
+        <Text size="sm" color={colors.gold}>
+          보스 — EXP · 골드 +{Math.round(bonus.expGold * 100)}% · 강화 성공률 +
+          {Math.round(bonus.enhance * 100)}%p
+        </Text>
         <Text size="sm" dim>
           1 · 10 · 25 · 50 · 100마리마다 테두리 색이 바뀌고 정보가 열린다. 10마리부터 그 몬스터 장비
-          드랍 ×{DEX.dropMult}, 100마리면 1차 스탯 +{DEX.cardStat}.
+          드랍 ×{DEX.dropMult}, 100마리면 1차 스탯 +{DEX.cardStat}. 보스는 잡을 때마다 한 단계 —{' '}
+          {BOSS_REWARDS.map((t, i) => `${i + 2}번 ${t}`).join(' · ')}.
         </Text>
       </Panel>
 
@@ -242,6 +273,15 @@ const styles = StyleSheet.create({
   },
   art: { width: 40, height: 40 },
   center: { textAlign: 'center' },
-  head: { flexDirection: 'row', gap: space.sm, alignItems: 'center' },
-  headText: { gap: space.xs, flexShrink: 1 },
+  // 창 폭을 다 쓰는 그림 칸 — 테두리가 카드 단계 색
+  frame: {
+    height: 176,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: space.sm,
+    borderWidth: border * 2,
+    backgroundColor: colors.bg,
+  },
+  big: { width: 144, height: 144 },
+  title: { alignItems: 'center', gap: space.xs },
 });

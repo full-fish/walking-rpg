@@ -114,6 +114,11 @@ export default function Battle() {
   const [settled, setSettled] = useState<RunResult | null>(null);
   /** 정산은 한 판에 딱 한 번. 재생 완료와 [도망]이 둘 다 여기로 들어온다. */
   const settledOnce = useRef(false);
+  /**
+   * 마지막으로 한 칸 넘긴 시각. 물약으로 전투를 이어 붙이면 타이머가 새로 걸리는데,
+   * 0.6초를 처음부터 다시 세면 그만큼 멈칫한다 — 남은 시간만 기다린다 (T19 검수).
+   */
+  const [stepAt] = useState(() => ({ t: Date.now() }));
 
   const total = battle?.events.length ?? 0;
 
@@ -128,14 +133,18 @@ export default function Battle() {
 
   useEffect(() => {
     if (!battle || cursor >= total || settledOnce.current) return;
+    const wait = Math.max(0, STEP_MS - (Date.now() - stepAt.t));
     const timer = setTimeout(() => {
+      // [도망]으로 이미 끝났으면 한 칸 더 넘기지 않는다 — 도망친 뒤에 한 대 더 맞는 게 보였다
+      if (settledOnce.current) return;
+      stepAt.t = Date.now();
       const next = cursor + 1;
       setCursor(next);
       // 마지막 행동을 보여준 그 순간 정산한다. 남은 HP는 엔진이 이미 계산해 뒀다.
       if (next >= total) finish(battle.result.outcome, battle.result.playerHp);
-    }, STEP_MS);
+    }, wait);
     return () => clearTimeout(timer);
-  }, [battle, cursor, total, finish]);
+  }, [battle, cursor, total, finish, stepAt]);
 
   // 판 밖에서 열릴 경로는 없지만, 세이브가 꼬였을 때 흰 화면 대신 돌아갈 길을 준다
   if (!battle) {

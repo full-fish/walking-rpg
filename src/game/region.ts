@@ -47,10 +47,14 @@ export function travel(save: Save, region: number): Save | null {
  *
  * 소재 버프는 들어간 뒤 판 안에서 붙인다(addBuffs, T17_7 검수 5차 — 화면은 [버프] 창).
  * `materials`(개수)는 시뮬용이다 — 들어가면서 그만큼 알아서 골라 붙인다. 소재가 모자라면 못 들어간다.
+ *
+ * **잡은 보스도 다시 들어간다** (T19 검수: 재사냥) — 재도전 값을 내고, 이기면 EXP · 골드와 도감 한 단계만 준다.
+ * 장비를 안 주니 가방은 안 본다. 'cleared'는 그대로 둔다.
  */
 export function enterBoss(save: Save, materials = 0, rng: () => number = Math.random): Save | null {
   const region = save.regionProgress.current;
-  if (save.run !== null || bagFull(save) || bossState(save, region) === 'cleared') return null;
+  const cleared = bossState(save, region) === 'cleared';
+  if (save.run !== null || (!cleared && bagFull(save))) return null;
 
   const n = Math.min(materials, MATERIAL_BUFF.max);
   if (n > 0 && !pickMaterials(save, region, n, false)) return null;
@@ -62,7 +66,7 @@ export function enterBoss(save: Save, materials = 0, rng: () => number = Math.ra
     wp,
     regionProgress: {
       ...save.regionProgress,
-      bosses: { ...save.regionProgress.bosses, [region]: 'tried' },
+      bosses: { ...save.regionProgress.bosses, [region]: cleared ? 'cleared' : 'tried' },
     },
   };
   const opened = openRun(tried, {

@@ -12,6 +12,7 @@ import {
 } from '@/content';
 import {
   depositNet,
+  enhanceChance,
   enhancePick,
   pickMaterials,
   ringEnhancePick,
@@ -19,6 +20,7 @@ import {
   ringPrice,
   sellPrice,
 } from '@/game/economy';
+import { bossBonus } from '@/game/dex';
 import { inTown } from '@/game/field';
 import {
   BAG,
@@ -27,7 +29,6 @@ import {
   enhanceCost,
   enhanceExpected,
   enhanceMaterials,
-  enhanceRate,
   GEAR_SLOTS,
   RING_COST,
   ringValue,
@@ -290,8 +291,8 @@ export default function Shop() {
           (compact && worn ? '착용 중 · ' : '') +
           (maxed
             ? '최대 단계입니다'
-            : `+${next} 성공률 ${(enhanceRate(next) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
-              ` · +10까지 기대 ${enhanceExpected(def.price).gold.toLocaleString()}G`)
+            : `+${next} 성공률 ${(enhanceChance(save, next) * 100).toFixed(0)}% · ${cost.toLocaleString()}G` +
+              ` · +10까지 기대 ${enhanceExpected(def.price, ENHANCE_MAX, bossBonus(save).enhance).gold.toLocaleString()}G`)
         }
         action={maxed ? '완료' : '강화'}
         tone={worn ? 'gold' : 'normal'}
@@ -369,7 +370,7 @@ export default function Shop() {
           detail={
             maxed
               ? '강화 최대 단계입니다'
-              : `+${step} 성공률 ${(enhanceRate(step) * 100).toFixed(0)}% · ${cost.toLocaleString()}G`
+              : `+${step} 성공률 ${(enhanceChance(save, step) * 100).toFixed(0)}% · ${cost.toLocaleString()}G`
           }
           action="강화"
           disabled={maxed || gold < cost}

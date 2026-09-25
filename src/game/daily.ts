@@ -13,6 +13,7 @@ import {
   GEAR_SLOTS,
   GEAR_TIERS_PER_REGION,
   REGION_DAILY_GOLD,
+  REWARD_GOLD_UNIT,
   rollRarity,
   STEP_GOAL,
   STEP_GOAL_REWARDS,
@@ -38,9 +39,10 @@ export function regionPotion(region: number): string {
   return CONSUMABLES.find((c) => c.region === region && c.healRatio === 0)!.id;
 }
 
-/** 칸 하나에 드는 골드 — 그 지역 하루 골드의 비율 */
+/** 칸 하나에 드는 골드 — 그 지역 하루 골드의 비율, 10G 단위로 반올림 */
 export function rewardGold(reward: DailyReward, region: number): number {
-  return Math.round(REGION_DAILY_GOLD[region - 1] * (reward.gold ?? 0));
+  const gold = REGION_DAILY_GOLD[region - 1] * (reward.gold ?? 0);
+  return Math.round(gold / REWARD_GOLD_UNIT) * REWARD_GOLD_UNIT;
 }
 
 /**

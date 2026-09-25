@@ -72,7 +72,7 @@ function GotList({ got }: { got: Got }) {
 }
 
 /**
- * 모험 탭 "오늘" (T19) — 걸음 목표 6칸과 7일 출석표. **둘 다 [받기]를 눌러야 들어온다.**
+ * 모험 탭 [보상] (T19, 칸 이름은 검수 2차) — 걸음 목표 6칸과 7일 출석표. **둘 다 [받기]를 눌러야 들어온다.**
  * 걸음은 WP가 센 값(wp.grantedByDate)이라 HUD의 "오늘 걸음"과 같다.
  */
 export function Today() {
@@ -103,7 +103,7 @@ export function Today() {
   const doneUpTo = next ? next.cell : ((save.streak.count - 1) % STREAK_REWARDS.length) + 1;
 
   return (
-    <Panel title="오늘">
+    <Panel title="보상">
       <Text size="sm" dim>
         걸음 목표 — {STEP_GOAL.toLocaleString()}보마다 한 칸
       </Text>

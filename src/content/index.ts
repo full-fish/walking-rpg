@@ -164,12 +164,12 @@ export function gearSetFor(
 /**
  * 상점 진열 — **지금 지역의 티어 두 개** (§4.5, T17_6 검수). 레벨이 아직 모자란 뒷단도 편다 —
  * 미리 사 둘 수 있다. 다음 지역 장비는 보스 보상으로만 먼저 만진다.
- * **전설은 드랍으로만** 나온다 (T17_6). 높은 티어부터.
+ * **전설은 드랍으로만** 나온다 (T17_6). 낮은 티어부터 (T19 검수 — 지금 낄 것이 위에).
  */
 export function shopGear(region: number): Equipment[] {
   return EQUIPMENT.filter(
     (e) => (SHOP_RARITIES as readonly string[]).includes(e.rarity) && e.region === region,
-  ).sort((a, b) => b.tier - a.tier);
+  ).sort((a, b) => a.tier - b.tier);
 }
 
 /** 등급 그리드에서 장비 정의 하나를 찾는다 (드랍·보스 보상, T17_6). */

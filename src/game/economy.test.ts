@@ -64,8 +64,9 @@ test('전설은 상점에 없다 — 드랍으로만 나온다 (T17_6)', () => {
 });
 
 test('상점은 지금 지역의 티어 두 개만 판다 — 레벨이 아니라 지역이 정한다 (T17_6 검수)', () => {
-  expect([...new Set(shopGear(1).map((e) => e.tier))]).toEqual([2, 1]);
-  expect([...new Set(shopGear(2).map((e) => e.tier))]).toEqual([4, 3]);
+  // 낮은 티어가 위 (T19 검수)
+  expect([...new Set(shopGear(1).map((e) => e.tier))]).toEqual([1, 2]);
+  expect([...new Set(shopGear(2).map((e) => e.tier))]).toEqual([3, 4]);
 });
 
 test('낀 장비는 못 판다 — 실수로 알몸이 되는 경로를 없앤다', () => {

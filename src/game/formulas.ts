@@ -475,6 +475,23 @@ export const BOSS_DROP_RARITY: Partial<Record<GridRarity, number>> = {
   legendary: 0.2,
 };
 
+/**
+ * 비율표에서 전설만 `mult`배로 — 나머지 등급을 같은 비율로 줄여 합을 1로 둔다 (보스 도감 5번, T19 검수 3차).
+ * 전설 칸만 키우면 합이 1을 넘어 rollRarity의 마지막 칸(전설)이 도리어 잘린다.
+ */
+export function withLegendary(
+  weights: Partial<Record<GridRarity, number>>,
+  mult: number,
+): Partial<Record<GridRarity, number>> {
+  const before = weights.legendary ?? 0;
+  if (mult === 1 || before === 0) return weights;
+  const legend = before * mult;
+  const rest = (1 - legend) / (1 - before);
+  return Object.fromEntries(
+    Object.entries(weights).map(([k, w]) => [k, k === 'legendary' ? legend : w * rest]),
+  );
+}
+
 /** 비율표에서 등급 하나를 뽑는다. 표의 합이 1이라 마지막 칸이 나머지를 받는다. */
 export function rollRarity(
   weights: Partial<Record<GridRarity, number>>,
@@ -762,13 +779,15 @@ export function enhanceRate(next: number): number {
 /**
  * +N까지 올리는 데 드는 **기대** 시도 수와 골드 (§4.5).
  * 실패해도 단계가 안 내려가므로 단계마다 1/성공률 번씩 두드리면 된다 — 단계끼리 독립이다.
+ * `bonus`는 성공률에 더하는 %p다 (보스 도감, T19 검수 2차).
  */
-export function enhanceExpected(price: number, target = ENHANCE_MAX) {
+export function enhanceExpected(price: number, target = ENHANCE_MAX, bonus = 0) {
   let tries = 0;
   let gold = 0;
   for (let n = 1; n <= target; n++) {
-    tries += 1 / enhanceRate(n);
-    gold += (1 / enhanceRate(n)) * enhanceCost(price, n);
+    const rate = Math.min(1, enhanceRate(n) + bonus);
+    tries += 1 / rate;
+    gold += (1 / rate) * enhanceCost(price, n);
   }
   return { tries, gold: Math.round(gold) };
 }
@@ -945,6 +964,9 @@ export function innCost(region: number): number {
  */
 export type DailyReward = { gold?: number; potion?: number; material?: number; gear?: boolean };
 
+/** 보상 골드는 이 단위로 반올림한다 (T19 검수 — 101G처럼 1의 자리가 지저분하지 않게) */
+export const REWARD_GOLD_UNIT = 10;
+
 /** 걸음 목표 한 칸의 걸음 수 (T19). 5,000보마다 한 칸 */
 export const STEP_GOAL = 5_000;
 
@@ -978,6 +1000,13 @@ export const STREAK_REWARDS: readonly DailyReward[] = [
 /**
  * 도감 (T19). 몬스터마다 잡은 수를 센다 — 단계마다 카드 테두리가 등급 색으로 바뀌고 정보가 하나씩 열린다.
  *   steps       1 이름·그림 / 10 원형·티어·사냥터 / 25 EXP·골드 / 50 드랍 부위 / 100 스탯
+ *   bossSteps   보스는 잡을 때마다 한 단계 — 재사냥으로 채운다 (T19 검수)
+ *   보스 카드 보상 (검수 3차) — 보스마다 따로 더한다
+ *     2번  bossDropMult   그 지역 사냥터 장비 드랍 배율
+ *     3번  bossExpGold    EXP · 골드 배율에 더하는 값
+ *     4번  bossStat       네 1차 스탯에 더하는 값
+ *     5번  bossEnhance    강화 성공률에 더하는 고정값(%p) — 100%를 넘지 않는다
+ *          bossLegendMult 그 지역 사냥터 드랍에서 전설이 나올 비율 배율 (나머지 등급이 그만큼 준다)
  *   dropMult    10마리부터 그 몬스터의 장비 드랍 배율 (행운 배율과 곱한다)
  *   cardStat    100마리 카드 하나가 주는 1차 스탯 — 어느 스탯인지는 원형(dexStat)이 정한다
  *   fieldPoints 사냥터 하나를 다 채우면 주는 스탯 포인트 (자유 배분)
@@ -986,6 +1015,15 @@ export const STREAK_REWARDS: readonly DailyReward[] = [
  */
 export const DEX = {
   steps: [1, 10, 25, 50, 100],
+  bossSteps: [1, 2, 3, 4, 5],
+  bossDropAt: 2,
+  bossDropMult: 1.5,
+  bossExpGoldAt: 3,
+  bossExpGold: 0.03,
+  bossStatAt: 4,
+  bossStat: 1,
+  bossEnhance: 0.01,
+  bossLegendMult: 1.5,
   dropAt: 10,
   dropMult: 1.5,
   cardStat: 1,

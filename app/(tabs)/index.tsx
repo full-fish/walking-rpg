@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { bossOf, REGIONS, regionById, type Field } from '@/content';
+import { goalsReady, streakNext } from '@/game/daily';
 import { fieldEntryCost } from '@/game/field';
 import { REGION_COUNT, WP_COST } from '@/game/formulas';
 import { bagFull } from '@/game/items';
@@ -30,9 +31,14 @@ function Stat({ label, value, color }: { label: string; value: number; color?: s
   );
 }
 
-/** 모험 탭. 상단 HUD까지 (사냥터 진행은 S2~). */
+/** 모험 탭 안의 칸 (T19 검수 2차) — 사냥터 · 보스 · 해금 · 이동 · 걸음 목표 · 출석을 한 페이지에 두니 길었다 */
+const TABS = ['사냥', '지역', '보상'] as const;
+type Tab = (typeof TABS)[number];
+
+/** 모험 탭. 상단 HUD 아래로 [사냥] [지역] [보상] */
 export default function Adventure() {
   const router = useRouter();
+  const [tab, setTab] = useState<Tab>('사냥');
   const steps = useSteps();
   const save = usePlayer((s) => s.save);
   const grantFromSteps = usePlayer((s) => s.grantFromSteps);
@@ -46,6 +52,9 @@ export default function Adventure() {
   const { unlocked } = save.regionProgress;
   const boss = bossOf(region.id);
   const bossNow = bossState(save, region.id);
+  // 받을 게 있으면 [보상 ●] — 칸을 열어 보지 않아도 안다
+  const now = new Date();
+  const rewardReady = streakNext(save, now) !== null || goalsReady(save, now).length > 0;
 
   // 걸음이 갱신될 때마다(=60초 폴링/센서) 지급과 HP 회복을 함께 반영한다.
   // 둘 다 받을 게 없으면 아무것도 저장하지 않으므로 그냥 매번 불러도 된다.
@@ -82,10 +91,22 @@ export default function Adventure() {
           )}
         </Panel>
 
-        {/* 걸음 목표 · 출석 (T19) — 둘 다 [받기]를 눌러야 들어온다 */}
-        <Today />
+        {/* 한 페이지에 다 있으면 길어서 셋으로 쪼갰다 (T19 검수 2차). 열면 늘 [사냥]부터 — 제일 자주 누른다 */}
+        <View style={styles.row}>
+          {TABS.map((t) => (
+            <Button
+              key={t}
+              label={t === '보상' && rewardReady ? '보상 ●' : t}
+              tone={t === tab ? 'gold' : 'normal'}
+              onPress={() => setTab(t)}
+            />
+          ))}
+        </View>
 
-        {save.run ? (
+        {tab === '보상' ? (
+          // 걸음 목표 · 출석 (T19) — 둘 다 [받기]를 눌러야 들어온다. 판 안에서도 받는다
+          <Today />
+        ) : save.run ? (
           // 앱을 껐다 켜도 판이 남아 있다. 마을로 돌려보내지 않고 이어가게 한다 (§4.4)
           <Panel title={save.run.boss ? '보스전 중' : '사냥 중'}>
             <Text>{regionById(save.regionProgress.current).name}</Text>
@@ -96,28 +117,43 @@ export default function Adventure() {
             </Text>
             <Button label="돌아가기" tone="gold" onPress={() => router.push('/field')} />
           </Panel>
-        ) : (
+        ) : tab === '지역' ? (
           <>
             {/* 지역 관문 (T17_5) — 보스 도전 · 해금 · 이동은 따로 낸다 (§4.1) */}
             <Panel title={`보스 — ${boss.name}`}>
               {bossNow === 'cleared' ? (
-                unlocked === region.id && region.id < REGION_COUNT ? (
-                  <View style={styles.fieldRow}>
+                <>
+                  {unlocked === region.id && region.id < REGION_COUNT ? (
+                    <View style={styles.fieldRow}>
+                      <Text size="sm" dim>
+                        쓰러뜨렸다. {regionById(region.id + 1).name}을(를) 열 수 있다.
+                      </Text>
+                      <Button
+                        label={`해금 ${unlockCost(save).toLocaleString()} WP`}
+                        tone="gold"
+                        disabled={save.wp.current < unlockCost(save)}
+                        onPress={() => trade(trades.unlockRegion())}
+                      />
+                    </View>
+                  ) : (
                     <Text size="sm" dim>
-                      쓰러뜨렸다. {regionById(region.id + 1).name}을(를) 열 수 있다.
+                      쓰러뜨렸다.
+                    </Text>
+                  )}
+                  {/* 재사냥 (T19 검수) — 추억과 도감용. 장비 · 해금은 첫 처치 때만 */}
+                  <View style={styles.fieldRow}>
+                    <Text size="sm" dim style={styles.fieldText}>
+                      다시 잡으면 EXP · 골드와 도감 한 단계만 준다 (장비 없음).
                     </Text>
                     <Button
-                      label={`해금 ${unlockCost(save).toLocaleString()} WP`}
-                      tone="gold"
-                      disabled={save.wp.current < unlockCost(save)}
-                      onPress={() => trade(trades.unlockRegion())}
+                      label={`재사냥 ${bossCost(save, region.id).toLocaleString()} WP`}
+                      disabled={save.wp.current < bossCost(save, region.id) || save.player.hp <= 0}
+                      onPress={() => {
+                        if (trade(trades.challengeBoss())) router.push('/field');
+                      }}
                     />
                   </View>
-                ) : (
-                  <Text size="sm" dim>
-                    쓰러뜨렸다.
-                  </Text>
-                )
+                </>
               ) : (
                 <View style={styles.fieldRow}>
                   <View style={styles.fieldText}>
@@ -155,7 +191,7 @@ export default function Adventure() {
               {REGIONS.map((r) => (
                 <View key={r.id} style={styles.fieldRow}>
                   <Text dim={r.id > unlocked}>
-                    {r.id}. {r.name} (Lv{r.levelRange[0]}~{r.levelRange[1]})
+                    {r.id}. {r.name}
                   </Text>
                   {r.id === region.id ? (
                     <Text size="sm" color={colors.gold}>
@@ -175,41 +211,41 @@ export default function Adventure() {
                 </View>
               ))}
             </Panel>
-
-            <Panel title={`${region.name} — 입장 ${entryCost.toLocaleString()} WP`}>
-              {region.fields.map((field: Field) => (
-                <View key={field.id} style={styles.fieldRow}>
-                  <View style={styles.fieldText}>
-                    <Text>{field.name}</Text>
-                    <Text size="sm" dim>
-                      {field.desc}
-                    </Text>
-                    <Text size="sm" dim>
-                      소재 · {field.material.name}
-                    </Text>
-                  </View>
-                  <Button
-                    label="입장"
-                    tone="gold"
-                    disabled={save.wp.current < entryCost || save.player.hp <= 0}
-                    onPress={() => {
-                      if (enter(field.id)) router.push('/field');
-                    }}
-                  />
-                </View>
-              ))}
-              {save.player.hp <= 0 && (
-                <Text size="sm" color={colors.hp}>
-                  HP가 0입니다. 여관이나 물약으로 회복하세요.
-                </Text>
-              )}
-              {save.statPoints.unspent > 0 && (
-                <Text size="sm" color={colors.gold}>
-                  쓰지 않은 스탯 포인트 {save.statPoints.unspent}점 — 캐릭터 탭에서 올리세요
-                </Text>
-              )}
-            </Panel>
           </>
+        ) : (
+          <Panel title={`${region.name} — 입장 ${entryCost.toLocaleString()} WP`}>
+            {region.fields.map((field: Field) => (
+              <View key={field.id} style={styles.fieldRow}>
+                <View style={styles.fieldText}>
+                  <Text>{field.name}</Text>
+                  <Text size="sm" dim>
+                    {field.desc}
+                  </Text>
+                  <Text size="sm" dim>
+                    소재 · {field.material.name}
+                  </Text>
+                </View>
+                <Button
+                  label="입장"
+                  tone="gold"
+                  disabled={save.wp.current < entryCost || save.player.hp <= 0}
+                  onPress={() => {
+                    if (enter(field.id)) router.push('/field');
+                  }}
+                />
+              </View>
+            ))}
+            {save.player.hp <= 0 && (
+              <Text size="sm" color={colors.hp}>
+                HP가 0입니다. 여관이나 물약으로 회복하세요.
+              </Text>
+            )}
+            {save.statPoints.unspent > 0 && (
+              <Text size="sm" color={colors.gold}>
+                쓰지 않은 스탯 포인트 {save.statPoints.unspent}점 — 캐릭터 탭에서 올리세요
+              </Text>
+            )}
+          </Panel>
         )}
       </ScrollView>
     </SafeAreaView>

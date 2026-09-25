@@ -25,6 +25,7 @@ import {
   vaultExpandCost,
   type GridRarity,
 } from './formulas';
+import { bossBonus } from './dex';
 import { bagFull, itemDef, makeItem, nextUid, ringBonus } from './items';
 import { addItem, statsOf, withStatChange } from './progression';
 
@@ -272,6 +273,12 @@ export function enhancePick(save: Save, item: ItemInstance): string[] | null {
   return pickMaterials(save, itemDef(item).region, enhanceMaterials(item.enhance + 1), true);
 }
 
+/** 이 세이브의 강화 성공률 — 표에 보스 도감 5번(T19 검수 2차)의 %p를 더한다. 100%를 넘지 않는다 */
+export function enhanceChance(save: Save, next: number): number {
+  const rate = enhanceRate(next);
+  return rate === 0 ? 0 : Math.min(1, rate + bossBonus(save).enhance);
+}
+
 /**
  * 강화 한 번의 공통 규칙 (§4.5, T17_7) — 장비와 반지가 같이 쓴다. 규칙이 둘로 갈리면 안 된다.
  * 골드는 두드릴 때 나가고, +6부터 드는 소재는 **성공했을 때만** 뺀다. 성공하면 `bump`로 단계를 올린다.
@@ -294,7 +301,7 @@ function tryEnhance(
   const paid = withGold(save, -cost);
   if (!paid) return null;
 
-  const success = rng() < enhanceRate(step);
+  const success = rng() < enhanceChance(save, step);
   if (!success) return { save: paid, success, cost, step, materials: 0 };
   return {
     save: bump(spendMaterials(paid, picked)),
