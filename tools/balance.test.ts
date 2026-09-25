@@ -69,6 +69,7 @@ import {
   STEP_GOAL,
   STEP_GOAL_REWARDS,
   STREAK_REWARDS,
+  withLegendary,
   WP_COST,
   type DailyReward,
 } from '../src/game/formulas';
@@ -76,7 +77,7 @@ import { setBonus } from '../src/game/items';
 import { statsOf } from '../src/game/progression';
 import { enterBoss } from '../src/game/region';
 import type { Save } from '../src/save/schema';
-import { DEX_REVEAL, STAT_LABEL } from '../src/ui/dexText';
+import { BOSS_REWARDS, DEX_REVEAL, STAT_LABEL } from '../src/ui/dexText';
 import { RARITY_LABEL, RING_INFO } from '../src/ui/rings';
 import { baselineSave, BUILDS, dayAtLevel, fight, simulate, type DayLog } from './simulate';
 
@@ -558,6 +559,8 @@ test('balance.md — 게임 숫자 한눈에', () => {
   // ── 하루 (시뮬)
   h('9. 하루 (시뮬, 균등)', '입장은 WP가 정한다 — 하루 10,000보 + 자정 1,000 WP.');
   const log = balanced.flatMap((r) => r.log);
+  const dayOf = (r: (typeof REGIONS)[number]) =>
+    regionDays(log, r.levelRange[0], r.id === REGIONS.length ? 51 : r.levelRange[1]);
   out.push(
     table(
       [
@@ -574,7 +577,7 @@ test('balance.md — 게임 숫자 한눈에', () => {
         '유지비',
       ],
       REGIONS.map((r) => {
-        const d = regionDays(log, r.levelRange[0], r.id === REGIONS.length ? 51 : r.levelRange[1]);
+        const d = dayOf(r);
         return [
           r.id,
           n1(d.days),
@@ -587,6 +590,61 @@ test('balance.md — 게임 숫자 한눈에', () => {
           n0(d.potion),
           n0(d.inn),
           pct((d.potion + d.inn) / Math.max(1, d.gold)),
+        ];
+      }),
+    ),
+  );
+
+  // 하루 장비 드랍 (T19 검수 2차 — "하루 전설 기대 획득량") — 처치/일 × 처치당 드랍 × 등급 비율
+  out.push(
+    '\n**하루 장비 드랍** — 처치/일 × 처치당 드랍(행운 균등) × 등급 비율. ' +
+      `기본 → 몬스터 도감 10마리(×${DEX.dropMult}) → 그 지역 보스 카드 2번(드랍 ×${DEX.bossDropMult}) · ` +
+      `5번(전설 비율 ×${DEX.bossLegendMult}). 걸음 목표 3만 보 · 보스 첫 처치 장비는 빼고\n`,
+  );
+  // 세 단계 — 기본, 몬스터 10마리, 보스 2 · 5번까지
+  const dropSteps = [1, DEX.dropMult, DEX.dropMult * DEX.bossDropMult];
+  const legendShare = [
+    DROP_RARITY.legendary!,
+    DROP_RARITY.legendary!,
+    withLegendary(DROP_RARITY, DEX.bossLegendMult).legendary!,
+  ];
+  out.push(
+    table(
+      ['지역', '드랍/일', '전설/일', '전설 하나까지'],
+      REGIONS.map((r) => {
+        const d = dayOf(r);
+        const perKill = mean(
+          r.fields.map((f) => DROP_RATE * referencePlayer(fieldLevel(f), r.id).dropMult),
+        );
+        const drops = dropSteps.map((m) => d.kills * perKill * m);
+        const legend = drops.map((n, i) => n * legendShare[i]);
+        return [
+          r.id,
+          drops.map(n1).join(' → '),
+          legend.map((n) => n.toFixed(3)).join(' → '),
+          legend.map((n) => `${n0(1 / n)}일`).join(' → '),
+        ];
+      }),
+    ),
+  );
+
+  // 보스 재사냥 (T19 검수) — 추억과 도감용이라 다음 지역 사냥보다 WP당 한참 덜 벌어야 한다
+  out.push(
+    '\n**보스 재사냥** — 재도전 값을 내고 EXP · 골드와 도감 한 단계만(장비 · 해금 없음). WP 1,000당\n',
+  );
+  out.push(
+    table(
+      ['보스', '재사냥 EXP · 골드', '다음 지역 사냥 EXP · 골드'],
+      REGIONS.map((r) => {
+        const boss = bossOf(r.id);
+        const k = 1_000 / WP_COST.bossRetry(r.id);
+        const next = REGIONS[Math.min(r.id, REGIONS.length - 1)];
+        const d = dayOf(next);
+        const f = 1_000 / (d.entries * WP_COST.fieldEntry(next.id));
+        return [
+          `${r.id}. ${boss.name}`,
+          `${n0(boss.exp * k)} · ${n0(boss.gold * k)}`,
+          `${n0(d.exp * f)} · ${n0(d.gold * f)}${next.id === r.id ? ' (제 지역)' : ''}`,
         ];
       }),
     ),
@@ -675,13 +733,30 @@ test('balance.md — 게임 숫자 한눈에', () => {
   out.push('\n**도감 단계** — 테두리는 장비 등급 색\n');
   out.push(
     table(
-      ['처치', '테두리', '열리는 것'],
-      DEX.steps.map((s, i) => [s, RARITY_LABEL[RARITIES[i]], DEX_REVEAL[i]]),
+      ['처치', '보스', '테두리', '열리는 것'],
+      DEX.steps.map((s, i) => [s, DEX.bossSteps[i], RARITY_LABEL[RARITIES[i]], DEX_REVEAL[i]]),
     ),
   );
   out.push(
-    `\n사냥터 하나를 다 채우면 스탯 포인트 +${DEX.fieldPoints}, 지역 하나를 다 채우면 네 스탯 +${DEX.regionStat}. ` +
-      `보스는 한 번 잡으면 끝 단계(스탯 없음).\n`,
+    `\n사냥터 하나를 다 채우면 스탯 포인트 +${DEX.fieldPoints}, 지역 하나를 다 채우면 네 스탯 +${DEX.regionStat}.\n`,
+  );
+  out.push(
+    '\n**보스 카드** — 잡을 때마다 한 단계, 재사냥으로 채운다. 보상은 보스마다 따로 더한다\n',
+  );
+  out.push(
+    table(
+      ['처치', '테두리', '보상'],
+      DEX.bossSteps.map((s, i) => [
+        s,
+        RARITY_LABEL[RARITIES[i]],
+        i === 0 ? '(첫 처치 장비 · 다음 지역 해금)' : BOSS_REWARDS[i - 1],
+      ]),
+    ),
+  );
+  out.push(
+    `\n다섯 다 채우면 EXP · 골드 +${pct(DEX.bossExpGold * REGIONS.length)} · ` +
+      `네 스탯 +${DEX.bossStat * REGIONS.length} · 강화 성공률 +${pct(DEX.bossEnhance * REGIONS.length)}p` +
+      '(100%에서 멈춘다). 드랍 · 전설 배율은 그 보스 지역 사냥터에만 붙는다.\n',
   );
   const species = [...DEX_MONSTERS.values()].flat();
   out.push('\n**원형 → 100마리 스탯**\n');
