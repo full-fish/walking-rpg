@@ -17,6 +17,7 @@ export default function Settings() {
   const grantAllSprites = usePlayer((s) => s.grantAllSprites);
   const setBagCapacity = usePlayer((s) => s.setBagCapacity);
   const grantMaterials = usePlayer((s) => s.grantMaterials);
+  const grantDex = usePlayer((s) => s.grantDex);
   const reset = usePlayer((s) => s.reset);
 
   return (
@@ -58,6 +59,8 @@ export default function Settings() {
         {/* 반지·강화 +6 확인용 (T17_7) — 6마리 판을 몇십 번 돌아야 모이는 걸 한 번에 준다 */}
         <View style={styles.row}>
           <Button label="소재 전부 +3" onPress={() => grantMaterials(3)} />
+          {/* 도감 단계 확인용 (T19) — 100마리는 몇 주 걸린다 */}
+          <Button label="도감 +10 (지금 지역)" onPress={() => grantDex(10)} />
         </View>
         <Text size="sm" dim>
           앱을 완전히 끄고 다시 켜도 값이 남아 있어야 합니다.

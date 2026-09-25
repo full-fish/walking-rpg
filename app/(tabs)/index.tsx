@@ -16,6 +16,7 @@ import { Button } from '@/ui/Button';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
+import { Today } from '@/ui/Today';
 
 /** HUD 한 칸. 새 공용 컴포넌트를 만들 만큼은 아니라 이 화면 안에 둔다. */
 function Stat({ label, value, color }: { label: string; value: number; color?: string }) {
@@ -80,6 +81,9 @@ export default function Adventure() {
             </Text>
           )}
         </Panel>
+
+        {/* 걸음 목표 · 출석 (T19) — 둘 다 [받기]를 눌러야 들어온다 */}
+        <Today />
 
         {save.run ? (
           // 앱을 껐다 켜도 판이 남아 있다. 마을로 돌려보내지 않고 이어가게 한다 (§4.4)

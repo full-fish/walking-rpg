@@ -1,6 +1,7 @@
 import { gearSetFor } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import type { Outcome } from './battle';
+import { dexStats } from './dex';
 import {
   MATERIAL_BUFF,
   combatStats,
@@ -38,7 +39,17 @@ export type StatKey = SpendableStat;
  * Lv50 기준 전투력의 60%가 장비 몫이다 (T17_7 검수 4차). 맨몸으로 후반 사냥터에 가면 그래서 안 된다.
  */
 export function statsOf(save: Save) {
-  const base = combatStats(save.player.level, 'warrior', save.statPoints, equippedStats(save));
+  // 도감 (T19) — 100마리 카드 · 지역 완성 스탯은 배분 포인트처럼 1차 스탯에 더한다
+  const dex = dexStats(save);
+  const points = save.statPoints;
+  const spend = {
+    ...points,
+    str: points.str + dex.str,
+    vit: points.vit + dex.vit,
+    agi: points.agi + dex.agi,
+    luk: points.luk + dex.luk,
+  };
+  const base = combatStats(save.player.level, 'warrior', spend, equippedStats(save));
   // 반지 (T17_7) — 전투력 축 밖의 것만 준다. 입장 WP·자정 WP·6마리 판·클리어 보너스·물약은 쓰는 곳이 본다
   const stats = {
     ...base,

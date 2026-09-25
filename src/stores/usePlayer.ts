@@ -2,6 +2,8 @@ import { create } from 'zustand';
 
 import { EQUIPMENT, gearSetFor, REGIONS } from '@/content';
 import type { Outcome } from '@/game/battle';
+import { claimGoals, claimStreak, type Got } from '@/game/daily';
+import { DEX_MONSTERS, recordKill } from '@/game/dex';
 import { addBuffs, enterField, settleRun, drinkPotion, type RunResult } from '@/game/field';
 import {
   buyConsumable,
@@ -50,6 +52,13 @@ type PlayerStore = {
   grantFromSteps: (steps: DailySteps) => void;
   /** WP를 쓴다. 모자라면 아무것도 바꾸지 않고 false */
   spend: (cost: number) => boolean;
+  /**
+   * 걸음 목표를 받는다 (T19) — 최근 3일치 열린 칸 전부. 받을 게 없으면 null.
+   * `waiting`이면 가방이 차서 장비 칸이 남았다
+   */
+  claimGoals: () => { got: Got; waiting: boolean } | null;
+  /** 오늘 출석을 받는다 (T19). 오늘 이미 받았으면 null */
+  claimStreak: () => { got: Got; count: number } | null;
   /** 안 켠 동안의 HP 자연회복을 반영한다. 회복할 게 없으면 아무것도 안 한다 */
   regen: () => void;
   /** 전투 하나를 정산한다. 화면이 결과를 보여줄 수 있게 정산 내역을 돌려준다 */
@@ -87,6 +96,8 @@ type PlayerStore = {
   setBagCapacity: (capacity: number) => void;
   /** 실기기 확인용 — 모든 사냥터 소재를 n개씩 더 준다 (반지·강화 +6 확인, T17_7) */
   grantMaterials: (n: number) => void;
+  /** 실기기 확인용 — 지금 지역 몬스터를 n마리씩 잡은 것으로 친다 (도감 단계 확인, T19) */
+  grantDex: (n: number) => void;
   /**
    * 장비 한 점을 한 단계 올려 본다 (§4.5). 성공·실패를 화면이 보여줘야 해서
    * trade()와 달리 결과를 그대로 돌려준다. 골드가 모자라면 null.
@@ -127,6 +138,20 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     if (!wp) return false;
     set({ save: persist({ ...save, wp }) });
     return true;
+  },
+
+  claimGoals: () => {
+    const result = claimGoals(get().save, new Date());
+    if (!result) return null;
+    set({ save: persist(result.save) });
+    return result;
+  },
+
+  claimStreak: () => {
+    const result = claimStreak(get().save, new Date());
+    if (!result) return null;
+    set({ save: persist(result.save) });
+    return result;
   },
 
   regen: () => {
@@ -245,6 +270,15 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     const materials = { ...save.materials };
     for (const f of REGIONS.flatMap((r) => r.fields)) materials[f.id] = (materials[f.id] ?? 0) + n;
     set({ save: persist({ ...save, materials }) });
+  },
+
+  grantDex: (n) => {
+    let save = get().save;
+    // 실제 처치 경로를 그대로 탄다 — 사냥터 완성 포인트까지 똑같이 붙는다
+    for (const m of DEX_MONSTERS.get(save.regionProgress.current)!) {
+      for (let i = 0; i < n; i++) save = recordKill(save, m).save;
+    }
+    set({ save: persist(save) });
   },
 
   enhance: (uid, materials) => {

@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { GEAR_SLOT_LABELS, REGIONS } from '@/content';
+import { dexStats } from '@/game/dex';
 import { expToNext, GEAR_SLOTS, STAT_PER_POINT, type GearSlot } from '@/game/formulas';
 import {
   bagFull,
@@ -25,13 +26,14 @@ import type { ItemInstance } from '@/save/schema';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
+import { Dex } from '@/ui/Dex';
 import { EmptyCell, ItemCell, ItemGrid, ListIcon, qualityTag, RingCell } from '@/ui/ItemCell';
 import { Panel } from '@/ui/Panel';
 import { ringName, ringText } from '@/ui/rings';
 import { Text } from '@/ui/Text';
 import { colors, rarity, space } from '@/ui/theme';
 
-const TABS = ['캐릭터', '장비', '가방'] as const;
+const TABS = ['캐릭터', '장비', '가방', '도감'] as const;
 type Tab = (typeof TABS)[number];
 
 /** 확률 계수를 "%p"로. 0.0025 → "0.25%p" */
@@ -119,6 +121,8 @@ export default function Character() {
     agi: gear.agi,
     luk: gear.luk,
   };
+  /** 도감이 주는 1차 스탯 — 100마리 카드 · 지역 완성 (T19). 장비 몫과 따로 적는다 */
+  const dex = dexStats(save);
 
   const equippedIn = (slot: GearSlot) => {
     const uid = save.equipped[slot];
@@ -213,6 +217,7 @@ export default function Character() {
                     <Text>
                       {label} {primary[key]}
                       {bonus(gearPrimary[key])}
+                      {dex[key] > 0 ? ` (도감 +${dex[key]})` : ''}
                     </Text>
                     <Text size="sm" dim>
                       {effect}
@@ -568,6 +573,9 @@ export default function Character() {
             )}
           </>
         )}
+
+        {/* 도감 (T19) — 몬스터마다 잡은 수 · 카드 5단계 · 사냥터·지역 완성 */}
+        {tab === '도감' && <Dex save={save} />}
       </ScrollView>
     </SafeAreaView>
   );

@@ -11,6 +11,7 @@ import {
   MAX_TIER,
   RARITIES,
   REGION_COUNT,
+  SPENDABLE_STATS,
 } from '../game/formulas';
 
 /** 원형에 곱하는 배율들. 1.0이 기준 (§7.2③). */
@@ -36,6 +37,8 @@ export const MonsterArchetypeSchema = z
     /** 내성·드랍 분기에 쓰는 태그. 무기 종류별 내성도 여기에 붙는다 (§7.2 주석 ⑥) */
     traits: z.array(z.string().min(1)).nonempty(),
     spriteTag: z.string().min(1),
+    /** 도감 카드를 100마리 채우면 오르는 1차 스탯 (T19) — "바위 몬스터를 모으면 단단해진다" */
+    dexStat: z.enum(SPENDABLE_STATS),
     tiers: z.array(z.int().min(1).max(MAX_TIER)).nonempty(),
     namePool: z.array(z.string().min(1)).nonempty(),
     /**

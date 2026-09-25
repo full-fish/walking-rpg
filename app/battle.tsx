@@ -15,7 +15,7 @@ import {
   type Outcome,
 } from '@/game/battle';
 import { currentMonster, type RunResult } from '@/game/field';
-import { POINTS_PER_LEVEL } from '@/game/formulas';
+import { DEX, POINTS_PER_LEVEL } from '@/game/formulas';
 import { equippedIn, itemDef, itemLabel } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import type { Save } from '@/save/schema';
@@ -23,6 +23,7 @@ import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { BossStage } from '@/ui/BossStage';
 import { Button } from '@/ui/Button';
+import { dexUpText, stageColor } from '@/ui/Dex';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { colors, rarity, space } from '@/ui/theme';
@@ -284,6 +285,20 @@ export default function Battle() {
             <Text size="sm" color={colors.hp}>
               장비가 떨어졌지만 가방이 꽉 차 못 주웠다
             </Text>
+          )}
+          {/* 도감 (T19) — 카드 단계가 오를 때만 */}
+          {settled.dex && (
+            <Text size="sm" color={stageColor(settled.dex.stage)}>
+              {dexUpText(settled.dex)}
+            </Text>
+          )}
+          {settled.dex?.fields.map((f) => (
+            <Text key={f.id} color={colors.gold}>
+              📖 {f.name} 도감 완성! 스탯 포인트 +{DEX.fieldPoints}
+            </Text>
+          ))}
+          {settled.dex?.region && (
+            <Text color={colors.gold}>📖 지역 도감 완성! 네 스탯 +{DEX.regionStat}</Text>
           )}
           {settled.bossCleared && (
             <Text color={colors.gold}>

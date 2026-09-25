@@ -36,6 +36,7 @@ import {
   rollRunSize,
   WP_COST,
 } from './formulas';
+import { dexDropMult, recordKill, type DexUp } from './dex';
 import { chooseMaterials, pickMaterials, potionHeal, spendMaterials } from './economy';
 import { bagFull, makeItem, ringBonus } from './items';
 import {
@@ -212,12 +213,14 @@ export type RunResult = Settlement & {
   dropLost: boolean;
   /** 보스를 쓰러뜨렸나 (T17_5). 이제 다음 지역을 해금할 수 있다 */
   bossCleared: boolean;
+  /** 도감 카드 단계가 올랐다 (T19) — 화면이 한 줄로 알린다 */
+  dex: DexUp | null;
 };
 
 const NONE: Reward = { exp: 0, gold: 0 };
 
 /** 전투 결과에 드랍 칸의 기본값. 대부분의 전투는 아무것도 안 떨군다 */
-const NO_DROP = { drop: null, dropLost: false, bossCleared: false } as const;
+const NO_DROP = { drop: null, dropLost: false, bossCleared: false, dex: null } as const;
 
 type Given = { save: Save; drop: ItemInstance | null; lost: boolean };
 
@@ -229,12 +232,12 @@ function give(save: Save, defId: string, rng: () => number): Given {
 }
 
 /**
- * 몬스터 한 마리의 장비 드랍 (T17_6). 기본 3% × LUK 배율, 처치마다 한 번.
+ * 몬스터 한 마리의 장비 드랍 (T17_6). 기본 3% × LUK 배율 × 도감 배율(10마리부터, T19), 처치마다 한 번.
  * **부위는 몬스터가, 티어는 사냥터가 정한다** — 같은 몬스터라도 어디서 잡았느냐에 따라
  * 티어가 다를 수 있고, 사냥터마다 나오는 부위가 정해진다.
  */
 function rollDrop(save: Save, monster: Monster, fieldId: string, rng: () => number): Given {
-  if (!monster.drop || rng() >= DROP_RATE * statsOf(save).dropMult) {
+  if (!monster.drop || rng() >= DROP_RATE * statsOf(save).dropMult * dexDropMult(save, monster)) {
     return { save, drop: null, lost: false };
   }
   const tier = fieldDropTier(fieldById(fieldId));
@@ -269,7 +272,9 @@ function settleBoss(
     exp: Math.round(boss.exp * stats.expMult),
     gold: Math.round(boss.gold * stats.goldMult),
   };
-  const settled = settleBattle(save, 'win', playerHp, reward, now);
+  const won = settleBattle(save, 'win', playerHp, reward, now);
+  const dex = recordKill(won.save, boss);
+  const settled = { ...won, save: dex.save };
   const progress = {
     ...settled.save.regionProgress,
     bosses: { ...settled.save.regionProgress.bosses, [boss.region]: 'cleared' as const },
@@ -286,6 +291,7 @@ function settleBoss(
     drop: given.drop,
     dropLost: given.lost,
     bossCleared: true,
+    dex: dex.up,
   };
 }
 
@@ -334,10 +340,12 @@ export function settleRun(
   const stats = statsOf(save);
   const gained = killReward(monster, stats.goldMult, stats.expMult);
   const won = settleBattle(save, 'win', playerHp, gained, now);
+  // 도감에 한 마리 (T19). 10번째부터 아래 드랍이 는다
+  const dex = recordKill(won.save, monster);
   // 드랍은 처치 즉시 들어온다 — 개별 보상처럼 도망·사망해도 남는다 (T17_6)
-  const loot = rollDrop(won.save, monster, run.fieldId, rng);
+  const loot = rollDrop(dex.save, monster, run.fieldId, rng);
   const settled = { ...won, save: loot.save };
-  const dropped = { drop: loot.drop, dropLost: loot.lost, bossCleared: false };
+  const dropped = { drop: loot.drop, dropLost: loot.lost, bossCleared: false, dex: dex.up };
   const killed = run.killed + 1;
   const earned = { exp: run.earned.exp + gained.exp, gold: run.earned.gold + gained.gold };
 

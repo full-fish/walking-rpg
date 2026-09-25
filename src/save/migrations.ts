@@ -123,6 +123,9 @@ export const migrations: Record<number, Migration> = {
       ringSlots: Array.from({ length: RING_SLOTS }, () => null),
     };
   },
+
+  /** v11 → v12: 도감 · 걸음 목표 · 출석 (T19). 지금까지 잡은 몬스터는 기록이 없어 0부터 센다 */
+  11: (s) => ({ ...s, dex: {}, daily: {}, streak: { count: 0, last: '' } }),
 };
 
 /**

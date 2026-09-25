@@ -3,6 +3,7 @@ import { z } from 'zod';
 import {
   BAG,
   BUFF_STATS,
+  DEX_MAX,
   ENHANCE_MAX,
   GEAR_SLOTS,
   QUALITY_MAX,
@@ -11,11 +12,12 @@ import {
   REGION_COUNT,
   RING_KINDS,
   RING_SLOTS,
+  STEP_GOAL_REWARDS,
   VAULT,
 } from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 11;
+export const SAVE_VERSION = 12;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
@@ -149,6 +151,15 @@ export const SaveSchema = z.object({
      */
     bosses: z.record(z.string(), z.enum(['tried', 'cleared'])),
   }),
+  /** 도감 (T19) — 몬스터 id → 잡은 수. DEX_MAX(100)에서 멈춘다. 보스도 센다 */
+  dex: z.record(z.string(), z.int().min(0).max(DEX_MAX)),
+  /**
+   * 걸음 목표 (T19) — 'YYYY-MM-DD' → 그날 받은 칸 수. 걸음은 wp.grantedByDate가 센 값을 쓴다.
+   * 최근 3일만 남긴다 (미래 날짜는 시계 되돌림 방지로 남긴다 — wp.ts와 같다)
+   */
+  daily: z.record(z.string(), z.int().min(0).max(STEP_GOAL_REWARDS.length)),
+  /** 출석 (T19) — 연속으로 받은 날 수와 마지막으로 받은 날짜. ''이면 아직 한 번도 안 받았다 */
+  streak: z.object({ count: z.int().min(0), last: z.string() }),
 });
 
 export type Save = z.infer<typeof SaveSchema>;
@@ -170,5 +181,8 @@ export function defaultSave(): Save {
     consumables: {},
     run: null,
     regionProgress: { current: 1, unlocked: 1, bosses: {} },
+    dex: {},
+    daily: {},
+    streak: { count: 0, last: '' },
   };
 }

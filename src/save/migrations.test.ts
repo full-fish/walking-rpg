@@ -220,3 +220,15 @@ test('v10 → v11: 고유 장비는 가방·장비 칸에서 지워지고 반지
   expect(v11.rings).toEqual([]);
   expect(v11.ringSlots).toEqual([null, null]);
 });
+
+test('v11 → v12: 도감 · 걸음 목표 · 출석이 빈 채로 생기고 나머지는 그대로다 (T19)', () => {
+  const v11 = { ...defaultSave(), version: 11, player: { level: 7, exp: 3, gold: 500, hp: 80 } };
+  delete (v11 as Record<string, unknown>).dex;
+  delete (v11 as Record<string, unknown>).daily;
+  delete (v11 as Record<string, unknown>).streak;
+  const v12 = SaveSchema.parse(migrate(v11));
+  expect(v12.dex).toEqual({});
+  expect(v12.daily).toEqual({});
+  expect(v12.streak).toEqual({ count: 0, last: '' });
+  expect(v12.player.level).toBe(7);
+});

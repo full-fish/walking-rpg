@@ -930,3 +930,68 @@ export function vaultExpandCost(capacity: number): number {
 export function innCost(region: number): number {
   return Math.round(150 * region * 1.1 ** (region - 1));
 }
+
+// ─────────────────────────────────────────────────────────────
+// 걸음 목표 · 출석 · 도감 (T19)
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * 걸음 목표·출석 보상 한 칸 (T19). 전부 **받는 날 있는 지역** 기준이다.
+ *   gold      그 지역 하루 골드(REGION_DAILY_GOLD)에 곱하는 비율
+ *   potion    그 지역 물약 개수
+ *   material  그 지역 사냥터 중 무작위 소재 개수
+ *   gear      그 지역 높은 티어 장비 1개 — 등급은 보스 보상 표(BOSS_DROP_RARITY)
+ * WP는 주지 않는다 — WP가 곧 진행 속도라 하루 몇백만 줘도 Lv50이 7% 빨라진다 (T19 시뮬).
+ */
+export type DailyReward = { gold?: number; potion?: number; material?: number; gear?: boolean };
+
+/** 걸음 목표 한 칸의 걸음 수 (T19). 5,000보마다 한 칸 */
+export const STEP_GOAL = 5_000;
+
+/**
+ * 걸음 목표 6칸 — 5,000 · 10,000 · … · 30,000보 (T19). 하루 1만 보 기준선은 앞 두 칸을 매일 받는다.
+ * **장비 칸은 맨 끝이다** — 가방이 차 있으면 거기서 멈추고 기다린다(받은 칸 수 하나로 기록할 수 있다).
+ */
+export const STEP_GOAL_REWARDS: readonly DailyReward[] = [
+  { potion: 1 },
+  { gold: 0.1 },
+  { material: 1 },
+  { gold: 0.2 },
+  { material: 1 },
+  { gear: true },
+];
+
+/**
+ * 7일 출석표 (T19). 연속 1~7일째마다 한 칸, 하루라도 빠지면 1일째로, 7일째 다음은 다시 1일째 칸.
+ * 한 주 합 ≈ 사냥 하루치 — 소급(최대 이틀치 걸음)보다 작아야 "여행 2~3일은 손해 없음"이 산다 (§3.6).
+ */
+export const STREAK_REWARDS: readonly DailyReward[] = [
+  { gold: 0.05 },
+  { potion: 1 },
+  { gold: 0.1 },
+  { material: 1 },
+  { gold: 0.15 },
+  { potion: 2 },
+  { material: 2, gold: 0.2 },
+];
+
+/**
+ * 도감 (T19). 몬스터마다 잡은 수를 센다 — 단계마다 카드 테두리가 등급 색으로 바뀌고 정보가 하나씩 열린다.
+ *   steps       1 이름·그림 / 10 원형·티어·사냥터 / 25 EXP·골드 / 50 드랍 부위 / 100 스탯
+ *   dropMult    10마리부터 그 몬스터의 장비 드랍 배율 (행운 배율과 곱한다)
+ *   cardStat    100마리 카드 하나가 주는 1차 스탯 — 어느 스탯인지는 원형(dexStat)이 정한다
+ *   fieldPoints 사냥터 하나를 다 채우면 주는 스탯 포인트 (자유 배분)
+ *   regionStat  지역 하나를 다 채우면 네 1차 스탯에 더하는 값
+ * 다 채우면 스탯 +216점 ≈ Lv50 균등의 2배 세기다. 100마리는 Lv50까지 평범하게 가면 4장뿐이라 Lv50 이후의 목표다.
+ */
+export const DEX = {
+  steps: [1, 10, 25, 50, 100],
+  dropAt: 10,
+  dropMult: 1.5,
+  cardStat: 1,
+  fieldPoints: 1,
+  regionStat: 2,
+} as const;
+
+/** 도감 최대 처치 수 — 여기서 멈춘다 */
+export const DEX_MAX = DEX.steps[DEX.steps.length - 1];
