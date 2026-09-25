@@ -86,15 +86,15 @@ test('물약 — 만피면 안 쓴다. 누르자마자 증발하면 억울하다
 
   expect(consumeItem(stocked, 'pot_small')).toBeNull(); // 만피
 
-  // Lv1 만피가 100이라 물약(소) 한 병이면 어디서 써도 가득 찬다 — 넘치지 않는다
+  // 물약(소)는 60을 채운다 (T17_7 검수 4차 — HP가 작아져서 100 → 60)
   const hurt = { ...stocked, player: { ...stocked.player, hp: 10 } };
   const healed = consumeItem(hurt, 'pot_small')!;
-  expect(healed.player.hp).toBe(statsOf(stocked).maxHp);
+  expect(healed.player.hp).toBe(70);
   expect(healed.consumables.pot_small).toBe(1);
 
-  // 회복량이 남아도 최대치에서 멈춘다
-  const deep = { ...stocked, player: { ...stocked.player, level: 20, hp: 5 } };
-  expect(consumeItem(deep, 'pot_small')!.player.hp).toBe(105);
+  // 회복량이 남아도 최대치에서 멈춘다 — Lv1 만피 100
+  const deep = { ...stocked, player: { ...stocked.player, hp: 60 } };
+  expect(consumeItem(deep, 'pot_small')!.player.hp).toBe(statsOf(stocked).maxHp);
 });
 
 test('엘릭서는 최대 HP의 50%를 채운다 (§4.5)', () => {

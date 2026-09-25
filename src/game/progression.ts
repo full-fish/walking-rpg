@@ -4,7 +4,6 @@ import type { Outcome } from './battle';
 import {
   BOSS_BUFF,
   combatStats,
-  effectiveSpend,
   GEAR_SLOTS,
   DEATH_GOLD_LOSS,
   DEATH_HP_RATIO,
@@ -35,13 +34,11 @@ export type StatKey = SpendableStat;
  * 세이브의 레벨·배분·**장비**로 전투 스탯을 만든다 (§4.3, §4.5).
  * 화면과 전투가 반드시 이걸 거쳐 같은 값을 본다.
  *
- * 맨몸은 레벨에 선형으로 자라고, 몬스터와의 격차는 장비가 메운다 —
- * Lv50 기준 전투력의 85%가 장비 몫이다. 맨몸으로 후반 사냥터에 가면 그래서 안 된다.
+ * 맨몸은 찍은 포인트에 선형으로 자라고, 몬스터와의 격차는 장비가 메운다 —
+ * Lv50 기준 전투력의 60%가 장비 몫이다 (T17_7 검수 4차). 맨몸으로 후반 사냥터에 가면 그래서 안 된다.
  */
 export function statsOf(save: Save) {
-  // 평균을 넘게 넣은 몫은 절반만 든다 (T17_7 검수) — 균등 배분이 제일 세다
-  const spend = effectiveSpend(save.statPoints);
-  const base = combatStats(save.player.level, 'warrior', spend, equippedStats(save));
+  const base = combatStats(save.player.level, 'warrior', save.statPoints, equippedStats(save));
   // 반지 (T17_7) — 전투력 축 밖의 것만 준다. 입장 WP·자정 WP·6마리 판·클리어 보너스·물약은 쓰는 곳이 본다
   const stats = {
     ...base,

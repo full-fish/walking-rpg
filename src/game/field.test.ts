@@ -13,7 +13,7 @@ import {
   settleRun,
   drinkPotion,
 } from './field';
-import { CLEAR_BONUS_RATE, POTION_CARRY_MAX, WP_COST } from './formulas';
+import { CLEAR_BONUS_RATE, materialChance, POTION_CARRY_MAX, WP_COST } from './formulas';
 import { statsOf } from './progression';
 
 const FIELD = 'f_r1_meadow';
@@ -74,7 +74,7 @@ test('사냥터 안에서만 물약을 쓴다. 만피면 안 쓴다', () => {
   const entered = enterField(save, FIELD, makeRng(1))!;
   expect(drinkPotion(entered, 'pot_small'), '만피').toBeNull();
 
-  const hurt = { ...entered, player: { ...entered.player, hp: 10 } };
+  const hurt = { ...entered, player: { ...entered.player, hp: 50 } };
   const healed = drinkPotion(hurt, 'pot_small')!;
   expect(healed.player.hp).toBe(statsOf(hurt).maxHp);
   expect(carriedPotions(healed.run!)).toBe(POTION_CARRY_MAX - 1);
@@ -176,40 +176,36 @@ test('상대 몬스터는 그 사냥터 풀에서만 나온다', () => {
   }
 });
 
-test('소재는 6마리 완주만 준다 — 그 아래는 행운을 몰빵해도 0 (§4.4, T17)', () => {
+test('소재 — 6마리 확정 · 5마리 50% · 4마리 20%에 드랍 배율, 3마리 이하 0 (§4.4, T17_7 검수 4차)', () => {
+  expect(materialChance(6, 1)).toBe(1);
+  expect(materialChance(5, 1)).toBe(0.5);
+  expect(materialChance(4, 1.5)).toBeCloseTo(0.3);
+  expect(materialChance(5, 4), '1을 넘지 않는다').toBe(1);
+  expect(materialChance(3, 10), '3마리 이하는 행운이 아무리 높아도 0').toBe(0);
+
+  // 실제 판에서도 — 행운 몰빵(드랍 ×4.02)이면 5마리도 확정, 4마리는 80%, 3마리 이하는 0
   const lucky: Save = {
     ...ready(),
     player: { ...ready().player, level: 50 },
     statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 147, int: 0 },
   };
-  // 행운은 골드·장비 드랍만 증폭한다. 소재에는 손을 못 댄다.
-  // 가산이다 — 1점당 2% (T17_6). 몰빵이라 평균(36.75)을 넘는 110.25는 절반만 든다 (T17_7 검수) —
-  // 시작 4 + 36.75 + 55.125 = 95.875점, +191.75%
-  expect(statsOf(lucky).goldMult).toBeCloseTo(2.9175);
-
-  let sub6 = 0;
-  let sub6Material = 0;
-  let six = 0;
-  let sixMaterial = 0;
-  for (let seed = 1; seed <= 200; seed++) {
+  expect(statsOf(lucky).dropMult).toBeCloseTo(4.02);
+  const runs = new Map<number, { n: number; got: number }>();
+  for (let seed = 1; seed <= 300; seed++) {
     const rng = makeRng(seed);
     const save = enterField(lucky, FIELD, rng)!;
-    const six6 = save.run!.size >= 6;
+    const size = save.run!.size;
     let result = settleRun(save, 'win', 1e6, rng, 0);
     while (!result.over) result = settleRun(result.save, 'win', 1e6, rng, 0);
-    if (six6) {
-      six += 1;
-      if (result.material) sixMaterial += 1;
-    } else {
-      sub6 += 1;
-      if (result.material) sub6Material += 1;
-    }
+    const row = runs.get(size) ?? { n: 0, got: 0 };
+    runs.set(size, { n: row.n + 1, got: row.got + (result.material ? 1 : 0) });
   }
-
-  expect(sub6).toBeGreaterThan(100);
-  expect(sub6Material, '5마리 이하는 한 번도 안 나온다').toBe(0);
-  expect(six).toBeGreaterThan(0);
-  expect(sixMaterial, '6마리는 전부 나온다').toBe(six);
+  expect(runs.get(2)!.got + runs.get(3)!.got).toBe(0);
+  expect(runs.get(5)!.got).toBe(runs.get(5)!.n);
+  expect(runs.get(6)!.got).toBe(runs.get(6)!.n);
+  const four = runs.get(4)!;
+  expect(four.got / four.n).toBeGreaterThan(0.65);
+  expect(four.got / four.n).toBeLessThan(0.95);
 });
 
 test('반지 — 입장 WP 할인(상한 50%) · 6마리 판 · 클리어 보너스 · EXP (T17_7)', () => {

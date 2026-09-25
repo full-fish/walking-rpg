@@ -16,7 +16,7 @@ export const RING_INFO: Record<RingKind, { name: string; effect: (v: number) => 
   clearBonus: { name: '정복자의 반지', effect: (v) => `클리어 보너스 +${pct(v)}` },
   exp: { name: '현자의 반지', effect: (v) => `EXP +${pct(v)}` },
   gold: { name: '상인의 반지', effect: (v) => `골드 +${pct(v)}` },
-  drop: { name: '도굴꾼의 반지', effect: (v) => `장비 드랍 +${pct(v)}` },
+  drop: { name: '도굴꾼의 반지', effect: (v) => `드랍 +${pct(v)} (장비·소재)` },
   potion: { name: '약초꾼의 반지', effect: (v) => `물약 회복 +${pct(v)}` },
   shield: { name: '수호자의 반지', effect: (v) => `전투 시작 보호막 — 최대 HP의 ${pct(v)}` },
   bossBuff: {

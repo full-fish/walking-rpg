@@ -145,13 +145,15 @@ const rarity = z.enum(RARITIES);
  * 장비 원형 — 부위 하나. 수치는 하나도 없다.
  *
  * 스탯은 §4.5 공식(gearStats)이 전부 뽑고, 여기 있는 건 **이름과 스프라이트뿐**이다.
- * 이름 = `tierNames[티어-1] + namePool[등급]` — 10티어 × 7부위 × 5등급 = 350종이 겹치지 않는다.
+ * 이름 = `tierNames[티어-1] + names[티어 1이면 0, 아니면 1]` (T17_7 검수 4차) — **등급이 올라도 안 바뀐다.**
+ * 그림이 부위 × 티어로만 갈려서, 등급마다 이름을 바꾸면 그림과 이름이 어긋났다. 등급은 색이 말한다.
  */
 export const EquipmentArchetypeSchema = z.object({
   slot,
   label: z.string().min(1),
   spriteTag: z.string().min(1),
-  namePool: z.record(z.enum(RARITIES), z.string().min(1)),
+  /** [티어 1 이름, 티어 2~10 이름] — 낡은 검 → 무쇠 장검 */
+  names: z.tuple([z.string().min(1), z.string().min(1)]),
 });
 
 export const EquipmentArchetypesSchema = z.object({

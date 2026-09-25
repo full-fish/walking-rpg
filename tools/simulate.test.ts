@@ -245,21 +245,21 @@ test('빌드별 편차 — 배분을 어떻게 하든 굴러가야 한다 (§4.3
   // T13까지는 행운 몰빵이 400일 안에 못 끝냈다.
   const stuck = reached.filter((r) => r.day === undefined).map((r) => r.name);
   expect(stuck, 'Lv50에 못 간 빌드').toEqual([]);
-  // **네 스탯 균등 배분이 제일 빠르다** (T17_7 검수) — 평균 넘는 몫은 절반만 들고(effectiveSpend)
-  // 장비 몫에도 %로 붙어서다(STAT_PER_POINT gear*). 이게 깨지면 1점의 값이 스탯끼리 두 배 넘게 벌어진 것이다
+  // **네 스탯 균등 배분이 제일 빠르다** (T17_7 검수 4차) — 장비가 네 스탯에 같은 배수를 얹고
+  // 레벨 자동 성장이 없어서, 1점의 값이 스탯끼리 같다. 행운은 전투가 조금 약한 대신 골드·소재를 준다
   const fastest = reached.reduce((a, b) => (a.day! <= b.day! ? a : b));
   expect(fastest.name, '제일 빠른 빌드').toBe(balanced.name);
   // 빌드 13개 × 시드 — 기본 5초를 넘는다
 }, 30_000);
 
-test('장비가 전투력의 85%를 댄다 (§4.5) — 맨몸 성장은 선형으로 남는다', () => {
+test('장비가 Lv50 전투력의 60%를 댄다 (§4.5, T17_7 검수 4차) — 맨몸은 찍은 포인트만큼 선형이다', () => {
   console.log('\n■ 맨몸 vs 장비 (균등 배분 · 그 레벨 common 풀세트)');
   console.log('  레벨   맨몸HP   +장비HP   맨몸ATK  +장비ATK   장비 몫');
   console.log('  ' + '─'.repeat(52));
 
   const shares: number[] = [];
   for (const level of [1, 10, 20, 30, 40, 50]) {
-    // 장비 몫은 1차 스탯만큼 %로 커진다 (T17_7 검수) — 기준 플레이어(균등 배분)로 잰다
+    // 기준 플레이어(네 스탯 균등)로 잰다
     const naked = combatStats(level, 'warrior', evenSpend(level));
     const geared = combatStats(level, 'warrior', evenSpend(level), setBonus(gearSetFor(level)));
     const hp = geared.maxHp;
@@ -274,8 +274,9 @@ test('장비가 전투력의 85%를 댄다 (§4.5) — 맨몸 성장은 선형�
   }
   console.log('  ' + '─'.repeat(52));
 
-  // Lv50에서 85% 근처여야 한다. 이게 무너지면 §4.5의 "장비를 모으는 재미"가 사라진다
-  expect(shares.at(-1), 'Lv50 장비 몫').toBeGreaterThan(0.8);
+  // Lv50에서 60% 근처여야 한다 — 넘치면 1점이 묽어지고(전에 86%), 모자라면 장비 모으는 재미가 준다
+  expect(shares.at(-1), 'Lv50 장비 몫').toBeGreaterThan(0.55);
+  expect(shares.at(-1), 'Lv50 장비 몫').toBeLessThan(0.65);
   // 레벨이 오를수록 장비 비중이 커진다 — 뒤로 갈수록 노가다가 의미를 갖는다
   expect(shares, '장비 몫은 단조 증가').toEqual([...shares].sort((a, b) => a - b));
 });

@@ -38,6 +38,7 @@ import {
   ENHANCE_MAX,
   EXPECTED_GEAR,
   enhanceCost,
+  enhanceMaterials,
   enhanceRate,
   expToNext,
   GEAR_SLOTS,
@@ -202,10 +203,17 @@ function enhanceGear(save: Save, reserve: number, rng: () => number) {
   let next = save;
   let spent = 0;
   let materials = 0;
+  // 아직 못 잡은 보스가 있으면 그 지역 소재 3개는 보스 버프 몫으로 남긴다 (T17_7 검수 4차) —
+  // 보스가 버프 없이는 잘 안 잡혀서, 강화에 다 쓰면 관문 앞에서 한참 막힌다. 사람도 남겨 둔다
+  const here = next.regionProgress.current;
+  const keep = bossState(next, here) === 'cleared' ? 0 : BOSS_BUFF.max;
+  const spares = (i: ItemInstance) =>
+    itemDef(i).region !== here ||
+    regionMaterials(next, here) - enhanceMaterials(i.enhance + 1) >= keep;
   for (;;) {
     // +6부터는 소재가 있어야 한다 (T17_6 검수) — 없는 장비는 이번엔 건너뛴다
     const steps = equippedItems(next)
-      .filter((i) => i.enhance < ENHANCE_MAX && enhancePick(next, i) !== null)
+      .filter((i) => i.enhance < ENHANCE_MAX && enhancePick(next, i) !== null && spares(i))
       .map((i) => ({
         uid: i.uid,
         cost: enhanceCost(itemDef(i).price, i.enhance + 1),

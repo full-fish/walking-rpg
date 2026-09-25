@@ -98,16 +98,16 @@ test('승리 — 보상 지급, HP는 싸우고 남은 만큼 유지 (§4.2)', (
   expect(s.levelsGained).toBe(0);
 });
 
-test('레벨업하면 포인트 3점을 받고 늘어난 최대 HP만큼 현재 HP도 오른다', () => {
+test('레벨업은 포인트 3점만 준다 — 찍기 전엔 최대 HP도 그대로다 (T17_7 검수 4차)', () => {
   const save = { ...at(1, { hp: 60, exp: 160 }), hpUpdatedAt: 0 };
   const s = settleBattle(save, 'win', 60, { exp: 10, gold: 0 }, 0);
 
   expect(s.levelsGained).toBe(1);
   expect(s.save.player.level).toBe(2);
   expect(s.save.statPoints.unspent).toBe(POINTS_PER_LEVEL);
-  // Lv1 maxHp 100 → Lv2(미배분) 114 = 40 + 직업 14 + VIT 6×10. 다친 40은 그대로 두고 14만 더한다
-  expect(statsOf(s.save).maxHp).toBe(114);
-  expect(s.save.player.hp).toBe(74);
+  // 레벨 자동 성장이 없다 — 체력에 찍어야 오른다
+  expect(statsOf(s.save).maxHp).toBe(100);
+  expect(s.save.player.hp).toBe(60);
 });
 
 test('도망 — 보상 없이 그 시점 HP만 남는다 (§4.2)', () => {
@@ -141,26 +141,16 @@ test('스탯 배분 — 포인트가 있어야 쓰이고 VIT는 현재 HP도 올
     statPoints: { unspent: 2, str: 0, vit: 0, agi: 0, luk: 0, int: 0 },
   };
 
-  // 한 스탯에만 넣으면 네 스탯 평균(0.25)을 넘는 0.75는 절반만 든다 (T17_7 검수) — 1점이 0.625점이다
   const vit = spendPoint(save, 'vit');
   expect(vit?.statPoints).toMatchObject({ unspent: 1, vit: 1 });
-  expect(statsOf(vit!).maxHp - statsOf(save).maxHp).toBe(6);
-  expect(vit!.player.hp).toBe(56);
+  expect(statsOf(vit!).maxHp - statsOf(save).maxHp).toBe(10);
+  expect(vit!.player.hp).toBe(60);
 
   // STR은 최대 HP와 무관하므로 현재 HP를 건드리지 않는다
   const str = spendPoint(save, 'str');
   expect(str!.player.hp).toBe(50);
-  expect(statsOf(str!).atk - statsOf(save).atk).toBeCloseTo(2 * 0.625);
-
-  // 네 스탯에 하나씩 넣으면 평균을 넘는 게 없어서 표 그대로다 — VIT 1점 = HP +10, STR 1점 = ATK +2
-  const even: Save = {
-    ...save,
-    statPoints: { unspent: 0, str: 1, vit: 1, agi: 1, luk: 1, int: 0 },
-  };
-  const noVit: Save = { ...even, statPoints: { ...even.statPoints, vit: 0 } };
-  const noStr: Save = { ...even, statPoints: { ...even.statPoints, str: 0 } };
-  expect(statsOf(even).maxHp - statsOf(noVit).maxHp).toBe(10);
-  expect(statsOf(even).atk - statsOf(noStr).atk).toBe(2);
+  // 포인트 1점 = ATK +2. 어디에 몇 점 넣었든 표 그대로다 (§4.3)
+  expect(statsOf(str!).atk - statsOf(save).atk).toBe(2);
 
   // 포인트가 없으면 null
   expect(spendPoint({ ...save, statPoints: { ...save.statPoints, unspent: 0 } }, 'str')).toBeNull();

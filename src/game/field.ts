@@ -28,7 +28,7 @@ import {
   GEAR_SLOTS,
   GEAR_TIERS,
   GEAR_TIERS_PER_REGION,
-  MATERIAL_GUARANTEED_SIZE,
+  materialChance,
   POTION_CARRY_MAX,
   rollRarity,
   rollRunSize,
@@ -335,9 +335,9 @@ export function settleRun(
   };
   const withBonus = settleBattle(settled.save, 'win', playerHp, bonus, now);
 
-  // **6마리 완주만 소재를 준다** (§4.4, T17). 확률을 섞으면 "6마리를 뽑았나"가 흐려진다 —
-  // 마릿수 자체가 이미 도박이라 그 위에 확률을 한 겹 더 얹을 자리가 없다
-  const material = run.size >= MATERIAL_GUARANTEED_SIZE ? run.fieldId : null;
+  // 소재 — 6마리 확정, 5마리 50%, 4마리 20% × 드랍 배율 (§4.4, T17_7 검수 4차)
+  const chance = materialChance(run.size, statsOf(save).dropMult);
+  const material = chance > 0 && (chance >= 1 || rng() < chance) ? run.fieldId : null;
   const materials = material
     ? { ...withBonus.save.materials, [material]: (withBonus.save.materials[material] ?? 0) + 1 }
     : withBonus.save.materials;

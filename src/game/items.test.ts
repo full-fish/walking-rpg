@@ -49,7 +49,8 @@ test('부위마다 성격이 다르다 — 무기는 ATK만, 장신구는 LUK만
   expect(full.dropMult).toBeGreaterThan(naked.dropMult);
   expect(full.goldMult).toBeGreaterThan(naked.goldMult);
   expect(full.cri).toBeGreaterThan(naked.cri);
-  expect(full.crd).toBeGreaterThan(naked.crd);
+  // 치명 배율은 고정이다 — 행운은 확률만 올린다 (T17_7 검수 4차)
+  expect(full.crd).toBe(naked.crd);
 });
 
 test('uid는 세이브 안에서만 안 겹치면 된다 — 가진 것 중 가장 큰 번호 + 1', () => {
@@ -74,7 +75,7 @@ test('개체 스탯 = 정의 × 품질 × 1.1^강화 (§4.5)', () => {
   expect(good.atk / base.atk).toBeCloseTo(1.2, 2);
   expect(forged.atk / base.atk).toBeCloseTo(2.59, 2);
   expect(itemLabel({ uid: '4', defId: 'eq_t10_weapon_common', quality: 1.14, enhance: 3 })).toBe(
-    '심연 검 +3 (114%)',
+    '심연 장검 +3 (114%)',
   );
 });
 
@@ -128,9 +129,10 @@ test('itemPower — 품질·강화가 붙은 순서대로 정렬된다 (T17_1)',
   expect(itemPower(good)).toBeGreaterThan(itemPower(plain));
   expect(itemPower(forged)).toBeGreaterThan(itemPower(plain));
 
-  // 부위가 달라도 비교가 선다 — 값이 실제로 주는 몫에 비례하기 때문이다 (§4.5)
+  // 부위가 달라도 비교가 선다 — 값이 실제로 주는 몫에 비례하기 때문이다 (§4.5).
+  // 장비 몫이 Lv50 60%로 줄어(T17_7 검수 4차) 티어 차이도 줄었다 — 티어 2 전설이 티어 8 일반과 비슷하다
   const highTier = { uid: '2', defId: 'eq_t8_helm_common', quality: 1, enhance: 0 };
-  const lowTier = { uid: '3', defId: 'eq_t2_weapon_legendary', quality: 1, enhance: 0 };
+  const lowTier = { uid: '3', defId: 'eq_t2_weapon_epic', quality: 1, enhance: 0 };
   expect(itemPower(highTier)).toBeGreaterThan(itemPower(lowTier));
 });
 

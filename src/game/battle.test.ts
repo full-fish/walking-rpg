@@ -134,15 +134,15 @@ test('HP가 0인 채로 들어가면 바로 진다', () => {
   expect(r.events).toHaveLength(0);
 });
 
-test('레벨 스탯은 §4.3 표 그대로 — 시작 스탯 + 직업 성장 + 3포인트 균등 배분', () => {
-  // §4.3 "Lv1 기본값"은 전사 기준 합계다. 시작 스탯(STR5 VIT6 AGI4 LUK4)을 포함한 값
-  expect(combatStats(1)).toMatchObject({ maxHp: 100, atk: 10, def: 5, spd: 10 });
-  expect(combatStats(1).cri).toBeCloseTo(0.05, 6);
-  expect(combatStats(1).eva).toBeCloseTo(0.03, 6);
+test('레벨 스탯은 §4.3 표 그대로 — 시작 스탯 + 네 스탯 균등 배분 (자동 성장 없음)', () => {
+  // §4.3 "Lv1 기본값"은 전사 기준 합계다. 시작 스탯(STR5 VIT6 AGI4 LUK4)을 포함한 값 (T17_7 검수 4차)
+  expect(combatStats(1)).toMatchObject({ maxHp: 100, atk: 20, def: 5, spd: 15 });
+  expect(combatStats(1).cri).toBeCloseTo(0.072, 6);
+  expect(combatStats(1).eva).toBeCloseTo(0.028, 6);
 
-  // 전사 Lv2 = maxHP +14+10, ATK +2+2, DEF +1.5+0.5, SPD +2.6+1.5. 숨은 배수는 없다
-  expect(combatStats(2)).toMatchObject({ maxHp: 124, atk: 14, def: 7, spd: 14.1 });
-  expect(combatStats(2).eva).toBeCloseTo(0.0315, 6);
+  // 전사 Lv2 = 3점을 넷에 0.75씩 — HP +7.5, ATK +1.5, DEF +0.375, SPD +1.125. 숨은 배수는 없다
+  expect(combatStats(2)).toMatchObject({ maxHp: 108, atk: 21.5, def: 5.375, spd: 16.125 });
+  expect(combatStats(2).eva).toBeCloseTo(0.02875, 6);
 
   // 도적은 더 빠르고 덜 단단하다
   const rogue = combatStats(2, 'rogue');
@@ -154,9 +154,8 @@ test('레벨 스탯은 §4.3 표 그대로 — 시작 스탯 + 직업 성장 + 3
 });
 
 test('SPD가 빠르면 연속으로 두 번 때린다 — 화면에서 보여야 하는 것 (T8 완료 기준)', () => {
-  // 플레이어 SPD 10 vs 슬라임 7.47 → 행동 비율 1.34. 서너 라운드마다 한 번 연속이 나온다.
-  // 수치는 gen-content가 뽑은 지역 1 초록 슬라임 그대로다 (T11·T12).
-  const slime = monster({ hp: 86, maxHp: 86, atk: 2.5, def: 1.73, spd: 7.47, eva: 0.03 });
+  // 플레이어 SPD 15 vs 슬라임 11.2 → 행동 비율 1.34. 서너 라운드마다 한 번 연속이 나온다.
+  const slime = monster({ hp: 172, maxHp: 172, atk: 2.5, def: 1.73, spd: 11.2, eva: 0.03 });
   let battlesWithStreak = 0;
 
   for (let seed = 0; seed < 50; seed++) {
@@ -169,7 +168,7 @@ test('SPD가 빠르면 연속으로 두 번 때린다 — 화면에서 보여야
   expect(battlesWithStreak).toBe(50);
 
   // 비율이 1에 가까우면 전투 길이 안에서는 연속이 안 나온다 — 데모 몬스터가 이랬다.
-  const twin = monster({ hp: 86, maxHp: 86, atk: 2.5, def: 1.73, spd: 9.96 });
+  const twin = monster({ hp: 172, maxHp: 172, atk: 2.5, def: 1.73, spd: 14.94 });
   const { events } = simulateBattle(player(), twin, makeRng(0));
   expect(
     events.some((e, i) => i > 0 && e.actor === 'player' && events[i - 1].actor === 'player'),

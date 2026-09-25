@@ -30,10 +30,10 @@ const RUN_SIZES = [4, 6] as const;
 
 /**
  * Lv L 전사, **네 스탯 균등 배분**(T17_7 검수) · **그 지역 보통으로 투자한 한 벌** 착용 (EXPECTED_GEAR,
- * T17_6 검수) — 지역 1 common +0 · 2 common +3 · 3 uncommon +3 · 4 uncommon +4 · 5 rare +3.
+ * T17_7 검수 4차) — 지역 1 common +0 · 2 common +2 · 3 uncommon +2 · 4 uncommon +3 · 5 rare +2.
  * 상점은 지금 지역 티어만 판다 — 지역 끝 레벨이면 다음 지역 앞단을 낄 수 있어도 못 산다.
  *
- * 맨몸으로 재면 후반이 전멸한다 — 전투력의 85%가 장비에서 오는 게 설계라서다.
+ * 맨몸으로 재면 후반이 전멸한다 — Lv50 전투력의 60%가 장비에서 오는 게 설계라서다.
  * 스탯 계산은 화면과 같은 combatStats·itemStats를 쓴다 — 여기서 따로 세면 둘이 어긋난다.
  */
 function warrior(level: number, region = 1): Combatant {
@@ -255,14 +255,13 @@ test('SPD 비율이 그대로 행동 횟수 비율이 된다 (상한 3배)', () 
 });
 
 /**
- * 보스 1:1 (T17_5) — **지역 끝 레벨 · 보통으로 투자한 한 벌 · 물약 3개로 승률 50%** (T17_6 검수).
+ * 보스 1:1 (T17_5) — **지역 끝 레벨 · 보통으로 투자한 한 벌 · 물약 3개로 승률 30%** (T17_7 검수 4차).
  *
- * 보통 투자(EXPECTED_GEAR)는 지역 1 common +0부터 지역 5 uncommon +5까지 한 단계씩 오른다.
- * 기준선에서 반반이면, 더 키워 온 사람은 대체로 이기고 강화를 안 한 사람은 레벨로 메워야 한다.
- * 배율(regions.json의 boss.mult)은 이 승률을 이분 탐색으로 맞춘 값이다. 밸런스를 건드려 여기가
- * 깨지면 배율을 다시 맞춘다.
+ * "잡을까 말까 한 보스를 소재 버프로 그나마 잡는다" — 버프 없이 30%, 소재 3개(×1.1 셋)면 60~80%다.
+ * 전에는 50%였다. 배율(regions.json의 boss.mult)은 이 승률을 이분 탐색으로 맞춘 값이다.
+ * 밸런스를 건드려 여기가 깨지면 배율을 다시 맞춘다.
  */
-test('보스 1:1 — 지역 끝 레벨 · 보통 투자 한 벌 · 물약 3개로 승률 50% (T17_5, T17_6 검수)', () => {
+test('보스 1:1 — 지역 끝 레벨 · 보통 투자 한 벌 · 물약 3개로 승률 30% (T17_5, T17_7 검수 4차)', () => {
   console.log('\n보스 1:1 — 지역 끝 레벨, 보통 투자 한 벌(품질 100%), 물약 3개');
   console.log('  지역  보스                 배율    레벨  장비          승률');
   console.log('  ' + '─'.repeat(62));
@@ -281,7 +280,7 @@ test('보스 1:1 — 지역 끝 레벨 · 보통 투자 한 벌 · 물약 3개�
     );
   }
   console.log('  ' + '─'.repeat(62));
-  for (const rate of rates) expect(rate, '보스 승률').toBeGreaterThan(0.4);
-  for (const rate of rates) expect(rate, '보스 승률').toBeLessThan(0.6);
+  for (const rate of rates) expect(rate, '보스 승률').toBeGreaterThan(0.2);
+  for (const rate of rates) expect(rate, '보스 승률').toBeLessThan(0.4);
 }, 60_000);
 

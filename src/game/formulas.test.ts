@@ -3,7 +3,6 @@ import { expect, test } from 'vitest';
 import { makeRng } from './battle';
 import {
   combatStats,
-  effectiveSpend,
   evenSpend,
   gearPrice,
   gearSetPrice,
@@ -48,11 +47,11 @@ test('장비가 채우는 몫 — 그 레벨 common 풀세트가 기대 배수�
   expect(gearShare(1)).toBe(GEAR_FLOOR);
   expect(powerScale(1)).toBe(1);
 
-  // Lv1 33% → Lv50 86%. 뒤로 갈수록 장비 비중이 커지는 건 그대로다
+  // Lv1 33% → Lv50 60% (T17_7 검수 4차 — 전에는 86%). 뒤로 갈수록 장비 비중이 커지는 건 그대로다
   for (const [level, want] of [
     [1, 0.33],
-    [10, 0.48],
-    [50, 0.86],
+    [10, 0.39],
+    [50, 0.6],
   ] as const) {
     expect(gearShare(level) / (1 + gearShare(level)), `Lv${level} 장비 몫`).toBeCloseTo(want, 2);
   }
@@ -67,36 +66,43 @@ test('장비가 채우는 몫 — 그 레벨 common 풀세트가 기대 배수�
       spd: a.spd + g.spd,
       luk: 0,
     }));
-    // 장비 몫은 1차 스탯만큼 %로 커진다 (T17_7 검수) — **균등 배분한 사람이 꼈을 때** 몫이 된다
-    const even = evenSpend(level);
-    const worn = combatStats(level, 'warrior', even, sum);
-    const bare = combatStats(level, 'warrior', even);
-    // 부위 몫(SLOT_BIAS)의 합이 1.0이므로 풀세트 = 그 레벨의 장비 몫 전체가 된다
-    expect((naked.atk + worn.atk - bare.atk) / naked.atk).toBeCloseTo(1 + gearShare(level), 1);
-    expect((naked.maxHp + worn.maxHp - bare.maxHp) / naked.maxHp).toBeCloseTo(
-      1 + gearShare(level),
-      1,
-    );
+    const worn = combatStats(level, 'warrior', evenSpend(level), sum);
+    // 부위 몫(SLOT_BIAS)의 합이 1.0이므로 풀세트 = 그 레벨의 장비 몫 전체가 된다. SPD도 같다 (T17_7 검수 4차)
+    for (const key of ['atk', 'maxHp', 'spd'] as const) {
+      expect(worn[key] / naked[key], `Lv${level} ${key}`).toBeCloseTo(1 + gearShare(level), 1);
+    }
   }
 });
 
-test('균등 배분이 제일 세다 — 평균 넘는 몫은 절반, 장비 몫은 1차 스탯만큼 커진다 (T17_7 검수)', () => {
-  // 평균을 넘는 몫만 깎는다. 넷이 같으면 그대로다
-  expect(effectiveSpend({ str: 10, vit: 10, agi: 10, luk: 10, int: 0 })).toEqual({
-    str: 10,
-    vit: 10,
-    agi: 10,
-    luk: 10,
-    int: 0,
-  });
-  // 40점을 힘에만 → 평균 10을 넘는 30은 절반 = 25점
-  expect(effectiveSpend({ str: 40, vit: 0, agi: 0, luk: 0, int: 0 }).str).toBe(25);
+test('레벨업은 포인트만 준다 — 몰빵은 제 스탯이 균등의 약 2배, 나머지는 0.6배 (T17_7 검수 4차)', () => {
+  // 자동 성장이 없다 — 한 점도 안 찍은 Lv50은 Lv1 맨몸 그대로다
+  const none = { str: 0, vit: 0, agi: 0, luk: 0, int: 0 };
+  const lv1 = combatStats(1, 'warrior', none);
+  const lv50 = combatStats(50, 'warrior', none);
+  expect([lv50.maxHp, lv50.atk, lv50.def, lv50.spd]).toEqual([
+    lv1.maxHp,
+    lv1.atk,
+    lv1.def,
+    lv1.spd,
+  ]);
+  expect([lv1.maxHp, lv1.atk, lv1.def, lv1.spd]).toEqual([100, 20, 5, 15]);
 
-  // 같은 장비라도 힘이 높으면 장비 ATK가 더 커진다 — 1점당 장비 몫 +0.8%
-  const gear = { atk: 1000, maxHp: 0, def: 0, spd: 0, luk: 0 };
-  const lo = combatStats(20, 'warrior', { str: 0, vit: 0, agi: 0, luk: 0, int: 0 }, gear);
-  const hi = combatStats(20, 'warrior', { str: 10, vit: 0, agi: 0, luk: 0, int: 0 }, gear);
-  expect(hi.atk - lo.atk).toBeCloseTo(10 * 2 + 1000 * 0.008 * 10);
+  // Lv50 common 풀세트를 끼고 — 장비는 네 스탯에 같은 배수를 얹으므로 몰빵의 이득이 대칭이다
+  const gear = GEAR_SLOTS.map((slot) => gearStats(50, slot, 'common')).reduce((a, g) => ({
+    atk: a.atk + g.atk,
+    maxHp: a.maxHp + g.maxHp,
+    def: a.def + g.def,
+    spd: a.spd + g.spd,
+    luk: a.luk + g.luk,
+  }));
+  const all = 49 * 3;
+  const even = combatStats(50, 'warrior', evenSpend(50), gear);
+  const agi = combatStats(50, 'warrior', { ...none, agi: all }, gear);
+  const str = combatStats(50, 'warrior', { ...none, str: all }, gear);
+  expect(agi.spd / even.spd).toBeCloseTo(2, 0);
+  expect(str.atk / even.atk).toBeCloseTo(2, 0);
+  expect(agi.atk / even.atk).toBeCloseTo(0.65, 1);
+  expect(agi.maxHp / even.maxHp).toBeCloseTo(0.65, 1);
 });
 
 test('등급이 오르면 세진다. 품질·강화는 그 위에 곱해진다 (§4.5)', () => {

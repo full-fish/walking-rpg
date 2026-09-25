@@ -12,14 +12,11 @@ import { CONSUMABLES, EQUIPMENT, MONSTERS, monstersOfField, REGIONS } from '../s
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
 import {
   combatStats,
-  evenSpend,
   gearSetPrice,
   gearShare,
   GEAR_SLOTS,
   GEAR_LUK_BASE,
-  GEAR_SPD_RATE,
   innCost,
-  powerScale,
 } from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
 import { generateAll, generateEquipment, gearTierLevels, tierInRegion } from './gen-content';
@@ -222,7 +219,7 @@ const PRICE_TOLERANCE = 0.02;
  * 장비 (§4.5, §7.4 #6).
  *
  * 제일 중요한 건 **기준선**이다 — 그 티어 common 풀세트를 입으면 전투력이
- * 정확히 powerScale(레벨)배가 되어야 한다. 이게 어긋나면 몬스터 곡선과 다시 벌어진다.
+ * 정확히 (1 + gearShare)배가 되어야 한다. 이게 어긋나면 몬스터 곡선과 다시 벌어진다.
  */
 function validateEquipment(): string[] {
   const errors: string[] = [];
@@ -232,9 +229,9 @@ function validateEquipment(): string[] {
   }
 
   for (const id of duplicates(EQUIPMENT.map((e) => e.id))) errors.push(`[장비 ID 중복] ${id}`);
-  for (const name of duplicates(EQUIPMENT.map((e) => e.name))) {
-    errors.push(`[장비 이름 중복] ${name}`);
-  }
+  // 이름은 등급끼리 같다 (T17_7 검수 4차) — 티어 × 부위로만 안 겹치면 된다
+  const named = EQUIPMENT.filter((e) => e.rarity === 'common').map((e) => e.name);
+  for (const name of duplicates(named)) errors.push(`[장비 이름 중복] ${name}`);
 
   for (const { tier, refLevel } of gearTierLevels()) {
     const set = EQUIPMENT.filter((e) => e.tier === tier && e.rarity === 'common');
@@ -243,27 +240,16 @@ function validateEquipment(): string[] {
       continue;
     }
 
-    // 기준선: 맨몸 + common 풀세트 = 맨몸 × powerScale
+    // 기준선: 맨몸(네 스탯 균등) + common 풀세트 = 맨몸 × (1 + gearShare)
     const naked = combatStats(refLevel);
-    // 장비 몫은 1차 스탯만큼 %로 커진다 (T17_7 검수) — **균등 배분한 사람이 꼈을 때** 기준선이어야 한다
-    const even = evenSpend(refLevel);
-    const bare = combatStats(refLevel, 'warrior', even);
-    const worn = combatStats(refLevel, 'warrior', even, setBonus(set));
-    const gear = {
-      atk: worn.atk - bare.atk,
-      maxHp: worn.maxHp - bare.maxHp,
-      def: worn.def - bare.def,
-      spd: worn.spd - bare.spd,
-      luk: setBonus(set).luk,
-    };
-    // 목표 배수 = 1 + gearShare (powerScale에 GEAR_FLOOR가 더 얹힌다, §4.5)
+    const gear = setBonus(set);
+    // 목표 배수 = 1 + gearShare (powerScale에 GEAR_FLOOR가 더 얹힌다, §4.5). SPD도 같다 (T17_7 검수 4차)
     const target = 1 + gearShare(refLevel);
-    // SPD만 목표가 다르다 — gearShare를 안 쓰고 레벨과 무관하게 +15%다 (§4.5)
     for (const [label, got, base, want] of [
       ['ATK', naked.atk + gear.atk, naked.atk, naked.atk * target],
       ['HP', naked.maxHp + gear.maxHp, naked.maxHp, naked.maxHp * target],
       ['DEF', naked.def + gear.def, naked.def, naked.def * target],
-      ['SPD', naked.spd + gear.spd, naked.spd, naked.spd * (1 + GEAR_SPD_RATE)],
+      ['SPD', naked.spd + gear.spd, naked.spd, naked.spd * target],
       // LUK은 맨몸에 비례하지 않는다 — 절대값 기준이라 base를 1로 둔다 (§4.5)
       ['LUK', gear.luk, 1, GEAR_LUK_BASE * gearShare(refLevel)],
     ] as const) {

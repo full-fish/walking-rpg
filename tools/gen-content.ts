@@ -37,6 +37,16 @@ export function tierInRegion(tier: number, region: number): number {
   return tier - (region - 1) * TIERS_PER_REGION;
 }
 
+/**
+ * 그 티어의 적정 레벨 (T17_7 검수 4차) — 지역의 티어 대역을 레벨 구간에 그대로 편다.
+ * 몬스터는 이 레벨의 기준 플레이어를 따라간다(monsterStats). 사냥터 적정 레벨(fieldLevel)과 같은 선이다.
+ */
+export function levelOfTier(tier: number, region: Region): number {
+  const [loT, hiT] = region.tierBand;
+  const [loL, hiL] = region.levelRange;
+  return loL + ((tier - loT) / (hiT - loT)) * (hiL - loL);
+}
+
 type Extra = { drop: Monster['drop'] } | { boss: number };
 
 function build(
@@ -59,7 +69,7 @@ function build(
     power,
     // 보스는 그림을 따로 쓴다. 같은 티어 일반 몬스터와 id가 겹치면 그림도 겹친다
     sprite: 'boss' in extra ? `boss_r${region.id}` : `${arch.spriteTag}_${tier}`,
-    ...monsterStats(tier, region.difficulty, power, arch.statBias),
+    ...monsterStats(levelOfTier(tier, region), region.id, region.difficulty, power, arch.statBias),
     cri: arch.cri,
     crd: 1.5,
     eva: arch.eva,
@@ -145,7 +155,7 @@ export function generateEquipment(): Equipment[] {
       for (const rarity of RARITIES) {
         out.push({
           id: `eq_t${tier}_${arch.slot}_${rarity}`,
-          name: `${tierNames[tier - 1]} ${arch.namePool[rarity]}`,
+          name: `${tierNames[tier - 1]} ${arch.names[tier === 1 ? 0 : 1]}`,
           tier,
           slot: arch.slot,
           rarity,

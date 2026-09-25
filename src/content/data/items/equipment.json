@@ -8,35 +8,19 @@
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
-    "atk": 7,
-    "maxHp": 0,
-    "def": 0,
-    "spd": 0,
-    "luk": 0,
-    "price": 239
-  },
-  {
-    "id": "eq_t1_weapon_uncommon",
-    "name": "낡은 장검",
-    "tier": 1,
-    "slot": "weapon",
-    "rarity": "uncommon",
-    "level": 1,
-    "region": 1,
-    "sprite": "sword_1",
     "atk": 9,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 525
+    "price": 916
   },
   {
-    "id": "eq_t1_weapon_rare",
-    "name": "낡은 대검",
+    "id": "eq_t1_weapon_uncommon",
+    "name": "낡은 검",
     "tier": 1,
     "slot": "weapon",
-    "rarity": "rare",
+    "rarity": "uncommon",
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
@@ -45,14 +29,14 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1193
+    "price": 2014
   },
   {
-    "id": "eq_t1_weapon_epic",
-    "name": "낡은 마검",
+    "id": "eq_t1_weapon_rare",
+    "name": "낡은 검",
     "tier": 1,
     "slot": "weapon",
-    "rarity": "epic",
+    "rarity": "rare",
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
@@ -61,23 +45,39 @@
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2863
+    "price": 4578
+  },
+  {
+    "id": "eq_t1_weapon_epic",
+    "name": "낡은 검",
+    "tier": 1,
+    "slot": "weapon",
+    "rarity": "epic",
+    "level": 1,
+    "region": 1,
+    "sprite": "sword_1",
+    "atk": 15,
+    "maxHp": 0,
+    "def": 0,
+    "spd": 0,
+    "luk": 0,
+    "price": 10987
   },
   {
     "id": "eq_t1_weapon_legendary",
-    "name": "낡은 성검",
+    "name": "낡은 검",
     "tier": 1,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 1,
     "region": 1,
     "sprite": "sword_1",
-    "atk": 14,
+    "atk": 17,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 7156
+    "price": 27467
   },
   {
     "id": "eq_t1_helm_common",
@@ -89,15 +89,15 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 32,
-    "def": 1,
+    "maxHp": 24,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 143
+    "price": 549
   },
   {
     "id": "eq_t1_helm_uncommon",
-    "name": "낡은 투구",
+    "name": "낡은 두건",
     "tier": 1,
     "slot": "helm",
     "rarity": "uncommon",
@@ -105,15 +105,15 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 37,
-    "def": 1,
+    "maxHp": 28,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 315
+    "price": 1209
   },
   {
     "id": "eq_t1_helm_rare",
-    "name": "낡은 중투구",
+    "name": "낡은 두건",
     "tier": 1,
     "slot": "helm",
     "rarity": "rare",
@@ -121,15 +121,15 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 44,
-    "def": 1,
+    "maxHp": 33,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 716
+    "price": 2747
   },
   {
     "id": "eq_t1_helm_epic",
-    "name": "낡은 마투구",
+    "name": "낡은 두건",
     "tier": 1,
     "slot": "helm",
     "rarity": "epic",
@@ -137,15 +137,15 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 52,
-    "def": 1,
+    "maxHp": 39,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1718
+    "price": 6592
   },
   {
     "id": "eq_t1_helm_legendary",
-    "name": "낡은 성투구",
+    "name": "낡은 두건",
     "tier": 1,
     "slot": "helm",
     "rarity": "legendary",
@@ -153,11 +153,11 @@
     "region": 1,
     "sprite": "helm_1",
     "atk": 0,
-    "maxHp": 62,
+    "maxHp": 46,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 4294
+    "price": 16480
   },
   {
     "id": "eq_t1_armor_common",
@@ -169,15 +169,15 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 20,
-    "def": 2,
+    "maxHp": 15,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 191
+    "price": 732
   },
   {
     "id": "eq_t1_armor_uncommon",
-    "name": "낡은 갑옷",
+    "name": "낡은 옷",
     "tier": 1,
     "slot": "armor",
     "rarity": "uncommon",
@@ -185,15 +185,15 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 23,
-    "def": 2,
+    "maxHp": 17,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 420
+    "price": 1611
   },
   {
     "id": "eq_t1_armor_rare",
-    "name": "낡은 중갑",
+    "name": "낡은 옷",
     "tier": 1,
     "slot": "armor",
     "rarity": "rare",
@@ -201,15 +201,15 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 27,
-    "def": 2,
+    "maxHp": 21,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 954
+    "price": 3662
   },
   {
     "id": "eq_t1_armor_epic",
-    "name": "낡은 마갑",
+    "name": "낡은 옷",
     "tier": 1,
     "slot": "armor",
     "rarity": "epic",
@@ -217,15 +217,15 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 32,
-    "def": 3,
+    "maxHp": 24,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 2290
+    "price": 8790
   },
   {
     "id": "eq_t1_armor_legendary",
-    "name": "낡은 성갑",
+    "name": "낡은 옷",
     "tier": 1,
     "slot": "armor",
     "rarity": "legendary",
@@ -233,11 +233,11 @@
     "region": 1,
     "sprite": "armor_1",
     "atk": 0,
-    "maxHp": 39,
-    "def": 3,
+    "maxHp": 29,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 5725
+    "price": 21974
   },
   {
     "id": "eq_t1_pants_common",
@@ -249,18 +249,50 @@
     "region": 1,
     "sprite": "pants_1",
     "atk": 0,
+    "maxHp": 12,
+    "def": 1,
+    "spd": 0,
+    "luk": 0,
+    "price": 610
+  },
+  {
+    "id": "eq_t1_pants_uncommon",
+    "name": "낡은 바지",
+    "tier": 1,
+    "slot": "pants",
+    "rarity": "uncommon",
+    "level": 1,
+    "region": 1,
+    "sprite": "pants_1",
+    "atk": 0,
+    "maxHp": 14,
+    "def": 1,
+    "spd": 0,
+    "luk": 0,
+    "price": 1343
+  },
+  {
+    "id": "eq_t1_pants_rare",
+    "name": "낡은 바지",
+    "tier": 1,
+    "slot": "pants",
+    "rarity": "rare",
+    "level": 1,
+    "region": 1,
+    "sprite": "pants_1",
+    "atk": 0,
     "maxHp": 16,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 159
+    "price": 3052
   },
   {
-    "id": "eq_t1_pants_uncommon",
-    "name": "낡은 하갑",
+    "id": "eq_t1_pants_epic",
+    "name": "낡은 바지",
     "tier": 1,
     "slot": "pants",
-    "rarity": "uncommon",
+    "rarity": "epic",
     "level": 1,
     "region": 1,
     "sprite": "pants_1",
@@ -269,43 +301,11 @@
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 350
-  },
-  {
-    "id": "eq_t1_pants_rare",
-    "name": "낡은 중하갑",
-    "tier": 1,
-    "slot": "pants",
-    "rarity": "rare",
-    "level": 1,
-    "region": 1,
-    "sprite": "pants_1",
-    "atk": 0,
-    "maxHp": 22,
-    "def": 1,
-    "spd": 0,
-    "luk": 0,
-    "price": 795
-  },
-  {
-    "id": "eq_t1_pants_epic",
-    "name": "낡은 마하갑",
-    "tier": 1,
-    "slot": "pants",
-    "rarity": "epic",
-    "level": 1,
-    "region": 1,
-    "sprite": "pants_1",
-    "atk": 0,
-    "maxHp": 26,
-    "def": 2,
-    "spd": 0,
-    "luk": 0,
-    "price": 1908
+    "price": 7325
   },
   {
     "id": "eq_t1_pants_legendary",
-    "name": "낡은 성하갑",
+    "name": "낡은 바지",
     "tier": 1,
     "slot": "pants",
     "rarity": "legendary",
@@ -313,11 +313,11 @@
     "region": 1,
     "sprite": "pants_1",
     "atk": 0,
-    "maxHp": 31,
-    "def": 2,
+    "maxHp": 23,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 4771
+    "price": 18312
   },
   {
     "id": "eq_t1_gloves_common",
@@ -328,16 +328,16 @@
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 2,
-    "maxHp": 12,
-    "def": 1,
+    "atk": 3,
+    "maxHp": 9,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 127
+    "price": 488
   },
   {
     "id": "eq_t1_gloves_uncommon",
-    "name": "낡은 장갑",
+    "name": "낡은 손싸개",
     "tier": 1,
     "slot": "gloves",
     "rarity": "uncommon",
@@ -345,59 +345,59 @@
     "region": 1,
     "sprite": "gloves_1",
     "atk": 3,
-    "maxHp": 14,
-    "def": 1,
+    "maxHp": 10,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 280
+    "price": 1074
   },
   {
     "id": "eq_t1_gloves_rare",
-    "name": "낡은 건틀릿",
+    "name": "낡은 손싸개",
     "tier": 1,
     "slot": "gloves",
     "rarity": "rare",
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 3,
-    "maxHp": 16,
-    "def": 1,
+    "atk": 4,
+    "maxHp": 12,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 636
+    "price": 2442
   },
   {
     "id": "eq_t1_gloves_epic",
-    "name": "낡은 마장갑",
+    "name": "낡은 손싸개",
     "tier": 1,
     "slot": "gloves",
     "rarity": "epic",
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 4,
-    "maxHp": 19,
-    "def": 1,
+    "atk": 5,
+    "maxHp": 15,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1527
+    "price": 5860
   },
   {
     "id": "eq_t1_gloves_legendary",
-    "name": "낡은 성장갑",
+    "name": "낡은 손싸개",
     "tier": 1,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 1,
     "region": 1,
     "sprite": "gloves_1",
-    "atk": 5,
-    "maxHp": 23,
+    "atk": 6,
+    "maxHp": 17,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 3817
+    "price": 14649
   },
   {
     "id": "eq_t1_boots_common",
@@ -411,13 +411,13 @@
     "atk": 0,
     "maxHp": 0,
     "def": 1,
-    "spd": 2.6,
+    "spd": 9.1,
     "luk": 0,
-    "price": 127
+    "price": 488
   },
   {
     "id": "eq_t1_boots_uncommon",
-    "name": "낡은 장화",
+    "name": "낡은 신",
     "tier": 1,
     "slot": "boots",
     "rarity": "uncommon",
@@ -426,14 +426,14 @@
     "sprite": "boots_1",
     "atk": 0,
     "maxHp": 0,
-    "def": 2,
-    "spd": 3,
+    "def": 1,
+    "spd": 10.5,
     "luk": 0,
-    "price": 280
+    "price": 1074
   },
   {
     "id": "eq_t1_boots_rare",
-    "name": "낡은 각반",
+    "name": "낡은 신",
     "tier": 1,
     "slot": "boots",
     "rarity": "rare",
@@ -442,14 +442,14 @@
     "sprite": "boots_1",
     "atk": 0,
     "maxHp": 0,
-    "def": 2,
-    "spd": 3.5,
+    "def": 1,
+    "spd": 12.3,
     "luk": 0,
-    "price": 636
+    "price": 2442
   },
   {
     "id": "eq_t1_boots_epic",
-    "name": "낡은 마장화",
+    "name": "낡은 신",
     "tier": 1,
     "slot": "boots",
     "rarity": "epic",
@@ -458,14 +458,14 @@
     "sprite": "boots_1",
     "atk": 0,
     "maxHp": 0,
-    "def": 2,
-    "spd": 4.2,
+    "def": 1,
+    "spd": 14.6,
     "luk": 0,
-    "price": 1527
+    "price": 5860
   },
   {
     "id": "eq_t1_boots_legendary",
-    "name": "낡은 성각반",
+    "name": "낡은 신",
     "tier": 1,
     "slot": "boots",
     "rarity": "legendary",
@@ -474,10 +474,10 @@
     "sprite": "boots_1",
     "atk": 0,
     "maxHp": 0,
-    "def": 2,
-    "spd": 5,
+    "def": 1,
+    "spd": 17.3,
     "luk": 0,
-    "price": 3817
+    "price": 14649
   },
   {
     "id": "eq_t1_accessory_common",
@@ -492,12 +492,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 1.7,
-    "price": 127
+    "luk": 1.6,
+    "price": 488
   },
   {
     "id": "eq_t1_accessory_uncommon",
-    "name": "낡은 팔찌",
+    "name": "낡은 부적",
     "tier": 1,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -508,12 +508,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 2,
-    "price": 280
+    "luk": 1.8,
+    "price": 1074
   },
   {
     "id": "eq_t1_accessory_rare",
-    "name": "낡은 목걸이",
+    "name": "낡은 부적",
     "tier": 1,
     "slot": "accessory",
     "rarity": "rare",
@@ -524,12 +524,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 2.4,
-    "price": 636
+    "luk": 2.1,
+    "price": 2442
   },
   {
     "id": "eq_t1_accessory_epic",
-    "name": "낡은 마정석",
+    "name": "낡은 부적",
     "tier": 1,
     "slot": "accessory",
     "rarity": "epic",
@@ -540,12 +540,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 2.8,
-    "price": 1527
+    "luk": 2.5,
+    "price": 5860
   },
   {
     "id": "eq_t1_accessory_legendary",
-    "name": "낡은 성표",
+    "name": "낡은 부적",
     "tier": 1,
     "slot": "accessory",
     "rarity": "legendary",
@@ -556,24 +556,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 3.3,
-    "price": 3817
+    "luk": 3,
+    "price": 14649
   },
   {
     "id": "eq_t2_weapon_common",
-    "name": "무쇠 검",
+    "name": "무쇠 장검",
     "tier": 2,
     "slot": "weapon",
     "rarity": "common",
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 15,
+    "atk": 12,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 294
+    "price": 993
   },
   {
     "id": "eq_t2_weapon_uncommon",
@@ -584,64 +584,64 @@
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 17,
+    "atk": 14,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 647
+    "price": 2184
   },
   {
     "id": "eq_t2_weapon_rare",
-    "name": "무쇠 대검",
+    "name": "무쇠 장검",
     "tier": 2,
     "slot": "weapon",
     "rarity": "rare",
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 20,
+    "atk": 16,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1470
+    "price": 4964
   },
   {
     "id": "eq_t2_weapon_epic",
-    "name": "무쇠 마검",
+    "name": "무쇠 장검",
     "tier": 2,
     "slot": "weapon",
     "rarity": "epic",
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 24,
+    "atk": 19,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 3527
+    "price": 11914
   },
   {
     "id": "eq_t2_weapon_legendary",
-    "name": "무쇠 성검",
+    "name": "무쇠 장검",
     "tier": 2,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 5,
     "region": 1,
     "sprite": "sword_2",
-    "atk": 29,
+    "atk": 22,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 8818
+    "price": 29784
   },
   {
     "id": "eq_t2_helm_common",
-    "name": "무쇠 두건",
+    "name": "무쇠 투구",
     "tier": 2,
     "slot": "helm",
     "rarity": "common",
@@ -649,11 +649,11 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 59,
-    "def": 1,
+    "maxHp": 32,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 176
+    "price": 596
   },
   {
     "id": "eq_t2_helm_uncommon",
@@ -665,15 +665,15 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 67,
-    "def": 1,
+    "maxHp": 36,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 388
+    "price": 1311
   },
   {
     "id": "eq_t2_helm_rare",
-    "name": "무쇠 중투구",
+    "name": "무쇠 투구",
     "tier": 2,
     "slot": "helm",
     "rarity": "rare",
@@ -681,15 +681,15 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 79,
+    "maxHp": 43,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 882
+    "price": 2978
   },
   {
     "id": "eq_t2_helm_epic",
-    "name": "무쇠 마투구",
+    "name": "무쇠 투구",
     "tier": 2,
     "slot": "helm",
     "rarity": "epic",
@@ -697,15 +697,15 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 94,
-    "def": 2,
+    "maxHp": 51,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 2116
+    "price": 7148
   },
   {
     "id": "eq_t2_helm_legendary",
-    "name": "무쇠 성투구",
+    "name": "무쇠 투구",
     "tier": 2,
     "slot": "helm",
     "rarity": "legendary",
@@ -713,15 +713,15 @@
     "region": 1,
     "sprite": "helm_2",
     "atk": 0,
-    "maxHp": 111,
-    "def": 2,
+    "maxHp": 60,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 5291
+    "price": 17871
   },
   {
     "id": "eq_t2_armor_common",
-    "name": "무쇠 옷",
+    "name": "무쇠 갑옷",
     "tier": 2,
     "slot": "armor",
     "rarity": "common",
@@ -729,11 +729,11 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 37,
-    "def": 4,
+    "maxHp": 20,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 235
+    "price": 794
   },
   {
     "id": "eq_t2_armor_uncommon",
@@ -745,15 +745,15 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 42,
-    "def": 4,
+    "maxHp": 23,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 517
+    "price": 1747
   },
   {
     "id": "eq_t2_armor_rare",
-    "name": "무쇠 중갑",
+    "name": "무쇠 갑옷",
     "tier": 2,
     "slot": "armor",
     "rarity": "rare",
@@ -761,15 +761,15 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 49,
-    "def": 5,
+    "maxHp": 27,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1176
+    "price": 3971
   },
   {
     "id": "eq_t2_armor_epic",
-    "name": "무쇠 마갑",
+    "name": "무쇠 갑옷",
     "tier": 2,
     "slot": "armor",
     "rarity": "epic",
@@ -777,15 +777,15 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 59,
-    "def": 6,
+    "maxHp": 32,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 2822
+    "price": 9531
   },
   {
     "id": "eq_t2_armor_legendary",
-    "name": "무쇠 성갑",
+    "name": "무쇠 갑옷",
     "tier": 2,
     "slot": "armor",
     "rarity": "legendary",
@@ -793,15 +793,15 @@
     "region": 1,
     "sprite": "armor_2",
     "atk": 0,
-    "maxHp": 69,
-    "def": 7,
+    "maxHp": 38,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 7055
+    "price": 23827
   },
   {
     "id": "eq_t2_pants_common",
-    "name": "무쇠 바지",
+    "name": "무쇠 하갑",
     "tier": 2,
     "slot": "pants",
     "rarity": "common",
@@ -809,11 +809,11 @@
     "region": 1,
     "sprite": "pants_2",
     "atk": 0,
-    "maxHp": 29,
-    "def": 2,
+    "maxHp": 16,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 196
+    "price": 662
   },
   {
     "id": "eq_t2_pants_uncommon",
@@ -825,15 +825,15 @@
     "region": 1,
     "sprite": "pants_2",
     "atk": 0,
-    "maxHp": 34,
-    "def": 2,
+    "maxHp": 18,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 431
+    "price": 1456
   },
   {
     "id": "eq_t2_pants_rare",
-    "name": "무쇠 중하갑",
+    "name": "무쇠 하갑",
     "tier": 2,
     "slot": "pants",
     "rarity": "rare",
@@ -841,15 +841,15 @@
     "region": 1,
     "sprite": "pants_2",
     "atk": 0,
-    "maxHp": 39,
-    "def": 3,
+    "maxHp": 21,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 980
+    "price": 3309
   },
   {
     "id": "eq_t2_pants_epic",
-    "name": "무쇠 마하갑",
+    "name": "무쇠 하갑",
     "tier": 2,
     "slot": "pants",
     "rarity": "epic",
@@ -857,15 +857,15 @@
     "region": 1,
     "sprite": "pants_2",
     "atk": 0,
-    "maxHp": 47,
-    "def": 3,
+    "maxHp": 25,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 2352
+    "price": 7942
   },
   {
     "id": "eq_t2_pants_legendary",
-    "name": "무쇠 성하갑",
+    "name": "무쇠 하갑",
     "tier": 2,
     "slot": "pants",
     "rarity": "legendary",
@@ -873,43 +873,43 @@
     "region": 1,
     "sprite": "pants_2",
     "atk": 0,
-    "maxHp": 56,
-    "def": 4,
+    "maxHp": 30,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 5879
+    "price": 19856
   },
   {
     "id": "eq_t2_gloves_common",
-    "name": "무쇠 손싸개",
+    "name": "무쇠 건틀릿",
     "tier": 2,
     "slot": "gloves",
     "rarity": "common",
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 5,
-    "maxHp": 22,
-    "def": 1,
+    "atk": 4,
+    "maxHp": 12,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 157
+    "price": 529
   },
   {
     "id": "eq_t2_gloves_uncommon",
-    "name": "무쇠 장갑",
+    "name": "무쇠 건틀릿",
     "tier": 2,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 6,
-    "maxHp": 25,
-    "def": 1,
+    "atk": 5,
+    "maxHp": 14,
+    "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 345
+    "price": 1165
   },
   {
     "id": "eq_t2_gloves_rare",
@@ -920,48 +920,48 @@
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 7,
-    "maxHp": 30,
+    "atk": 5,
+    "maxHp": 16,
     "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 784
+    "price": 2647
   },
   {
     "id": "eq_t2_gloves_epic",
-    "name": "무쇠 마장갑",
+    "name": "무쇠 건틀릿",
     "tier": 2,
     "slot": "gloves",
     "rarity": "epic",
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 8,
-    "maxHp": 35,
-    "def": 2,
+    "atk": 6,
+    "maxHp": 19,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1881
+    "price": 6354
   },
   {
     "id": "eq_t2_gloves_legendary",
-    "name": "무쇠 성장갑",
+    "name": "무쇠 건틀릿",
     "tier": 2,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 5,
     "region": 1,
     "sprite": "gloves_2",
-    "atk": 10,
-    "maxHp": 42,
-    "def": 2,
+    "atk": 7,
+    "maxHp": 23,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 4703
+    "price": 15885
   },
   {
     "id": "eq_t2_boots_common",
-    "name": "무쇠 신",
+    "name": "무쇠 각반",
     "tier": 2,
     "slot": "boots",
     "rarity": "common",
@@ -970,14 +970,14 @@
     "sprite": "boots_2",
     "atk": 0,
     "maxHp": 0,
-    "def": 3,
-    "spd": 4.3,
+    "def": 1,
+    "spd": 11.8,
     "luk": 0,
-    "price": 157
+    "price": 529
   },
   {
     "id": "eq_t2_boots_uncommon",
-    "name": "무쇠 장화",
+    "name": "무쇠 각반",
     "tier": 2,
     "slot": "boots",
     "rarity": "uncommon",
@@ -986,10 +986,10 @@
     "sprite": "boots_2",
     "atk": 0,
     "maxHp": 0,
-    "def": 3,
-    "spd": 5,
+    "def": 1,
+    "spd": 13.6,
     "luk": 0,
-    "price": 345
+    "price": 1165
   },
   {
     "id": "eq_t2_boots_rare",
@@ -1002,14 +1002,14 @@
     "sprite": "boots_2",
     "atk": 0,
     "maxHp": 0,
-    "def": 4,
-    "spd": 5.8,
+    "def": 1,
+    "spd": 16,
     "luk": 0,
-    "price": 784
+    "price": 2647
   },
   {
     "id": "eq_t2_boots_epic",
-    "name": "무쇠 마장화",
+    "name": "무쇠 각반",
     "tier": 2,
     "slot": "boots",
     "rarity": "epic",
@@ -1018,14 +1018,14 @@
     "sprite": "boots_2",
     "atk": 0,
     "maxHp": 0,
-    "def": 4,
-    "spd": 6.9,
+    "def": 2,
+    "spd": 18.9,
     "luk": 0,
-    "price": 1881
+    "price": 6354
   },
   {
     "id": "eq_t2_boots_legendary",
-    "name": "무쇠 성각반",
+    "name": "무쇠 각반",
     "tier": 2,
     "slot": "boots",
     "rarity": "legendary",
@@ -1034,14 +1034,14 @@
     "sprite": "boots_2",
     "atk": 0,
     "maxHp": 0,
-    "def": 5,
-    "spd": 8.2,
+    "def": 2,
+    "spd": 22.5,
     "luk": 0,
-    "price": 4703
+    "price": 15885
   },
   {
     "id": "eq_t2_accessory_common",
-    "name": "무쇠 부적",
+    "name": "무쇠 펜던트",
     "tier": 2,
     "slot": "accessory",
     "rarity": "common",
@@ -1052,12 +1052,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 2.1,
-    "price": 157
+    "luk": 1.7,
+    "price": 529
   },
   {
     "id": "eq_t2_accessory_uncommon",
-    "name": "무쇠 팔찌",
+    "name": "무쇠 펜던트",
     "tier": 2,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -1068,12 +1068,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 2.5,
-    "price": 345
+    "luk": 2,
+    "price": 1165
   },
   {
     "id": "eq_t2_accessory_rare",
-    "name": "무쇠 목걸이",
+    "name": "무쇠 펜던트",
     "tier": 2,
     "slot": "accessory",
     "rarity": "rare",
@@ -1084,12 +1084,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 2.9,
-    "price": 784
+    "luk": 2.3,
+    "price": 2647
   },
   {
     "id": "eq_t2_accessory_epic",
-    "name": "무쇠 마정석",
+    "name": "무쇠 펜던트",
     "tier": 2,
     "slot": "accessory",
     "rarity": "epic",
@@ -1100,12 +1100,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 3.4,
-    "price": 1881
+    "luk": 2.8,
+    "price": 6354
   },
   {
     "id": "eq_t2_accessory_legendary",
-    "name": "무쇠 성표",
+    "name": "무쇠 펜던트",
     "tier": 2,
     "slot": "accessory",
     "rarity": "legendary",
@@ -1116,24 +1116,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 4.1,
-    "price": 4703
+    "luk": 3.3,
+    "price": 15885
   },
   {
     "id": "eq_t3_weapon_common",
-    "name": "강철 검",
+    "name": "강철 장검",
     "tier": 3,
     "slot": "weapon",
     "rarity": "common",
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 29,
+    "atk": 16,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 379
+    "price": 1101
   },
   {
     "id": "eq_t3_weapon_uncommon",
@@ -1144,64 +1144,64 @@
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 33,
+    "atk": 18,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 833
+    "price": 2422
   },
   {
     "id": "eq_t3_weapon_rare",
-    "name": "강철 대검",
+    "name": "강철 장검",
     "tier": 3,
     "slot": "weapon",
     "rarity": "rare",
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 39,
+    "atk": 22,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1894
+    "price": 5505
   },
   {
     "id": "eq_t3_weapon_epic",
-    "name": "강철 마검",
+    "name": "강철 장검",
     "tier": 3,
     "slot": "weapon",
     "rarity": "epic",
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 47,
+    "atk": 26,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 4544
+    "price": 13212
   },
   {
     "id": "eq_t3_weapon_legendary",
-    "name": "강철 성검",
+    "name": "강철 장검",
     "tier": 3,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 8,
     "region": 2,
     "sprite": "sword_3",
-    "atk": 55,
+    "atk": 30,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 11361
+    "price": 33030
   },
   {
     "id": "eq_t3_helm_common",
-    "name": "강철 두건",
+    "name": "강철 투구",
     "tier": 3,
     "slot": "helm",
     "rarity": "common",
@@ -1209,11 +1209,11 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 106,
-    "def": 2,
+    "maxHp": 43,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 227
+    "price": 661
   },
   {
     "id": "eq_t3_helm_uncommon",
@@ -1225,15 +1225,15 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 122,
-    "def": 2,
+    "maxHp": 49,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 500
+    "price": 1453
   },
   {
     "id": "eq_t3_helm_rare",
-    "name": "강철 중투구",
+    "name": "강철 투구",
     "tier": 3,
     "slot": "helm",
     "rarity": "rare",
@@ -1241,15 +1241,15 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 143,
-    "def": 3,
+    "maxHp": 58,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1136
+    "price": 3303
   },
   {
     "id": "eq_t3_helm_epic",
-    "name": "강철 마투구",
+    "name": "강철 투구",
     "tier": 3,
     "slot": "helm",
     "rarity": "epic",
@@ -1257,15 +1257,15 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 169,
-    "def": 3,
+    "maxHp": 68,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 2727
+    "price": 7927
   },
   {
     "id": "eq_t3_helm_legendary",
-    "name": "강철 성투구",
+    "name": "강철 투구",
     "tier": 3,
     "slot": "helm",
     "rarity": "legendary",
@@ -1273,15 +1273,15 @@
     "region": 2,
     "sprite": "helm_3",
     "atk": 0,
-    "maxHp": 201,
-    "def": 4,
+    "maxHp": 81,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 6817
+    "price": 19818
   },
   {
     "id": "eq_t3_armor_common",
-    "name": "강철 옷",
+    "name": "강철 갑옷",
     "tier": 3,
     "slot": "armor",
     "rarity": "common",
@@ -1289,11 +1289,11 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 66,
-    "def": 7,
+    "maxHp": 27,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 303
+    "price": 881
   },
   {
     "id": "eq_t3_armor_uncommon",
@@ -1305,15 +1305,15 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 76,
-    "def": 9,
+    "maxHp": 31,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 667
+    "price": 1938
   },
   {
     "id": "eq_t3_armor_rare",
-    "name": "강철 중갑",
+    "name": "강철 갑옷",
     "tier": 3,
     "slot": "armor",
     "rarity": "rare",
@@ -1321,15 +1321,15 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 89,
-    "def": 10,
+    "maxHp": 36,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 1515
+    "price": 4404
   },
   {
     "id": "eq_t3_armor_epic",
-    "name": "강철 마갑",
+    "name": "강철 갑옷",
     "tier": 3,
     "slot": "armor",
     "rarity": "epic",
@@ -1337,15 +1337,15 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 106,
-    "def": 12,
+    "maxHp": 43,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 3636
+    "price": 10570
   },
   {
     "id": "eq_t3_armor_legendary",
-    "name": "강철 성갑",
+    "name": "강철 갑옷",
     "tier": 3,
     "slot": "armor",
     "rarity": "legendary",
@@ -1353,15 +1353,15 @@
     "region": 2,
     "sprite": "armor_3",
     "atk": 0,
-    "maxHp": 126,
-    "def": 14,
+    "maxHp": 51,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 9089
+    "price": 26424
   },
   {
     "id": "eq_t3_pants_common",
-    "name": "강철 바지",
+    "name": "강철 하갑",
     "tier": 3,
     "slot": "pants",
     "rarity": "common",
@@ -1369,11 +1369,11 @@
     "region": 2,
     "sprite": "pants_3",
     "atk": 0,
-    "maxHp": 53,
-    "def": 4,
+    "maxHp": 21,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 252
+    "price": 734
   },
   {
     "id": "eq_t3_pants_uncommon",
@@ -1385,15 +1385,15 @@
     "region": 2,
     "sprite": "pants_3",
     "atk": 0,
-    "maxHp": 61,
-    "def": 5,
+    "maxHp": 25,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 555
+    "price": 1615
   },
   {
     "id": "eq_t3_pants_rare",
-    "name": "강철 중하갑",
+    "name": "강철 하갑",
     "tier": 3,
     "slot": "pants",
     "rarity": "rare",
@@ -1401,15 +1401,15 @@
     "region": 2,
     "sprite": "pants_3",
     "atk": 0,
-    "maxHp": 71,
-    "def": 6,
+    "maxHp": 29,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1262
+    "price": 3670
   },
   {
     "id": "eq_t3_pants_epic",
-    "name": "강철 마하갑",
+    "name": "강철 하갑",
     "tier": 3,
     "slot": "pants",
     "rarity": "epic",
@@ -1417,15 +1417,15 @@
     "region": 2,
     "sprite": "pants_3",
     "atk": 0,
-    "maxHp": 85,
-    "def": 7,
+    "maxHp": 34,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 3030
+    "price": 8808
   },
   {
     "id": "eq_t3_pants_legendary",
-    "name": "강철 성하갑",
+    "name": "강철 하갑",
     "tier": 3,
     "slot": "pants",
     "rarity": "legendary",
@@ -1433,43 +1433,43 @@
     "region": 2,
     "sprite": "pants_3",
     "atk": 0,
-    "maxHp": 101,
-    "def": 8,
+    "maxHp": 41,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 7574
+    "price": 22020
   },
   {
     "id": "eq_t3_gloves_common",
-    "name": "강철 손싸개",
+    "name": "강철 건틀릿",
     "tier": 3,
     "slot": "gloves",
     "rarity": "common",
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 10,
-    "maxHp": 40,
-    "def": 2,
+    "atk": 5,
+    "maxHp": 16,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 202
+    "price": 587
   },
   {
     "id": "eq_t3_gloves_uncommon",
-    "name": "강철 장갑",
+    "name": "강철 건틀릿",
     "tier": 3,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 11,
-    "maxHp": 46,
-    "def": 2,
+    "atk": 6,
+    "maxHp": 18,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 444
+    "price": 1292
   },
   {
     "id": "eq_t3_gloves_rare",
@@ -1480,48 +1480,48 @@
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 13,
-    "maxHp": 54,
-    "def": 3,
+    "atk": 7,
+    "maxHp": 22,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1010
+    "price": 2936
   },
   {
     "id": "eq_t3_gloves_epic",
-    "name": "강철 마장갑",
+    "name": "강철 건틀릿",
     "tier": 3,
     "slot": "gloves",
     "rarity": "epic",
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 16,
-    "maxHp": 64,
-    "def": 3,
+    "atk": 9,
+    "maxHp": 26,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 2424
+    "price": 7046
   },
   {
     "id": "eq_t3_gloves_legendary",
-    "name": "강철 성장갑",
+    "name": "강철 건틀릿",
     "tier": 3,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 8,
     "region": 2,
     "sprite": "gloves_3",
-    "atk": 18,
-    "maxHp": 75,
-    "def": 4,
+    "atk": 10,
+    "maxHp": 30,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 6059
+    "price": 17616
   },
   {
     "id": "eq_t3_boots_common",
-    "name": "강철 신",
+    "name": "강철 각반",
     "tier": 3,
     "slot": "boots",
     "rarity": "common",
@@ -1530,14 +1530,14 @@
     "sprite": "boots_3",
     "atk": 0,
     "maxHp": 0,
-    "def": 5,
-    "spd": 6.5,
+    "def": 1,
+    "spd": 16,
     "luk": 0,
-    "price": 202
+    "price": 587
   },
   {
     "id": "eq_t3_boots_uncommon",
-    "name": "강철 장화",
+    "name": "강철 각반",
     "tier": 3,
     "slot": "boots",
     "rarity": "uncommon",
@@ -1546,10 +1546,10 @@
     "sprite": "boots_3",
     "atk": 0,
     "maxHp": 0,
-    "def": 6,
-    "spd": 7.4,
+    "def": 2,
+    "spd": 18.4,
     "luk": 0,
-    "price": 444
+    "price": 1292
   },
   {
     "id": "eq_t3_boots_rare",
@@ -1562,14 +1562,14 @@
     "sprite": "boots_3",
     "atk": 0,
     "maxHp": 0,
-    "def": 7,
-    "spd": 8.7,
+    "def": 2,
+    "spd": 21.6,
     "luk": 0,
-    "price": 1010
+    "price": 2936
   },
   {
     "id": "eq_t3_boots_epic",
-    "name": "강철 마장화",
+    "name": "강철 각반",
     "tier": 3,
     "slot": "boots",
     "rarity": "epic",
@@ -1578,14 +1578,14 @@
     "sprite": "boots_3",
     "atk": 0,
     "maxHp": 0,
-    "def": 8,
-    "spd": 10.4,
+    "def": 2,
+    "spd": 25.6,
     "luk": 0,
-    "price": 2424
+    "price": 7046
   },
   {
     "id": "eq_t3_boots_legendary",
-    "name": "강철 성각반",
+    "name": "강철 각반",
     "tier": 3,
     "slot": "boots",
     "rarity": "legendary",
@@ -1594,14 +1594,14 @@
     "sprite": "boots_3",
     "atk": 0,
     "maxHp": 0,
-    "def": 10,
-    "spd": 12.3,
+    "def": 3,
+    "spd": 30.4,
     "luk": 0,
-    "price": 6059
+    "price": 17616
   },
   {
     "id": "eq_t3_accessory_common",
-    "name": "강철 부적",
+    "name": "강철 펜던트",
     "tier": 3,
     "slot": "accessory",
     "rarity": "common",
@@ -1612,12 +1612,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 2.8,
-    "price": 202
+    "luk": 1.9,
+    "price": 587
   },
   {
     "id": "eq_t3_accessory_uncommon",
-    "name": "강철 팔찌",
+    "name": "강철 펜던트",
     "tier": 3,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -1628,12 +1628,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 3.2,
-    "price": 444
+    "luk": 2.2,
+    "price": 1292
   },
   {
     "id": "eq_t3_accessory_rare",
-    "name": "강철 목걸이",
+    "name": "강철 펜던트",
     "tier": 3,
     "slot": "accessory",
     "rarity": "rare",
@@ -1644,12 +1644,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 3.7,
-    "price": 1010
+    "luk": 2.6,
+    "price": 2936
   },
   {
     "id": "eq_t3_accessory_epic",
-    "name": "강철 마정석",
+    "name": "강철 펜던트",
     "tier": 3,
     "slot": "accessory",
     "rarity": "epic",
@@ -1660,12 +1660,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 4.4,
-    "price": 2424
+    "luk": 3.1,
+    "price": 7046
   },
   {
     "id": "eq_t3_accessory_legendary",
-    "name": "강철 성표",
+    "name": "강철 펜던트",
     "tier": 3,
     "slot": "accessory",
     "rarity": "legendary",
@@ -1676,24 +1676,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 5.3,
-    "price": 6059
+    "luk": 3.6,
+    "price": 17616
   },
   {
     "id": "eq_t4_weapon_common",
-    "name": "은빛 검",
+    "name": "은빛 장검",
     "tier": 4,
     "slot": "weapon",
     "rarity": "common",
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 48,
+    "atk": 21,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 478
+    "price": 1216
   },
   {
     "id": "eq_t4_weapon_uncommon",
@@ -1704,64 +1704,64 @@
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 56,
+    "atk": 24,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1051
+    "price": 2674
   },
   {
     "id": "eq_t4_weapon_rare",
-    "name": "은빛 대검",
+    "name": "은빛 장검",
     "tier": 4,
     "slot": "weapon",
     "rarity": "rare",
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 65,
+    "atk": 28,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2389
+    "price": 6078
   },
   {
     "id": "eq_t4_weapon_epic",
-    "name": "은빛 마검",
+    "name": "은빛 장검",
     "tier": 4,
     "slot": "weapon",
     "rarity": "epic",
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 78,
+    "atk": 33,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 5734
+    "price": 14586
   },
   {
     "id": "eq_t4_weapon_legendary",
-    "name": "은빛 성검",
+    "name": "은빛 장검",
     "tier": 4,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 12,
     "region": 2,
     "sprite": "sword_4",
-    "atk": 92,
+    "atk": 40,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 14336
+    "price": 36465
   },
   {
     "id": "eq_t4_helm_common",
-    "name": "은빛 두건",
+    "name": "은빛 투구",
     "tier": 4,
     "slot": "helm",
     "rarity": "common",
@@ -1769,11 +1769,11 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 171,
-    "def": 4,
+    "maxHp": 56,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 287
+    "price": 729
   },
   {
     "id": "eq_t4_helm_uncommon",
@@ -1785,15 +1785,15 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 196,
-    "def": 4,
+    "maxHp": 64,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 631
+    "price": 1604
   },
   {
     "id": "eq_t4_helm_rare",
-    "name": "은빛 중투구",
+    "name": "은빛 투구",
     "tier": 4,
     "slot": "helm",
     "rarity": "rare",
@@ -1801,15 +1801,15 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 230,
-    "def": 5,
+    "maxHp": 75,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1434
+    "price": 3647
   },
   {
     "id": "eq_t4_helm_epic",
-    "name": "은빛 마투구",
+    "name": "은빛 투구",
     "tier": 4,
     "slot": "helm",
     "rarity": "epic",
@@ -1817,15 +1817,15 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 273,
-    "def": 6,
+    "maxHp": 89,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 3441
+    "price": 8752
   },
   {
     "id": "eq_t4_helm_legendary",
-    "name": "은빛 성투구",
+    "name": "은빛 투구",
     "tier": 4,
     "slot": "helm",
     "rarity": "legendary",
@@ -1833,15 +1833,15 @@
     "region": 2,
     "sprite": "helm_4",
     "atk": 0,
-    "maxHp": 324,
-    "def": 7,
+    "maxHp": 106,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 8602
+    "price": 21879
   },
   {
     "id": "eq_t4_armor_common",
-    "name": "은빛 옷",
+    "name": "은빛 갑옷",
     "tier": 4,
     "slot": "armor",
     "rarity": "common",
@@ -1849,11 +1849,11 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 107,
-    "def": 13,
+    "maxHp": 35,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 382
+    "price": 972
   },
   {
     "id": "eq_t4_armor_uncommon",
@@ -1865,15 +1865,15 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 123,
-    "def": 15,
+    "maxHp": 40,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 841
+    "price": 2139
   },
   {
     "id": "eq_t4_armor_rare",
-    "name": "은빛 중갑",
+    "name": "은빛 갑옷",
     "tier": 4,
     "slot": "armor",
     "rarity": "rare",
@@ -1881,15 +1881,15 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 144,
-    "def": 17,
+    "maxHp": 47,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 1911
+    "price": 4862
   },
   {
     "id": "eq_t4_armor_epic",
-    "name": "은빛 마갑",
+    "name": "은빛 갑옷",
     "tier": 4,
     "slot": "armor",
     "rarity": "epic",
@@ -1897,15 +1897,15 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 171,
-    "def": 20,
+    "maxHp": 56,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 4587
+    "price": 11669
   },
   {
     "id": "eq_t4_armor_legendary",
-    "name": "은빛 성갑",
+    "name": "은빛 갑옷",
     "tier": 4,
     "slot": "armor",
     "rarity": "legendary",
@@ -1913,15 +1913,15 @@
     "region": 2,
     "sprite": "armor_4",
     "atk": 0,
-    "maxHp": 202,
-    "def": 24,
+    "maxHp": 66,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 11469
+    "price": 29172
   },
   {
     "id": "eq_t4_pants_common",
-    "name": "은빛 바지",
+    "name": "은빛 하갑",
     "tier": 4,
     "slot": "pants",
     "rarity": "common",
@@ -1929,11 +1929,11 @@
     "region": 2,
     "sprite": "pants_4",
     "atk": 0,
-    "maxHp": 85,
-    "def": 7,
+    "maxHp": 28,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 319
+    "price": 810
   },
   {
     "id": "eq_t4_pants_uncommon",
@@ -1945,15 +1945,15 @@
     "region": 2,
     "sprite": "pants_4",
     "atk": 0,
-    "maxHp": 98,
-    "def": 8,
+    "maxHp": 32,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 701
+    "price": 1783
   },
   {
     "id": "eq_t4_pants_rare",
-    "name": "은빛 중하갑",
+    "name": "은빛 하갑",
     "tier": 4,
     "slot": "pants",
     "rarity": "rare",
@@ -1961,15 +1961,15 @@
     "region": 2,
     "sprite": "pants_4",
     "atk": 0,
-    "maxHp": 115,
-    "def": 10,
+    "maxHp": 38,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1593
+    "price": 4052
   },
   {
     "id": "eq_t4_pants_epic",
-    "name": "은빛 마하갑",
+    "name": "은빛 하갑",
     "tier": 4,
     "slot": "pants",
     "rarity": "epic",
@@ -1977,15 +1977,15 @@
     "region": 2,
     "sprite": "pants_4",
     "atk": 0,
-    "maxHp": 136,
-    "def": 12,
+    "maxHp": 44,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 3823
+    "price": 9724
   },
   {
     "id": "eq_t4_pants_legendary",
-    "name": "은빛 성하갑",
+    "name": "은빛 하갑",
     "tier": 4,
     "slot": "pants",
     "rarity": "legendary",
@@ -1993,43 +1993,43 @@
     "region": 2,
     "sprite": "pants_4",
     "atk": 0,
-    "maxHp": 162,
-    "def": 14,
+    "maxHp": 53,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 9557
+    "price": 24310
   },
   {
     "id": "eq_t4_gloves_common",
-    "name": "은빛 손싸개",
+    "name": "은빛 건틀릿",
     "tier": 4,
     "slot": "gloves",
     "rarity": "common",
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 16,
-    "maxHp": 64,
-    "def": 4,
+    "atk": 7,
+    "maxHp": 21,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 255
+    "price": 648
   },
   {
     "id": "eq_t4_gloves_uncommon",
-    "name": "은빛 장갑",
+    "name": "은빛 건틀릿",
     "tier": 4,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 19,
-    "maxHp": 74,
-    "def": 4,
+    "atk": 8,
+    "maxHp": 24,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 561
+    "price": 1426
   },
   {
     "id": "eq_t4_gloves_rare",
@@ -2040,48 +2040,48 @@
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 22,
-    "maxHp": 86,
-    "def": 5,
+    "atk": 9,
+    "maxHp": 28,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1274
+    "price": 3241
   },
   {
     "id": "eq_t4_gloves_epic",
-    "name": "은빛 마장갑",
+    "name": "은빛 건틀릿",
     "tier": 4,
     "slot": "gloves",
     "rarity": "epic",
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 26,
-    "maxHp": 102,
-    "def": 6,
+    "atk": 11,
+    "maxHp": 33,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 3058
+    "price": 7779
   },
   {
     "id": "eq_t4_gloves_legendary",
-    "name": "은빛 성장갑",
+    "name": "은빛 건틀릿",
     "tier": 4,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 12,
     "region": 2,
     "sprite": "gloves_4",
-    "atk": 31,
-    "maxHp": 121,
-    "def": 7,
+    "atk": 13,
+    "maxHp": 40,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 7646
+    "price": 19448
   },
   {
     "id": "eq_t4_boots_common",
-    "name": "은빛 신",
+    "name": "은빛 각반",
     "tier": 4,
     "slot": "boots",
     "rarity": "common",
@@ -2090,14 +2090,14 @@
     "sprite": "boots_4",
     "atk": 0,
     "maxHp": 0,
-    "def": 9,
-    "spd": 8.6,
+    "def": 2,
+    "spd": 20.8,
     "luk": 0,
-    "price": 255
+    "price": 648
   },
   {
     "id": "eq_t4_boots_uncommon",
-    "name": "은빛 장화",
+    "name": "은빛 각반",
     "tier": 4,
     "slot": "boots",
     "rarity": "uncommon",
@@ -2106,10 +2106,10 @@
     "sprite": "boots_4",
     "atk": 0,
     "maxHp": 0,
-    "def": 10,
-    "spd": 9.8,
+    "def": 2,
+    "spd": 23.9,
     "luk": 0,
-    "price": 561
+    "price": 1426
   },
   {
     "id": "eq_t4_boots_rare",
@@ -2122,14 +2122,14 @@
     "sprite": "boots_4",
     "atk": 0,
     "maxHp": 0,
-    "def": 12,
-    "spd": 11.5,
+    "def": 2,
+    "spd": 28.1,
     "luk": 0,
-    "price": 1274
+    "price": 3241
   },
   {
     "id": "eq_t4_boots_epic",
-    "name": "은빛 마장화",
+    "name": "은빛 각반",
     "tier": 4,
     "slot": "boots",
     "rarity": "epic",
@@ -2138,14 +2138,14 @@
     "sprite": "boots_4",
     "atk": 0,
     "maxHp": 0,
-    "def": 14,
-    "spd": 13.7,
+    "def": 3,
+    "spd": 33.3,
     "luk": 0,
-    "price": 3058
+    "price": 7779
   },
   {
     "id": "eq_t4_boots_legendary",
-    "name": "은빛 성각반",
+    "name": "은빛 각반",
     "tier": 4,
     "slot": "boots",
     "rarity": "legendary",
@@ -2154,14 +2154,14 @@
     "sprite": "boots_4",
     "atk": 0,
     "maxHp": 0,
-    "def": 17,
-    "spd": 16.3,
+    "def": 3,
+    "spd": 39.5,
     "luk": 0,
-    "price": 7646
+    "price": 19448
   },
   {
     "id": "eq_t4_accessory_common",
-    "name": "은빛 부적",
+    "name": "은빛 펜던트",
     "tier": 4,
     "slot": "accessory",
     "rarity": "common",
@@ -2172,12 +2172,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 3.5,
-    "price": 255
+    "luk": 2.1,
+    "price": 648
   },
   {
     "id": "eq_t4_accessory_uncommon",
-    "name": "은빛 팔찌",
+    "name": "은빛 펜던트",
     "tier": 4,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -2188,12 +2188,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 4,
-    "price": 561
+    "luk": 2.4,
+    "price": 1426
   },
   {
     "id": "eq_t4_accessory_rare",
-    "name": "은빛 목걸이",
+    "name": "은빛 펜던트",
     "tier": 4,
     "slot": "accessory",
     "rarity": "rare",
@@ -2204,12 +2204,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 4.7,
-    "price": 1274
+    "luk": 2.8,
+    "price": 3241
   },
   {
     "id": "eq_t4_accessory_epic",
-    "name": "은빛 마정석",
+    "name": "은빛 펜던트",
     "tier": 4,
     "slot": "accessory",
     "rarity": "epic",
@@ -2220,12 +2220,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 5.6,
-    "price": 3058
+    "luk": 3.4,
+    "price": 7779
   },
   {
     "id": "eq_t4_accessory_legendary",
-    "name": "은빛 성표",
+    "name": "은빛 펜던트",
     "tier": 4,
     "slot": "accessory",
     "rarity": "legendary",
@@ -2236,24 +2236,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 6.6,
-    "price": 7646
+    "luk": 4,
+    "price": 19448
   },
   {
     "id": "eq_t5_weapon_common",
-    "name": "흑철 검",
+    "name": "흑철 장검",
     "tier": 5,
     "slot": "weapon",
     "rarity": "common",
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 74,
+    "atk": 26,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 594
+    "price": 1337
   },
   {
     "id": "eq_t5_weapon_uncommon",
@@ -2264,64 +2264,64 @@
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 85,
+    "atk": 30,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1307
+    "price": 2941
   },
   {
     "id": "eq_t5_weapon_rare",
-    "name": "흑철 대검",
+    "name": "흑철 장검",
     "tier": 5,
     "slot": "weapon",
     "rarity": "rare",
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 100,
+    "atk": 36,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2969
+    "price": 6683
   },
   {
     "id": "eq_t5_weapon_epic",
-    "name": "흑철 마검",
+    "name": "흑철 장검",
     "tier": 5,
     "slot": "weapon",
     "rarity": "epic",
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 119,
+    "atk": 42,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 7126
+    "price": 16040
   },
   {
     "id": "eq_t5_weapon_legendary",
-    "name": "흑철 성검",
+    "name": "흑철 장검",
     "tier": 5,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 16,
     "region": 3,
     "sprite": "sword_5",
-    "atk": 141,
+    "atk": 50,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 17816
+    "price": 40101
   },
   {
     "id": "eq_t5_helm_common",
-    "name": "흑철 두건",
+    "name": "흑철 투구",
     "tier": 5,
     "slot": "helm",
     "rarity": "common",
@@ -2329,11 +2329,11 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 256,
-    "def": 6,
+    "maxHp": 70,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 356
+    "price": 802
   },
   {
     "id": "eq_t5_helm_uncommon",
@@ -2345,15 +2345,15 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 294,
-    "def": 6,
+    "maxHp": 81,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 784
+    "price": 1764
   },
   {
     "id": "eq_t5_helm_rare",
-    "name": "흑철 중투구",
+    "name": "흑철 투구",
     "tier": 5,
     "slot": "helm",
     "rarity": "rare",
@@ -2361,15 +2361,15 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 345,
-    "def": 8,
+    "maxHp": 95,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1782
+    "price": 4010
   },
   {
     "id": "eq_t5_helm_epic",
-    "name": "흑철 마투구",
+    "name": "흑철 투구",
     "tier": 5,
     "slot": "helm",
     "rarity": "epic",
@@ -2377,15 +2377,15 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 409,
-    "def": 9,
+    "maxHp": 113,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 4276
+    "price": 9624
   },
   {
     "id": "eq_t5_helm_legendary",
-    "name": "흑철 성투구",
+    "name": "흑철 투구",
     "tier": 5,
     "slot": "helm",
     "rarity": "legendary",
@@ -2393,15 +2393,15 @@
     "region": 3,
     "sprite": "helm_5",
     "atk": 0,
-    "maxHp": 486,
-    "def": 11,
+    "maxHp": 134,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 10690
+    "price": 24060
   },
   {
     "id": "eq_t5_armor_common",
-    "name": "흑철 옷",
+    "name": "흑철 갑옷",
     "tier": 5,
     "slot": "armor",
     "rarity": "common",
@@ -2409,11 +2409,11 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 160,
-    "def": 20,
+    "maxHp": 44,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 475
+    "price": 1069
   },
   {
     "id": "eq_t5_armor_uncommon",
@@ -2425,15 +2425,15 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 184,
-    "def": 23,
+    "maxHp": 51,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 1045
+    "price": 2353
   },
   {
     "id": "eq_t5_armor_rare",
-    "name": "흑철 중갑",
+    "name": "흑철 갑옷",
     "tier": 5,
     "slot": "armor",
     "rarity": "rare",
@@ -2441,15 +2441,15 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 216,
-    "def": 27,
+    "maxHp": 59,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 2375
+    "price": 5347
   },
   {
     "id": "eq_t5_armor_epic",
-    "name": "흑철 마갑",
+    "name": "흑철 갑옷",
     "tier": 5,
     "slot": "armor",
     "rarity": "epic",
@@ -2457,15 +2457,15 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 256,
-    "def": 32,
+    "maxHp": 70,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 5701
+    "price": 12832
   },
   {
     "id": "eq_t5_armor_legendary",
-    "name": "흑철 성갑",
+    "name": "흑철 갑옷",
     "tier": 5,
     "slot": "armor",
     "rarity": "legendary",
@@ -2473,15 +2473,15 @@
     "region": 3,
     "sprite": "armor_5",
     "atk": 0,
-    "maxHp": 304,
-    "def": 38,
+    "maxHp": 84,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 14253
+    "price": 32080
   },
   {
     "id": "eq_t5_pants_common",
-    "name": "흑철 바지",
+    "name": "흑철 하갑",
     "tier": 5,
     "slot": "pants",
     "rarity": "common",
@@ -2489,11 +2489,11 @@
     "region": 3,
     "sprite": "pants_5",
     "atk": 0,
-    "maxHp": 128,
-    "def": 11,
+    "maxHp": 35,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 396
+    "price": 891
   },
   {
     "id": "eq_t5_pants_uncommon",
@@ -2505,15 +2505,15 @@
     "region": 3,
     "sprite": "pants_5",
     "atk": 0,
-    "maxHp": 147,
-    "def": 13,
+    "maxHp": 40,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 871
+    "price": 1960
   },
   {
     "id": "eq_t5_pants_rare",
-    "name": "흑철 중하갑",
+    "name": "흑철 하갑",
     "tier": 5,
     "slot": "pants",
     "rarity": "rare",
@@ -2521,15 +2521,15 @@
     "region": 3,
     "sprite": "pants_5",
     "atk": 0,
-    "maxHp": 173,
-    "def": 15,
+    "maxHp": 48,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1980
+    "price": 4456
   },
   {
     "id": "eq_t5_pants_epic",
-    "name": "흑철 마하갑",
+    "name": "흑철 하갑",
     "tier": 5,
     "slot": "pants",
     "rarity": "epic",
@@ -2537,15 +2537,15 @@
     "region": 3,
     "sprite": "pants_5",
     "atk": 0,
-    "maxHp": 205,
-    "def": 18,
+    "maxHp": 56,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 4751
+    "price": 10693
   },
   {
     "id": "eq_t5_pants_legendary",
-    "name": "흑철 성하갑",
+    "name": "흑철 하갑",
     "tier": 5,
     "slot": "pants",
     "rarity": "legendary",
@@ -2553,43 +2553,43 @@
     "region": 3,
     "sprite": "pants_5",
     "atk": 0,
-    "maxHp": 243,
-    "def": 21,
+    "maxHp": 67,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 11877
+    "price": 26734
   },
   {
     "id": "eq_t5_gloves_common",
-    "name": "흑철 손싸개",
+    "name": "흑철 건틀릿",
     "tier": 5,
     "slot": "gloves",
     "rarity": "common",
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 25,
-    "maxHp": 96,
-    "def": 6,
+    "atk": 9,
+    "maxHp": 26,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 317
+    "price": 713
   },
   {
     "id": "eq_t5_gloves_uncommon",
-    "name": "흑철 장갑",
+    "name": "흑철 건틀릿",
     "tier": 5,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 28,
-    "maxHp": 110,
-    "def": 6,
+    "atk": 10,
+    "maxHp": 30,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 697
+    "price": 1568
   },
   {
     "id": "eq_t5_gloves_rare",
@@ -2600,48 +2600,48 @@
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 33,
-    "maxHp": 130,
-    "def": 8,
+    "atk": 12,
+    "maxHp": 36,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1584
+    "price": 3564
   },
   {
     "id": "eq_t5_gloves_epic",
-    "name": "흑철 마장갑",
+    "name": "흑철 건틀릿",
     "tier": 5,
     "slot": "gloves",
     "rarity": "epic",
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 40,
-    "maxHp": 154,
-    "def": 9,
+    "atk": 14,
+    "maxHp": 42,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 3801
+    "price": 8555
   },
   {
     "id": "eq_t5_gloves_legendary",
-    "name": "흑철 성장갑",
+    "name": "흑철 건틀릿",
     "tier": 5,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 16,
     "region": 3,
     "sprite": "gloves_5",
-    "atk": 47,
-    "maxHp": 182,
-    "def": 11,
+    "atk": 17,
+    "maxHp": 50,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 9502
+    "price": 21387
   },
   {
     "id": "eq_t5_boots_common",
-    "name": "흑철 신",
+    "name": "흑철 각반",
     "tier": 5,
     "slot": "boots",
     "rarity": "common",
@@ -2650,14 +2650,14 @@
     "sprite": "boots_5",
     "atk": 0,
     "maxHp": 0,
-    "def": 14,
-    "spd": 10.5,
+    "def": 2,
+    "spd": 26.3,
     "luk": 0,
-    "price": 317
+    "price": 713
   },
   {
     "id": "eq_t5_boots_uncommon",
-    "name": "흑철 장화",
+    "name": "흑철 각반",
     "tier": 5,
     "slot": "boots",
     "rarity": "uncommon",
@@ -2666,10 +2666,10 @@
     "sprite": "boots_5",
     "atk": 0,
     "maxHp": 0,
-    "def": 16,
-    "spd": 12.1,
+    "def": 3,
+    "spd": 30.3,
     "luk": 0,
-    "price": 697
+    "price": 1568
   },
   {
     "id": "eq_t5_boots_rare",
@@ -2682,14 +2682,14 @@
     "sprite": "boots_5",
     "atk": 0,
     "maxHp": 0,
-    "def": 19,
-    "spd": 14.2,
+    "def": 3,
+    "spd": 35.6,
     "luk": 0,
-    "price": 1584
+    "price": 3564
   },
   {
     "id": "eq_t5_boots_epic",
-    "name": "흑철 마장화",
+    "name": "흑철 각반",
     "tier": 5,
     "slot": "boots",
     "rarity": "epic",
@@ -2698,14 +2698,14 @@
     "sprite": "boots_5",
     "atk": 0,
     "maxHp": 0,
-    "def": 23,
-    "spd": 16.9,
+    "def": 4,
+    "spd": 42.1,
     "luk": 0,
-    "price": 3801
+    "price": 8555
   },
   {
     "id": "eq_t5_boots_legendary",
-    "name": "흑철 성각반",
+    "name": "흑철 각반",
     "tier": 5,
     "slot": "boots",
     "rarity": "legendary",
@@ -2714,14 +2714,14 @@
     "sprite": "boots_5",
     "atk": 0,
     "maxHp": 0,
-    "def": 27,
-    "spd": 20,
+    "def": 4,
+    "spd": 50,
     "luk": 0,
-    "price": 9502
+    "price": 21387
   },
   {
     "id": "eq_t5_accessory_common",
-    "name": "흑철 부적",
+    "name": "흑철 펜던트",
     "tier": 5,
     "slot": "accessory",
     "rarity": "common",
@@ -2732,12 +2732,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 4.3,
-    "price": 317
+    "luk": 2.3,
+    "price": 713
   },
   {
     "id": "eq_t5_accessory_uncommon",
-    "name": "흑철 팔찌",
+    "name": "흑철 펜던트",
     "tier": 5,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -2748,12 +2748,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 5,
-    "price": 697
+    "luk": 2.7,
+    "price": 1568
   },
   {
     "id": "eq_t5_accessory_rare",
-    "name": "흑철 목걸이",
+    "name": "흑철 펜던트",
     "tier": 5,
     "slot": "accessory",
     "rarity": "rare",
@@ -2764,12 +2764,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 5.9,
-    "price": 1584
+    "luk": 3.1,
+    "price": 3564
   },
   {
     "id": "eq_t5_accessory_epic",
-    "name": "흑철 마정석",
+    "name": "흑철 펜던트",
     "tier": 5,
     "slot": "accessory",
     "rarity": "epic",
@@ -2780,12 +2780,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 6.9,
-    "price": 3801
+    "luk": 3.7,
+    "price": 8555
   },
   {
     "id": "eq_t5_accessory_legendary",
-    "name": "흑철 성표",
+    "name": "흑철 펜던트",
     "tier": 5,
     "slot": "accessory",
     "rarity": "legendary",
@@ -2796,24 +2796,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 8.3,
-    "price": 9502
+    "luk": 4.4,
+    "price": 21387
   },
   {
     "id": "eq_t6_weapon_common",
-    "name": "용린 검",
+    "name": "용린 장검",
     "tier": 6,
     "slot": "weapon",
     "rarity": "common",
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 117,
+    "atk": 34,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 767
+    "price": 1498
   },
   {
     "id": "eq_t6_weapon_uncommon",
@@ -2824,64 +2824,64 @@
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 135,
+    "atk": 40,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1687
+    "price": 3296
   },
   {
     "id": "eq_t6_weapon_rare",
-    "name": "용린 대검",
+    "name": "용린 장검",
     "tier": 6,
     "slot": "weapon",
     "rarity": "rare",
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 158,
+    "atk": 46,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 3835
+    "price": 7491
   },
   {
     "id": "eq_t6_weapon_epic",
-    "name": "용린 마검",
+    "name": "용린 장검",
     "tier": 6,
     "slot": "weapon",
     "rarity": "epic",
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 188,
+    "atk": 55,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 9203
+    "price": 17977
   },
   {
     "id": "eq_t6_weapon_legendary",
-    "name": "용린 성검",
+    "name": "용린 장검",
     "tier": 6,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 21,
     "region": 3,
     "sprite": "sword_6",
-    "atk": 223,
+    "atk": 65,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 23009
+    "price": 44943
   },
   {
     "id": "eq_t6_helm_common",
-    "name": "용린 두건",
+    "name": "용린 투구",
     "tier": 6,
     "slot": "helm",
     "rarity": "common",
@@ -2889,11 +2889,11 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 398,
-    "def": 9,
+    "maxHp": 92,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 460
+    "price": 899
   },
   {
     "id": "eq_t6_helm_uncommon",
@@ -2905,15 +2905,15 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 458,
-    "def": 11,
+    "maxHp": 105,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 1012
+    "price": 1978
   },
   {
     "id": "eq_t6_helm_rare",
-    "name": "용린 중투구",
+    "name": "용린 투구",
     "tier": 6,
     "slot": "helm",
     "rarity": "rare",
@@ -2921,15 +2921,15 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 537,
-    "def": 12,
+    "maxHp": 124,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 2301
+    "price": 4494
   },
   {
     "id": "eq_t6_helm_epic",
-    "name": "용린 마투구",
+    "name": "용린 투구",
     "tier": 6,
     "slot": "helm",
     "rarity": "epic",
@@ -2937,15 +2937,15 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 637,
-    "def": 15,
+    "maxHp": 147,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 5522
+    "price": 10786
   },
   {
     "id": "eq_t6_helm_legendary",
-    "name": "용린 성투구",
+    "name": "용린 투구",
     "tier": 6,
     "slot": "helm",
     "rarity": "legendary",
@@ -2953,15 +2953,15 @@
     "region": 3,
     "sprite": "helm_6",
     "atk": 0,
-    "maxHp": 756,
-    "def": 17,
+    "maxHp": 174,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 13805
+    "price": 26966
   },
   {
     "id": "eq_t6_armor_common",
-    "name": "용린 옷",
+    "name": "용린 갑옷",
     "tier": 6,
     "slot": "armor",
     "rarity": "common",
@@ -2969,11 +2969,11 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 249,
-    "def": 32,
+    "maxHp": 57,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 614
+    "price": 1198
   },
   {
     "id": "eq_t6_armor_uncommon",
@@ -2985,15 +2985,15 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 286,
-    "def": 37,
+    "maxHp": 66,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 1350
+    "price": 2637
   },
   {
     "id": "eq_t6_armor_rare",
-    "name": "용린 중갑",
+    "name": "용린 갑옷",
     "tier": 6,
     "slot": "armor",
     "rarity": "rare",
@@ -3001,15 +3001,15 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 336,
-    "def": 43,
+    "maxHp": 77,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 3068
+    "price": 5992
   },
   {
     "id": "eq_t6_armor_epic",
-    "name": "용린 마갑",
+    "name": "용린 갑옷",
     "tier": 6,
     "slot": "armor",
     "rarity": "epic",
@@ -3017,15 +3017,15 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 398,
-    "def": 51,
+    "maxHp": 92,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 7363
+    "price": 14382
   },
   {
     "id": "eq_t6_armor_legendary",
-    "name": "용린 성갑",
+    "name": "용린 갑옷",
     "tier": 6,
     "slot": "armor",
     "rarity": "legendary",
@@ -3033,15 +3033,15 @@
     "region": 3,
     "sprite": "armor_6",
     "atk": 0,
-    "maxHp": 473,
-    "def": 61,
+    "maxHp": 109,
+    "def": 8,
     "spd": 0,
     "luk": 0,
-    "price": 18407
+    "price": 35955
   },
   {
     "id": "eq_t6_pants_common",
-    "name": "용린 바지",
+    "name": "용린 하갑",
     "tier": 6,
     "slot": "pants",
     "rarity": "common",
@@ -3049,11 +3049,11 @@
     "region": 3,
     "sprite": "pants_6",
     "atk": 0,
-    "maxHp": 199,
-    "def": 18,
+    "maxHp": 46,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 511
+    "price": 999
   },
   {
     "id": "eq_t6_pants_uncommon",
@@ -3065,15 +3065,15 @@
     "region": 3,
     "sprite": "pants_6",
     "atk": 0,
-    "maxHp": 229,
-    "def": 21,
+    "maxHp": 53,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 1125
+    "price": 2197
   },
   {
     "id": "eq_t6_pants_rare",
-    "name": "용린 중하갑",
+    "name": "용린 하갑",
     "tier": 6,
     "slot": "pants",
     "rarity": "rare",
@@ -3081,15 +3081,15 @@
     "region": 3,
     "sprite": "pants_6",
     "atk": 0,
-    "maxHp": 269,
-    "def": 25,
+    "maxHp": 62,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 2557
+    "price": 4994
   },
   {
     "id": "eq_t6_pants_epic",
-    "name": "용린 마하갑",
+    "name": "용린 하갑",
     "tier": 6,
     "slot": "pants",
     "rarity": "epic",
@@ -3097,15 +3097,15 @@
     "region": 3,
     "sprite": "pants_6",
     "atk": 0,
-    "maxHp": 318,
-    "def": 29,
+    "maxHp": 73,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 6136
+    "price": 11985
   },
   {
     "id": "eq_t6_pants_legendary",
-    "name": "용린 성하갑",
+    "name": "용린 하갑",
     "tier": 6,
     "slot": "pants",
     "rarity": "legendary",
@@ -3113,43 +3113,43 @@
     "region": 3,
     "sprite": "pants_6",
     "atk": 0,
-    "maxHp": 378,
-    "def": 35,
+    "maxHp": 87,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 15339
+    "price": 29962
   },
   {
     "id": "eq_t6_gloves_common",
-    "name": "용린 손싸개",
+    "name": "용린 건틀릿",
     "tier": 6,
     "slot": "gloves",
     "rarity": "common",
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 39,
-    "maxHp": 149,
-    "def": 9,
+    "atk": 11,
+    "maxHp": 34,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 409
+    "price": 799
   },
   {
     "id": "eq_t6_gloves_uncommon",
-    "name": "용린 장갑",
+    "name": "용린 건틀릿",
     "tier": 6,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 45,
-    "maxHp": 172,
-    "def": 11,
+    "atk": 13,
+    "maxHp": 40,
+    "def": 1,
     "spd": 0,
     "luk": 0,
-    "price": 900
+    "price": 1758
   },
   {
     "id": "eq_t6_gloves_rare",
@@ -3160,48 +3160,48 @@
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 53,
-    "maxHp": 202,
-    "def": 12,
+    "atk": 15,
+    "maxHp": 46,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 2045
+    "price": 3995
   },
   {
     "id": "eq_t6_gloves_epic",
-    "name": "용린 마장갑",
+    "name": "용린 건틀릿",
     "tier": 6,
     "slot": "gloves",
     "rarity": "epic",
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 63,
-    "maxHp": 239,
-    "def": 15,
+    "atk": 18,
+    "maxHp": 55,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 4909
+    "price": 9588
   },
   {
     "id": "eq_t6_gloves_legendary",
-    "name": "용린 성장갑",
+    "name": "용린 건틀릿",
     "tier": 6,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 21,
     "region": 3,
     "sprite": "gloves_6",
-    "atk": 74,
-    "maxHp": 284,
-    "def": 17,
+    "atk": 22,
+    "maxHp": 65,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 12271
+    "price": 23970
   },
   {
     "id": "eq_t6_boots_common",
-    "name": "용린 신",
+    "name": "용린 각반",
     "tier": 6,
     "slot": "boots",
     "rarity": "common",
@@ -3210,14 +3210,14 @@
     "sprite": "boots_6",
     "atk": 0,
     "maxHp": 0,
-    "def": 23,
-    "spd": 12.9,
+    "def": 3,
+    "spd": 34.4,
     "luk": 0,
-    "price": 409
+    "price": 799
   },
   {
     "id": "eq_t6_boots_uncommon",
-    "name": "용린 장화",
+    "name": "용린 각반",
     "tier": 6,
     "slot": "boots",
     "rarity": "uncommon",
@@ -3226,10 +3226,10 @@
     "sprite": "boots_6",
     "atk": 0,
     "maxHp": 0,
-    "def": 26,
-    "spd": 14.8,
+    "def": 3,
+    "spd": 39.5,
     "luk": 0,
-    "price": 900
+    "price": 1758
   },
   {
     "id": "eq_t6_boots_rare",
@@ -3242,14 +3242,14 @@
     "sprite": "boots_6",
     "atk": 0,
     "maxHp": 0,
-    "def": 31,
-    "spd": 17.4,
+    "def": 4,
+    "spd": 46.4,
     "luk": 0,
-    "price": 2045
+    "price": 3995
   },
   {
     "id": "eq_t6_boots_epic",
-    "name": "용린 마장화",
+    "name": "용린 각반",
     "tier": 6,
     "slot": "boots",
     "rarity": "epic",
@@ -3258,14 +3258,14 @@
     "sprite": "boots_6",
     "atk": 0,
     "maxHp": 0,
-    "def": 37,
-    "spd": 20.7,
+    "def": 5,
+    "spd": 55,
     "luk": 0,
-    "price": 4909
+    "price": 9588
   },
   {
     "id": "eq_t6_boots_legendary",
-    "name": "용린 성각반",
+    "name": "용린 각반",
     "tier": 6,
     "slot": "boots",
     "rarity": "legendary",
@@ -3274,14 +3274,14 @@
     "sprite": "boots_6",
     "atk": 0,
     "maxHp": 0,
-    "def": 44,
-    "spd": 24.5,
+    "def": 5,
+    "spd": 65.3,
     "luk": 0,
-    "price": 12271
+    "price": 23970
   },
   {
     "id": "eq_t6_accessory_common",
-    "name": "용린 부적",
+    "name": "용린 펜던트",
     "tier": 6,
     "slot": "accessory",
     "rarity": "common",
@@ -3292,12 +3292,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 5.6,
-    "price": 409
+    "luk": 2.6,
+    "price": 799
   },
   {
     "id": "eq_t6_accessory_uncommon",
-    "name": "용린 팔찌",
+    "name": "용린 펜던트",
     "tier": 6,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -3308,12 +3308,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 6.5,
-    "price": 900
+    "luk": 3,
+    "price": 1758
   },
   {
     "id": "eq_t6_accessory_rare",
-    "name": "용린 목걸이",
+    "name": "용린 펜던트",
     "tier": 6,
     "slot": "accessory",
     "rarity": "rare",
@@ -3324,12 +3324,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 7.6,
-    "price": 2045
+    "luk": 3.5,
+    "price": 3995
   },
   {
     "id": "eq_t6_accessory_epic",
-    "name": "용린 마정석",
+    "name": "용린 펜던트",
     "tier": 6,
     "slot": "accessory",
     "rarity": "epic",
@@ -3340,12 +3340,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 9,
-    "price": 4909
+    "luk": 4.2,
+    "price": 9588
   },
   {
     "id": "eq_t6_accessory_legendary",
-    "name": "용린 성표",
+    "name": "용린 펜던트",
     "tier": 6,
     "slot": "accessory",
     "rarity": "legendary",
@@ -3356,24 +3356,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 10.7,
-    "price": 12271
+    "luk": 4.9,
+    "price": 23970
   },
   {
     "id": "eq_t7_weapon_common",
-    "name": "수정 검",
+    "name": "수정 장검",
     "tier": 7,
     "slot": "weapon",
     "rarity": "common",
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 189,
+    "atk": 46,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1025
+    "price": 1708
   },
   {
     "id": "eq_t7_weapon_uncommon",
@@ -3384,64 +3384,64 @@
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 218,
+    "atk": 53,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2255
+    "price": 3757
   },
   {
     "id": "eq_t7_weapon_rare",
-    "name": "수정 대검",
+    "name": "수정 장검",
     "tier": 7,
     "slot": "weapon",
     "rarity": "rare",
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 256,
+    "atk": 62,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 5124
+    "price": 8538
   },
   {
     "id": "eq_t7_weapon_epic",
-    "name": "수정 마검",
+    "name": "수정 장검",
     "tier": 7,
     "slot": "weapon",
     "rarity": "epic",
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 303,
+    "atk": 73,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 12298
+    "price": 20490
   },
   {
     "id": "eq_t7_weapon_legendary",
-    "name": "수정 성검",
+    "name": "수정 장검",
     "tier": 7,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 26,
     "region": 4,
     "sprite": "sword_7",
-    "atk": 360,
+    "atk": 87,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 30746
+    "price": 51226
   },
   {
     "id": "eq_t7_helm_common",
-    "name": "수정 두건",
+    "name": "수정 투구",
     "tier": 7,
     "slot": "helm",
     "rarity": "common",
@@ -3449,11 +3449,11 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 635,
-    "def": 15,
+    "maxHp": 122,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 615
+    "price": 1025
   },
   {
     "id": "eq_t7_helm_uncommon",
@@ -3465,15 +3465,15 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 730,
-    "def": 18,
+    "maxHp": 141,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1353
+    "price": 2254
   },
   {
     "id": "eq_t7_helm_rare",
-    "name": "수정 중투구",
+    "name": "수정 투구",
     "tier": 7,
     "slot": "helm",
     "rarity": "rare",
@@ -3481,15 +3481,15 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 857,
-    "def": 21,
+    "maxHp": 165,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 3075
+    "price": 5123
   },
   {
     "id": "eq_t7_helm_epic",
-    "name": "수정 마투구",
+    "name": "수정 투구",
     "tier": 7,
     "slot": "helm",
     "rarity": "epic",
@@ -3497,15 +3497,15 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 1015,
-    "def": 24,
+    "maxHp": 196,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 7379
+    "price": 12294
   },
   {
     "id": "eq_t7_helm_legendary",
-    "name": "수정 성투구",
+    "name": "수정 투구",
     "tier": 7,
     "slot": "helm",
     "rarity": "legendary",
@@ -3513,15 +3513,15 @@
     "region": 4,
     "sprite": "helm_7",
     "atk": 0,
-    "maxHp": 1206,
-    "def": 29,
+    "maxHp": 232,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 18447
+    "price": 30735
   },
   {
     "id": "eq_t7_armor_common",
-    "name": "수정 옷",
+    "name": "수정 갑옷",
     "tier": 7,
     "slot": "armor",
     "rarity": "common",
@@ -3529,11 +3529,11 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 397,
-    "def": 53,
+    "maxHp": 76,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 820
+    "price": 1366
   },
   {
     "id": "eq_t7_armor_uncommon",
@@ -3545,15 +3545,15 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 456,
-    "def": 61,
+    "maxHp": 88,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 1804
+    "price": 3005
   },
   {
     "id": "eq_t7_armor_rare",
-    "name": "수정 중갑",
+    "name": "수정 갑옷",
     "tier": 7,
     "slot": "armor",
     "rarity": "rare",
@@ -3561,15 +3561,15 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 535,
-    "def": 72,
+    "maxHp": 103,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 4099
+    "price": 6830
   },
   {
     "id": "eq_t7_armor_epic",
-    "name": "수정 마갑",
+    "name": "수정 갑옷",
     "tier": 7,
     "slot": "armor",
     "rarity": "epic",
@@ -3577,15 +3577,15 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 635,
-    "def": 85,
+    "maxHp": 122,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 9839
+    "price": 16392
   },
   {
     "id": "eq_t7_armor_legendary",
-    "name": "수정 성갑",
+    "name": "수정 갑옷",
     "tier": 7,
     "slot": "armor",
     "rarity": "legendary",
@@ -3593,15 +3593,15 @@
     "region": 4,
     "sprite": "armor_7",
     "atk": 0,
-    "maxHp": 754,
-    "def": 101,
+    "maxHp": 145,
+    "def": 10,
     "spd": 0,
     "luk": 0,
-    "price": 24597
+    "price": 40980
   },
   {
     "id": "eq_t7_pants_common",
-    "name": "수정 바지",
+    "name": "수정 하갑",
     "tier": 7,
     "slot": "pants",
     "rarity": "common",
@@ -3609,11 +3609,11 @@
     "region": 4,
     "sprite": "pants_7",
     "atk": 0,
-    "maxHp": 317,
-    "def": 30,
+    "maxHp": 61,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 683
+    "price": 1138
   },
   {
     "id": "eq_t7_pants_uncommon",
@@ -3625,15 +3625,15 @@
     "region": 4,
     "sprite": "pants_7",
     "atk": 0,
-    "maxHp": 365,
-    "def": 35,
+    "maxHp": 70,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 1503
+    "price": 2504
   },
   {
     "id": "eq_t7_pants_rare",
-    "name": "수정 중하갑",
+    "name": "수정 하갑",
     "tier": 7,
     "slot": "pants",
     "rarity": "rare",
@@ -3641,15 +3641,15 @@
     "region": 4,
     "sprite": "pants_7",
     "atk": 0,
-    "maxHp": 428,
-    "def": 41,
+    "maxHp": 83,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 3416
+    "price": 5692
   },
   {
     "id": "eq_t7_pants_epic",
-    "name": "수정 마하갑",
+    "name": "수정 하갑",
     "tier": 7,
     "slot": "pants",
     "rarity": "epic",
@@ -3657,15 +3657,15 @@
     "region": 4,
     "sprite": "pants_7",
     "atk": 0,
-    "maxHp": 508,
-    "def": 49,
+    "maxHp": 98,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 8199
+    "price": 13660
   },
   {
     "id": "eq_t7_pants_legendary",
-    "name": "수정 성하갑",
+    "name": "수정 하갑",
     "tier": 7,
     "slot": "pants",
     "rarity": "legendary",
@@ -3673,43 +3673,43 @@
     "region": 4,
     "sprite": "pants_7",
     "atk": 0,
-    "maxHp": 603,
-    "def": 58,
+    "maxHp": 116,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 20497
+    "price": 34150
   },
   {
     "id": "eq_t7_gloves_common",
-    "name": "수정 손싸개",
+    "name": "수정 건틀릿",
     "tier": 7,
     "slot": "gloves",
     "rarity": "common",
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 63,
-    "maxHp": 238,
-    "def": 15,
+    "atk": 15,
+    "maxHp": 46,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 547
+    "price": 911
   },
   {
     "id": "eq_t7_gloves_uncommon",
-    "name": "수정 장갑",
+    "name": "수정 건틀릿",
     "tier": 7,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 73,
-    "maxHp": 274,
-    "def": 18,
+    "atk": 18,
+    "maxHp": 53,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1202
+    "price": 2003
   },
   {
     "id": "eq_t7_gloves_rare",
@@ -3720,48 +3720,48 @@
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 85,
-    "maxHp": 321,
-    "def": 21,
+    "atk": 21,
+    "maxHp": 62,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 2733
+    "price": 4553
   },
   {
     "id": "eq_t7_gloves_epic",
-    "name": "수정 마장갑",
+    "name": "수정 건틀릿",
     "tier": 7,
     "slot": "gloves",
     "rarity": "epic",
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 101,
-    "maxHp": 381,
-    "def": 24,
+    "atk": 24,
+    "maxHp": 73,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 6559
+    "price": 10928
   },
   {
     "id": "eq_t7_gloves_legendary",
-    "name": "수정 성장갑",
+    "name": "수정 건틀릿",
     "tier": 7,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 26,
     "region": 4,
     "sprite": "gloves_7",
-    "atk": 120,
-    "maxHp": 452,
-    "def": 29,
+    "atk": 29,
+    "maxHp": 87,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 16398
+    "price": 27320
   },
   {
     "id": "eq_t7_boots_common",
-    "name": "수정 신",
+    "name": "수정 각반",
     "tier": 7,
     "slot": "boots",
     "rarity": "common",
@@ -3770,14 +3770,14 @@
     "sprite": "boots_7",
     "atk": 0,
     "maxHp": 0,
-    "def": 38,
-    "spd": 15.6,
+    "def": 4,
+    "spd": 45.8,
     "luk": 0,
-    "price": 547
+    "price": 911
   },
   {
     "id": "eq_t7_boots_uncommon",
-    "name": "수정 장화",
+    "name": "수정 각반",
     "tier": 7,
     "slot": "boots",
     "rarity": "uncommon",
@@ -3786,10 +3786,10 @@
     "sprite": "boots_7",
     "atk": 0,
     "maxHp": 0,
-    "def": 44,
-    "spd": 17.9,
+    "def": 4,
+    "spd": 52.7,
     "luk": 0,
-    "price": 1202
+    "price": 2003
   },
   {
     "id": "eq_t7_boots_rare",
@@ -3802,14 +3802,14 @@
     "sprite": "boots_7",
     "atk": 0,
     "maxHp": 0,
-    "def": 51,
-    "spd": 21.1,
+    "def": 5,
+    "spd": 61.9,
     "luk": 0,
-    "price": 2733
+    "price": 4553
   },
   {
     "id": "eq_t7_boots_epic",
-    "name": "수정 마장화",
+    "name": "수정 각반",
     "tier": 7,
     "slot": "boots",
     "rarity": "epic",
@@ -3818,14 +3818,14 @@
     "sprite": "boots_7",
     "atk": 0,
     "maxHp": 0,
-    "def": 61,
-    "spd": 25,
+    "def": 6,
+    "spd": 73.4,
     "luk": 0,
-    "price": 6559
+    "price": 10928
   },
   {
     "id": "eq_t7_boots_legendary",
-    "name": "수정 성각반",
+    "name": "수정 각반",
     "tier": 7,
     "slot": "boots",
     "rarity": "legendary",
@@ -3834,14 +3834,14 @@
     "sprite": "boots_7",
     "atk": 0,
     "maxHp": 0,
-    "def": 72,
-    "spd": 29.6,
+    "def": 7,
+    "spd": 87.1,
     "luk": 0,
-    "price": 16398
+    "price": 27320
   },
   {
     "id": "eq_t7_accessory_common",
-    "name": "수정 부적",
+    "name": "수정 펜던트",
     "tier": 7,
     "slot": "accessory",
     "rarity": "common",
@@ -3852,12 +3852,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 7.5,
-    "price": 547
+    "luk": 3,
+    "price": 911
   },
   {
     "id": "eq_t7_accessory_uncommon",
-    "name": "수정 팔찌",
+    "name": "수정 펜던트",
     "tier": 7,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -3868,12 +3868,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 8.6,
-    "price": 1202
+    "luk": 3.4,
+    "price": 2003
   },
   {
     "id": "eq_t7_accessory_rare",
-    "name": "수정 목걸이",
+    "name": "수정 펜던트",
     "tier": 7,
     "slot": "accessory",
     "rarity": "rare",
@@ -3884,12 +3884,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 10.1,
-    "price": 2733
+    "luk": 4,
+    "price": 4553
   },
   {
     "id": "eq_t7_accessory_epic",
-    "name": "수정 마정석",
+    "name": "수정 펜던트",
     "tier": 7,
     "slot": "accessory",
     "rarity": "epic",
@@ -3900,12 +3900,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 12,
-    "price": 6559
+    "luk": 4.7,
+    "price": 10928
   },
   {
     "id": "eq_t7_accessory_legendary",
-    "name": "수정 성표",
+    "name": "수정 펜던트",
     "tier": 7,
     "slot": "accessory",
     "rarity": "legendary",
@@ -3916,24 +3916,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 14.2,
-    "price": 16398
+    "luk": 5.6,
+    "price": 27320
   },
   {
     "id": "eq_t8_weapon_common",
-    "name": "흑요석 검",
+    "name": "흑요석 장검",
     "tier": 8,
     "slot": "weapon",
     "rarity": "common",
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 271,
+    "atk": 57,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1291
+    "price": 1896
   },
   {
     "id": "eq_t8_weapon_uncommon",
@@ -3944,64 +3944,64 @@
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 311,
+    "atk": 66,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2841
+    "price": 4171
   },
   {
     "id": "eq_t8_weapon_rare",
-    "name": "흑요석 대검",
+    "name": "흑요석 장검",
     "tier": 8,
     "slot": "weapon",
     "rarity": "rare",
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 366,
+    "atk": 77,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 6457
+    "price": 9481
   },
   {
     "id": "eq_t8_weapon_epic",
-    "name": "흑요석 마검",
+    "name": "흑요석 장검",
     "tier": 8,
     "slot": "weapon",
     "rarity": "epic",
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 433,
+    "atk": 91,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 15496
+    "price": 22753
   },
   {
     "id": "eq_t8_weapon_legendary",
-    "name": "흑요석 성검",
+    "name": "흑요석 장검",
     "tier": 8,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 32,
     "region": 4,
     "sprite": "sword_8",
-    "atk": 515,
+    "atk": 108,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 38740
+    "price": 56884
   },
   {
     "id": "eq_t8_helm_common",
-    "name": "흑요석 두건",
+    "name": "흑요석 투구",
     "tier": 8,
     "slot": "helm",
     "rarity": "common",
@@ -4009,11 +4009,11 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 902,
-    "def": 22,
+    "maxHp": 152,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 775
+    "price": 1138
   },
   {
     "id": "eq_t8_helm_uncommon",
@@ -4025,15 +4025,15 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 1037,
-    "def": 26,
+    "maxHp": 175,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1705
+    "price": 2503
   },
   {
     "id": "eq_t8_helm_rare",
-    "name": "흑요석 중투구",
+    "name": "흑요석 투구",
     "tier": 8,
     "slot": "helm",
     "rarity": "rare",
@@ -4041,15 +4041,15 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 1217,
-    "def": 30,
+    "maxHp": 206,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 3874
+    "price": 5688
   },
   {
     "id": "eq_t8_helm_epic",
-    "name": "흑요석 마투구",
+    "name": "흑요석 투구",
     "tier": 8,
     "slot": "helm",
     "rarity": "epic",
@@ -4057,15 +4057,15 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 1442,
-    "def": 36,
+    "maxHp": 244,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 9298
+    "price": 13652
   },
   {
     "id": "eq_t8_helm_legendary",
-    "name": "흑요석 성투구",
+    "name": "흑요석 투구",
     "tier": 8,
     "slot": "helm",
     "rarity": "legendary",
@@ -4073,15 +4073,15 @@
     "region": 4,
     "sprite": "helm_8",
     "atk": 0,
-    "maxHp": 1713,
-    "def": 42,
+    "maxHp": 290,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 23244
+    "price": 34130
   },
   {
     "id": "eq_t8_armor_common",
-    "name": "흑요석 옷",
+    "name": "흑요석 갑옷",
     "tier": 8,
     "slot": "armor",
     "rarity": "common",
@@ -4089,11 +4089,11 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 563,
-    "def": 78,
+    "maxHp": 95,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 1033
+    "price": 1517
   },
   {
     "id": "eq_t8_armor_uncommon",
@@ -4105,15 +4105,15 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 648,
-    "def": 90,
+    "maxHp": 110,
+    "def": 8,
     "spd": 0,
     "luk": 0,
-    "price": 2273
+    "price": 3337
   },
   {
     "id": "eq_t8_armor_rare",
-    "name": "흑요석 중갑",
+    "name": "흑요석 갑옷",
     "tier": 8,
     "slot": "armor",
     "rarity": "rare",
@@ -4121,15 +4121,15 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 761,
-    "def": 106,
+    "maxHp": 129,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 5165
+    "price": 7584
   },
   {
     "id": "eq_t8_armor_epic",
-    "name": "흑요석 마갑",
+    "name": "흑요석 갑옷",
     "tier": 8,
     "slot": "armor",
     "rarity": "epic",
@@ -4137,15 +4137,15 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 902,
-    "def": 125,
+    "maxHp": 152,
+    "def": 11,
     "spd": 0,
     "luk": 0,
-    "price": 12397
+    "price": 18203
   },
   {
     "id": "eq_t8_armor_legendary",
-    "name": "흑요석 성갑",
+    "name": "흑요석 갑옷",
     "tier": 8,
     "slot": "armor",
     "rarity": "legendary",
@@ -4153,15 +4153,15 @@
     "region": 4,
     "sprite": "armor_8",
     "atk": 0,
-    "maxHp": 1071,
-    "def": 149,
+    "maxHp": 181,
+    "def": 13,
     "spd": 0,
     "luk": 0,
-    "price": 30992
+    "price": 45507
   },
   {
     "id": "eq_t8_pants_common",
-    "name": "흑요석 바지",
+    "name": "흑요석 하갑",
     "tier": 8,
     "slot": "pants",
     "rarity": "common",
@@ -4169,11 +4169,11 @@
     "region": 4,
     "sprite": "pants_8",
     "atk": 0,
-    "maxHp": 451,
-    "def": 45,
+    "maxHp": 76,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 861
+    "price": 1264
   },
   {
     "id": "eq_t8_pants_uncommon",
@@ -4185,15 +4185,15 @@
     "region": 4,
     "sprite": "pants_8",
     "atk": 0,
-    "maxHp": 518,
-    "def": 51,
+    "maxHp": 88,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 1894
+    "price": 2781
   },
   {
     "id": "eq_t8_pants_rare",
-    "name": "흑요석 중하갑",
+    "name": "흑요석 하갑",
     "tier": 8,
     "slot": "pants",
     "rarity": "rare",
@@ -4201,15 +4201,15 @@
     "region": 4,
     "sprite": "pants_8",
     "atk": 0,
-    "maxHp": 609,
-    "def": 60,
+    "maxHp": 103,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 4304
+    "price": 6320
   },
   {
     "id": "eq_t8_pants_epic",
-    "name": "흑요석 마하갑",
+    "name": "흑요석 하갑",
     "tier": 8,
     "slot": "pants",
     "rarity": "epic",
@@ -4217,15 +4217,15 @@
     "region": 4,
     "sprite": "pants_8",
     "atk": 0,
-    "maxHp": 721,
-    "def": 72,
+    "maxHp": 122,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 10331
+    "price": 15169
   },
   {
     "id": "eq_t8_pants_legendary",
-    "name": "흑요석 성하갑",
+    "name": "흑요석 하갑",
     "tier": 8,
     "slot": "pants",
     "rarity": "legendary",
@@ -4233,43 +4233,43 @@
     "region": 4,
     "sprite": "pants_8",
     "atk": 0,
-    "maxHp": 856,
-    "def": 85,
+    "maxHp": 145,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 25827
+    "price": 37922
   },
   {
     "id": "eq_t8_gloves_common",
-    "name": "흑요석 손싸개",
+    "name": "흑요석 건틀릿",
     "tier": 8,
     "slot": "gloves",
     "rarity": "common",
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 90,
-    "maxHp": 338,
-    "def": 22,
+    "atk": 19,
+    "maxHp": 57,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 689
+    "price": 1011
   },
   {
     "id": "eq_t8_gloves_uncommon",
-    "name": "흑요석 장갑",
+    "name": "흑요석 건틀릿",
     "tier": 8,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 104,
-    "maxHp": 389,
-    "def": 26,
+    "atk": 22,
+    "maxHp": 66,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1515
+    "price": 2225
   },
   {
     "id": "eq_t8_gloves_rare",
@@ -4280,48 +4280,48 @@
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 122,
-    "maxHp": 456,
-    "def": 30,
+    "atk": 26,
+    "maxHp": 77,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 3444
+    "price": 5056
   },
   {
     "id": "eq_t8_gloves_epic",
-    "name": "흑요석 마장갑",
+    "name": "흑요석 건틀릿",
     "tier": 8,
     "slot": "gloves",
     "rarity": "epic",
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 144,
-    "maxHp": 541,
-    "def": 36,
+    "atk": 30,
+    "maxHp": 91,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 8264
+    "price": 12135
   },
   {
     "id": "eq_t8_gloves_legendary",
-    "name": "흑요석 성장갑",
+    "name": "흑요석 건틀릿",
     "tier": 8,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 32,
     "region": 4,
     "sprite": "gloves_8",
-    "atk": 172,
-    "maxHp": 642,
-    "def": 42,
+    "atk": 36,
+    "maxHp": 109,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 20661
+    "price": 30338
   },
   {
     "id": "eq_t8_boots_common",
-    "name": "흑요석 신",
+    "name": "흑요석 각반",
     "tier": 8,
     "slot": "boots",
     "rarity": "common",
@@ -4330,14 +4330,14 @@
     "sprite": "boots_8",
     "atk": 0,
     "maxHp": 0,
-    "def": 56,
-    "spd": 17.7,
+    "def": 5,
+    "spd": 57.1,
     "luk": 0,
-    "price": 689
+    "price": 1011
   },
   {
     "id": "eq_t8_boots_uncommon",
-    "name": "흑요석 장화",
+    "name": "흑요석 각반",
     "tier": 8,
     "slot": "boots",
     "rarity": "uncommon",
@@ -4346,10 +4346,10 @@
     "sprite": "boots_8",
     "atk": 0,
     "maxHp": 0,
-    "def": 64,
-    "spd": 20.4,
+    "def": 5,
+    "spd": 65.6,
     "luk": 0,
-    "price": 1515
+    "price": 2225
   },
   {
     "id": "eq_t8_boots_rare",
@@ -4362,14 +4362,14 @@
     "sprite": "boots_8",
     "atk": 0,
     "maxHp": 0,
-    "def": 75,
-    "spd": 23.9,
+    "def": 6,
+    "spd": 77,
     "luk": 0,
-    "price": 3444
+    "price": 5056
   },
   {
     "id": "eq_t8_boots_epic",
-    "name": "흑요석 마장화",
+    "name": "흑요석 각반",
     "tier": 8,
     "slot": "boots",
     "rarity": "epic",
@@ -4378,14 +4378,14 @@
     "sprite": "boots_8",
     "atk": 0,
     "maxHp": 0,
-    "def": 89,
-    "spd": 28.4,
+    "def": 8,
+    "spd": 91.3,
     "luk": 0,
-    "price": 8264
+    "price": 12135
   },
   {
     "id": "eq_t8_boots_legendary",
-    "name": "흑요석 성각반",
+    "name": "흑요석 각반",
     "tier": 8,
     "slot": "boots",
     "rarity": "legendary",
@@ -4394,14 +4394,14 @@
     "sprite": "boots_8",
     "atk": 0,
     "maxHp": 0,
-    "def": 106,
-    "spd": 33.7,
+    "def": 9,
+    "spd": 108.4,
     "luk": 0,
-    "price": 20661
+    "price": 30338
   },
   {
     "id": "eq_t8_accessory_common",
-    "name": "흑요석 부적",
+    "name": "흑요석 펜던트",
     "tier": 8,
     "slot": "accessory",
     "rarity": "common",
@@ -4412,12 +4412,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 9.4,
-    "price": 689
+    "luk": 3.3,
+    "price": 1011
   },
   {
     "id": "eq_t8_accessory_uncommon",
-    "name": "흑요석 팔찌",
+    "name": "흑요석 펜던트",
     "tier": 8,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -4428,12 +4428,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 10.9,
-    "price": 1515
+    "luk": 3.8,
+    "price": 2225
   },
   {
     "id": "eq_t8_accessory_rare",
-    "name": "흑요석 목걸이",
+    "name": "흑요석 펜던트",
     "tier": 8,
     "slot": "accessory",
     "rarity": "rare",
@@ -4444,12 +4444,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 12.8,
-    "price": 3444
+    "luk": 4.4,
+    "price": 5056
   },
   {
     "id": "eq_t8_accessory_epic",
-    "name": "흑요석 마정석",
+    "name": "흑요석 펜던트",
     "tier": 8,
     "slot": "accessory",
     "rarity": "epic",
@@ -4460,12 +4460,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 15.1,
-    "price": 8264
+    "luk": 5.3,
+    "price": 12135
   },
   {
     "id": "eq_t8_accessory_legendary",
-    "name": "흑요석 성표",
+    "name": "흑요석 펜던트",
     "tier": 8,
     "slot": "accessory",
     "rarity": "legendary",
@@ -4476,24 +4476,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 17.9,
-    "price": 20661
+    "luk": 6.2,
+    "price": 30338
   },
   {
     "id": "eq_t9_weapon_common",
-    "name": "월광 검",
+    "name": "월광 장검",
     "tier": 9,
     "slot": "weapon",
     "rarity": "common",
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 402,
+    "atk": 73,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 1688
+    "price": 2141
   },
   {
     "id": "eq_t9_weapon_uncommon",
@@ -4504,64 +4504,64 @@
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 463,
+    "atk": 84,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 3714
+    "price": 4710
   },
   {
     "id": "eq_t9_weapon_rare",
-    "name": "월광 대검",
+    "name": "월광 장검",
     "tier": 9,
     "slot": "weapon",
     "rarity": "rare",
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 543,
+    "atk": 98,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 8442
+    "price": 10704
   },
   {
     "id": "eq_t9_weapon_epic",
-    "name": "월광 마검",
+    "name": "월광 장검",
     "tier": 9,
     "slot": "weapon",
     "rarity": "epic",
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 644,
+    "atk": 116,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 20260
+    "price": 25689
   },
   {
     "id": "eq_t9_weapon_legendary",
-    "name": "월광 성검",
+    "name": "월광 장검",
     "tier": 9,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 37,
     "region": 5,
     "sprite": "sword_9",
-    "atk": 764,
+    "atk": 138,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 50650
+    "price": 64224
   },
   {
     "id": "eq_t9_helm_common",
-    "name": "월광 두건",
+    "name": "월광 투구",
     "tier": 9,
     "slot": "helm",
     "rarity": "common",
@@ -4569,11 +4569,11 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 1331,
-    "def": 34,
+    "maxHp": 194,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 1013
+    "price": 1284
   },
   {
     "id": "eq_t9_helm_uncommon",
@@ -4585,15 +4585,15 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 1530,
-    "def": 39,
+    "maxHp": 223,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 2229
+    "price": 2826
   },
   {
     "id": "eq_t9_helm_rare",
-    "name": "월광 중투구",
+    "name": "월광 투구",
     "tier": 9,
     "slot": "helm",
     "rarity": "rare",
@@ -4601,15 +4601,15 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 1796,
-    "def": 46,
+    "maxHp": 262,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 5065
+    "price": 6422
   },
   {
     "id": "eq_t9_helm_epic",
-    "name": "월광 마투구",
+    "name": "월광 투구",
     "tier": 9,
     "slot": "helm",
     "rarity": "epic",
@@ -4617,15 +4617,15 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 2129,
-    "def": 55,
+    "maxHp": 311,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 12156
+    "price": 15414
   },
   {
     "id": "eq_t9_helm_legendary",
-    "name": "월광 성투구",
+    "name": "월광 투구",
     "tier": 9,
     "slot": "helm",
     "rarity": "legendary",
@@ -4633,15 +4633,15 @@
     "region": 5,
     "sprite": "helm_9",
     "atk": 0,
-    "maxHp": 2528,
-    "def": 65,
+    "maxHp": 369,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 30390
+    "price": 38534
   },
   {
     "id": "eq_t9_armor_common",
-    "name": "월광 옷",
+    "name": "월광 갑옷",
     "tier": 9,
     "slot": "armor",
     "rarity": "common",
@@ -4649,11 +4649,11 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 832,
-    "def": 120,
+    "maxHp": 121,
+    "def": 8,
     "spd": 0,
     "luk": 0,
-    "price": 1351
+    "price": 1713
   },
   {
     "id": "eq_t9_armor_uncommon",
@@ -4665,15 +4665,15 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 956,
-    "def": 138,
+    "maxHp": 140,
+    "def": 10,
     "spd": 0,
     "luk": 0,
-    "price": 2971
+    "price": 3768
   },
   {
     "id": "eq_t9_armor_rare",
-    "name": "월광 중갑",
+    "name": "월광 갑옷",
     "tier": 9,
     "slot": "armor",
     "rarity": "rare",
@@ -4681,15 +4681,15 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 1123,
-    "def": 161,
+    "maxHp": 164,
+    "def": 11,
     "spd": 0,
     "luk": 0,
-    "price": 6753
+    "price": 8563
   },
   {
     "id": "eq_t9_armor_epic",
-    "name": "월광 마갑",
+    "name": "월광 갑옷",
     "tier": 9,
     "slot": "armor",
     "rarity": "epic",
@@ -4697,15 +4697,15 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 1331,
-    "def": 191,
+    "maxHp": 194,
+    "def": 14,
     "spd": 0,
     "luk": 0,
-    "price": 16208
+    "price": 20552
   },
   {
     "id": "eq_t9_armor_legendary",
-    "name": "월광 성갑",
+    "name": "월광 갑옷",
     "tier": 9,
     "slot": "armor",
     "rarity": "legendary",
@@ -4713,15 +4713,15 @@
     "region": 5,
     "sprite": "armor_9",
     "atk": 0,
-    "maxHp": 1580,
-    "def": 227,
+    "maxHp": 231,
+    "def": 16,
     "spd": 0,
     "luk": 0,
-    "price": 40520
+    "price": 51379
   },
   {
     "id": "eq_t9_pants_common",
-    "name": "월광 바지",
+    "name": "월광 하갑",
     "tier": 9,
     "slot": "pants",
     "rarity": "common",
@@ -4729,11 +4729,11 @@
     "region": 5,
     "sprite": "pants_9",
     "atk": 0,
-    "maxHp": 665,
-    "def": 68,
+    "maxHp": 97,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 1126
+    "price": 1427
   },
   {
     "id": "eq_t9_pants_uncommon",
@@ -4745,15 +4745,15 @@
     "region": 5,
     "sprite": "pants_9",
     "atk": 0,
-    "maxHp": 765,
-    "def": 79,
+    "maxHp": 112,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 2476
+    "price": 3140
   },
   {
     "id": "eq_t9_pants_rare",
-    "name": "월광 중하갑",
+    "name": "월광 하갑",
     "tier": 9,
     "slot": "pants",
     "rarity": "rare",
@@ -4761,15 +4761,15 @@
     "region": 5,
     "sprite": "pants_9",
     "atk": 0,
-    "maxHp": 898,
-    "def": 92,
+    "maxHp": 131,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 5628
+    "price": 7136
   },
   {
     "id": "eq_t9_pants_epic",
-    "name": "월광 마하갑",
+    "name": "월광 하갑",
     "tier": 9,
     "slot": "pants",
     "rarity": "epic",
@@ -4777,15 +4777,15 @@
     "region": 5,
     "sprite": "pants_9",
     "atk": 0,
-    "maxHp": 1064,
-    "def": 109,
+    "maxHp": 155,
+    "def": 8,
     "spd": 0,
     "luk": 0,
-    "price": 13507
+    "price": 17126
   },
   {
     "id": "eq_t9_pants_legendary",
-    "name": "월광 성하갑",
+    "name": "월광 하갑",
     "tier": 9,
     "slot": "pants",
     "rarity": "legendary",
@@ -4793,43 +4793,43 @@
     "region": 5,
     "sprite": "pants_9",
     "atk": 0,
-    "maxHp": 1264,
-    "def": 130,
+    "maxHp": 185,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 33767
+    "price": 42816
   },
   {
     "id": "eq_t9_gloves_common",
-    "name": "월광 손싸개",
+    "name": "월광 건틀릿",
     "tier": 9,
     "slot": "gloves",
     "rarity": "common",
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 134,
-    "maxHp": 499,
-    "def": 34,
+    "atk": 24,
+    "maxHp": 73,
+    "def": 2,
     "spd": 0,
     "luk": 0,
-    "price": 900
+    "price": 1142
   },
   {
     "id": "eq_t9_gloves_uncommon",
-    "name": "월광 장갑",
+    "name": "월광 건틀릿",
     "tier": 9,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 154,
-    "maxHp": 574,
-    "def": 39,
+    "atk": 28,
+    "maxHp": 84,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 1981
+    "price": 2512
   },
   {
     "id": "eq_t9_gloves_rare",
@@ -4840,48 +4840,48 @@
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 181,
-    "maxHp": 674,
-    "def": 46,
+    "atk": 33,
+    "maxHp": 98,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 4502
+    "price": 5709
   },
   {
     "id": "eq_t9_gloves_epic",
-    "name": "월광 마장갑",
+    "name": "월광 건틀릿",
     "tier": 9,
     "slot": "gloves",
     "rarity": "epic",
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 215,
-    "maxHp": 798,
-    "def": 55,
+    "atk": 39,
+    "maxHp": 117,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 10805
+    "price": 13701
   },
   {
     "id": "eq_t9_gloves_legendary",
-    "name": "월광 성장갑",
+    "name": "월광 건틀릿",
     "tier": 9,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 37,
     "region": 5,
     "sprite": "gloves_9",
-    "atk": 255,
-    "maxHp": 948,
-    "def": 65,
+    "atk": 46,
+    "maxHp": 138,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 27014
+    "price": 34253
   },
   {
     "id": "eq_t9_boots_common",
-    "name": "월광 신",
+    "name": "월광 각반",
     "tier": 9,
     "slot": "boots",
     "rarity": "common",
@@ -4890,14 +4890,14 @@
     "sprite": "boots_9",
     "atk": 0,
     "maxHp": 0,
-    "def": 85,
-    "spd": 20.1,
+    "def": 6,
+    "spd": 72.8,
     "luk": 0,
-    "price": 900
+    "price": 1142
   },
   {
     "id": "eq_t9_boots_uncommon",
-    "name": "월광 장화",
+    "name": "월광 각반",
     "tier": 9,
     "slot": "boots",
     "rarity": "uncommon",
@@ -4906,10 +4906,10 @@
     "sprite": "boots_9",
     "atk": 0,
     "maxHp": 0,
-    "def": 98,
-    "spd": 23.1,
+    "def": 7,
+    "spd": 83.7,
     "luk": 0,
-    "price": 1981
+    "price": 2512
   },
   {
     "id": "eq_t9_boots_rare",
@@ -4922,14 +4922,14 @@
     "sprite": "boots_9",
     "atk": 0,
     "maxHp": 0,
-    "def": 115,
-    "spd": 27.2,
+    "def": 8,
+    "spd": 98.3,
     "luk": 0,
-    "price": 4502
+    "price": 5709
   },
   {
     "id": "eq_t9_boots_epic",
-    "name": "월광 마장화",
+    "name": "월광 각반",
     "tier": 9,
     "slot": "boots",
     "rarity": "epic",
@@ -4938,14 +4938,14 @@
     "sprite": "boots_9",
     "atk": 0,
     "maxHp": 0,
-    "def": 137,
-    "spd": 32.2,
+    "def": 10,
+    "spd": 116.4,
     "luk": 0,
-    "price": 10805
+    "price": 13701
   },
   {
     "id": "eq_t9_boots_legendary",
-    "name": "월광 성각반",
+    "name": "월광 각반",
     "tier": 9,
     "slot": "boots",
     "rarity": "legendary",
@@ -4954,14 +4954,14 @@
     "sprite": "boots_9",
     "atk": 0,
     "maxHp": 0,
-    "def": 162,
-    "spd": 38.2,
+    "def": 12,
+    "spd": 138.3,
     "luk": 0,
-    "price": 27014
+    "price": 34253
   },
   {
     "id": "eq_t9_accessory_common",
-    "name": "월광 부적",
+    "name": "월광 펜던트",
     "tier": 9,
     "slot": "accessory",
     "rarity": "common",
@@ -4972,12 +4972,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 12.3,
-    "price": 900
+    "luk": 3.7,
+    "price": 1142
   },
   {
     "id": "eq_t9_accessory_uncommon",
-    "name": "월광 팔찌",
+    "name": "월광 펜던트",
     "tier": 9,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -4988,12 +4988,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 14.2,
-    "price": 1981
+    "luk": 4.3,
+    "price": 2512
   },
   {
     "id": "eq_t9_accessory_rare",
-    "name": "월광 목걸이",
+    "name": "월광 펜던트",
     "tier": 9,
     "slot": "accessory",
     "rarity": "rare",
@@ -5004,12 +5004,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 16.7,
-    "price": 4502
+    "luk": 5,
+    "price": 5709
   },
   {
     "id": "eq_t9_accessory_epic",
-    "name": "월광 마정석",
+    "name": "월광 펜던트",
     "tier": 9,
     "slot": "accessory",
     "rarity": "epic",
@@ -5020,12 +5020,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 19.8,
-    "price": 10805
+    "luk": 5.9,
+    "price": 13701
   },
   {
     "id": "eq_t9_accessory_legendary",
-    "name": "월광 성표",
+    "name": "월광 펜던트",
     "tier": 9,
     "slot": "accessory",
     "rarity": "legendary",
@@ -5036,24 +5036,24 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 23.5,
-    "price": 27014
+    "luk": 7,
+    "price": 34253
   },
   {
     "id": "eq_t10_weapon_common",
-    "name": "심연 검",
+    "name": "심연 장검",
     "tier": 10,
     "slot": "weapon",
     "rarity": "common",
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 616,
+    "atk": 95,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 2287
+    "price": 2454
   },
   {
     "id": "eq_t10_weapon_uncommon",
@@ -5064,64 +5064,64 @@
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 709,
+    "atk": 109,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 5030
+    "price": 5398
   },
   {
     "id": "eq_t10_weapon_rare",
-    "name": "심연 대검",
+    "name": "심연 장검",
     "tier": 10,
     "slot": "weapon",
     "rarity": "rare",
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 832,
+    "atk": 128,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 11433
+    "price": 12269
   },
   {
     "id": "eq_t10_weapon_epic",
-    "name": "심연 마검",
+    "name": "심연 장검",
     "tier": 10,
     "slot": "weapon",
     "rarity": "epic",
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 986,
+    "atk": 151,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 27439
+    "price": 29445
   },
   {
     "id": "eq_t10_weapon_legendary",
-    "name": "심연 성검",
+    "name": "심연 장검",
     "tier": 10,
     "slot": "weapon",
     "rarity": "legendary",
     "level": 44,
     "region": 5,
     "sprite": "sword_10",
-    "atk": 1171,
+    "atk": 180,
     "maxHp": 0,
     "def": 0,
     "spd": 0,
     "luk": 0,
-    "price": 68596
+    "price": 73612
   },
   {
     "id": "eq_t10_helm_common",
-    "name": "심연 두건",
+    "name": "심연 투구",
     "tier": 10,
     "slot": "helm",
     "rarity": "common",
@@ -5129,11 +5129,11 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 2028,
-    "def": 54,
+    "maxHp": 252,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 1372
+    "price": 1472
   },
   {
     "id": "eq_t10_helm_uncommon",
@@ -5145,15 +5145,15 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 2332,
-    "def": 62,
+    "maxHp": 290,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 3018
+    "price": 3239
   },
   {
     "id": "eq_t10_helm_rare",
-    "name": "심연 중투구",
+    "name": "심연 투구",
     "tier": 10,
     "slot": "helm",
     "rarity": "rare",
@@ -5161,15 +5161,15 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 2738,
-    "def": 73,
+    "maxHp": 340,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 6860
+    "price": 7361
   },
   {
     "id": "eq_t10_helm_epic",
-    "name": "심연 마투구",
+    "name": "심연 투구",
     "tier": 10,
     "slot": "helm",
     "rarity": "epic",
@@ -5177,15 +5177,15 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 3245,
-    "def": 87,
+    "maxHp": 404,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 16463
+    "price": 17667
   },
   {
     "id": "eq_t10_helm_legendary",
-    "name": "심연 성투구",
+    "name": "심연 투구",
     "tier": 10,
     "slot": "helm",
     "rarity": "legendary",
@@ -5193,15 +5193,15 @@
     "region": 5,
     "sprite": "helm_10",
     "atk": 0,
-    "maxHp": 3853,
-    "def": 103,
+    "maxHp": 479,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 41158
+    "price": 44167
   },
   {
     "id": "eq_t10_armor_common",
-    "name": "심연 옷",
+    "name": "심연 갑옷",
     "tier": 10,
     "slot": "armor",
     "rarity": "common",
@@ -5209,11 +5209,11 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 1267,
-    "def": 189,
+    "maxHp": 158,
+    "def": 11,
     "spd": 0,
     "luk": 0,
-    "price": 1829
+    "price": 1963
   },
   {
     "id": "eq_t10_armor_uncommon",
@@ -5225,15 +5225,15 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 1457,
-    "def": 218,
+    "maxHp": 181,
+    "def": 13,
     "spd": 0,
     "luk": 0,
-    "price": 4024
+    "price": 4319
   },
   {
     "id": "eq_t10_armor_rare",
-    "name": "심연 중갑",
+    "name": "심연 갑옷",
     "tier": 10,
     "slot": "armor",
     "rarity": "rare",
@@ -5241,15 +5241,15 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 1711,
-    "def": 256,
+    "maxHp": 213,
+    "def": 15,
     "spd": 0,
     "luk": 0,
-    "price": 9146
+    "price": 9815
   },
   {
     "id": "eq_t10_armor_epic",
-    "name": "심연 마갑",
+    "name": "심연 갑옷",
     "tier": 10,
     "slot": "armor",
     "rarity": "epic",
@@ -5257,15 +5257,15 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 2028,
-    "def": 303,
+    "maxHp": 252,
+    "def": 18,
     "spd": 0,
     "luk": 0,
-    "price": 21951
+    "price": 23556
   },
   {
     "id": "eq_t10_armor_legendary",
-    "name": "심연 성갑",
+    "name": "심연 갑옷",
     "tier": 10,
     "slot": "armor",
     "rarity": "legendary",
@@ -5273,15 +5273,15 @@
     "region": 5,
     "sprite": "armor_10",
     "atk": 0,
-    "maxHp": 2408,
-    "def": 360,
+    "maxHp": 299,
+    "def": 21,
     "spd": 0,
     "luk": 0,
-    "price": 54877
+    "price": 58890
   },
   {
     "id": "eq_t10_pants_common",
-    "name": "심연 바지",
+    "name": "심연 하갑",
     "tier": 10,
     "slot": "pants",
     "rarity": "common",
@@ -5289,11 +5289,11 @@
     "region": 5,
     "sprite": "pants_10",
     "atk": 0,
-    "maxHp": 1014,
-    "def": 108,
+    "maxHp": 126,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 1524
+    "price": 1636
   },
   {
     "id": "eq_t10_pants_uncommon",
@@ -5305,15 +5305,15 @@
     "region": 5,
     "sprite": "pants_10",
     "atk": 0,
-    "maxHp": 1166,
-    "def": 124,
+    "maxHp": 145,
+    "def": 7,
     "spd": 0,
     "luk": 0,
-    "price": 3354
+    "price": 3599
   },
   {
     "id": "eq_t10_pants_rare",
-    "name": "심연 중하갑",
+    "name": "심연 하갑",
     "tier": 10,
     "slot": "pants",
     "rarity": "rare",
@@ -5321,15 +5321,15 @@
     "region": 5,
     "sprite": "pants_10",
     "atk": 0,
-    "maxHp": 1369,
-    "def": 146,
+    "maxHp": 170,
+    "def": 9,
     "spd": 0,
     "luk": 0,
-    "price": 7622
+    "price": 8179
   },
   {
     "id": "eq_t10_pants_epic",
-    "name": "심연 마하갑",
+    "name": "심연 하갑",
     "tier": 10,
     "slot": "pants",
     "rarity": "epic",
@@ -5337,15 +5337,15 @@
     "region": 5,
     "sprite": "pants_10",
     "atk": 0,
-    "maxHp": 1622,
-    "def": 173,
+    "maxHp": 202,
+    "def": 10,
     "spd": 0,
     "luk": 0,
-    "price": 18292
+    "price": 19630
   },
   {
     "id": "eq_t10_pants_legendary",
-    "name": "심연 성하갑",
+    "name": "심연 하갑",
     "tier": 10,
     "slot": "pants",
     "rarity": "legendary",
@@ -5353,43 +5353,43 @@
     "region": 5,
     "sprite": "pants_10",
     "atk": 0,
-    "maxHp": 1926,
-    "def": 205,
+    "maxHp": 240,
+    "def": 12,
     "spd": 0,
     "luk": 0,
-    "price": 45731
+    "price": 49075
   },
   {
     "id": "eq_t10_gloves_common",
-    "name": "심연 손싸개",
+    "name": "심연 건틀릿",
     "tier": 10,
     "slot": "gloves",
     "rarity": "common",
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 205,
-    "maxHp": 760,
-    "def": 54,
+    "atk": 32,
+    "maxHp": 95,
+    "def": 3,
     "spd": 0,
     "luk": 0,
-    "price": 1219
+    "price": 1309
   },
   {
     "id": "eq_t10_gloves_uncommon",
-    "name": "심연 장갑",
+    "name": "심연 건틀릿",
     "tier": 10,
     "slot": "gloves",
     "rarity": "uncommon",
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 236,
-    "maxHp": 874,
-    "def": 62,
+    "atk": 36,
+    "maxHp": 109,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 2683
+    "price": 2879
   },
   {
     "id": "eq_t10_gloves_rare",
@@ -5400,48 +5400,48 @@
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 277,
-    "maxHp": 1027,
-    "def": 73,
+    "atk": 43,
+    "maxHp": 128,
+    "def": 4,
     "spd": 0,
     "luk": 0,
-    "price": 6097
+    "price": 6543
   },
   {
     "id": "eq_t10_gloves_epic",
-    "name": "심연 마장갑",
+    "name": "심연 건틀릿",
     "tier": 10,
     "slot": "gloves",
     "rarity": "epic",
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 329,
-    "maxHp": 1217,
-    "def": 87,
+    "atk": 50,
+    "maxHp": 151,
+    "def": 5,
     "spd": 0,
     "luk": 0,
-    "price": 14634
+    "price": 15704
   },
   {
     "id": "eq_t10_gloves_legendary",
-    "name": "심연 성장갑",
+    "name": "심연 건틀릿",
     "tier": 10,
     "slot": "gloves",
     "rarity": "legendary",
     "level": 44,
     "region": 5,
     "sprite": "gloves_10",
-    "atk": 390,
-    "maxHp": 1445,
-    "def": 103,
+    "atk": 60,
+    "maxHp": 180,
+    "def": 6,
     "spd": 0,
     "luk": 0,
-    "price": 36585
+    "price": 39260
   },
   {
     "id": "eq_t10_boots_common",
-    "name": "심연 신",
+    "name": "심연 각반",
     "tier": 10,
     "slot": "boots",
     "rarity": "common",
@@ -5450,14 +5450,14 @@
     "sprite": "boots_10",
     "atk": 0,
     "maxHp": 0,
-    "def": 135,
-    "spd": 22.8,
+    "def": 8,
+    "spd": 94.6,
     "luk": 0,
-    "price": 1219
+    "price": 1309
   },
   {
     "id": "eq_t10_boots_uncommon",
-    "name": "심연 장화",
+    "name": "심연 각반",
     "tier": 10,
     "slot": "boots",
     "rarity": "uncommon",
@@ -5466,10 +5466,10 @@
     "sprite": "boots_10",
     "atk": 0,
     "maxHp": 0,
-    "def": 155,
-    "spd": 26.2,
+    "def": 9,
+    "spd": 108.8,
     "luk": 0,
-    "price": 2683
+    "price": 2879
   },
   {
     "id": "eq_t10_boots_rare",
@@ -5482,14 +5482,14 @@
     "sprite": "boots_10",
     "atk": 0,
     "maxHp": 0,
-    "def": 183,
-    "spd": 30.7,
+    "def": 11,
+    "spd": 127.7,
     "luk": 0,
-    "price": 6097
+    "price": 6543
   },
   {
     "id": "eq_t10_boots_epic",
-    "name": "심연 마장화",
+    "name": "심연 각반",
     "tier": 10,
     "slot": "boots",
     "rarity": "epic",
@@ -5498,14 +5498,14 @@
     "sprite": "boots_10",
     "atk": 0,
     "maxHp": 0,
-    "def": 216,
-    "spd": 36.4,
+    "def": 13,
+    "spd": 151.3,
     "luk": 0,
-    "price": 14634
+    "price": 15704
   },
   {
     "id": "eq_t10_boots_legendary",
-    "name": "심연 성각반",
+    "name": "심연 각반",
     "tier": 10,
     "slot": "boots",
     "rarity": "legendary",
@@ -5514,14 +5514,14 @@
     "sprite": "boots_10",
     "atk": 0,
     "maxHp": 0,
-    "def": 257,
-    "spd": 43.3,
+    "def": 15,
+    "spd": 179.7,
     "luk": 0,
-    "price": 36585
+    "price": 39260
   },
   {
     "id": "eq_t10_accessory_common",
-    "name": "심연 부적",
+    "name": "심연 펜던트",
     "tier": 10,
     "slot": "accessory",
     "rarity": "common",
@@ -5532,12 +5532,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 16.7,
-    "price": 1219
+    "luk": 4.3,
+    "price": 1309
   },
   {
     "id": "eq_t10_accessory_uncommon",
-    "name": "심연 팔찌",
+    "name": "심연 펜던트",
     "tier": 10,
     "slot": "accessory",
     "rarity": "uncommon",
@@ -5548,12 +5548,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 19.2,
-    "price": 2683
+    "luk": 4.9,
+    "price": 2879
   },
   {
     "id": "eq_t10_accessory_rare",
-    "name": "심연 목걸이",
+    "name": "심연 펜던트",
     "tier": 10,
     "slot": "accessory",
     "rarity": "rare",
@@ -5564,12 +5564,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 22.6,
-    "price": 6097
+    "luk": 5.7,
+    "price": 6543
   },
   {
     "id": "eq_t10_accessory_epic",
-    "name": "심연 마정석",
+    "name": "심연 펜던트",
     "tier": 10,
     "slot": "accessory",
     "rarity": "epic",
@@ -5580,12 +5580,12 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 26.8,
-    "price": 14634
+    "luk": 6.8,
+    "price": 15704
   },
   {
     "id": "eq_t10_accessory_legendary",
-    "name": "심연 성표",
+    "name": "심연 펜던트",
     "tier": 10,
     "slot": "accessory",
     "rarity": "legendary",
@@ -5596,7 +5596,7 @@
     "maxHp": 0,
     "def": 0,
     "spd": 0,
-    "luk": 31.8,
-    "price": 36585
+    "luk": 8.1,
+    "price": 39260
   }
 ]
