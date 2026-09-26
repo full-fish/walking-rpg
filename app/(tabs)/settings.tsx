@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -9,6 +10,7 @@ import { Text } from '@/ui/Text';
 import { colors, space } from '@/ui/theme';
 
 export default function Settings() {
+  const router = useRouter();
   const save = usePlayer((s) => s.save);
   const addGold = usePlayer((s) => s.addGold);
   const addWp = usePlayer((s) => s.addWp);
@@ -64,10 +66,16 @@ export default function Settings() {
           <Button label="소재 전부 +3" onPress={() => grantMaterials(3)} />
           {/* 도감 단계 확인용 (T19) — 100마리는 몇 주 걸린다 */}
           <Button label="도감 +10 (지금 지역)" onPress={() => grantDex(10)} />
+          {/* 도감 이야기 확인용 — 100마리(보스는 5번째)에 열린다 */}
+          <Button label="+100" onPress={() => grantDex(100)} />
         </View>
         {/* 무기 계열 확인용 (T18) — 다섯 계열의 손(단검 두 자루)과 그 지역 기본 화살 300발 · 특수 여덟 종 30발씩 (T18_1) */}
         <View style={styles.row}>
           <Button label="무기 계열 한 벌씩 + 화살" onPress={grantWeapons} />
+        </View>
+        {/* 몬스터 그림 확인용 — 지금 스탯으로 싸우는 걸 보여 주기만 한다. ← → 로 몬스터를 바꾼다 */}
+        <View style={styles.row}>
+          <Button label="전투 미리보기" onPress={() => router.push('/preview')} />
         </View>
         {/* 화살 연출 비교 (T18_1) — 코드로 그린 선이냐 화살 그림이냐. 그림이 없는 화살은 선으로 난다 */}
         <View style={styles.row}>

@@ -38,7 +38,7 @@ export const SKILL_TEXT: Record<Style, string> = {
   shield: `다음 공격 ${SKILL.guard}번을 막고 반격`,
   dual: `곧바로 ${SKILL.flurry}번 벤다`,
   great: `그 전투 동안 적 공격 −${pct(SKILL.breakCut)}`,
-  bow: `쏘고 물러난다 — 적이 다시 붙는 동안(${SKILL.retreat}발) 나만 쏜다`,
+  bow: `물러나고 쏜다 — 적이 다시 붙는 동안(${SKILL.retreat}발) 나만 쏜다`,
 };
 
 /** 기술이 도는 주기 */

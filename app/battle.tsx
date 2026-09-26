@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { ARROW_NAMES, arrowById, consumableById, fieldById } from '@/content';
 import {
+  beatStart,
   hpAfterLastHitBy,
   makeRng,
   playerHpAfter,
@@ -42,6 +43,7 @@ function damageText(event: BattleEvent) {
   if (event.type === 'block') return '막음!';
   if (event.type === 'guard') return '방패를 세웠다';
   if (event.type === 'stun') return '기절해 쉰다';
+  if (event.type === 'retreat') return '뒤로 물러났다';
   const hit = event.type === 'crit' ? `치명타! ${event.value}` : `${event.value}`;
   return event.heal ? `${hit} · HP +${event.heal}` : hit;
 }
@@ -49,7 +51,7 @@ function damageText(event: BattleEvent) {
 function eventColor(event: BattleEvent) {
   if (event.type === 'miss') return colors.dim;
   if (event.type === 'crit') return colors.gold;
-  if (event.type === 'block' || event.type === 'guard' || event.type === 'stun') return colors.exp;
+  if (['block', 'guard', 'stun', 'retreat'].includes(event.type)) return colors.exp;
   return event.actor === 'player' ? colors.text : colors.hp;
 }
 
@@ -66,13 +68,6 @@ function lineText(e: BattleEvent, style: Style, foe: string): string {
           ? ARROW_NAMES[e.arrow]
           : '내 공격';
   return `${who} → ${damageText(e)}`;
-}
-
-/** 이 이벤트가 속한 칸의 첫 이벤트 — 앞으로 chain이 아닌 데까지 (T18) */
-function beatStart(events: BattleEvent[], i: number): number {
-  let b = i;
-  while (b > 0 && events[b].chain) b--;
-  return b;
 }
 
 /**

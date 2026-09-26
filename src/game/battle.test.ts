@@ -312,10 +312,17 @@ test('활 — 적이 다가오는 동안 나만 쏘고, 화살이 떨어지면 3
   expect(r.events[2].arrow).toBeUndefined();
   expect(r.events[2].value).toBe(Math.floor(bow.atk * 0.3 * mult));
 
-  // 거리 벌리기 — 쏘고 물러나 다음 한 발도 적이 다가오는 중이다
+  // 거리 벌리기 (T18 확인) — 물러나기만 한 줄(치지 않는다), 곧바로 다음 줄에 멀어진 적을 쏜다.
+  // 물러난 거리(한 발)는 처음 거리(세 발)보다 가깝다
   const skill = r.events.findIndex((e) => e.skill);
-  const next = r.events.slice(skill + 1).find((e) => e.actor === 'player');
-  expect(next?.far).toBeGreaterThan(0);
+  expect(r.events[skill]).toMatchObject({ actor: 'player', type: 'retreat', value: 0 });
+  expect(r.events[skill].far).toBeGreaterThan(0);
+  expect(r.events[skill].far).toBeLessThan(1);
+  const next = r.events[skill + 1];
+  expect(next).toMatchObject({ actor: 'player' });
+  expect(next.skill).toBeUndefined();
+  expect(next.type).not.toBe('miss');
+  expect(next.far).toBeGreaterThan(0);
 });
 
 test('물약으로 끊고 이어 뽑으면 게이지 · 화살 · 첫 거리를 이어 받는다 (T18)', () => {
@@ -323,9 +330,9 @@ test('물약으로 끊고 이어 뽑으면 게이지 · 화살 · 첫 거리를 
   const first = simulateBattle(bow, target(), makeRng(9));
   const cut = first.events[6].state;
   const rest = simulateBattle(bow, target(), makeRng(9), { ...cut, gauge: 5 });
-  // 게이지가 찬 채로 이어 받으면 첫 행동이 기술이고, 첫 거리는 또 주지 않는다
-  expect(rest.events[0]).toMatchObject({ actor: 'player', skill: true });
+  // 게이지가 찬 채로 이어 받으면 첫 행동이 기술(물러나고 쏜다)이고, 첫 거리는 또 주지 않는다
+  expect(rest.events[0]).toMatchObject({ actor: 'player', type: 'retreat', skill: true });
   expect(rest.events.find((e) => e.actor === 'monster')).toBeDefined();
-  expect(rest.events[0].state.arrows).toBe(cut.arrows - 1);
+  expect(rest.events[1].state.arrows).toBe(cut.arrows - 1);
   expect(rest.events.slice(0, 3).some((e) => e.far === 1)).toBe(false);
 });

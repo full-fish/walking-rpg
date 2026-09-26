@@ -96,9 +96,12 @@ export type BattleEvent = {
   /** 0부터. 화면은 이 순서대로 0.6초에 한 칸씩 재생한다 (T8) */
   seq: number;
   actor: 'player' | 'monster';
-  /** block은 막아서 0, guard는 가드를 세운 행동 (T18). stun은 번개에 맞아 쉰 적의 차례 (T18_1) */
-  type: 'hit' | 'crit' | 'miss' | 'block' | 'guard' | 'stun';
-  /** 준 대미지. miss · block · guard · stun이면 0 */
+  /**
+   * block은 막아서 0, guard는 가드를 세운 행동 (T18). stun은 번개에 맞아 쉰 적의 차례 (T18_1).
+   * retreat는 거리 벌리기로 물러난 것 — 공격이 아니다. 쏘는 건 다음 이벤트다 (T18 확인)
+   */
+  type: 'hit' | 'crit' | 'miss' | 'block' | 'guard' | 'stun' | 'retreat';
+  /** 준 대미지. miss · block · guard · stun · retreat이면 0 */
   value: number;
   /** 맞은 쪽의 남은 HP */
   hpAfter: number;
@@ -214,6 +217,13 @@ export function playerHpAfter(events: BattleEvent[], initial: number): number {
     if (e.selfHp !== undefined) return e.selfHp;
   }
   return initial;
+}
+
+/** 이 이벤트가 속한 칸의 첫 이벤트 — 앞으로 chain이 아닌 데까지 (T18). 전투 화면 · 미리보기가 같이 쓴다 */
+export function beatStart(events: BattleEvent[], i: number): number {
+  let b = i;
+  while (b > 0 && events[b].chain) b--;
+  return b;
 }
 
 /** 새 전투의 상태 — 게이지 0, 반지 보호막과 화살은 가진 만큼 (T18) */
@@ -390,10 +400,20 @@ export function simulateBattle(
         });
         return;
       case 'bow':
-        hit({ sure: true, at, tag: { skill: true } });
-        // 쏘고 물러난다 — 적이 다시 다가오는 동안 나만 쏜다
+        // 물러나고 곧바로 쏜다 (T18 확인) — 기록은 "[거리 벌리기]" 한 줄, 쏘는 건 다음 줄이다.
+        // 물러나는 데는 차례를 안 쓴다 — 전에 "쏘고 물러난다"던 것과 같은 몫이라 세기는 그대로다.
+        // 그 한 발은 기술이라 빗나가지 않는다(전과 같다). 적은 멀어진 만큼 다시 다가온다
         tMonster += approachTime(SKILL.retreat);
         arrive = tMonster;
+        push({
+          actor: 'player',
+          type: 'retreat',
+          value: 0,
+          hpAfter: monsterHp,
+          skill: true,
+          ...far(t),
+        });
+        hit({ sure: true, at: far(t) });
         return;
     }
   };

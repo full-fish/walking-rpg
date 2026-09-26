@@ -18,8 +18,8 @@ const CLAW = 150;
 const CUTS = 4;
 /** 한 칸 안에서 여러 번 벨 때 사이 간격 — 0.6초 안에 끝난다 */
 const GAP = 110;
-/** 활의 거리 (T18) — 가장 멀 때 적 크기 */
-const FAR_SCALE = 0.55;
+/** 활의 거리 (T18) — 가장 멀 때(처음 세 발 거리) 적 크기. 거리 벌리기(한 발 거리)는 그 사이다 */
+const FAR_SCALE = 0.4;
 
 /**
  * 화살마다 모양 (T18_1, 코드로 그리기) — 색 · 굵기 · 길이 · 날아가는 시간(ms) · 궤적 · 맞는 자리 효과.
@@ -103,7 +103,7 @@ function popupOf(beat: BattleEvent[], style: Style) {
     };
   }
   const at = styles.atFoe;
-  if (first.type === 'guard')
+  if (first.type === 'guard' || first.type === 'retreat')
     return { text: `${SKILL_LABEL[style]}!`, color: colors.exp, big: true, at };
   const hits = beat.filter((e) => e.actor === 'player');
   const skill = first.skill ? `${SKILL_LABEL[style]}! ` : '';
@@ -185,7 +185,8 @@ function cutShape(style: Style, i: number, crit: boolean) {
  *   적 공격  적이 화면 쪽으로 덮쳐 오고 → 붉은 할퀸 자국 셋 · 화면이 흔들리며 붉게 번쩍인다. 숫자는 아래
  *   회피     적이 덮쳐 오는데 화면(내 시점)이 옆으로 비킨다
  *   막기     화면 아래 방패가 번쩍 — 곧바로 짧은 반격 자국 (검과 방패). 가드도 같은 방패가 선다
- *   거리     활이면 적이 다가오는 동안 작게 서 있다가 붙을 때 커진다 (event.far)
+ *   거리     활이면 적이 멀리서 작게 서 있다가 다가오며 커진다 (event.far). 거리 벌리기는 치지 않고 물러나기만 해서
+ *            적이 다시 작아진다 — 처음 거리(세 발)보다는 가깝다
  *   화살     화살마다 색 · 궤적 · 맞는 자리가 다르다(ARROW_LOOK, T18_1). `art`가 sprite면 화살 그림이 있는 것은 그림으로 난다.
  *            얼음에 느려진 적은 파르스름하고, 폭탄 · 얼음 · 신체파괴가 건 약화는 무대 오른쪽 아래에 적는다
  */
@@ -217,7 +218,8 @@ export function Stage({
   const [foeX] = useState(() => new Animated.Value(0));
   const [foeY] = useState(() => new Animated.Value(0));
   const [foeScale] = useState(() => new Animated.Value(1));
-  const [distance] = useState(() => new Animated.Value(1));
+  // 활은 멀리서 시작한다 — 첫 칸 전부터 작게 서 있다가 다가온다 (T18 확인)
+  const [distance] = useState(() => new Animated.Value(style === 'bow' ? FAR_SCALE : 1));
   const [foeFlash] = useState(() => new Animated.Value(0));
   const [cuts] = useState(() =>
     Array.from({ length: CUTS }, () => ({
@@ -238,7 +240,9 @@ export function Stage({
   const first = beat[0];
   const last = beat.at(-1);
   const popup = first && popupOf(beat, style);
-  const hits = beat.filter((e) => e.actor === 'player' && e.type !== 'guard');
+  const hits = beat.filter(
+    (e) => e.actor === 'player' && e.type !== 'guard' && e.type !== 'retreat',
+  );
   // 무대 번쩍임 색 — 내가 치명타를 내면 하얗게, 내가 맞으면 붉게
   const tint = first?.actor === 'monster' ? colors.hp : colors.text;
   const broken = last?.state.broken ?? 0;
@@ -316,8 +320,13 @@ export function Stage({
 
     let impact: Animated.CompositeAnimation;
     if (first.actor === 'player') {
+      // 거리 벌리기는 치지 않고 물러나기만 한다 — 적이 작아진다 (T18 확인)
       impact =
-        first.type === 'guard' ? flash(guard, 1, 520) : Animated.parallel([strikes(), reach]);
+        first.type === 'guard'
+          ? flash(guard, 1, 520)
+          : first.type === 'retreat'
+            ? reach
+            : Animated.parallel([strikes(), reach]);
     } else if (first.type === 'stun') {
       // 번개에 맞아 쉰다 (T18_1) — 제자리에서 비틀거린다
       impact = Animated.parallel([shake(foeX, 5), flash(zap, 0.7, 400), reach]);

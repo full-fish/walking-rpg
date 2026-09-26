@@ -45,7 +45,10 @@ test('폭탄 화살 — 맞을 때마다 적 공격이 3%씩 줄어 −45%에서
   expect(
     Math.abs(monsterHits(r).at(-1)! - full * (1 - ARROW_EFFECT.bomb.weakenMax!)),
   ).toBeLessThanOrEqual(1);
-  expect(r.events.every((e) => e.actor === 'monster' || e.arrow === 'bomb')).toBe(true);
+  // 거리 벌리기(물러나기)는 쏘지 않는다 — 나머지 내 행동은 전부 폭탄 화살
+  expect(
+    r.events.every((e) => e.actor === 'monster' || e.type === 'retreat' || e.arrow === 'bomb'),
+  ).toBe(true);
 });
 
 test('얼음 화살 — 맞을 때마다 적이 느려져 ×0.5에서 멈춘다. 그만큼 적이 덜 친다 (T18_1)', () => {
@@ -75,24 +78,27 @@ test('흡혈 화살 — 맞힐 때마다 최대 HP의 몫이 모였다가 1씩 �
   const vamp = bow('vamp', { hp: start, maxHp: 10_000 });
   // 적은 늘 빗나간다 — 흡혈만 본다
   const r = simulateBattle(vamp, target({ acc: 0 }), always(0.5));
-  const landed = r.events.filter((e) => e.actor === 'player' && e.type !== 'miss').length;
+  const landed = r.events.filter(
+    (e) => e.actor === 'player' && e.type !== 'miss' && e.type !== 'retreat',
+  ).length;
   expect(r.playerHp).toBe(start + Math.floor(landed * 10_000 * ARROW_EFFECT.vamp.drain! + 1e-9));
   expect(r.events.some((e) => (e.heal ?? 0) > 0)).toBe(true);
   expect(playerHpAfter(r.events, start)).toBe(r.playerHp);
 });
 
 test('가는 · 무거운 화살은 먹인 게 남아 있는 동안만 빠르기를 바꾼다. 다 쓰면 제 빠르기 (T18_1)', () => {
-  /** 적 한 번에 내가 몇 번 쏘나 — 처음 다가오는 동안의 공짜 발은 뺀다. `until`이 있으면 거기까지, `from`이면 거기부터 */
+  /**
+   * 적 한 번에 내가 몇 번 쏘나 — 처음 다가오는 동안의 공짜 발은 뺀다. `until`이 있으면 화살이 떨어질 때까지, `from`이면 거기부터.
+   * 거리 벌리기의 물러나기(retreat)는 쏜 게 아니라 안 센다
+   */
   const pace = (p: Combatant, part?: 'until' | 'from') => {
     const all = simulateBattle(p, target(), always(0.5)).events;
     const events = all.slice(all.findIndex((e) => e.actor === 'monster'));
-    const cut = events.findIndex((e) => e.actor === 'player' && e.arrow === undefined);
+    const shot = (e: (typeof events)[number]) => e.actor === 'player' && e.type !== 'retreat';
+    const cut = events.findIndex((e) => shot(e) && e.arrow === undefined);
     const seg =
       part === 'until' ? events.slice(0, cut) : part === 'from' ? events.slice(cut) : events;
-    return (
-      seg.filter((e) => e.actor === 'player').length /
-      seg.filter((e) => e.actor === 'monster').length
-    );
+    return seg.filter(shot).length / seg.filter((e) => e.actor === 'monster').length;
   };
   // 거리 벌리기(기술)도 행동 수로 돌아서, 빠르기 ×1.35인 기본 화살과 같은 박자다
   for (const effect of ['thin', 'heavy'] as const) {

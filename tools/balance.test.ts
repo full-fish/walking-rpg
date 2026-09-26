@@ -1002,7 +1002,9 @@ function styleChapter(out: string[], h: (title: string, note?: string) => void) 
     for (let i = 0; i < fights; i++) {
       const m = pool[i % pool.length];
       const r = simulateBattle(player, { ...m, hp: m.maxHp }, rng);
-      for (const e of r.events) if (e.actor === 'player') values.push(e.value);
+      // 거리 벌리기의 물러나기는 쏜 게 아니다 (T18 확인)
+      for (const e of r.events)
+        if (e.actor === 'player' && e.type !== 'retreat') values.push(e.value);
       lost += (player.maxHp - r.playerHp) / player.maxHp / fights;
     }
     return { dmg: mean(values), lost };
