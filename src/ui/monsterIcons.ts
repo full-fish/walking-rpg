@@ -1,7 +1,7 @@
 /**
  * 몬스터 sprite id → 이미지 (T17_7). itemIcons와 같은 이유로 require()를 한 줄씩 적는다 —
  * RN은 require 경로를 정적으로만 읽는다. 그림은 `node tools/crop-sprites.mjs <종족>`이 만든다.
- * 없는 sprite는 빠뜨려 두면 된다 — 전투 무대가 이름 상자로 대신 그린다. (야수형 beast는 아직 그림이 없다)
+ * 없는 sprite는 빠뜨려 두면 된다 — 전투 무대가 이름 상자로 대신 그린다.
  */
 export const monsterIcons: Partial<Record<string, number>> = {
   boss_r1: require('@/assets/images/monsters/boss/boss_r1.png'),
@@ -24,6 +24,19 @@ export const monsterIcons: Partial<Record<string, number>> = {
   bandit_16: require('@/assets/images/monsters/bandit/bandit_16.png'),
   bandit_20: require('@/assets/images/monsters/bandit/bandit_20.png'),
   bandit_25: require('@/assets/images/monsters/bandit/bandit_25.png'),
+  beast_1: require('@/assets/images/monsters/beast/beast_1.png'),
+  beast_2: require('@/assets/images/monsters/beast/beast_2.png'),
+  beast_3: require('@/assets/images/monsters/beast/beast_3.png'),
+  beast_4: require('@/assets/images/monsters/beast/beast_4.png'),
+  beast_5: require('@/assets/images/monsters/beast/beast_5.png'),
+  beast_6: require('@/assets/images/monsters/beast/beast_6.png'),
+  beast_7: require('@/assets/images/monsters/beast/beast_7.png'),
+  beast_8: require('@/assets/images/monsters/beast/beast_8.png'),
+  beast_12: require('@/assets/images/monsters/beast/beast_12.png'),
+  beast_13: require('@/assets/images/monsters/beast/beast_13.png'),
+  beast_15: require('@/assets/images/monsters/beast/beast_15.png'),
+  beast_16: require('@/assets/images/monsters/beast/beast_16.png'),
+  beast_21: require('@/assets/images/monsters/beast/beast_21.png'),
   bird_2: require('@/assets/images/monsters/bird/bird_2.png'),
   bird_3: require('@/assets/images/monsters/bird/bird_3.png'),
   bird_5: require('@/assets/images/monsters/bird/bird_5.png'),
