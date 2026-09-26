@@ -9,6 +9,7 @@ import consumablesRaw from './archetypes/consumables.json';
 import equipmentArchetypesRaw from './archetypes/equipment.json';
 import archetypesRaw from './archetypes/monsters.json';
 import regionsRaw from './archetypes/regions.json';
+import storiesRaw from './archetypes/stories.json';
 import equipmentRaw from './data/items/equipment.json';
 import region01 from './data/monsters/region-01.json';
 import region02 from './data/monsters/region-02.json';
@@ -34,6 +35,7 @@ import {
   MonsterArchetypesSchema,
   MonstersSchema,
   RegionsSchema,
+  StoriesSchema,
   type Consumable,
   type Equipment,
   type Field,
@@ -93,6 +95,18 @@ export function tierForLevel(level: number): number {
 }
 
 const MONSTER_BY_ID = new Map(MONSTERS.map((m) => [m.id, m]));
+
+/** 도감 이야기 146편 — 몬스터마다 한 편. 모두 한 줄거리의 조각이다 */
+export const STORIES = StoriesSchema.parse(storiesRaw);
+
+/** 이 이야기로 이어지는 앞 이야기들 — `next`를 거꾸로 모은다 */
+const PREV_STORIES = new Map<string, string[]>();
+for (const [id, s] of Object.entries(STORIES)) {
+  for (const n of s.next) PREV_STORIES.set(n, [...(PREV_STORIES.get(n) ?? []), id]);
+}
+export function prevStories(id: string): string[] {
+  return PREV_STORIES.get(id) ?? [];
+}
 
 export function monsterById(id: string): Monster {
   const found = MONSTER_BY_ID.get(id);

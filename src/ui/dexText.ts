@@ -10,7 +10,7 @@ export const DEX_REVEAL = [
   `원형 · 티어 · 나오는 사냥터 · 장비 드랍 ×${DEX.dropMult}`,
   'EXP · 골드',
   '드랍 부위',
-  `스탯 · 1차 스탯 +${DEX.cardStat}`,
+  `스탯 · 1차 스탯 +${DEX.cardStat} · 이야기`,
 ];
 
 /** 보스 카드 2 · 3 · 4 · 5번의 보상 (T19 검수 3차) — 도감 칸 · balance.md가 같이 쓴다. 보스마다 따로 더한다 */
@@ -27,7 +27,7 @@ export const BOSS_REVEAL = [
   `원형 · 티어 · ${BOSS_REWARDS[0]}`,
   `EXP · 골드 · 받는 ${BOSS_REWARDS[1]}`,
   `첫 처치 보상 · ${BOSS_REWARDS[2]}`,
-  `스탯 · ${BOSS_REWARDS[3]}`,
+  `스탯 · ${BOSS_REWARDS[3]} · 이야기`,
 ];
 
 function pct(v: number): string {

@@ -5,7 +5,9 @@ import {
   MONSTER_ARCHETYPES,
   MONSTERS,
   REGIONS,
+  STORIES,
   monstersOfField,
+  prevStories,
   regionById,
   tierForLevel,
 } from './index';
@@ -45,5 +47,17 @@ test('적정 티어는 레벨과 같지 않다 — 지역이 레벨 구간을 �
   // 레벨이 오르면 티어도 내려가지 않는다
   for (let level = 2; level <= 20; level++) {
     expect(tierForLevel(level)).toBeGreaterThanOrEqual(tierForLevel(level - 1));
+  }
+});
+
+test('도감 이야기 — 몬스터마다 한 편, 이어지는 이야기는 다른 몬스터를 가리키고 앞 이야기로 거꾸로 이어진다', () => {
+  const ids = MONSTERS.map((m) => m.id);
+  expect(Object.keys(STORIES).sort()).toEqual([...ids].sort());
+  for (const [id, s] of Object.entries(STORIES)) {
+    for (const n of s.next) {
+      expect(ids, `${id} → ${n}`).toContain(n);
+      expect(n).not.toBe(id);
+      expect(prevStories(n)).toContain(id);
+    }
   }
 });

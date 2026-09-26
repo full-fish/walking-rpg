@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Image, Pressable, StyleSheet, View } from 'react-native';
+import { Image, Pressable, ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native';
 
 import {
   bossOf,
@@ -7,9 +7,12 @@ import {
   GEAR_LINE_LABELS,
   GEAR_SLOT_LABELS,
   MONSTER_ARCHETYPES,
+  monsterById,
   monstersOfField,
+  prevStories,
   REGIONS,
   regionById,
+  STORIES,
   type Monster,
 } from '@/content';
 import {
@@ -87,8 +90,66 @@ function Card({
   );
 }
 
+/**
+ * 이야기 (도감 마지막 단계) — 앞 이야기 · 이어지는 이야기는 이름을 누르면 그 카드로 넘어간다.
+ * 아직 한 번도 못 잡은 몬스터는 "???"로 두고 못 누른다 — 줄거리를 미리 들키지 않게
+ */
+function Story({
+  save,
+  monster,
+  onOpen,
+}: {
+  save: Save;
+  monster: Monster;
+  onOpen: (m: Monster) => void;
+}) {
+  const story = STORIES[monster.id];
+  if (!story) return null;
+  const link = (id: string) => {
+    const m = monsterById(id);
+    const seen = dexKills(save, m) > 0;
+    return (
+      <Pressable key={id} disabled={!seen} onPress={() => onOpen(m)}>
+        <Text size="sm" color={seen ? colors.gold : undefined} dim={!seen}>
+          {seen ? m.name : '???'}
+        </Text>
+      </Pressable>
+    );
+  };
+  const prev = prevStories(monster.id);
+  return (
+    <View style={styles.story}>
+      <Text size="sm">{story.story}</Text>
+      {prev.length > 0 && (
+        <View style={styles.links}>
+          <Text size="sm" dim>
+            앞 이야기
+          </Text>
+          {prev.map(link)}
+        </View>
+      )}
+      {story.next.length > 0 && (
+        <View style={styles.links}>
+          <Text size="sm" dim>
+            이어지는 이야기
+          </Text>
+          {story.next.map(link)}
+        </View>
+      )}
+    </View>
+  );
+}
+
 /** 카드를 누르면 — 큰 그림 아래로 단계만큼 열린 정보와 다음 단계까지 (카드 모양, T19 검수) */
-function Info({ save, monster }: { save: Save; monster: Monster }) {
+function Info({
+  save,
+  monster,
+  onOpen,
+}: {
+  save: Save;
+  monster: Monster;
+  onOpen: (m: Monster) => void;
+}) {
   const kills = dexKills(save, monster);
   const stage = dexStage(monster, kills);
   const next = dexSteps(monster).find((s) => kills < s);
@@ -169,6 +230,7 @@ function Info({ save, monster }: { save: Save; monster: Monster }) {
           {monster.boss ? '번째 처치' : '마리'} ({next - kills} 남음) — {revealOf(monster)[stage]}
         </Text>
       )}
+      {stage >= 5 && <Story save={save} monster={monster} onOpen={onOpen} />}
     </>
   );
 }
@@ -180,6 +242,8 @@ function Info({ save, monster }: { save: Save; monster: Monster }) {
 export function Dex({ save }: { save: Save }) {
   const [region, setRegion] = useState(save.regionProgress.current);
   const [open, setOpen] = useState<Monster | null>(null);
+  // 이야기까지 열리면 창이 길어진다 — 화면을 넘지 않게 창 안에서 굴린다
+  const { height } = useWindowDimensions();
 
   const all = [...DEX_MONSTERS.values()].flat();
   const seen = all.filter((m) => dexKills(save, m) > 0).length;
@@ -213,8 +277,8 @@ export function Dex({ save }: { save: Save }) {
         </Text>
         <Text size="sm" dim>
           1 · 10 · 25 · 50 · 100마리마다 테두리 색이 바뀌고 정보가 열린다. 10마리부터 그 몬스터 장비
-          드랍 ×{DEX.dropMult}, 100마리면 1차 스탯 +{DEX.cardStat}. 보스는 잡을 때마다 한 단계 —{' '}
-          {BOSS_REWARDS.map((t, i) => `${i + 2}번 ${t}`).join(' · ')}.
+          드랍 ×{DEX.dropMult}, 100마리면 1차 스탯 +{DEX.cardStat}과 그 몬스터의 이야기. 보스는 잡을
+          때마다 한 단계 — {BOSS_REWARDS.map((t, i) => `${i + 2}번 ${t}`).join(' · ')}.
         </Text>
       </Panel>
 
@@ -261,7 +325,9 @@ export function Dex({ save }: { save: Save }) {
       </Panel>
 
       <Popup visible={open !== null} onClose={() => setOpen(null)}>
-        {open && <Info save={save} monster={open} />}
+        <ScrollView style={{ maxHeight: height * 0.7 }} contentContainerStyle={styles.info}>
+          {open && <Info key={open.id} save={save} monster={open} onOpen={setOpen} />}
+        </ScrollView>
         <Button label="닫기" onPress={() => setOpen(null)} />
       </Popup>
     </>
@@ -293,4 +359,7 @@ const styles = StyleSheet.create({
   },
   big: { width: 144, height: 144 },
   title: { alignItems: 'center', gap: space.xs },
+  info: { gap: space.sm },
+  story: { gap: space.xs, paddingTop: space.sm, borderTopWidth: border, borderColor: colors.edge },
+  links: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
 });

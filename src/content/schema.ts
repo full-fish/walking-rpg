@@ -243,6 +243,15 @@ export const ConsumablesSchema = z.array(ConsumableSchema).nonempty();
 export type Consumable = z.infer<typeof ConsumableSchema>;
 
 /**
+ * 도감 이야기 — 몬스터 id → 이야기 한 편과 이어지는 이야기(몬스터 id). 카드 마지막 단계(100마리, 보스는 5번째 처치)에 열린다.
+ * 줄거리는 한 줄기라 편마다 앞뒤가 있다 — 앞 이야기는 `next`를 거꾸로 모은다(content/index.ts)
+ */
+export const StoriesSchema = z.record(
+  z.string().regex(/^mon_/),
+  z.object({ story: z.string().min(1), next: z.array(z.string().regex(/^mon_/)) }),
+);
+
+/**
  * 화살 한 종 (T18 → T18_1) — 공식(arrowStats)에서 바로 뽑는다. 값은 한 묶음(ARROW.bundle발) 값이다.
  * 기본만 상점에서 팔고, 특수는 몬스터가 떨군다
  */
