@@ -3,3 +3,5 @@ node_modules/
 android/
 ios/
 *.md
+# crop-sprites.mjs가 목록을 한 줄로 다시 쓴다
+assets/images/gallery.html

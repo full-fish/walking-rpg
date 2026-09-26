@@ -1,0 +1,167 @@
+<!doctype html>
+<!-- StepQuest 그림 모음. 목록(SPRITES)은 `node tools/crop-sprites.mjs`가 다시 쓴다 — 손으로 고치지 않는다 -->
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>StepQuest 그림 모음</title>
+    <style>
+      :root {
+        --cell: 72px;
+        --bg: #1a1626;
+        --panel: #2a2438;
+        --edge: #4a4260;
+        --text: #e8e4f0;
+        --dim: #a8a0bc;
+        --gold: #e0b84a;
+        color-scheme: dark;
+      }
+      body {
+        margin: 0;
+        padding: 0 16px 32px;
+        background: var(--bg);
+        color: var(--text);
+        font: 14px/1.4 system-ui, sans-serif;
+      }
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 1;
+        padding: 12px 0 8px;
+        background: var(--bg);
+        border-bottom: 1px solid var(--edge);
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 18px;
+      }
+      h1 small,
+      h2 small {
+        color: var(--dim);
+        font-weight: normal;
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-bottom: 8px;
+      }
+      .chips button {
+        padding: 4px 10px;
+        border: 1px solid var(--edge);
+        border-radius: 14px;
+        background: var(--panel);
+        color: inherit;
+        font: inherit;
+        cursor: pointer;
+      }
+      .chips button.on {
+        border-color: var(--gold);
+        background: var(--gold);
+        color: var(--bg);
+      }
+      label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      input[type='range'] {
+        flex: 1;
+        max-width: 320px;
+      }
+      h2 {
+        margin: 16px 0 6px;
+        font-size: 15px;
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(var(--cell), 1fr));
+        gap: 4px;
+      }
+      .grid a {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        min-width: 0;
+        padding: 2px;
+        border-radius: 4px;
+        background: var(--panel);
+        color: var(--dim);
+        font-size: 11px;
+        text-decoration: none;
+      }
+      .grid a:hover {
+        outline: 1px solid var(--gold);
+      }
+      .grid img {
+        width: 100%;
+        aspect-ratio: 1;
+        object-fit: contain;
+      }
+      .grid span {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .small .grid span {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>StepQuest 그림 모음 <small id="count"></small></h1>
+      <div class="chips" id="chips"></div>
+      <label>칸 크기 <input id="size" type="range" min="32" max="320" step="8" value="72" /> <output id="px">72px</output></label>
+    </header>
+    <main id="main"></main>
+    <script>
+      /* sprites:start */const SPRITES = [{"group":"item","kind":"sword","label":"장검","files":["items/sword/sword_1.png","items/sword/sword_2.png","items/sword/sword_3.png","items/sword/sword_4.png","items/sword/sword_5.png","items/sword/sword_6.png","items/sword/sword_7.png","items/sword/sword_8.png","items/sword/sword_9.png","items/sword/sword_10.png"]},{"group":"item","kind":"shortsword","label":"소검","files":["items/shortsword/shortsword_1.png","items/shortsword/shortsword_2.png","items/shortsword/shortsword_3.png","items/shortsword/shortsword_4.png","items/shortsword/shortsword_5.png","items/shortsword/shortsword_6.png","items/shortsword/shortsword_7.png","items/shortsword/shortsword_8.png","items/shortsword/shortsword_9.png","items/shortsword/shortsword_10.png"]},{"group":"item","kind":"shield","label":"방패","files":["items/shield/shield_1.png","items/shield/shield_2.png","items/shield/shield_3.png","items/shield/shield_4.png","items/shield/shield_5.png","items/shield/shield_6.png","items/shield/shield_7.png","items/shield/shield_8.png","items/shield/shield_9.png","items/shield/shield_10.png"]},{"group":"item","kind":"dagger","label":"단검","files":["items/dagger/dagger_1.png","items/dagger/dagger_2.png","items/dagger/dagger_3.png","items/dagger/dagger_4.png","items/dagger/dagger_5.png","items/dagger/dagger_6.png","items/dagger/dagger_7.png","items/dagger/dagger_8.png","items/dagger/dagger_9.png","items/dagger/dagger_10.png"]},{"group":"item","kind":"greatsword","label":"대검","files":["items/greatsword/greatsword_1.png","items/greatsword/greatsword_2.png","items/greatsword/greatsword_3.png","items/greatsword/greatsword_4.png","items/greatsword/greatsword_5.png","items/greatsword/greatsword_6.png","items/greatsword/greatsword_7.png","items/greatsword/greatsword_8.png","items/greatsword/greatsword_9.png","items/greatsword/greatsword_10.png"]},{"group":"item","kind":"bow","label":"활","files":["items/bow/bow_1.png","items/bow/bow_2.png","items/bow/bow_3.png","items/bow/bow_4.png","items/bow/bow_5.png","items/bow/bow_6.png","items/bow/bow_7.png","items/bow/bow_8.png","items/bow/bow_9.png","items/bow/bow_10.png"]},{"group":"item","kind":"helm","label":"투구","files":["items/helm/helm_1.png","items/helm/helm_2.png","items/helm/helm_3.png","items/helm/helm_4.png","items/helm/helm_5.png","items/helm/helm_6.png","items/helm/helm_7.png","items/helm/helm_8.png","items/helm/helm_9.png","items/helm/helm_10.png"]},{"group":"item","kind":"armor","label":"갑옷","files":["items/armor/armor_1.png","items/armor/armor_2.png","items/armor/armor_3.png","items/armor/armor_4.png","items/armor/armor_5.png","items/armor/armor_6.png","items/armor/armor_7.png","items/armor/armor_8.png","items/armor/armor_9.png","items/armor/armor_10.png"]},{"group":"item","kind":"pants","label":"하의","files":["items/pants/pants_1.png","items/pants/pants_2.png","items/pants/pants_3.png","items/pants/pants_4.png","items/pants/pants_5.png","items/pants/pants_6.png","items/pants/pants_7.png","items/pants/pants_8.png","items/pants/pants_9.png","items/pants/pants_10.png"]},{"group":"item","kind":"gloves","label":"장갑","files":["items/gloves/gloves_1.png","items/gloves/gloves_2.png","items/gloves/gloves_3.png","items/gloves/gloves_4.png","items/gloves/gloves_5.png","items/gloves/gloves_6.png","items/gloves/gloves_7.png","items/gloves/gloves_8.png","items/gloves/gloves_9.png","items/gloves/gloves_10.png"]},{"group":"item","kind":"boots","label":"신발","files":["items/boots/boots_1.png","items/boots/boots_2.png","items/boots/boots_3.png","items/boots/boots_4.png","items/boots/boots_5.png","items/boots/boots_6.png","items/boots/boots_7.png","items/boots/boots_8.png","items/boots/boots_9.png","items/boots/boots_10.png"]},{"group":"item","kind":"accessory","label":"장신구","files":["items/accessory/accessory_1.png","items/accessory/accessory_2.png","items/accessory/accessory_3.png","items/accessory/accessory_4.png","items/accessory/accessory_5.png","items/accessory/accessory_6.png","items/accessory/accessory_7.png","items/accessory/accessory_8.png","items/accessory/accessory_9.png","items/accessory/accessory_10.png"]},{"group":"item","kind":"ring","label":"반지","files":["items/ring/ring_bigRun.png","items/ring/ring_bossBuff.png","items/ring/ring_bossDamage.png","items/ring/ring_clearBonus.png","items/ring/ring_drop.png","items/ring/ring_exp.png","items/ring/ring_fieldWp.png","items/ring/ring_gold.png","items/ring/ring_midnightWp.png","items/ring/ring_potion.png","items/ring/ring_shield.png"]},{"group":"item","kind":"arrow","label":"화살","files":["items/arrow/arrow_1.png","items/arrow/arrow_2.png","items/arrow/arrow_3.png","items/arrow/arrow_4.png","items/arrow/arrow_5.png","items/arrow/arrow_bomb.png","items/arrow/arrow_fire.png","items/arrow/arrow_heavy.png","items/arrow/arrow_ice.png","items/arrow/arrow_pierce.png","items/arrow/arrow_shock.png","items/arrow/arrow_thin.png","items/arrow/arrow_vamp.png","items/arrow/fly_basic.png","items/arrow/fly_bomb.png","items/arrow/fly_fire.png","items/arrow/fly_heavy.png","items/arrow/fly_ice.png","items/arrow/fly_pierce.png","items/arrow/fly_shock.png","items/arrow/fly_thin.png","items/arrow/fly_vamp.png"]},{"group":"monster","kind":"boss","label":"보스","files":["monsters/boss/boss_r1.png","monsters/boss/boss_r2_1.png","monsters/boss/boss_r2.png","monsters/boss/boss_r3.png","monsters/boss/boss_r4.png","monsters/boss/boss_r5.png"]},{"group":"monster","kind":"aquatic","label":"수생형","files":["monsters/aquatic/aquatic_8.png","monsters/aquatic/aquatic_11.png","monsters/aquatic/aquatic_12.png","monsters/aquatic/aquatic_16.png","monsters/aquatic/aquatic_21.png","monsters/aquatic/aquatic_23.png"]},{"group":"monster","kind":"bandit","label":"인간형","files":["monsters/bandit/bandit_4.png","monsters/bandit/bandit_5.png","monsters/bandit/bandit_8.png","monsters/bandit/bandit_9.png","monsters/bandit/bandit_12.png","monsters/bandit/bandit_14.png","monsters/bandit/bandit_16.png","monsters/bandit/bandit_20.png","monsters/bandit/bandit_25.png"]},{"group":"monster","kind":"bird","label":"조류형","files":["monsters/bird/bird_2.png","monsters/bird/bird_3.png","monsters/bird/bird_5.png","monsters/bird/bird_6.png","monsters/bird/bird_8.png","monsters/bird/bird_10.png","monsters/bird/bird_11.png","monsters/bird/bird_14.png","monsters/bird/bird_18.png","monsters/bird/bird_21.png","monsters/bird/bird_22.png"]},{"group":"monster","kind":"demon","label":"마족형","files":["monsters/demon/demon_16.png","monsters/demon/demon_18.png","monsters/demon/demon_21.png","monsters/demon/demon_22.png","monsters/demon/demon_25.png"]},{"group":"monster","kind":"fungus","label":"균사형","files":["monsters/fungus/fungus_1.png","monsters/fungus/fungus_4.png","monsters/fungus/fungus_7.png","monsters/fungus/fungus_12.png","monsters/fungus/fungus_17.png","monsters/fungus/fungus_23.png"]},{"group":"monster","kind":"goblin","label":"소인형","files":["monsters/goblin/goblin_3.png","monsters/goblin/goblin_4.png","monsters/goblin/goblin_5.png","monsters/goblin/goblin_9.png"]},{"group":"monster","kind":"golem","label":"바위형","files":["monsters/golem/golem_3.png","monsters/golem/golem_9.png","monsters/golem/golem_11.png","monsters/golem/golem_13.png","monsters/golem/golem_14.png","monsters/golem/golem_17.png","monsters/golem/golem_19.png","monsters/golem/golem_22.png","monsters/golem/golem_23.png","monsters/golem/golem_25.png"]},{"group":"monster","kind":"insect","label":"벌레형","files":["monsters/insect/insect_2.png","monsters/insect/insect_4.png","monsters/insect/insect_6.png","monsters/insect/insect_7.png","monsters/insect/insect_8.png","monsters/insect/insect_9.png","monsters/insect/insect_11.png","monsters/insect/insect_12.png","monsters/insect/insect_13.png","monsters/insect/insect_16.png","monsters/insect/insect_17.png","monsters/insect/insect_19.png","monsters/insect/insect_21.png","monsters/insect/insect_22.png"]},{"group":"monster","kind":"knight","label":"기갑형","files":["monsters/knight/knight_15.png","monsters/knight/knight_18.png","monsters/knight/knight_20.png","monsters/knight/knight_22.png","monsters/knight/knight_24.png"]},{"group":"monster","kind":"lizard","label":"파충류형","files":["monsters/lizard/lizard_4.png","monsters/lizard/lizard_7.png","monsters/lizard/lizard_9.png","monsters/lizard/lizard_10.png","monsters/lizard/lizard_13.png","monsters/lizard/lizard_16.png","monsters/lizard/lizard_17.png","monsters/lizard/lizard_18.png","monsters/lizard/lizard_20.png","monsters/lizard/lizard_23.png"]},{"group":"monster","kind":"plant","label":"식물형","files":["monsters/plant/plant_3.png","monsters/plant/plant_5.png","monsters/plant/plant_6.png","monsters/plant/plant_7.png","monsters/plant/plant_8.png","monsters/plant/plant_12.png","monsters/plant/plant_13.png","monsters/plant/plant_18.png","monsters/plant/plant_19.png","monsters/plant/plant_24.png"]},{"group":"monster","kind":"slime","label":"점액형","files":["monsters/slime/slime_1.png","monsters/slime/slime_2.png","monsters/slime/slime_3.png","monsters/slime/slime_11.png","monsters/slime/slime_13.png","monsters/slime/slime_16.png","monsters/slime/slime_17.png","monsters/slime/slime_18.png","monsters/slime/slime_19.png","monsters/slime/slime_21.png","monsters/slime/slime_22.png","monsters/slime/slime_23.png","monsters/slime/slime_24.png"]},{"group":"monster","kind":"spirit","label":"정령형","files":["monsters/spirit/spirit_2.png","monsters/spirit/spirit_8.png","monsters/spirit/spirit_9.png","monsters/spirit/spirit_11.png","monsters/spirit/spirit_12.png","monsters/spirit/spirit_14.png","monsters/spirit/spirit_16.png","monsters/spirit/spirit_17.png","monsters/spirit/spirit_21.png","monsters/spirit/spirit_24.png"]},{"group":"monster","kind":"undead","label":"망령형","files":["monsters/undead/undead_5.png","monsters/undead/undead_7.png","monsters/undead/undead_8.png","monsters/undead/undead_9.png","monsters/undead/undead_10.png","monsters/undead/undead_12.png","monsters/undead/undead_13.png","monsters/undead/undead_15.png","monsters/undead/undead_17.png","monsters/undead/undead_18.png","monsters/undead/undead_19.png","monsters/undead/undead_21.png","monsters/undead/undead_22.png","monsters/undead/undead_23.png","monsters/undead/undead_25.png"]}];/* sprites:end */
+
+      const $ = (id) => document.getElementById(id);
+      const name = (file) => file.split('/').pop().replace('.png', '');
+      const total = (list) => list.reduce((n, k) => n + k.files.length, 0);
+      const views = [
+        ['all', '전체', SPRITES],
+        ['item', '장비 · 반지 · 화살', SPRITES.filter((k) => k.group === 'item')],
+        ['monster', '몬스터', SPRITES.filter((k) => k.group === 'monster')],
+        ...SPRITES.map((k) => [k.kind, k.label, [k]]),
+      ];
+      let view = 'all';
+
+      function render() {
+        const shown = views.find(([id]) => id === view)[2];
+        $('count').textContent = `${total(shown)}장`;
+        $('chips').innerHTML = views
+          .map(([id, label, list]) => `<button data-id="${id}" class="${id === view ? 'on' : ''}">${label} ${total(list)}</button>`)
+          .join('');
+        $('main').innerHTML = shown
+          .map(
+            (k) =>
+              `<h2>${k.label} <small>${k.kind} · ${k.files.length}</small></h2><div class="grid">` +
+              k.files
+                .map((f) => `<a href="${f}" target="_blank" title="${name(f)}"><img src="${f}" alt="${name(f)}" loading="lazy" /><span>${name(f)}</span></a>`)
+                .join('') +
+              '</div>',
+          )
+          .join('');
+      }
+
+      $('chips').onclick = (e) => {
+        const id = e.target.dataset?.id;
+        if (!id) return;
+        view = id;
+        render();
+      };
+      // 작은 칸에서는 이름을 숨긴다 — 글자가 그림을 가린다
+      $('size').oninput = () => {
+        const px = Number($('size').value);
+        document.documentElement.style.setProperty('--cell', `${px}px`);
+        document.body.classList.toggle('small', px < 64);
+        $('px').textContent = `${px}px`;
+      };
+      render();
+    </script>
+  </body>
+</html>
