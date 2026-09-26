@@ -12,6 +12,8 @@ import {
   fieldLevel,
   gearSetFor,
   regionById,
+  shopArrows,
+  type Equipment,
   type Field,
   type Monster,
   type Region,
@@ -19,39 +21,45 @@ import {
 import {
   hpAfterLastHitBy,
   makeRng,
-  shieldLeft,
   simulateBattle,
+  type BattleState,
   type Combatant,
   type Outcome,
 } from '../src/game/battle';
 import {
+  buyArrows,
   buyConsumable,
   enhanceItem,
   enhancePick,
   regionMaterials,
   sellItem,
+  setQuiver,
   stayInn,
 } from '../src/game/economy';
 import { claimGoals, claimStreak } from '../src/game/daily';
 import { currentMonster, drinkPotion, enterField, settleRun } from '../src/game/field';
 import {
   MATERIAL_BUFF,
+  BODY_LINES,
   ENHANCE_MAX,
   EXPECTED_GEAR,
   enhanceCost,
   enhanceMaterials,
   enhanceRate,
   expToNext,
-  GEAR_SLOTS,
   MIDNIGHT_WP,
   POINTS_PER_LEVEL,
   POTION_CARRY_MAX,
   REGION_COUNT,
   SPENDABLE_STATS,
+  STYLE_HANDS,
   WP_COST,
+  type GearLine,
+  type GearSlot,
   type SpendableStat,
+  type Style,
 } from '../src/game/formulas';
-import { bagItems, equippedItems, itemDef, itemPower, makeItem } from '../src/game/items';
+import { bagItems, equippedItems, itemDef, itemPower, makeItem, styleOf } from '../src/game/items';
 import { addItem, applyRegen, equipItem, newGame, statsOf } from '../src/game/progression';
 import { bossCost, bossState, enterBoss, travel, unlockCost, unlockNext } from '../src/game/region';
 import { dayKey } from '../src/health/steps';
@@ -129,11 +137,21 @@ function freshPower(defId: string): number {
   return itemPower({ uid: '', defId, quality: 1, enhance: 0 });
 }
 
-/** 낀 것의 세기. 빈 칸이면 0 */
-function wornPower(save: Save, slot: (typeof GEAR_SLOTS)[number]): number {
+/** 그 칸에 낀 것의 세기 — 그 줄일 때만. 다른 계열 무기를 끼고 있으면 0이다 (T18) */
+function wornPower(save: Save, slot: GearSlot, line: GearLine): number {
   const uid = save.equipped[slot];
   const item = uid ? save.inventory.find((i) => i.uid === uid) : undefined;
-  return item ? itemPower(item) : 0;
+  return item && itemDef(item).line === line ? itemPower(item) : 0;
+}
+
+/** 계열 한 벌의 칸과 줄 (T18) — 손(쌍칼은 단검이 두 칸) + 몸 여섯. gearSetFor와 같은 순서다 */
+function parts(style: Style): [GearSlot, GearLine][] {
+  const [main, off] = STYLE_HANDS[style];
+  return [
+    ['weapon', main],
+    ...(off ? [['offhand', off] as [GearSlot, GearLine]] : []),
+    ...BODY_LINES.map((l): [GearSlot, GearLine] => [l, l]),
+  ];
 }
 
 /**
@@ -141,55 +159,62 @@ function wornPower(save: Save, slot: (typeof GEAR_SLOTS)[number]): number {
  *
  * **티어가 아니라 세기로 견준다** (T17_6). 강화해 둔 옛 장비나 드랍으로 주운 rare가
  * 새 티어 common보다 세면 안 산다 — 사람은 +5 검을 버리고 +0 검을 사지 않는다.
- * 돈이 모자라면 중요한 부위부터 한 점씩 산다.
+ * 돈이 모자라면 중요한 부위부터 한 점씩 산다. 사는 건 `style` 계열의 한 벌이다 (T18).
  */
-export function buyGear(save: Save, rng: () => number): Save {
-  const set = gearSetFor(save.player.level, save.regionProgress.current);
-
+export function buyGear(save: Save, rng: () => number, style: Style = 'sword'): Save {
   // **사는 순서가 의미를 갖는다** (T16_1). 부위마다 성격이 갈린 뒤로 무기는 ATK만 주므로,
   // 무기부터 사면 더 세게 때리면서 더 빨리 죽는다. 버티는 부위를 먼저 산다.
   let next = save;
-  for (const def of wantedGear(save, set)) {
+  for (const { def, slot } of wantedGear(save, style)) {
     // 못 산 부위는 다음 날 다시 본다. 하루 돈이 모자랐다고 다음 티어까지 그 칸을 비워두면
     // 실제 플레이와 다르다 — 사람은 이틀에 걸쳐 갖춰 입는다
     if (next.player.gold < def.price) continue;
-    const worn = next.equipped[def.slot];
+    const worn = next.equipped[slot];
     const item = makeItem(next.inventory, def.id, rng);
     next = addItem(next, item);
     next = { ...next, player: { ...next.player, gold: next.player.gold - def.price } };
-    next = equipItem(next, item.uid) ?? next;
+    next = equipItem(next, item.uid, slot) ?? next;
     // 갈아입은 구 장비는 판다 (§4.5). 안 팔면 가방 20칸이 열 티어를 못 버틴다 —
-    // 실제로도 가방을 늘리거나 파는 것 중 하나는 해야 한다 (T17_2)
-    if (worn) next = sellItem(next, worn) ?? next;
+    // 실제로도 가방을 늘리거나 파는 것 중 하나는 해야 한다 (T17_2).
+    // 오른손을 바꾸며 벗겨진 왼손(다른 계열)도 판다
+    for (const uid of [worn, save.equipped.offhand]) {
+      if (uid && !Object.values(next.equipped).includes(uid)) next = sellItem(next, uid) ?? next;
+    }
   }
   return next;
 }
 
 /** 지금 낀 것보다 센 새 물건들 — 사는 순서대로 (T16_1). 강화 예산에서 이만큼은 남긴다 */
-function wantedGear(save: Save, set = gearSetFor(save.player.level, save.regionProgress.current)) {
+function wantedGear(save: Save, style: Style): { def: Equipment; slot: GearSlot }[] {
+  const set = gearSetFor(save.player.level, save.regionProgress.current, 'common', style);
   // **사는 순서가 의미를 갖는다** (T16_1). 부위마다 성격이 갈린 뒤로 무기는 ATK만 주므로,
   // 무기부터 사면 더 세게 때리면서 더 빨리 죽는다. 버티는 부위를 먼저 산다.
-  const order = ['armor', 'helm', 'pants', 'boots', 'weapon', 'gloves', 'accessory'];
-  return [...set]
-    .filter((def) => freshPower(def.id) > wornPower(save, def.slot))
+  const order = ['armor', 'helm', 'pants', 'boots', 'weapon', 'offhand', 'gloves', 'accessory'];
+  return parts(style)
+    .map(([slot, line], i) => ({ def: set[i], slot, line }))
+    .filter(({ def, slot, line }) => freshPower(def.id) > wornPower(save, slot, line))
     .sort((a, b) => order.indexOf(a.slot) - order.indexOf(b.slot));
 }
 
 /**
- * 가방 정리 (T17_6) — 부위마다 **제일 센 것을 끼고** 나머지는 판다.
+ * 가방 정리 (T17_6) — 칸마다 **제일 센 것을 끼고** 나머지는 판다. `style` 계열의 줄만 견준다 (T18).
  * 드랍을 줍게 된 뒤로 사람이 하는 일 그대로다. 파는 값을 돌려준다 (드랍 판매 수입).
  */
-function sortGear(save: Save, wear: boolean): { save: Save; sold: number } {
+function sortGear(save: Save, wear: boolean, style: Style): { save: Save; sold: number } {
   let next = save;
-  for (const slot of wear ? GEAR_SLOTS : []) {
+  for (const [slot, line] of wear ? parts(style) : []) {
+    // 쌍칼의 왼손은 오른손에 낀 단검을 빼고 고른다
+    const other = slot === 'offhand' ? next.equipped.weapon : next.equipped.offhand;
     const fits = next.inventory.filter(
-      (i) => itemDef(i).slot === slot && itemDef(i).level <= next.player.level,
+      (i) => itemDef(i).line === line && itemDef(i).level <= next.player.level && i.uid !== other,
     );
     const best = fits.reduce<ItemInstance | undefined>(
       (a, b) => (a && itemPower(a) >= itemPower(b) ? a : b),
       undefined,
     );
-    if (best && next.equipped[slot] !== best.uid) next = equipItem(next, best.uid) ?? next;
+    if (best && next.equipped[slot] !== best.uid) {
+      next = equipItem(next, best.uid, slot) ?? next;
+    }
   }
   const before = next.player.gold;
   for (const item of bagItems(next)) next = sellItem(next, item.uid) ?? next;
@@ -239,9 +264,9 @@ function enhanceGear(save: Save, reserve: number, rng: () => number) {
  * 그 지역 **보통으로 투자한 사람**의 한 벌 (EXPECTED_GEAR, T17_6 검수) — 그 레벨에 그 지역에서
  * 살 수 있는 가장 높은 티어, 품질 100%. 보스 배율과 벤치가 이걸 기준으로 잰다.
  */
-export function expectedSet(level: number, region: number): ItemInstance[] {
+export function expectedSet(level: number, region: number, style: Style = 'sword'): ItemInstance[] {
   const { rarity, enhance } = EXPECTED_GEAR[region - 1];
-  return gearSetFor(level, region, rarity).map((def, i) => ({
+  return gearSetFor(level, region, rarity, style).map((def, i) => ({
     uid: String(i + 1),
     defId: def.id,
     quality: 1,
@@ -253,27 +278,59 @@ export function expectedSet(level: number, region: number): ItemInstance[] {
  * 보스 벤치용 기준 세이브 (T17_5) — 그 레벨, 네 스탯 균등 배분(T17_7 검수), 그 지역 **보통으로 투자한**
  * 한 벌(expectedSet), 그 지역 물약 3개. 보스 배율은 **이 상태로 승률 50%** 가 되게 잡는다 (T17_6 검수).
  */
-export function baselineSave(level: number, region: number): Save {
-  const none = { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0, int: 0 };
+export function baselineSave(level: number, region: number, style: Style = 'sword'): Save {
+  const none = { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0 };
   let save: Save = {
     ...defaultSave(),
-    player: { level, exp: 0, gold: 0, hp: 1 },
+    player: { name: '', level, exp: 0, gold: 0, hp: 1 },
     statPoints: allocate(none, BUILDS[0], (level - 1) * POINTS_PER_LEVEL),
     wp: { current: 1_000_000, grantedByDate: {}, lastMidnightGrantAt: '' },
     consumables: { [bestPotion(region).id]: POTION_CARRY_MAX },
     regionProgress: { current: region, unlocked: region, bosses: {} },
   };
-  for (const item of expectedSet(level, region)) save = equipItem(addItem(save, item), item.uid)!;
-  return { ...save, player: { ...save.player, hp: statsOf(save).maxHp } };
+  for (const [i, item] of expectedSet(level, region, style).entries()) {
+    save = equipItem(addItem(save, item), item.uid, parts(style)[i][0])!;
+  }
+  // 활은 그 지역 일반 화살을 넉넉히 (T18)
+  if (style === 'bow') save = stockArrows({ ...save, player: { ...save.player, gold: 1e9 } }).save;
+  return { ...save, player: { ...save.player, gold: 0, hp: statsOf(save).maxHp } };
 }
 
 /**
  * 보스 한 판 (T17_5) — 기준 세이브로 들어가 fight()로 싸운다. 화면과 같은 규칙이다.
  * `boss`를 주면 그 몬스터와 싸운다 — 배율을 바꿔 가며 승률을 재는 벤치가 쓴다.
  */
-export function bossTrial(level: number, region: number, rng: () => number, boss?: Monster) {
-  const inside = enterBoss(baselineSave(level, region))!;
+export function bossTrial(
+  level: number,
+  region: number,
+  rng: () => number,
+  boss?: Monster,
+  style: Style = 'sword',
+) {
+  const inside = enterBoss(baselineSave(level, region, style))!;
   return fight(inside, rng, boss).outcome;
+}
+
+/** 판 사이에 떨어지지 않게 늘 들고 있는 화살 (T18) — 6마리 판 하나가 많아야 150발쯤 쏜다 */
+const ARROW_STOCK = 300;
+
+/**
+ * 활이면 지금 지역의 일반 화살을 ARROW_STOCK발까지 채우고 먹인다 (T18). 다른 계열은 그대로.
+ * 시뮬은 일반 화살만 쓴다 — 관통 · 불은 값이 1.5배인 만큼 세다(balance.md "무기 계열").
+ */
+function stockArrows(save: Save): { save: Save; spent: number } {
+  if (styleOf(save) !== 'bow') return { save, spent: 0 };
+  const arrow = shopArrows(save.regionProgress.current)
+    .filter((a) => a.effect === 'basic')
+    .at(-1)!;
+  let next = save;
+  let spent = 0;
+  while ((next.arrows[arrow.id] ?? 0) < ARROW_STOCK && next.player.gold >= arrow.price) {
+    next = buyArrows(next, arrow.id)!;
+    spent += arrow.price;
+  }
+  if (next.quiver !== arrow.id) next = setQuiver(next, arrow.id) ?? next;
+  return { save: next, spent };
 }
 
 /** 그 지역에서 살 수 있는 가장 좋은 물약 (§4.5). 콘텐츠를 그대로 읽는다. */
@@ -339,14 +396,15 @@ export function fight(
   save: Save,
   rng: () => number,
   monster: Monster = currentMonster(save)!,
-): { save: Save; outcome: Outcome; playerHp: number } {
+): { save: Save; outcome: Outcome; playerHp: number; arrows: number } {
   let monsterHp = monster.maxHp;
-  // 보호막 반지(T17_7) — 물약으로 끊고 다시 뽑을 때 남은 만큼만 이어 준다. 화면과 같은 규칙이다
-  let shield = statsOf(save).shield;
+  // 보호막 반지(T17_7) · 게이지 · 화살(T18) — 물약으로 끊고 다시 뽑을 때 그 상태에서 이어 준다. 화면과 같은 규칙이다
+  let state: BattleState | undefined;
+  const arrows = statsOf(save).arrows;
   for (;;) {
     const stats = statsOf(save);
-    const player: Combatant = { name: '', hp: save.player.hp, ...stats, shield };
-    const battle = simulateBattle(player, { ...monster, hp: monsterHp }, rng);
+    const player: Combatant = { name: '', hp: save.player.hp, ...stats };
+    const battle = simulateBattle(player, { ...monster, hp: monsterHp }, rng, state);
 
     const potion = Object.keys(save.run!.potions)[0];
     const cut = potion
@@ -356,10 +414,13 @@ export function fight(
         )
       : -1;
     const drunk = cut < 0 ? null : drinkPotion(save, potion, battle.events[cut].hpAfter);
-    if (!drunk) return { save, outcome: battle.outcome, playerHp: battle.playerHp };
+    if (!drunk) {
+      const used = arrows - battle.state.arrows;
+      return { save, outcome: battle.outcome, playerHp: battle.playerHp, arrows: used };
+    }
 
     monsterHp = hpAfterLastHitBy(battle.events.slice(0, cut + 1), 'player', monsterHp);
-    shield = shieldLeft(battle.events.slice(0, cut + 1), shield);
+    state = battle.events[cut].state;
     save = drunk;
   }
 }
@@ -375,6 +436,8 @@ export type DayLog = {
   potionCost: number;
   /** 그날 여관에 쓴 골드 (§4.5 유지비) */
   innCost: number;
+  /** 그날 화살에 쓴 골드 (T18 — 활의 유지비) */
+  arrowCost: number;
   exp: number;
   kills: number;
   entries: number;
@@ -394,6 +457,8 @@ export type SimOptions = {
    * 보스에서 막히고 한참 느리다 — 강화를 안 하면 어떻게 되는지 보는 쪽이다.
    */
   invest?: boolean;
+  /** 무기 계열 (T18). 기본은 한손검 — 첫날 상점에서 그 계열 무기로 갈아 든다 */
+  style?: Style;
 };
 
 /**
@@ -465,6 +530,7 @@ export function simulate(opts: SimOptions, seed = 1) {
       lost: 0,
       potion: 0,
       inn: 0,
+      arrow: 0,
     };
     const before = { exp: save.player.exp, level: save.player.level };
     const dayStart = day * 86_400_000;
@@ -478,16 +544,20 @@ export function simulate(opts: SimOptions, seed = 1) {
       save = applyRegen(save, now);
 
       // 마을에서 할 일 — 주운 것 정리, 장비 갈아입기, 물약 채우기, 너무 다쳤으면 여관
-      const sorted = sortGear(save, opts.invest !== false);
+      const style = opts.style ?? 'sword';
+      const sorted = sortGear(save, opts.invest !== false, style);
       save = sorted.save;
       soldGear += sorted.sold;
       const goldBefore = save.player.gold;
-      save = buyGear(save, rng);
+      save = buyGear(save, rng, style);
       spentOnGear += goldBefore - save.player.gold;
 
       const stocked = restock(save, here.id);
       save = stocked.save;
       today.potion += stocked.spent;
+      const quiver = stockArrows(save);
+      save = quiver.save;
+      today.arrow += quiver.spent;
 
       const gate = gateStep(save, lostAt);
       // 보스 앞에서는 만피로 들어간다. 반쯤 다친 채로 관문 값을 내는 사람은 없다
@@ -499,7 +569,7 @@ export function simulate(opts: SimOptions, seed = 1) {
       const reserve =
         here.town.inn +
         bestPotion(here.id).price * POTION_CARRY_MAX +
-        wantedGear(save).reduce((sum, def) => sum + def.price, 0);
+        wantedGear(save, style).reduce((sum, { def }) => sum + def.price, 0);
       if (opts.invest !== false) {
         const enhanced = enhanceGear(save, reserve, rng);
         save = enhanced.save;
@@ -527,7 +597,14 @@ export function simulate(opts: SimOptions, seed = 1) {
         materialsUsed.boss += buffs;
         tries += 1;
         const battle = fight(inside, rng);
-        const result = settleRun(battle.save, battle.outcome, battle.playerHp, rng, now);
+        const result = settleRun(
+          battle.save,
+          battle.outcome,
+          battle.playerHp,
+          rng,
+          now,
+          battle.arrows,
+        );
         save = result.save;
         today.gold += result.gained.gold;
         today.lost += result.goldLost;
@@ -581,7 +658,7 @@ export function simulate(opts: SimOptions, seed = 1) {
 
         const battle = fight(save, rng);
         save = battle.save;
-        const result = settleRun(save, battle.outcome, battle.playerHp, rng, now);
+        const result = settleRun(save, battle.outcome, battle.playerHp, rng, now, battle.arrows);
         save = result.save;
         today.gold += result.gained.gold;
         today.lost += result.goldLost;
@@ -614,6 +691,7 @@ export function simulate(opts: SimOptions, seed = 1) {
       gold: today.gold,
       goldLost: today.lost,
       potionCost: today.potion,
+      arrowCost: today.arrow,
       innCost: today.inn,
       exp: gainedExp,
       kills: today.kills,

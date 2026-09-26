@@ -15,10 +15,13 @@ export default function Settings() {
   const settle = usePlayer((s) => s.settle);
   const grantGearSet = usePlayer((s) => s.grantGearSet);
   const grantAllSprites = usePlayer((s) => s.grantAllSprites);
+  const grantWeapons = usePlayer((s) => s.grantWeapons);
   const setBagCapacity = usePlayer((s) => s.setBagCapacity);
   const grantMaterials = usePlayer((s) => s.grantMaterials);
   const grantDex = usePlayer((s) => s.grantDex);
   const reset = usePlayer((s) => s.reset);
+  const arrowArt = usePlayer((s) => s.arrowArt);
+  const setArrowArt = usePlayer((s) => s.setArrowArt);
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -61,6 +64,23 @@ export default function Settings() {
           <Button label="소재 전부 +3" onPress={() => grantMaterials(3)} />
           {/* 도감 단계 확인용 (T19) — 100마리는 몇 주 걸린다 */}
           <Button label="도감 +10 (지금 지역)" onPress={() => grantDex(10)} />
+        </View>
+        {/* 무기 계열 확인용 (T18) — 다섯 계열의 손(단검 두 자루)과 그 지역 기본 화살 300발 · 특수 여덟 종 30발씩 (T18_1) */}
+        <View style={styles.row}>
+          <Button label="무기 계열 한 벌씩 + 화살" onPress={grantWeapons} />
+        </View>
+        {/* 화살 연출 비교 (T18_1) — 코드로 그린 선이냐 화살 그림이냐. 그림이 없는 화살은 선으로 난다 */}
+        <View style={styles.row}>
+          <Button
+            label="화살 연출: 코드"
+            tone={arrowArt === 'code' ? 'gold' : 'normal'}
+            onPress={() => setArrowArt('code')}
+          />
+          <Button
+            label="화살 연출: 그림"
+            tone={arrowArt === 'sprite' ? 'gold' : 'normal'}
+            onPress={() => setArrowArt('sprite')}
+          />
         </View>
         <Text size="sm" dim>
           앱을 완전히 끄고 다시 켜도 값이 남아 있어야 합니다.

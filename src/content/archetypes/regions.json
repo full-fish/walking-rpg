@@ -214,7 +214,7 @@
       "arch": "arch_beast",
       "tier": 5,
       "name": "들개 우두머리",
-      "mult": 3.19
+      "mult": 3.22
     }
   },
   {
@@ -428,7 +428,7 @@
       "arch": "arch_lizard",
       "tier": 10,
       "name": "늪을 삼킨 악어",
-      "mult": 3.21
+      "mult": 3.23
     }
   },
   {
@@ -642,7 +642,7 @@
       "arch": "arch_golem",
       "tier": 15,
       "name": "협곡을 지키는 거상",
-      "mult": 2.61
+      "mult": 2.63
     }
   },
   {
@@ -864,7 +864,7 @@
       "arch": "arch_knight",
       "tier": 20,
       "name": "대장간의 마지막 기사",
-      "mult": 2.09
+      "mult": 2.10
     }
   },
   {
@@ -1082,7 +1082,7 @@
       "arch": "arch_demon",
       "tier": 25,
       "name": "심연의 지배자",
-      "mult": 2.42
+      "mult": 2.45
     }
   }
 ]

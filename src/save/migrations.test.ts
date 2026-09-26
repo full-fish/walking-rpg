@@ -1,5 +1,6 @@
 import { expect, test } from 'vitest';
 
+import { arrowById } from '../content';
 import { BAG, GEAR_SLOTS, VAULT } from '../game/formulas';
 import { migrate } from './migrations';
 import { defaultSave, SAVE_VERSION, SaveSchema } from './schema';
@@ -62,7 +63,7 @@ test('v2 → v3: 지금까지 올린 레벨만큼 배분 포인트를 소급해�
   };
   const v3 = SaveSchema.parse(migrate(v2));
 
-  expect(v3.statPoints).toEqual({ unspent: 2 * 3, str: 0, vit: 0, agi: 0, luk: 0, int: 0 });
+  expect(v3.statPoints).toEqual({ unspent: 2 * 3, str: 0, vit: 0, agi: 0, luk: 0 });
   expect(v3.regionProgress).toMatchObject({ current: 1, unlocked: 1 });
   // 0으로 두면 첫 로드에서 24시간치 회복이 한 번에 들어온다 — 지금부터 센다
   expect(v3.hpUpdatedAt).toBeGreaterThan(0);
@@ -93,7 +94,7 @@ test('v3 → v4: 인벤토리 칸이 생기고 INT는 0에서 시작한다 (§4.
   const v4 = SaveSchema.parse(migrate(v3));
 
   // 배분해 둔 건 그대로 남는다 — 옛 세이브의 포인트를 회수하지 않는다
-  expect(v4.statPoints).toEqual({ unspent: 5, str: 10, vit: 10, agi: 8, luk: 0, int: 0 });
+  expect(v4.statPoints).toEqual({ unspent: 5, str: 10, vit: 10, agi: 8, luk: 0 });
   expect(v4.inventory).toEqual([]);
   // 부위가 전부 있어야 한다. 하나라도 없으면 장착 화면이 undefined를 만난다
   expect(Object.values(v4.equipped)).toEqual(GEAR_SLOTS.map(() => null));
@@ -105,8 +106,8 @@ test('v4 → v5: 창고·소재·소모품이 생긴다 (§3.7, §4.5)', () => {
     player: { level: 20, exp: 0, gold: 7_000, hp: 300 },
     wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
     hpUpdatedAt: 1,
-    statPoints: { unspent: 0, str: 19, vit: 19, agi: 19, luk: 0, int: 0 },
-    inventory: [{ uid: '1', defId: 'eq_t5_weapon_common', quality: 1.02, enhance: 0 }],
+    statPoints: { unspent: 0, str: 19, vit: 19, agi: 19, luk: 0 },
+    inventory: [{ uid: '1', defId: 'eq_t5_longsword_common', quality: 1.02, enhance: 0 }],
     equipped: { weapon: '1', helm: null, armor: null, gloves: null, boots: null, accessory: null },
     regionProgress: { current: 3, unlocked: 3 },
   };
@@ -126,7 +127,7 @@ test('v6 → v7: 가방 칸이 생기고, 이미 가진 건 안 버린다 (§4.5
     player: { level: 30, exp: 0, gold: 1_000, hp: 500 },
     wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
     hpUpdatedAt: 1,
-    statPoints: { unspent: 0, str: 29, vit: 29, agi: 29, luk: 0, int: 0 },
+    statPoints: { unspent: 0, str: 29, vit: 29, agi: 29, luk: 0 },
     equipped: { weapon: null, helm: null, armor: null, gloves: null, boots: null, accessory: null },
     vault: { gold: 0, capacity: VAULT.capacity, expansions: 0 },
     materials: {},
@@ -136,7 +137,7 @@ test('v6 → v7: 가방 칸이 생기고, 이미 가진 건 안 버린다 (§4.5
   };
   const item = (uid: number) => ({
     uid: String(uid),
-    defId: 'eq_t5_weapon_common',
+    defId: 'eq_t5_longsword_common',
     quality: 1,
     enhance: 0,
   });
@@ -158,7 +159,7 @@ test('v7 → v8: 하의 칸이 빈 칸으로 생기고, 낀 건 그대로다 (§
   const v7 = {
     ...defaultSave(),
     version: 7,
-    inventory: [{ uid: '1', defId: 'eq_t1_weapon_common', quality: 1, enhance: 0 }],
+    inventory: [{ uid: '1', defId: 'eq_t1_longsword_common', quality: 1, enhance: 0 }],
     equipped: { weapon: '1', helm: null, armor: null, gloves: null, boots: null, accessory: null },
   };
   const v8 = SaveSchema.parse(migrate(v7));
@@ -231,4 +232,47 @@ test('v11 → v12: 도감 · 걸음 목표 · 출석이 빈 채로 생기고 나
   expect(v12.daily).toEqual({});
   expect(v12.streak).toEqual({ count: 0, last: '' });
   expect(v12.player.level).toBe(7);
+});
+
+test('v12 → v13: 지금까지의 무기는 장검이 되고, 왼손 · 화살은 빈 채로, 지능은 없어진다 (T18)', () => {
+  const base = defaultSave();
+  const v12 = {
+    ...base,
+    version: 12,
+    statPoints: { unspent: 1, str: 3, vit: 0, agi: 0, luk: 0, int: 0 },
+    inventory: [
+      { uid: '1', defId: 'eq_t3_weapon_rare', quality: 1.1, enhance: 4 },
+      { uid: '2', defId: 'eq_t3_helm_common', quality: 1, enhance: 0 },
+    ],
+    equipped: {
+      ...Object.fromEntries(GEAR_SLOTS.filter((s) => s !== 'offhand').map((s) => [s, null])),
+      weapon: '1',
+    },
+  } as Record<string, unknown>;
+  delete v12.arrows;
+  delete v12.quiver;
+  const v13 = SaveSchema.parse(migrate(v12));
+  expect(v13.inventory.map((i) => i.defId)).toEqual(['eq_t3_longsword_rare', 'eq_t3_helm_common']);
+  expect(v13.inventory[0]).toMatchObject({ quality: 1.1, enhance: 4 });
+  expect(v13.equipped).toMatchObject({ weapon: '1', offhand: null });
+  expect(v13.statPoints).toEqual({ unspent: 1, str: 3, vit: 0, agi: 0, luk: 0 });
+  expect(v13.arrows).toEqual({});
+  expect(v13.quiver).toBeNull();
+});
+
+test('v13 → v14: 닉네임이 빈 채로 생기고(다음 실행에 묻는다), 가진 관통 · 불 화살은 그대로 특수 화살이다 (T18 확인 · T18_1)', () => {
+  const base = defaultSave();
+  const player: Record<string, unknown> = { ...base.player };
+  delete player.name;
+  const v13 = {
+    ...base,
+    version: 13,
+    player,
+    arrows: { arrow_r1_basic: 100, arrow_r2_pierce: 40 },
+    quiver: 'arrow_r2_pierce',
+  };
+  const v14 = SaveSchema.parse(migrate(v13));
+  expect(v14.player.name).toBe('');
+  expect(v14.arrows).toEqual({ arrow_r1_basic: 100, arrow_r2_pierce: 40 });
+  expect(arrowById(v14.quiver!).effect).toBe('pierce');
 });

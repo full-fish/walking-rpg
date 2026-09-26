@@ -5,13 +5,17 @@
 import { z } from 'zod';
 
 import {
+  ARROW_EFFECTS,
   FIELDS_PER_REGION,
+  GEAR_LINES,
   GEAR_SLOTS,
   GEAR_TIERS,
+  HAND_LINES,
   MAX_TIER,
   RARITIES,
   REGION_COUNT,
   SPENDABLE_STATS,
+  type ArrowEffectStats,
 } from '../game/formulas';
 
 /** 원형에 곱하는 배율들. 1.0이 기준 (§7.2③). */
@@ -46,6 +50,11 @@ export const MonsterArchetypeSchema = z
      * 사냥터에서 나오는 부위는 풀에 있는 몬스터들의 부위를 모은 것이 된다.
      */
     drops: z.array(z.enum(GEAR_SLOTS)).nonempty(),
+    /**
+     * 무기를 떨구는 티어가 떨구는 줄 2~3개 (T18) — 티어(문자열) → 줄. 무기 드랍은 이 중 하나로 나온다.
+     * 지역마다 두 장비 티어 × 여섯 줄이 다 나오게 validate가 본다.
+     */
+    weapons: z.record(z.string(), z.array(z.enum(HAND_LINES)).min(2).max(3)).optional(),
   })
   .refine((a) => a.tiers.length === a.namePool.length, {
     error: 'tiers와 namePool의 길이가 같아야 한다 (§7.4 #4)',
@@ -54,7 +63,15 @@ export const MonsterArchetypeSchema = z
   .refine((a) => a.tiers.length === a.drops.length, {
     error: 'tiers와 drops의 길이가 같아야 한다 (T17_6)',
     path: ['drops'],
-  });
+  })
+  .refine(
+    (a) => {
+      const armed = a.tiers.filter((_, i) => a.drops[i] === 'weapon').map(String);
+      const keys = Object.keys(a.weapons ?? {});
+      return armed.length === keys.length && armed.every((t) => keys.includes(t));
+    },
+    { error: '무기를 떨구는 티어마다 weapons가 있어야 한다 (T18)', path: ['weapons'] },
+  );
 
 export const MonsterArchetypesSchema = z.array(MonsterArchetypeSchema).nonempty();
 
@@ -130,6 +147,8 @@ export const MonsterSchema = z.object({
   traits: z.array(z.string().min(1)).nonempty(),
   /** 떨구는 장비 부위 (T17_6). 보스는 없다 — 보스는 부위를 가리지 않고 확정으로 준다 */
   drop: z.enum(GEAR_SLOTS).optional(),
+  /** 무기면 떨구는 줄 2~3개 (T18) — 드랍마다 이 중 하나 */
+  weapons: z.array(z.enum(HAND_LINES)).optional(),
   boss: z.boolean().optional(),
 });
 
@@ -142,17 +161,18 @@ export type Monster = z.infer<typeof MonsterSchema>;
 // ─────────────────────────────────────────────────────────────
 
 const slot = z.enum(GEAR_SLOTS);
+const line = z.enum(GEAR_LINES);
 const rarity = z.enum(RARITIES);
 
 /**
- * 장비 원형 — 부위 하나. 수치는 하나도 없다.
+ * 장비 원형 — 줄 하나(T18 — 무기 칸은 줄이 여섯이다). 수치는 하나도 없다.
  *
  * 스탯은 §4.5 공식(gearStats)이 전부 뽑고, 여기 있는 건 **이름과 스프라이트뿐**이다.
  * 이름 = `tierNames[티어-1] + names[티어 1이면 0, 아니면 1]` (T17_7 검수 4차) — **등급이 올라도 안 바뀐다.**
- * 그림이 부위 × 티어로만 갈려서, 등급마다 이름을 바꾸면 그림과 이름이 어긋났다. 등급은 색이 말한다.
+ * 그림이 줄 × 티어로만 갈려서, 등급마다 이름을 바꾸면 그림과 이름이 어긋났다. 등급은 색이 말한다.
  */
 export const EquipmentArchetypeSchema = z.object({
-  slot,
+  line,
   label: z.string().min(1),
   spriteTag: z.string().min(1),
   /** [티어 1 이름, 티어 2~10 이름] — 낡은 검 → 무쇠 장검 */
@@ -162,7 +182,14 @@ export const EquipmentArchetypeSchema = z.object({
 export const EquipmentArchetypesSchema = z.object({
   /** 티어 10단계의 재질 이름. 앞에 붙는다 */
   tierNames: z.array(z.string().min(1)).length(GEAR_TIERS),
-  slots: z.array(EquipmentArchetypeSchema).length(GEAR_SLOTS.length),
+  /** 칸 이름 — 화면이 "weapon" 대신 "무기"를 보여준다 */
+  slotLabels: z.record(slot, z.string().min(1)),
+  lines: z.array(EquipmentArchetypeSchema).length(GEAR_LINES.length),
+  /** 화살 이름 (T18) — 지역 티어 재질 + 효과 */
+  arrows: z.object({
+    tierNames: z.array(z.string().min(1)).length(REGION_COUNT),
+    effects: z.record(z.enum(ARROW_EFFECTS), z.string().min(1)),
+  }),
 });
 
 /** gen-content.ts가 뽑아내는 장비 정의 하나. 인스턴스가 아니라 **정의**다 (§4.5). */
@@ -172,6 +199,8 @@ export const EquipmentSchema = z.object({
   /** 장비 티어 1~10 */
   tier: z.int().min(1).max(GEAR_TIERS),
   slot,
+  /** 줄 (T18) — 장검 · 소검 · 방패 · 단검 · 대검 · 활, 몸 부위는 부위 이름 그대로 */
+  line,
   rarity,
   /** 착용 요구 레벨 */
   level: z.int().min(1),
@@ -187,6 +216,8 @@ export const EquipmentSchema = z.object({
   str: z.number().min(0),
   agi: z.number().min(0),
   luk: z.number().min(0),
+  /** 회피 확률 — 활만 준다 (T18). 품질 · 강화를 안 탄다 */
+  eva: z.number().min(0),
   price: z.int().min(1),
 });
 
@@ -210,3 +241,19 @@ export const ConsumableSchema = z.object({
 
 export const ConsumablesSchema = z.array(ConsumableSchema).nonempty();
 export type Consumable = z.infer<typeof ConsumableSchema>;
+
+/**
+ * 화살 한 종 (T18 → T18_1) — 공식(arrowStats)에서 바로 뽑는다. 값은 한 묶음(ARROW.bundle발) 값이다.
+ * 기본만 상점에서 팔고, 특수는 몬스터가 떨군다
+ */
+export type Arrow = ArrowEffectStats & {
+  id: string;
+  name: string;
+  /** 지역 티어 1~5 — 그 지역 상점부터 판다 */
+  region: number;
+  effect: (typeof ARROW_EFFECTS)[number];
+  /** 그림 — 기본은 지역마다(arrow_1~5), 특수는 효과마다 한 장(arrow_fire) */
+  sprite: string;
+  atk: number;
+  price: number;
+};

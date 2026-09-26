@@ -34,6 +34,7 @@ import {
   RING_COST,
   VAULT,
   vaultExpandCost,
+  GEAR_SLOTS,
 } from './formulas';
 import { bagFull, bagItems, itemStats } from './items';
 import { addItem, equipItem, settleBattle, sortInventory, statsOf, unequipSlot } from './progression';
@@ -46,9 +47,9 @@ function rich(gold: number, over: Partial<Save['player']> = {}): Save {
 }
 
 test('장비 구매 — 골드가 모자라면 아무것도 안 바뀐다', () => {
-  expect(buyEquipment(rich(10), 'eq_t1_weapon_common', rng)).toBeNull();
+  expect(buyEquipment(rich(10), 'eq_t1_longsword_common', rng)).toBeNull();
 
-  const bought = buyEquipment(rich(10_000), 'eq_t1_weapon_common', rng)!;
+  const bought = buyEquipment(rich(10_000), 'eq_t1_longsword_common', rng)!;
   expect(bought.inventory).toHaveLength(1);
   expect(bought.player.gold).toBeLessThan(10_000);
   // 품질이 붙는다 — 같은 이름이라도 개체마다 다르다 (§4.5)
@@ -56,11 +57,11 @@ test('장비 구매 — 골드가 모자라면 아무것도 안 바뀐다', () =
 });
 
 test('전설은 상점에 없다 — 드랍으로만 나온다 (T17_6)', () => {
-  expect(buyEquipment(rich(1_000_000), 'eq_t1_weapon_legendary', rng)).toBeNull();
-  expect(buyEquipment(rich(1_000_000), 'eq_t1_weapon_epic', rng)).not.toBeNull();
+  expect(buyEquipment(rich(1_000_000), 'eq_t1_longsword_legendary', rng)).toBeNull();
+  expect(buyEquipment(rich(1_000_000), 'eq_t1_longsword_epic', rng)).not.toBeNull();
   expect(shopGear(5).some((e) => e.rarity === 'legendary')).toBe(false);
-  // 전에는 앞 12개만 보여서 하의가 안 보였다 — 목록 자체에는 7부위가 다 있어야 한다
-  expect(new Set(shopGear(1).map((e) => e.slot)).size).toBe(7);
+  // 전에는 앞 12개만 보여서 하의가 안 보였다 — 목록 자체에는 칸이 다 있어야 한다(왼손 방패까지, T18)
+  expect(new Set(shopGear(1).map((e) => e.slot)).size).toBe(GEAR_SLOTS.length);
 });
 
 test('상점은 지금 지역의 티어 두 개만 판다 — 레벨이 아니라 지역이 정한다 (T17_6 검수)', () => {
@@ -70,7 +71,7 @@ test('상점은 지금 지역의 티어 두 개만 판다 — 레벨이 아니�
 });
 
 test('낀 장비는 못 판다 — 실수로 알몸이 되는 경로를 없앤다', () => {
-  const bought = buyEquipment(rich(10_000), 'eq_t1_weapon_common', rng)!;
+  const bought = buyEquipment(rich(10_000), 'eq_t1_longsword_common', rng)!;
   const uid = bought.inventory[0].uid;
 
   const sold = sellItem(bought, uid)!;
@@ -274,7 +275,7 @@ test('물약 반지는 회복량을 늘린다 — 마을·사냥터가 같은 �
 });
 
 test('강화 — §4.5 표 그대로. 실패해도 단계가 안 내려간다', () => {
-  const def = equipmentById('eq_t5_weapon_common');
+  const def = equipmentById('eq_t5_longsword_common');
   let save = buyEquipment(rich(10_000_000), def.id, rng)!;
   const uid = save.inventory[0].uid;
 
@@ -305,7 +306,7 @@ test('강화 — §4.5 표 그대로. 실패해도 단계가 안 내려간다', 
 });
 
 test('+6부터는 그 지역 소재가 서로 다른 사냥터에서 1·2·3·4·7개 든다 — 성공할 때만 쓴다 (T17_6 검수)', () => {
-  const def = equipmentById('eq_t5_weapon_common'); // 티어 5 = 지역 3
+  const def = equipmentById('eq_t5_longsword_common'); // 티어 5 = 지역 3
   const [a, b, ...rest] = regionById(def.region).fields.map((f) => f.id);
   let save = buyEquipment(rich(100_000_000), def.id, rng)!;
   const uid = save.inventory[0].uid;
@@ -341,7 +342,7 @@ test('+6부터는 그 지역 소재가 서로 다른 사냥터에서 1·2·3·4�
 });
 
 test('레벨이 모자라도 장비는 산다 — 미리 사 두고 레벨이 되면 낀다 (T17_6 검수)', () => {
-  const def = equipmentById('eq_t4_weapon_common');
+  const def = equipmentById('eq_t4_longsword_common');
   expect(def.level).toBeGreaterThan(1);
   const bought = buyEquipment(rich(1_000_000), def.id, rng)!;
   expect(bought.inventory).toHaveLength(1);
@@ -349,8 +350,8 @@ test('레벨이 모자라도 장비는 산다 — 미리 사 두고 레벨이 �
 });
 
 test('강화는 인스턴스 단위다 — 같은 이름 둘이 섞이면 안 된다 (§4.5)', () => {
-  let save = buyEquipment(rich(10_000_000), 'eq_t5_weapon_common', rng)!;
-  save = buyEquipment(save, 'eq_t5_weapon_common', rng)!;
+  let save = buyEquipment(rich(10_000_000), 'eq_t5_longsword_common', rng)!;
+  save = buyEquipment(save, 'eq_t5_longsword_common', rng)!;
 
   const [a, b] = save.inventory;
   const after = enhanceItem(save, a.uid, () => 0)!.save;
@@ -359,7 +360,7 @@ test('강화는 인스턴스 단위다 — 같은 이름 둘이 섞이면 안 �
 });
 
 test('★ +10 기대 시도 33.3회 · 기대 골드를 난수로 재현한다 (§4.5)', () => {
-  const def = equipmentById('eq_t5_weapon_common');
+  const def = equipmentById('eq_t5_longsword_common');
   const want = enhanceExpected(def.price);
   expect(want.tries).toBeCloseTo(33.33, 1);
 
@@ -419,22 +420,22 @@ test('가방 — 낀 장비는 칸을 안 쓴다 (§4.5, T17_2)', () => {
 
   // 기본 20칸을 꽉 채운다
   for (let i = 0; i < BAG.capacity; i++) {
-    save = buyEquipment(save, 'eq_t1_weapon_common', rng)!;
+    save = buyEquipment(save, 'eq_t1_longsword_common', rng)!;
   }
   expect(bagItems(save)).toHaveLength(BAG.capacity);
   expect(bagFull(save)).toBe(true);
-  expect(buyEquipment(save, 'eq_t1_weapon_common', rng), '차면 안 판다').toBeNull();
+  expect(buyEquipment(save, 'eq_t1_longsword_common', rng), '차면 안 판다').toBeNull();
 
   // 하나 끼면 가방에서 빠진다 — 낀 건 몸에 있지 가방에 있는 게 아니다
   const equipped = equipItem(save, save.inventory[0].uid)!;
   expect(bagItems(equipped)).toHaveLength(BAG.capacity - 1);
   expect(bagFull(equipped)).toBe(false);
-  expect(buyEquipment(equipped, 'eq_t1_weapon_common', rng), '자리가 생겼다').not.toBeNull();
+  expect(buyEquipment(equipped, 'eq_t1_longsword_common', rng), '자리가 생겼다').not.toBeNull();
 });
 
 test('가방이 차 있으면 장비를 못 벗는다 (T17_2)', () => {
   let save = rich(1_000_000);
-  save = buyEquipment(save, 'eq_t1_weapon_common', rng)!;
+  save = buyEquipment(save, 'eq_t1_longsword_common', rng)!;
   save = equipItem(save, save.inventory[0].uid)!;
 
   // 낀 것 하나 + 가방 20칸이 꽉 찬 상태
@@ -468,15 +469,15 @@ test('성능순 정렬 — 누른 그 시점 기준이고, 뒤에 얻은 건 맨
   const item = (uid: string, defId: string) => ({ uid, defId, quality: 1, enhance: 0 });
   // 일부러 약한 것부터가 아닌 순서로 넣는다
   let save: Save = { ...base, inventory: [] };
-  save = addItem(save, item('1', 'eq_t3_weapon_common'));
-  save = addItem(save, item('2', 'eq_t9_weapon_common'));
-  save = addItem(save, item('3', 'eq_t6_weapon_common'));
+  save = addItem(save, item('1', 'eq_t3_longsword_common'));
+  save = addItem(save, item('2', 'eq_t9_longsword_common'));
+  save = addItem(save, item('3', 'eq_t6_longsword_common'));
 
   const sorted = sortInventory(save);
   expect(sorted.inventory.map((i) => i.uid)).toEqual(['2', '3', '1']);
 
   // 정렬 뒤에 얻은 건 성능과 상관없이 맨 뒤다 — 정렬은 상태가 아니라 한 번의 동작이다
-  const later = addItem(sorted, item('4', 'eq_t10_weapon_common'));
+  const later = addItem(sorted, item('4', 'eq_t10_longsword_common'));
   expect(later.inventory.map((i) => i.uid)).toEqual(['2', '3', '1', '4']);
   expect(sortInventory(later).inventory.map((i) => i.uid)).toEqual(['4', '2', '3', '1']);
 });

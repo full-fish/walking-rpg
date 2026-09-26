@@ -56,8 +56,9 @@ function flash(v: Animated.Value, peak: number, duration: number) {
 }
 
 /**
- * 보스전 무대 — **칼 버전 백업** (T17_7). 지금 쓰는 건 적만 보이는 BossStage(T17_7 검수 4차)다.
- * 되돌리려면 app/battle.tsx의 import 한 줄을 `BossStageSword as BossStage`로 바꾸면 된다 — 받는 값이 같다.
+ * 보스전 무대 — **칼 버전 백업** (T17_7). 지금 쓰는 건 적만 보이는 Stage(T17_7 검수 4차 → T18)다.
+ * T18에서 Stage가 계열 연출(한 칸의 여러 타격 · 막기 · 활의 거리)을 받게 되어 이제 import 한 줄로는 안 바꿔 낀다 —
+ * 되돌리려면 받는 값(last → beat, style)을 맞춰야 한다.
  *
  * 보스 그림과 내 무기가 공방을 주고받는다. **아무것도 계산하지 않는다** —
  * 전투 화면이 재생하는 이벤트(`last`)를 받아 움직이기만 한다. `step`이 바뀔 때마다 한 번 움직인다

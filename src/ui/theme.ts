@@ -12,6 +12,16 @@ export const colors = {
   exp: '#4A8FD4',
 } as const;
 
+/** 화살 효과 색 (T18_1) — 불 · 얼음 · 피 · 번개 · 연기 · 서리 */
+export const fx = {
+  fire: '#FF8A3D',
+  ice: '#8FD8FF',
+  blood: '#C2344D',
+  spark: '#FFE45C',
+  smoke: '#8A7A66',
+  frost: '#CFF3FF',
+} as const;
+
 /** 등급 테두리 색 (§4.5). 키는 formulas.ts의 RARITIES와 같다. 흔한 것일수록 어둡다 */
 export const rarity = {
   common: '#8C7FA6',

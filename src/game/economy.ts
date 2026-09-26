@@ -5,9 +5,10 @@
  * 호출부가 "살 수 있나"를 따로 묻지 않고 결과만 확인하면 된다.
  * React를 import하지 않는다 — Node에서 돌아야 한다.
  */
-import { consumableById, equipmentById, gridItem, regionById } from '../content';
+import { arrowById, consumableById, equipmentById, gridItem, regionById } from '../content';
 import type { ItemInstance, Ring, Save } from '../save/schema';
 import {
+  ARROW,
   ENHANCE_MAX,
   enhanceCost,
   enhanceMaterials,
@@ -146,6 +147,29 @@ export function buyConsumable(save: Save, id: string, amount = 1): Save | null {
   const paid = withGold(save, -def.price * amount);
   if (!paid) return null;
   return { ...paid, consumables: bump(paid.consumables, id, amount) };
+}
+
+/**
+ * 화살 한 묶음(ARROW.bundle발)을 산다 (T18). 가방 칸을 안 쓴다. **기본 화살만 판다** — 특수는 몬스터가 떨군다(T18_1).
+ * 아직 먹인 화살이 없으면 이걸 먹인다 — 사 놓고 안 골라서 활로 치는 일이 없게.
+ */
+export function buyArrows(save: Save, id: string): Save | null {
+  const def = arrowById(id);
+  if (def.effect !== 'basic') return null;
+  const paid = withGold(save, -def.price);
+  if (!paid) return null;
+  const owned = save.quiver !== null && count(save.arrows, save.quiver) > 0;
+  return {
+    ...paid,
+    arrows: bump(paid.arrows, id, ARROW.bundle),
+    quiver: owned ? save.quiver : id,
+  };
+}
+
+/** 활에 먹일 화살을 고른다 (T18). 가진 것만 */
+export function setQuiver(save: Save, id: string): Save | null {
+  if (count(save.arrows, id) <= 0) return null;
+  return { ...save, quiver: id };
 }
 
 /**

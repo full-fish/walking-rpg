@@ -15,8 +15,19 @@ import region02 from './data/monsters/region-02.json';
 import region03 from './data/monsters/region-03.json';
 import region04 from './data/monsters/region-04.json';
 import region05 from './data/monsters/region-05.json';
-import { REGION_COUNT, SHOP_RARITIES, type GearSlot, type GridRarity } from '../game/formulas';
 import {
+  ARROW_EFFECTS,
+  arrowStats,
+  REGION_COUNT,
+  SHOP_RARITIES,
+  styleLines,
+  type ArrowEffect,
+  type GearLine,
+  type GridRarity,
+  type Style,
+} from '../game/formulas';
+import {
+  type Arrow,
   ConsumablesSchema,
   EquipmentArchetypesSchema,
   EquipmentsSchema,
@@ -31,7 +42,7 @@ import {
   type Region,
 } from './schema';
 
-export type { Consumable, Equipment, Field, Monster, MonsterArchetype, Region };
+export type { Arrow, Consumable, Equipment, Field, Monster, MonsterArchetype, Region };
 
 /** 몬스터 원형 15개 (§7.2). */
 export const MONSTER_ARCHETYPES = MonsterArchetypesSchema.parse(archetypesRaw);
@@ -105,7 +116,7 @@ export function monstersOfTier(tier: number): Monster[] {
 // 장비 (§4.5)
 // ─────────────────────────────────────────────────────────────
 
-/** 장비 정의 350종 = 티어 10 × 부위 7 × 등급 5. 인스턴스가 아니라 정의다. 고유 장비는 T17_7에 없앴다 */
+/** 장비 정의 600종 = 티어 10 × 줄 12 × 등급 5 (T18). 인스턴스가 아니라 정의다. 고유 장비는 T17_7에 없앴다 */
 export const EQUIPMENT = EquipmentsSchema.parse(equipmentRaw);
 
 /** 물약·엘릭서 (§4.5). 공식이 없어서 생성물이 아니라 창작물을 그대로 읽는다. */
@@ -133,10 +144,50 @@ export function regionOfField(fieldId: string): Region {
   return found;
 }
 
-/** 부위 이름. 화면이 "weapon" 대신 "무기"를 보여주려고 쓴다. */
-export const GEAR_SLOT_LABELS = Object.fromEntries(
-  EquipmentArchetypesSchema.parse(equipmentArchetypesRaw).slots.map((s) => [s.slot, s.label]),
-) as Record<Equipment['slot'], string>;
+const EQUIPMENT_ARCHETYPES = EquipmentArchetypesSchema.parse(equipmentArchetypesRaw);
+
+/** 칸 이름. 화면이 "weapon" 대신 "무기"를 보여주려고 쓴다. */
+export const GEAR_SLOT_LABELS = EQUIPMENT_ARCHETYPES.slotLabels as Record<
+  Equipment['slot'],
+  string
+>;
+
+/** 줄 이름 (T18) — 장검 · 소검 · 방패 · 단검 · 대검 · 활 · 투구 … */
+export const GEAR_LINE_LABELS = Object.fromEntries(
+  EQUIPMENT_ARCHETYPES.lines.map((l) => [l.line, l.label]),
+) as Record<GearLine, string>;
+
+/**
+ * 화살 45종 (T18_1) = 지역 5 × (기본 + 특수 8). 수치는 공식(arrowStats)에서 바로 뽑는다 — 그 지역 가운데 레벨의 장비 몫을 따른다.
+ * 이름 = 지역 재질 + 효과 — "강철 불화살". id는 T18과 같은 꼴이라 가진 관통 · 불 화살은 그대로 특수 화살이 된다
+ */
+export const ARROWS: Arrow[] = REGIONS.flatMap((r) =>
+  ARROW_EFFECTS.map((effect) => ({
+    id: `arrow_r${r.id}_${effect}`,
+    name: `${EQUIPMENT_ARCHETYPES.arrows.tierNames[r.id - 1]} ${EQUIPMENT_ARCHETYPES.arrows.effects[effect]}`,
+    region: r.id,
+    effect,
+    sprite: effect === 'basic' ? `arrow_${r.id}` : `arrow_${effect}`,
+    ...arrowStats(Math.round((r.levelRange[0] + r.levelRange[1]) / 2), r.id, effect),
+  })),
+);
+
+/** 화살 효과 이름 — "불화살" (T18_1). 전투 기록 · 무대가 지역 재질 없이 부른다 */
+export const ARROW_NAMES: Record<ArrowEffect, string> = EQUIPMENT_ARCHETYPES.arrows.effects;
+
+export function arrowById(id: string): Arrow {
+  const found = ARROWS.find((a) => a.id === id);
+  if (!found) throw new Error(`없는 화살: ${id}`);
+  return found;
+}
+
+/**
+ * 그 지역에서 파는 화살 (T18 → T18_1) — **기본 화살 하나만.** 특수는 몬스터가 떨군다.
+ * 아래 지역 것은 약하기만 해서 안 편다
+ */
+export function shopArrows(region: number): Arrow[] {
+  return ARROWS.filter((a) => a.region === region && a.effect === 'basic');
+}
 
 const EQUIPMENT_BY_ID = new Map(EQUIPMENT.map((e) => [e.id, e]));
 
@@ -147,18 +198,19 @@ export function equipmentById(id: string): Equipment {
 }
 
 /**
- * 그 레벨에서 낄 수 있는 **가장 높은 티어**의 한 벌 (§4.5).
- * 상점 진열(T14)과 밸런스 기준선이 같은 걸 봐야 해서 여기 둔다.
+ * 그 레벨에서 낄 수 있는 **가장 높은 티어**의 한 벌 (§4.5) — 그 계열의 손(한두 자루) + 몸 여섯 (T18).
+ * 상점 진열(T14)과 밸런스 기준선이 같은 걸 봐야 해서 여기 둔다. 쌍칼은 단검이 두 번 들어 있다.
  * `region`을 주면 그 지역 티어까지만 본다 — 상점이 지금 지역 것만 팔아서다 (T17_6 검수).
  */
 export function gearSetFor(
   level: number,
   region = REGION_COUNT,
   rarity: Equipment['rarity'] = 'common',
+  style: Style = 'sword',
 ): Equipment[] {
   const grid = EQUIPMENT.filter((e) => e.region <= region);
   const tier = Math.max(...grid.filter((e) => e.level <= level).map((e) => e.tier));
-  return grid.filter((e) => e.tier === tier && e.rarity === rarity);
+  return styleLines(style).map((line) => gridItem(tier, line, rarity));
 }
 
 /**
@@ -172,10 +224,10 @@ export function shopGear(region: number): Equipment[] {
   ).sort((a, b) => a.tier - b.tier);
 }
 
-/** 등급 그리드에서 장비 정의 하나를 찾는다 (드랍·보스 보상, T17_6). */
-export function gridItem(tier: number, slot: GearSlot, rarity: GridRarity): Equipment {
-  const found = EQUIPMENT.find((e) => e.tier === tier && e.slot === slot && e.rarity === rarity);
-  if (!found) throw new Error(`없는 장비: 티어 ${tier} ${slot} ${rarity}`);
+/** 등급 그리드에서 장비 정의 하나를 찾는다 (드랍·보스 보상, T17_6). 줄로 찾는다 (T18) */
+export function gridItem(tier: number, line: GearLine, rarity: GridRarity): Equipment {
+  const found = EQUIPMENT_BY_ID.get(`eq_t${tier}_${line}_${rarity}`);
+  if (!found) throw new Error(`없는 장비: 티어 ${tier} ${line} ${rarity}`);
   return found;
 }
 

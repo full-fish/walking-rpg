@@ -252,8 +252,8 @@ test('빌드별 편차 — 배분을 어떻게 하든 굴러가야 한다 (§4.3
   const fastest = reached.reduce((a, b) => (a.day! <= b.day! ? a : b));
   const even = reached.find((r) => r.name === balanced.name)!;
   expect(even.day! / fastest.day!, `균등 vs 제일 빠른 빌드(${fastest.name})`).toBeLessThan(1.08);
-  // 빌드 13개 × 시드 — 기본 5초를 넘는다
-}, 30_000);
+  // 빌드 13개 × 시드 — 기본 5초를 넘는다. T18에 계열 규칙이 붙어 30초 제한에 걸렸다(26초 → 33초)
+}, 60_000);
 
 test('장비가 Lv50 전투력의 60%를 댄다 (§4.5, T17_7 검수 4차) — 맨몸은 찍은 포인트만큼 선형이다', () => {
   console.log('\n■ 맨몸 vs 장비 (균등 배분 · 그 레벨 common 풀세트)');
@@ -263,8 +263,8 @@ test('장비가 Lv50 전투력의 60%를 댄다 (§4.5, T17_7 검수 4차) — �
   const shares: number[] = [];
   for (const level of [1, 10, 20, 30, 40, 50]) {
     // 기준 플레이어(네 스탯 균등)로 잰다
-    const naked = combatStats(level, 'warrior', evenSpend(level));
-    const geared = combatStats(level, 'warrior', evenSpend(level), setBonus(gearSetFor(level)));
+    const naked = combatStats(level, evenSpend(level));
+    const geared = combatStats(level, evenSpend(level), setBonus(gearSetFor(level)));
     const hp = geared.maxHp;
     const atk = geared.atk;
     const share = (geared.atk - naked.atk) / atk;

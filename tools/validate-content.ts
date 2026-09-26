@@ -8,16 +8,26 @@
  * §7.4 7번(스프라이트 파일 존재)은 아직 파일이 하나도 없어서 넣지 않았다.
  */
 import raw from '../src/content/archetypes/monsters.json';
-import { CONSUMABLES, EQUIPMENT, MONSTERS, monstersOfField, REGIONS } from '../src/content';
+import {
+  CONSUMABLES,
+  EQUIPMENT,
+  fieldDropTier,
+  MONSTERS,
+  monstersOfField,
+  REGIONS,
+} from '../src/content';
 import { MonsterArchetypesSchema, type Monster } from '../src/content/schema';
 import {
   combatStats,
   evenSpend,
   gearSetPrice,
   gearShare,
-  GEAR_SLOTS,
+  GEAR_LINES,
+  HAND_LINES,
   innCost,
+  SET_PARTS,
   STARTING_STATS,
+  styleLines,
 } from '../src/game/formulas';
 import { setBonus } from '../src/game/items';
 import { generateAll, generateEquipment, gearTierLevels, tierInRegion } from './gen-content';
@@ -117,17 +127,38 @@ export function validateGenerated(): string[] {
     }
 
     // T17_6 — 사냥터마다 드랍 부위가 2~4개다. 1개면 특색이 아니라 외길이고,
-    // 다 나오면 사냥터를 고를 이유가 없다. 지역 전체로는 7부위가 다 나와야 한다
+    // 다 나오면 사냥터를 고를 이유가 없다. 지역 전체로는 손 + 몸 여섯이 다 나와야 한다
     const regionSlots = new Set<string>();
+    // T18 — 지역마다 두 장비 티어 × 손 여섯 줄이 다 나와야 한다(사용자 결정). 원하는 계열이 한 지역에 한두 곳뿐이면 안 된다
+    const armed = new Map<number, Set<string>>();
     for (const field of region.fields) {
-      const slots = new Set(monstersOfField(field).map((m) => m.drop));
+      const monsters = monstersOfField(field);
+      const slots = new Set(monsters.map((m) => m.drop));
       if (slots.size < 2 || slots.size > 4) {
         errors.push(`[드랍 부위] ${field.id} — ${[...slots].join(', ')} (2~4개여야 한다)`);
       }
       for (const slot of slots) if (slot) regionSlots.add(slot);
+      const tier = fieldDropTier(field);
+      for (const m of monsters) {
+        for (const line of m.weapons ?? [])
+          armed.set(tier, (armed.get(tier) ?? new Set()).add(line));
+      }
     }
-    if (regionSlots.size !== GEAR_SLOTS.length) {
-      errors.push(`[드랍 부위] 지역 ${region.id} — ${regionSlots.size}/${GEAR_SLOTS.length}부위만 나온다`);
+    if (regionSlots.size !== SET_PARTS) {
+      errors.push(`[드랍 부위] 지역 ${region.id} — ${regionSlots.size}/${SET_PARTS}부위만 나온다`);
+    }
+    const tiers = [...new Set(region.fields.map(fieldDropTier))];
+    for (const tier of new Set([
+      ...tiers,
+      ...EQUIPMENT.filter((e) => e.region === region.id).map((e) => e.tier),
+    ])) {
+      const lines = armed.get(tier) ?? new Set();
+      const missing = HAND_LINES.filter((l) => !lines.has(l));
+      if (missing.length > 0) {
+        errors.push(
+          `[무기 드랍] 지역 ${region.id} 티어 ${tier} — ${missing.join(', ')}이(가) 안 나온다`,
+        );
+      }
     }
   }
 
@@ -230,22 +261,24 @@ function validateEquipment(): string[] {
   }
 
   for (const id of duplicates(EQUIPMENT.map((e) => e.id))) errors.push(`[장비 ID 중복] ${id}`);
-  // 이름은 등급끼리 같다 (T17_7 검수 4차) — 티어 × 부위로만 안 겹치면 된다
+  // 이름은 등급끼리 같다 (T17_7 검수 4차) — 티어 × 줄로만 안 겹치면 된다
   const named = EQUIPMENT.filter((e) => e.rarity === 'common').map((e) => e.name);
   for (const name of duplicates(named)) errors.push(`[장비 이름 중복] ${name}`);
 
   for (const { tier, refLevel } of gearTierLevels()) {
-    const set = EQUIPMENT.filter((e) => e.tier === tier && e.rarity === 'common');
-    if (set.length !== GEAR_SLOTS.length) {
-      errors.push(`[장비 부위 빠짐] 티어 ${tier} — ${set.length}/${GEAR_SLOTS.length}부위`);
+    const all = EQUIPMENT.filter((e) => e.tier === tier && e.rarity === 'common');
+    if (all.length !== GEAR_LINES.length) {
+      errors.push(`[장비 줄 빠짐] 티어 ${tier} — ${all.length}/${GEAR_LINES.length}줄`);
       continue;
     }
+    // 기준선은 한손검 한 벌 — 장검 + 몸 여섯 (T18). 다른 계열의 세기는 벤치가 본다(balance.md "무기 계열")
+    const set = styleLines('sword').map((line) => all.find((e) => e.line === line)!);
 
     // 기준선: 맨몸(네 스탯 균등) + common 풀세트 = 맨몸 × (1 + gearShare)
     // 장갑 STR·신발 AGI·장신구 LUK은 1차 스탯이라 combatStats를 지나야 ATK·SPD가 된다 (T17_7 검수 5차)
     const naked = combatStats(refLevel);
-    const worn = combatStats(refLevel, 'warrior', evenSpend(refLevel), setBonus(set));
-    const nakedLuk = STARTING_STATS.warrior.luk + evenSpend(refLevel).luk;
+    const worn = combatStats(refLevel, evenSpend(refLevel), setBonus(set));
+    const nakedLuk = STARTING_STATS.luk + evenSpend(refLevel).luk;
     // 목표 배수 = 1 + gearShare (powerScale에 GEAR_FLOOR가 더 얹힌다, §4.5). 다섯 다 같다
     const target = 1 + gearShare(refLevel);
     for (const [label, got, base] of [
@@ -258,7 +291,7 @@ function validateEquipment(): string[] {
       const want = base * target;
       // 부위마다 정수로 반올림하므로 최악이 7칸 × 0.5 = 3.5다. 그만큼은 봐준다 —
       // 티어 1 DEF처럼 몫 자체가 1도 안 되는 칸이 여기 걸린다
-      const slack = Math.max(GEAR_SLOTS.length / 2, want * GEAR_TOLERANCE);
+      const slack = Math.max(SET_PARTS / 2, want * GEAR_TOLERANCE);
       if (Math.abs(got - want) > slack) {
         errors.push(
           `[장비 기준선] 티어 ${tier} ${label} — Lv${refLevel}에서 ${(got / base).toFixed(2)}배 (목표 ${target.toFixed(2)}배)`,
@@ -274,9 +307,9 @@ function validateEquipment(): string[] {
     }
   }
 
-  // §7.4 #6 — 티어가 오르면 장비가 세진다. 같은 부위·등급 안에서 단조 증가
-  for (const slot of GEAR_SLOTS) {
-    const line = EQUIPMENT.filter((e) => e.slot === slot && e.rarity === 'common').sort(
+  // §7.4 #6 — 티어가 오르면 장비가 세진다. 같은 줄·등급 안에서 단조 증가
+  for (const kind of GEAR_LINES) {
+    const line = EQUIPMENT.filter((e) => e.line === kind && e.rarity === 'common').sort(
       (a, b) => a.tier - b.tier,
     );
     for (let i = 1; i < line.length; i++) {

@@ -3,32 +3,34 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { consumableById, fieldById } from '@/content';
+import { ARROW_NAMES, arrowById, consumableById, fieldById } from '@/content';
 import {
   hpAfterLastHitBy,
   makeRng,
-  shieldLeft,
+  playerHpAfter,
   simulateBattle,
   type BattleEvent,
   type BattleResult,
+  type BattleState,
   type Combatant,
   type Outcome,
 } from '@/game/battle';
 import { currentMonster, type RunResult } from '@/game/field';
-import { DEX, POINTS_PER_LEVEL } from '@/game/formulas';
-import { equippedIn, itemDef, itemLabel } from '@/game/items';
+import { DEX, POINTS_PER_LEVEL, SKILL, type Style } from '@/game/formulas';
+import { itemDef, itemLabel, styleOf } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import type { Save } from '@/save/schema';
 import { usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
-import { BossStage } from '@/ui/BossStage';
 import { Button } from '@/ui/Button';
 import { dexUpText, stageColor } from '@/ui/Dex';
 import { Panel } from '@/ui/Panel';
+import { Stage } from '@/ui/Stage';
+import { SKILL_LABEL, STYLE_LABEL } from '@/ui/styleText';
 import { Text } from '@/ui/Text';
 import { colors, rarity, space } from '@/ui/theme';
 
-/** 행동 하나를 보여주는 시간 (§4.2). */
+/** 한 칸을 보여주는 시간 (§4.2). 연격 · 막은 뒤 반격처럼 한 칸에 여러 이벤트가 들 수 있다 (T18) */
 const STEP_MS = 600;
 /** 전투 기록에 남겨두는 줄 수. */
 const LOG_LINES = 5;
@@ -37,13 +39,40 @@ const RESULT_LABEL = { win: '승리!', lose: '쓰러졌다...', flee: '도망쳤
 
 function damageText(event: BattleEvent) {
   if (event.type === 'miss') return '빗나갔다';
-  return event.type === 'crit' ? `치명타! ${event.value}` : `${event.value}`;
+  if (event.type === 'block') return '막음!';
+  if (event.type === 'guard') return '방패를 세웠다';
+  if (event.type === 'stun') return '기절해 쉰다';
+  const hit = event.type === 'crit' ? `치명타! ${event.value}` : `${event.value}`;
+  return event.heal ? `${hit} · HP +${event.heal}` : hit;
 }
 
 function eventColor(event: BattleEvent) {
   if (event.type === 'miss') return colors.dim;
   if (event.type === 'crit') return colors.gold;
+  if (event.type === 'block' || event.type === 'guard' || event.type === 'stun') return colors.exp;
   return event.actor === 'player' ? colors.text : colors.hp;
+}
+
+/** 전투 기록 한 줄 — 기술 · 반격 · 특수 화살은 앞에 붙인다 (T18, T18_1) */
+function lineText(e: BattleEvent, style: Style, foe: string): string {
+  if (e.actor === 'monster') return `${foe} → ${damageText(e)}`;
+  const who = e.skill
+    ? `[${SKILL_LABEL[style]}]`
+    : e.counter
+      ? '반격'
+      : e.chain
+        ? '연격'
+        : e.arrow && e.arrow !== 'basic'
+          ? ARROW_NAMES[e.arrow]
+          : '내 공격';
+  return `${who} → ${damageText(e)}`;
+}
+
+/** 이 이벤트가 속한 칸의 첫 이벤트 — 앞으로 chain이 아닌 데까지 (T18) */
+function beatStart(events: BattleEvent[], i: number): number {
+  let b = i;
+  while (b > 0 && events[b].chain) b--;
+  return b;
 }
 
 /**
@@ -68,24 +97,24 @@ type Playback = {
 
 /**
  * 지금 세이브 상태로 전투 한 구간을 뽑는다. `monsterHp`를 주면 그 체력에서 이어 싸운다.
- * `shield`는 이어 싸울 때 남은 보호막이다 (T17_7) — 안 주면 새 전투라 반지 값 그대로 꽉 차 있다.
+ * `resume`은 이어 싸울 때의 상태다 (T18) — 남은 보호막(T17_7) · 기술 게이지 · 화살 · 신체파괴를 이어 받는다.
+ * 안 주면 새 전투라 보호막은 반지 값 그대로, 게이지는 0이다.
  */
-function simulateFrom(save: Save, monsterHp?: number, shield?: number) {
+function simulateFrom(save: Save, monsterHp?: number, resume?: BattleState) {
   const picked = currentMonster(save);
   if (!picked) return null;
   const stats = statsOf(save);
   const player: Combatant = {
-    name: `Lv${save.player.level} 전사`,
+    name: `Lv${save.player.level} ${STYLE_LABEL[stats.style]}`,
     hp: save.player.hp,
     ...stats,
-    shield: shield ?? stats.shield,
   };
   const monster: Combatant = { ...picked, hp: monsterHp ?? picked.maxHp };
   return {
     player,
     monster,
     sprite: picked.sprite,
-    result: simulateBattle(player, monster, makeRng(Date.now())),
+    result: simulateBattle(player, monster, makeRng(Date.now()), resume),
   };
 }
 
@@ -106,6 +135,7 @@ export default function Battle() {
   const finishBattle = usePlayer((s) => s.finishBattle);
   const drink = usePlayer((s) => s.drink);
   const save = usePlayer((s) => s.save);
+  const arrowArt = usePlayer((s) => s.arrowArt);
 
   // 전투는 화면에 들어올 때 계산한다. 세이브에 남은 HP에서 이어서 싸운다 (§4.2).
   const [battle, setBattle] = useState(() => startPlayback(save));
@@ -122,11 +152,18 @@ export default function Battle() {
 
   const total = battle?.events.length ?? 0;
 
+  /** 쏜 화살 (T18) — 처음 가진 수에서 그 순간 남은 수를 뺀다 */
+  const arrowsUsed = useCallback(
+    (state?: BattleState) =>
+      battle ? (battle.player.arrows ?? 0) - (state?.arrows ?? battle.player.arrows ?? 0) : 0,
+    [battle],
+  );
+
   const finish = useCallback(
-    (outcome: Outcome, hp: number) => {
+    (outcome: Outcome, hp: number, arrows: number) => {
       if (settledOnce.current) return;
       settledOnce.current = true;
-      setSettled(finishBattle(outcome, hp));
+      setSettled(finishBattle(outcome, hp, arrows));
     },
     [finishBattle],
   );
@@ -138,13 +175,17 @@ export default function Battle() {
       // [도망]으로 이미 끝났으면 한 칸 더 넘기지 않는다 — 도망친 뒤에 한 대 더 맞는 게 보였다
       if (settledOnce.current) return;
       stepAt.t = Date.now();
-      const next = cursor + 1;
+      // 한 칸 = 이벤트 하나 + 뒤에 붙은 것들(연격 · 난무 · 반격, T18) — 같이 보여 준다
+      let next = cursor + 1;
+      while (next < total && battle.events[next].chain) next++;
       setCursor(next);
       // 마지막 행동을 보여준 그 순간 정산한다. 남은 HP는 엔진이 이미 계산해 뒀다.
-      if (next >= total) finish(battle.result.outcome, battle.result.playerHp);
+      if (next >= total) {
+        finish(battle.result.outcome, battle.result.playerHp, arrowsUsed(battle.result.state));
+      }
     }, wait);
     return () => clearTimeout(timer);
-  }, [battle, cursor, total, finish, stepAt]);
+  }, [battle, cursor, total, finish, stepAt, arrowsUsed]);
 
   // 판 밖에서 열릴 경로는 없지만, 세이브가 꼬였을 때 흰 화면 대신 돌아갈 길을 준다
   if (!battle) {
@@ -161,26 +202,25 @@ export default function Battle() {
   const played = battle.events.slice(0, cursor);
   // 몬스터 HP는 이벤트의 hpAfter가 절대값이라 구간이 나뉘어도 그냥 마지막 것을 보면 된다
   const monsterHp = hpAfterLastHitBy(played, 'player', battle.monster.hp);
-  // 내 HP는 회복이 이벤트 밖에서 일어나므로, 마지막 물약 지점부터 다시 센다
+  // 내 HP는 물약이 이벤트 밖에서 일어나므로, 마지막 물약 지점부터 다시 센다. 흡혈(T18_1)은 이벤트 안이다
   const lastHeal = battle.heals.filter((h) => h.at <= cursor).at(-1);
-  const playerHp = hpAfterLastHitBy(
-    played.slice(lastHeal?.at ?? 0),
-    'monster',
-    lastHeal?.hp ?? battle.player.hp,
-  );
+  const playerHp = playerHpAfter(played.slice(lastHeal?.at ?? 0), lastHeal?.hp ?? battle.player.hp);
   const last = played.at(-1);
+  /** 지금 칸 — 연격 · 반격은 한 칸에 여럿이다 (T18) */
+  const beat = last ? played.slice(beatStart(played, played.length - 1)) : [];
   const potions = Object.entries(save.run?.potions ?? {}).filter(([, n]) => n > 0);
-  // 보호막은 맞은 만큼 줄고 안 찬다 (T17_7). 물약으로 이어 붙인 구간까지 한 번에 센다
-  const shield = shieldLeft(played, battle.player.shield ?? 0);
-  // 보스전은 그림이 공방을 주고받는 무대로 보여준다 (T17_7). 숫자도 무대에 뜬다
+  /** 지금까지의 상태 (T18) — 보호막(T17_7)은 맞은 만큼 줄고 안 찬다. 물약으로 이어 붙인 구간까지 이어진다 */
+  const state = last?.state;
+  const shield = state?.shield ?? battle.player.shield ?? 0;
+  const style = battle.player.style ?? styleOf(save);
   const boss = battle.monster.boss === true;
-  const weapon = equippedIn(save, 'weapon');
+  const arrowsLeft = state?.arrows ?? battle.player.arrows ?? 0;
 
   /** 지금 HP에서 회복하고, 남은 싸움을 새로 뽑아 **뒤에 잇는다**. 커서는 안 건드린다. */
   const onDrink = (id: string) => {
     if (!drink(id, playerHp)) return;
     const healed = usePlayer.getState().save;
-    const seg = simulateFrom(healed, monsterHp, shield);
+    const seg = simulateFrom(healed, monsterHp, state);
     if (!seg) return;
     const kept = battle.events.slice(0, cursor);
     setBattle({
@@ -201,7 +241,7 @@ export default function Battle() {
     const heal = battle.heals.find((h) => h.at === i);
     const hit = {
       key: `e${i}`,
-      text: `${e.actor === 'player' ? '내 공격' : battle.monster.name} → ${damageText(e)}`,
+      text: lineText(e, style, battle.monster.name),
       color: eventColor(e),
     };
     return heal
@@ -213,24 +253,17 @@ export default function Battle() {
     <SafeAreaView style={styles.screen} edges={['top', 'bottom']}>
       <Panel title={battle.monster.name}>
         <Bar label="HP" value={monsterHp} max={battle.monster.maxHp} color={colors.hp} />
-        {boss ? (
-          <BossStage
-            sprite={battle.sprite}
-            name={battle.monster.name}
-            weapon={weapon && itemDef(weapon)}
-            last={last}
-            step={cursor}
-            crd={battle.player.crd}
-          />
-        ) : (
-          <View style={styles.popup}>
-            {last?.actor === 'player' && (
-              <Text size="xl" color={eventColor(last)}>
-                {damageText(last)}
-              </Text>
-            )}
-          </View>
-        )}
+        {/* 보스전도 사냥터도 무대에서 보여준다 (T17_7 → T18). 숫자도 무대에 뜬다 */}
+        <Stage
+          sprite={battle.sprite}
+          name={battle.monster.name}
+          crd={battle.player.crd}
+          style={style}
+          beat={beat}
+          step={cursor}
+          boss={boss}
+          art={arrowArt}
+        />
       </Panel>
 
       <Panel title={battle.player.name}>
@@ -240,14 +273,18 @@ export default function Battle() {
             보호막 {shield} / {battle.player.shield}
           </Text>
         )}
-        {!boss && (
-          <View style={styles.popup}>
-            {last?.actor === 'monster' && (
-              <Text size="xl" color={eventColor(last)}>
-                {damageText(last)}
-              </Text>
-            )}
-          </View>
+        {/* 기술 게이지 (T18 → 바, T18 확인) — 다섯 번 행동하면 다음 행동이 저절로 기술이다 */}
+        <Bar
+          label={SKILL_LABEL[style]}
+          value={Math.min(SKILL.gauge, state?.gauge ?? 0)}
+          max={SKILL.gauge}
+          color={colors.gold}
+        />
+        {style === 'bow' && (
+          <Text size="sm" color={arrowsLeft === 0 ? colors.hp : colors.dim}>
+            {battle.player.arrow ? ARROW_NAMES[battle.player.arrow.effect] : '화살'} {arrowsLeft}
+            {arrowsLeft === 0 ? ' — 활로 친다' : ''}
+          </Text>
         )}
       </Panel>
 
@@ -288,6 +325,12 @@ export default function Battle() {
           {settled.drop && (
             <Text color={rarity[itemDef(settled.drop).rarity]}>
               장비를 주웠다: {itemLabel(settled.drop)}
+            </Text>
+          )}
+          {/* 특수 화살 (T18_1) — 계열을 가리지 않고 줍는다 */}
+          {settled.arrowDrop && (
+            <Text color={colors.gold}>
+              🏹 {arrowById(settled.arrowDrop.id).name} {settled.arrowDrop.n}발을 주웠다
             </Text>
           )}
           {settled.dropLost && (
@@ -338,8 +381,8 @@ export default function Battle() {
               onPress={() => onDrink(id)}
             />
           ))}
-          {/* 도망은 재생을 멈추고 그 시점 HP로 정산한다. 항상 성공한다 (§4.2). */}
-          <Button label="도망" onPress={() => finish('flee', playerHp)} />
+          {/* 도망은 재생을 멈추고 그 시점 HP로 정산한다. 항상 성공한다 (§4.2). 쏜 화살은 그만큼 준다 */}
+          <Button label="도망" onPress={() => finish('flee', playerHp, arrowsUsed(state))} />
         </View>
       )}
     </SafeAreaView>
@@ -348,8 +391,6 @@ export default function Battle() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg, padding: space.lg, gap: space.lg },
-  // 팝업이 떴다 사라져도 레이아웃이 흔들리지 않게 자리를 비워둔다.
-  popup: { height: 32, justifyContent: 'center' },
   // 로그가 채워지는 동안 패널 높이가 커지지 않게 미리 자리를 잡아둔다.
   log: { minHeight: LOG_LINES * 18, gap: space.xs },
   actions: { flexDirection: 'row', gap: space.sm, flexWrap: 'wrap' },

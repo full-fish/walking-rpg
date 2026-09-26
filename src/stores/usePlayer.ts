@@ -1,11 +1,12 @@
 import { create } from 'zustand';
 
-import { EQUIPMENT, gearSetFor, REGIONS } from '@/content';
+import { ARROWS, EQUIPMENT, gearSetFor, REGIONS, shopArrows } from '@/content';
 import type { Outcome } from '@/game/battle';
 import { claimGoals, claimStreak, type Got } from '@/game/daily';
 import { DEX_MONSTERS, recordKill } from '@/game/dex';
 import { addBuffs, enterField, settleRun, drinkPotion, type RunResult } from '@/game/field';
 import {
+  buyArrows,
   buyConsumable,
   bagExpand,
   buyEquipment,
@@ -19,9 +20,10 @@ import {
   vaultDeposit,
   vaultExpand,
   vaultWithdraw,
+  setQuiver,
   upgradeRing,
 } from '@/game/economy';
-import { MIDNIGHT_WP, type GearSlot } from '@/game/formulas';
+import { ARROW_DROP, MIDNIGHT_WP, STYLE_HANDS, STYLES, type GearSlot } from '@/game/formulas';
 import { makeItem, ringBonus } from '@/game/items';
 import { enterBoss, travel, unlockNext } from '@/game/region';
 import { grantWp, spendWp } from '@/game/wp';
@@ -33,6 +35,7 @@ import {
   equipRing,
   settleBattle,
   respec,
+  setName,
   sortInventory,
   spendPoint,
   statsOf,
@@ -66,7 +69,7 @@ type PlayerStore = {
   /** 사냥터에 들어간다 (§4.4). WP가 모자라거나 이미 판 안이면 false */
   enter: (fieldId: string) => boolean;
   /** 전투 하나를 판에 반영한다. 클리어·소재·보너스까지 여기서 나온다 */
-  finishBattle: (outcome: Outcome, playerHp: number) => RunResult;
+  finishBattle: (outcome: Outcome, playerHp: number, arrows?: number) => RunResult;
   /**
    * 사냥터 안에서 물약을 쓴다. 만피거나 없으면 false.
    * atHp는 전투 재생 중의 현재 HP — 세이브의 HP는 전투가 끝나야 갱신된다 (§4.2).
@@ -76,8 +79,8 @@ type PlayerStore = {
   allocate: (stat: StatKey) => boolean;
   /** 배분을 전부 되돌린다 (§4.3). WP가 모자라면 false */
   respec: () => boolean;
-  /** 장비를 낀다. 레벨이 모자라거나 없는 개체면 false */
-  equip: (uid: string) => boolean;
+  /** 장비를 낀다. 레벨이 모자라거나 없는 개체거나 그 칸에 못 끼면 false. `slot`은 단검을 어느 손에 쥘지 (T18) */
+  equip: (uid: string, slot?: GearSlot) => boolean;
   unequip: (slot: GearSlot) => void;
   /** 가방을 지금 기준으로 성능순 정렬한다 (T17_2) */
   sortBag: () => void;
@@ -92,6 +95,8 @@ type PlayerStore = {
   grantGearSet: () => void;
   /** 실기기 확인용 — 그림(sprite)마다 장비 하나씩 가방에 넣는다 */
   grantAllSprites: () => void;
+  /** 실기기 확인용 — 지금 레벨의 손 여섯 줄(단검 두 자루)과 그 지역 화살을 준다 (T18) */
+  grantWeapons: () => void;
   /** 실기기 확인용 — 가방 칸 수를 바로 정한다 */
   setBagCapacity: (capacity: number) => void;
   /** 실기기 확인용 — 모든 사냥터 소재를 n개씩 더 준다 (반지·강화 +6 확인, T17_7) */
@@ -106,6 +111,12 @@ type PlayerStore = {
   /** 반지를 한 단계 강화해 본다 (T17_7). 결과를 화면이 보여준다. `materials`는 고른 소재 */
   enhanceRing: (uid: string, materials?: readonly string[]) => EnhanceResult | null;
   reset: () => void;
+  /**
+   * 화살 연출 (T18_1, 사용자 결정 — 둘 다 보고 고른다). code는 코드로 그린 선 · 궤적, sprite는 화살 그림.
+   * 비교용이라 세이브에 안 남긴다 — 앱을 다시 켜면 code다
+   */
+  arrowArt: 'code' | 'sprite';
+  setArrowArt: (art: 'code' | 'sprite') => void;
 };
 
 /** 상태가 바뀔 때마다 즉시 MMKV에 쓴다. 스로틀 없음 — 동기 저장이라 1ms 미만 (§5.5). */
@@ -174,8 +185,8 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     return true;
   },
 
-  finishBattle: (outcome, playerHp) => {
-    const result = settleRun(get().save, outcome, playerHp, Math.random, Date.now());
+  finishBattle: (outcome, playerHp, arrows = 0) => {
+    const result = settleRun(get().save, outcome, playerHp, Math.random, Date.now(), arrows);
     set({ save: persist(result.save) });
     return result;
   },
@@ -201,8 +212,8 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     return true;
   },
 
-  equip: (uid) => {
-    const next = equipItem(get().save, uid);
+  equip: (uid, slot) => {
+    const next = equipItem(get().save, uid, slot);
     if (!next) return false;
     set({ save: persist(next) });
     return true;
@@ -260,6 +271,32 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
     set({ save: persist(save) });
   },
 
+  grantWeapons: () => {
+    let save = get().save;
+    const hands = STYLES.flatMap((style) =>
+      gearSetFor(save.player.level, REGIONS.length, 'common', style).slice(
+        0,
+        STYLE_HANDS[style][1] ? 2 : 1,
+      ),
+    );
+    for (const def of hands) save = addItem(save, makeItem(save.inventory, def.id, Math.random));
+    const region = save.regionProgress.current;
+    // 기본 300발 + 특수 여덟 종 한 번 드랍만큼씩 (T18_1) — 화살마다 연출을 본다
+    const arrows = Object.fromEntries(
+      ARROWS.filter((a) => a.region === region).map((a) => [
+        a.id,
+        (save.arrows[a.id] ?? 0) + (a.effect === 'basic' ? 300 : ARROW_DROP.bundle),
+      ]),
+    );
+    set({
+      save: persist({
+        ...save,
+        arrows: { ...save.arrows, ...arrows },
+        quiver: save.quiver ?? shopArrows(region)[0].id,
+      }),
+    });
+  },
+
   setBagCapacity: (capacity) => {
     const { save } = get();
     set({ save: persist({ ...save, bag: { ...save.bag, capacity } }) });
@@ -296,6 +333,9 @@ export const usePlayer = create<PlayerStore>((set, get) => ({
   },
 
   reset: () => set({ save: resetSave() }),
+
+  arrowArt: 'code',
+  setArrowArt: (arrowArt) => set({ arrowArt }),
 }));
 
 /** 화면들이 전투 스탯을 볼 때 쓰는 선택자. 세이브가 바뀌면 같이 갱신된다. */
@@ -306,6 +346,11 @@ export const trades = {
   buyEquipment: (defId: string) => (save: Save) => buyEquipment(save, defId, Math.random),
   sellItem: (uid: string) => (save: Save) => sellItem(save, uid),
   buyConsumable: (id: string) => (save: Save) => buyConsumable(save, id),
+  /** 닉네임 (T18 확인) — 규칙에 안 맞으면 null */
+  setName: (name: string) => (save: Save) => setName(save, name),
+  /** 화살 한 묶음 · 먹일 화살 고르기 (T18) */
+  buyArrows: (id: string) => (save: Save) => buyArrows(save, id),
+  setQuiver: (id: string) => (save: Save) => setQuiver(save, id),
   consumeItem: (id: string) => (save: Save) => consumeItem(save, id),
   stayInn: (cost: number) => (save: Save) => stayInn(save, cost, Date.now()),
   deposit: (amount: number) => (save: Save) => vaultDeposit(save, amount),

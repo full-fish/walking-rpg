@@ -8,17 +8,25 @@
 import { equipmentById, type Equipment } from '../content';
 import type { ItemInstance, Ring, Save } from '../save/schema';
 import {
+  BODY_LINES,
   combatStats,
   ENHANCE_MULT,
   GEAR_SLOTS,
   gearShare,
+  HAND_LINES,
+  handPartner,
   itemStat,
   RARITY_MULT,
   RING_FIELD_WP_CAP,
   ringValue,
   rollQuality,
+  STYLE_HANDS,
+  styleOfLine,
+  type GearLine,
   type GearSlot,
+  type HandLine,
   type RingKind,
+  type Style,
 } from './formulas';
 
 export type GearBonus = {
@@ -28,9 +36,11 @@ export type GearBonus = {
   str: number;
   agi: number;
   luk: number;
+  /** 회피 확률 — 활만 준다 (T18) */
+  eva: number;
 };
 
-const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 };
+const NONE: GearBonus = { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0, eva: 0 };
 
 /** 세이브 안에서만 유일하면 된다. 가진 것 중 가장 큰 번호 + 1. 반지 목록에도 쓴다 (T17_7) */
 export function nextUid(inventory: { uid: string }[]): string {
@@ -68,6 +78,8 @@ export function itemStats(inst: ItemInstance): GearBonus {
     str: primary(def.str),
     agi: primary(def.agi),
     luk: primary(def.luk),
+    // 회피는 확률이라 품질 · 강화를 안 탄다 (T18) — itemStat의 "한 단계 최소 +1"이 붙으면 +100%가 된다
+    eva: def.eva,
   };
 }
 
@@ -109,6 +121,7 @@ export function statText(s: GearBonus): string {
       s.str > 0 ? `STR +${s.str}` : '',
       s.agi > 0 ? `AGI +${s.agi}` : '',
       s.luk > 0 ? `LUK +${s.luk}` : '',
+      s.eva > 0 ? `회피 +${Math.round(s.eva * 100)}%` : '',
     ]
       .filter(Boolean)
       .join(' ') || '스탯 없음'
@@ -144,6 +157,7 @@ export function equippedStats(save: Save): GearBonus {
       str: round1(sum.str + s.str),
       agi: round1(sum.agi + s.agi),
       luk: round1(sum.luk + s.luk),
+      eva: sum.eva + s.eva,
     };
   }, NONE);
 }
@@ -201,9 +215,54 @@ export function setBonus(defs: Equipment[]): GearBonus {
       str: round1(sum.str + e.str),
       agi: round1(sum.agi + e.agi),
       luk: round1(sum.luk + e.luk),
+      eva: sum.eva + e.eva,
     }),
     NONE,
   );
+}
+
+/** 두 손 칸 (T18). 어느 쪽이든 똑같다 — 두 손 무기만 늘 weapon 칸에 든다 */
+export const HANDS = ['weapon', 'offhand'] as const;
+export type Hand = (typeof HANDS)[number];
+export const isHand = (slot: GearSlot): slot is Hand => slot === 'weapon' || slot === 'offhand';
+export const otherHand = (hand: Hand): Hand => (hand === 'weapon' ? 'offhand' : 'weapon');
+export const isHandLine = (line: GearLine): line is HandLine =>
+  (HAND_LINES as readonly GearLine[]).includes(line);
+
+/** 두 손에 든 것 — 어느 손이든 (T18 확인) */
+export function heldHands(save: Save): ItemInstance[] {
+  return HANDS.map((h) => equippedIn(save, h)).filter((i): i is ItemInstance => i !== undefined);
+}
+
+/**
+ * 지금 계열 (T18) — 손에 든 무기가 정한다(두 손은 늘 같은 계열이다). 맨손이면 한손검으로 친다.
+ * 직업 대신이다 — 무기를 바꾸면 그 자리에서 싸우는 방식이 바뀐다.
+ */
+export function styleOf(save: Save): Style {
+  const held = heldHands(save)[0];
+  return held ? styleOfLine(itemDef(held).line) : 'sword';
+}
+
+/**
+ * 그 칸에 낄 수 있나 (T18 → T18 확인). **두 손 칸은 똑같다** — 다른 손이 비었으면 손 줄은 무엇이든(방패 먼저도 된다),
+ * 다른 손에 한 손 줄이 있으면 그 짝만(소검 ↔ 방패, 단검 ↔ 단검). 다른 손이 두 손 무기(장검 · 대검 · 활)면 못 낀다.
+ */
+export function fitsSlot(save: Save, def: Equipment, slot: GearSlot): boolean {
+  if (!isHand(slot)) return def.slot === slot;
+  if (!isHandLine(def.line)) return false;
+  const other = equippedIn(save, otherHand(slot));
+  return other === undefined || handPartner(itemDef(other).line as HandLine) === def.line;
+}
+
+/**
+ * 부위를 가리지 않고 주는 장비 한 점의 줄 (T18) — 보스 첫 처치 · 걸음 3만 보.
+ * 손 하나 + 몸 여섯에서 고르고(전과 같은 7분의 1), 손이면 **지금 계열**의 것을 준다(두 자루 계열은 둘 중 하나).
+ */
+export function rollLine(save: Save, rng: () => number): GearLine {
+  const part = (['hand', ...BODY_LINES] as const)[Math.floor(rng() * (1 + BODY_LINES.length))];
+  if (part !== 'hand') return part;
+  const [main, off] = STYLE_HANDS[styleOf(save)];
+  return off && rng() < 0.5 ? off : main;
 }
 
 /** 소수 한 자리. 0.1을 여러 번 더하면 부동소수점 찌꺼기가 붙는다. */

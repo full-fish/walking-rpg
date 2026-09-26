@@ -9,6 +9,7 @@
  * React를 import하지 않는다 — Node에서 돌아야 한다.
  */
 import {
+  arrowById,
   consumableById,
   fieldById,
   fieldDropTier,
@@ -21,12 +22,12 @@ import {
 import type { ItemInstance, Save } from '../save/schema';
 import type { Outcome } from './battle';
 import {
+  ARROW_DROP,
   BOSS_DROP_RARITY,
   BUFF_STATS,
   CLEAR_BONUS_RATE,
   DROP_RARITY,
   DROP_RATE,
-  GEAR_SLOTS,
   GEAR_TIERS,
   GEAR_TIERS_PER_REGION,
   MATERIAL_BUFF,
@@ -34,12 +35,13 @@ import {
   POTION_CARRY_MAX,
   rollRarity,
   rollRunSize,
+  SPECIAL_ARROWS,
   withLegendary,
   WP_COST,
 } from './formulas';
 import { bossDrop, dexDropMult, recordKill, type DexUp } from './dex';
 import { chooseMaterials, pickMaterials, potionHeal, spendMaterials } from './economy';
-import { bagFull, makeItem, ringBonus } from './items';
+import { bagFull, makeItem, ringBonus, rollLine } from './items';
 import {
   addItem,
   killReward,
@@ -216,12 +218,22 @@ export type RunResult = Settlement & {
   bossCleared: boolean;
   /** 도감 카드 단계가 올랐다 (T19) — 화면이 한 줄로 알린다 */
   dex: DexUp | null;
+  /** 주운 특수 화살 (T18_1) — 화살 id와 발 수 */
+  arrowDrop: ArrowDrop | null;
 };
+
+export type ArrowDrop = { id: string; n: number };
 
 const NONE: Reward = { exp: 0, gold: 0 };
 
 /** 전투 결과에 드랍 칸의 기본값. 대부분의 전투는 아무것도 안 떨군다 */
-const NO_DROP = { drop: null, dropLost: false, bossCleared: false, dex: null } as const;
+const NO_DROP = {
+  drop: null,
+  dropLost: false,
+  bossCleared: false,
+  dex: null,
+  arrowDrop: null,
+} as const;
 
 type Given = { save: Save; drop: ItemInstance | null; lost: boolean };
 
@@ -237,6 +249,7 @@ function give(save: Save, defId: string, rng: () => number): Given {
  * × 그 지역 보스 카드(2번, T19 검수 3차), 처치마다 한 번. 보스 카드 5번이면 전설 비율도 ×1.5다.
  * **부위는 몬스터가, 티어는 사냥터가 정한다** — 같은 몬스터라도 어디서 잡았느냐에 따라
  * 티어가 다를 수 있고, 사냥터마다 나오는 부위가 정해진다.
+ * 무기는 몬스터가 떨구는 줄 2~3개 중 하나다 (T18) — 지역마다 두 티어 × 여섯 줄이 다 나온다.
  */
 function rollDrop(save: Save, monster: Monster, fieldId: string, rng: () => number): Given {
   const boss = bossDrop(save, regionOfField(fieldId).id);
@@ -244,7 +257,33 @@ function rollDrop(save: Save, monster: Monster, fieldId: string, rng: () => numb
   if (!monster.drop || rng() >= rate) return { save, drop: null, lost: false };
   const tier = fieldDropTier(fieldById(fieldId));
   const rarity = rollRarity(withLegendary(DROP_RARITY, boss.legend), rng);
-  return give(save, gridItem(tier, monster.drop, rarity).id, rng);
+  const lines = monster.weapons;
+  const line =
+    monster.drop === 'weapon' && lines ? lines[Math.floor(rng() * lines.length)] : monster.drop;
+  if (line === 'weapon' || line === 'offhand') throw new Error(`${monster.id}의 무기 줄이 없다`);
+  return give(save, gridItem(tier, line, rarity).id, rng);
+}
+
+/**
+ * 특수 화살 드랍 (T18_1) — 어느 몬스터든 처치마다 ARROW_DROP.rate × 장비 드랍과 같은 배율(행운 · 도감 · 보스 카드).
+ * 종류는 여덟 중 고르게, 티어는 그 지역이다. 계열을 가리지 않고 가방 칸도 안 쓴다 — 활로 바꾸면 쏜다
+ */
+function rollArrows(
+  save: Save,
+  monster: Monster,
+  region: number,
+  rng: () => number,
+): { save: Save; arrowDrop: ArrowDrop | null } {
+  const boss = bossDrop(save, region);
+  const rate = ARROW_DROP.rate * statsOf(save).dropMult * dexDropMult(save, monster) * boss.drop;
+  if (rng() >= rate) return { save, arrowDrop: null };
+  const effect = SPECIAL_ARROWS[Math.floor(rng() * SPECIAL_ARROWS.length)];
+  const { id } = arrowById(`arrow_r${region}_${effect}`);
+  const n = ARROW_DROP.bundle;
+  return {
+    save: { ...save, arrows: { ...save.arrows, [id]: (save.arrows[id] ?? 0) + n } },
+    arrowDrop: { id, n },
+  };
 }
 
 /**
@@ -277,13 +316,15 @@ function settleBoss(
   };
   const won = settleBattle(save, 'win', playerHp, reward, now);
   const dex = recordKill(won.save, boss);
-  const settled = { ...won, save: dex.save };
+  // 특수 화살 (T18_1) — 보스도 몬스터라 같이 떨군다
+  const shot = rollArrows(dex.save, boss, boss.region, rng);
+  const settled = { ...won, save: shot.save };
 
   // 재사냥 (T19 검수) — EXP · 골드와 도감 한 단계만. 장비와 해금은 첫 처치 한 번이다.
   // 재도전 값에 보스 한 마리 보상이라 WP당 그 지역 사냥보다도 한참 덜 번다 (balance.md 7장) — 추억과 도감용
   if (save.regionProgress.bosses[boss.region] === 'cleared') {
     const back = { ...settled.save, consumables: returnPotions(settled.save, run), run: null };
-    return { ...settled, ...done, ...NO_DROP, save: back, dex: dex.up };
+    return { ...settled, ...done, ...NO_DROP, save: back, dex: dex.up, arrowDrop: shot.arrowDrop };
   }
 
   const progress = {
@@ -291,8 +332,8 @@ function settleBoss(
     bosses: { ...settled.save.regionProgress.bosses, [boss.region]: 'cleared' as const },
   };
   const tier = Math.min(GEAR_TIERS, boss.region * GEAR_TIERS_PER_REGION + 1);
-  const slot = GEAR_SLOTS[Math.floor(rng() * GEAR_SLOTS.length)];
-  const item = gridItem(tier, slot, rollRarity(BOSS_DROP_RARITY, rng));
+  // 손이 나오면 지금 계열의 것 (T18)
+  const item = gridItem(tier, rollLine(save, rng), rollRarity(BOSS_DROP_RARITY, rng));
   const given = give({ ...settled.save, regionProgress: progress }, item.id, rng);
 
   return {
@@ -303,6 +344,7 @@ function settleBoss(
     dropLost: given.lost,
     bossCleared: true,
     dex: dex.up,
+    arrowDrop: shot.arrowDrop,
   };
 }
 
@@ -315,12 +357,23 @@ function returnPotions(save: Save, run: Run): Save['consumables'] {
   return consumables;
 }
 
+/** 먹인 화살을 n발 쓴다 (T18). 다 쓰면 칸을 지우고 고른 건 그대로 둔다 — 사면 다시 쏜다 */
+export function spendArrows(save: Save, n: number): Save {
+  if (n <= 0 || !save.quiver) return save;
+  const left = Math.max(0, (save.arrows[save.quiver] ?? 0) - n);
+  const arrows = { ...save.arrows, [save.quiver]: left };
+  if (left === 0) delete arrows[save.quiver];
+  return { ...save, arrows };
+}
+
 /**
  * 전투 하나의 결과를 판에 반영한다 (§4.4).
  *
  *   win   개별 보상 즉시 지급. 다 잡았으면 클리어 보너스 + 소재, 아니면 다음 몬스터
  *   flee  개별 보상은 그대로 두고 판만 끝낸다. **보너스만 잃는다**
  *   lose  거기에 소지 골드 10%까지 (창고는 면제, §4.5)
+ *
+ * `arrows`는 이 전투에서 쏜 화살 (T18) — 결과가 어떻든 쏜 만큼은 줄어 있다.
  */
 export function settleRun(
   save: Save,
@@ -328,7 +381,9 @@ export function settleRun(
   playerHp: number,
   rng: () => number,
   now: number,
+  arrows = 0,
 ): RunResult {
+  save = spendArrows(save, arrows);
   const run = save.run;
   if (!run) throw new Error('판 안이 아닌데 settleRun을 불렀다');
   if (run.boss) return settleBoss(save, run, outcome, playerHp, rng, now);
@@ -355,8 +410,16 @@ export function settleRun(
   const dex = recordKill(won.save, monster);
   // 드랍은 처치 즉시 들어온다 — 개별 보상처럼 도망·사망해도 남는다 (T17_6)
   const loot = rollDrop(dex.save, monster, run.fieldId, rng);
-  const settled = { ...won, save: loot.save };
-  const dropped = { drop: loot.drop, dropLost: loot.lost, bossCleared: false, dex: dex.up };
+  // 특수 화살 (T18_1) — 장비와 따로 굴린다
+  const shot = rollArrows(loot.save, monster, regionOfField(run.fieldId).id, rng);
+  const settled = { ...won, save: shot.save };
+  const dropped = {
+    drop: loot.drop,
+    dropLost: loot.lost,
+    bossCleared: false,
+    dex: dex.up,
+    arrowDrop: shot.arrowDrop,
+  };
   const killed = run.killed + 1;
   const earned = { exp: run.earned.exp + gained.exp, gold: run.earned.gold + gained.gold };
 

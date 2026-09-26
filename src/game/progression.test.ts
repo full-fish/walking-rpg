@@ -138,7 +138,7 @@ test('사망해도 HP가 0으로 남지 않는다 — 영원히 못 싸우는 �
 test('스탯 배분 — 포인트가 있어야 쓰이고 VIT는 현재 HP도 올린다', () => {
   const save: Save = {
     ...at(2, { hp: 50 }),
-    statPoints: { unspent: 2, str: 0, vit: 0, agi: 0, luk: 0, int: 0 },
+    statPoints: { unspent: 2, str: 0, vit: 0, agi: 0, luk: 0 },
   };
 
   const vit = spendPoint(save, 'vit');
@@ -182,7 +182,7 @@ test('재분배 — 배분을 전부 되돌리고 WP를 낸다 (§4.3, T17)', ()
     return {
       ...base,
       wp: { ...base.wp, current: 100_000 },
-      statPoints: { unspent: 2, str: 10, vit: 20, agi: 5, luk: 0, int: 0 },
+      statPoints: { unspent: 2, str: 10, vit: 20, agi: 5, luk: 0 },
     };
   };
 
@@ -192,7 +192,6 @@ test('재분배 — 배분을 전부 되돌리고 WP를 낸다 (§4.3, T17)', ()
   expect(freed.wp.current, '무료').toBe(young.wp.current);
   expect(freed.statPoints.unspent, '쓴 35점 + 남아 있던 2점').toBe(37);
   expect(freed.statPoints.vit).toBe(0);
-  expect(freed.statPoints.int, 'INT는 배분 대상이 아니라 안 건드린다').toBe(0);
 
   // Lv10부터는 돈을 낸다
   const old = rich(RESPEC_FREE_BELOW);
@@ -209,7 +208,7 @@ test('재분배로 HP를 채울 수 없다 — 최대치로 자르기만 한다 
   const build: Save = {
     ...base,
     wp: { ...base.wp, current: 100_000 },
-    statPoints: { unspent: 0, str: 0, vit: 87, agi: 0, luk: 0, int: 0 },
+    statPoints: { unspent: 0, str: 0, vit: 87, agi: 0, luk: 0 },
   };
   const hurt: Save = { ...build, player: { ...build.player, hp: 50 } };
 

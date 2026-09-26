@@ -9,7 +9,7 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { expect, test } from 'vitest';
 
 import { EquipmentsSchema, MonstersSchema } from '../src/content/schema';
-import { GEAR_SLOTS } from '../src/game/formulas';
+import { GEAR_LINES, styleLines } from '../src/game/formulas';
 import { generateAll, generateEquipment, REGIONS } from './gen-content';
 
 const OUT = 'src/content/data/monsters';
@@ -43,9 +43,11 @@ test('gen — 장비 정의 JSON을 쓴다 (§4.5)', () => {
   const file = `${ITEMS}/equipment.json`;
   writeFileSync(file, JSON.stringify(equipment, null, 2) + '\n');
 
-  const set = equipment.filter((e) => e.tier === 10 && e.rarity === 'common');
+  const set = equipment.filter(
+    (e) => e.tier === 10 && e.rarity === 'common' && styleLines('sword').includes(e.line),
+  );
   console.log(
-    `${file}  ${equipment.length}종 (티어 1~10 × 부위 ${GEAR_SLOTS.length} × 등급 5)` +
+    `${file}  ${equipment.length}종 (티어 1~10 × 줄 ${GEAR_LINES.length} × 등급 5)` +
       `  티어10 common 풀세트 ATK +${set.reduce((s, e) => s + e.atk, 0)}` +
       ` HP +${set.reduce((s, e) => s + e.maxHp, 0)}` +
       ` / ${set.reduce((s, e) => s + e.price, 0).toLocaleString()}골드`,

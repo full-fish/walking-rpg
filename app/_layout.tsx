@@ -4,6 +4,7 @@ import * as SplashScreen from 'expo-splash-screen';
 import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
+import { NameGate } from '@/ui/NameGate';
 import { colors } from '@/ui/theme';
 
 SplashScreen.preventAutoHideAsync();
@@ -22,6 +23,8 @@ export default function RootLayout() {
     <>
       <StatusBar style="light" />
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }} />
+      {/* 이름이 없으면 먼저 정한다 (T18 확인) */}
+      <NameGate />
     </>
   );
 }

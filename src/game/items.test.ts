@@ -3,7 +3,7 @@ import { expect, test } from 'vitest';
 import { equipmentById, gearSetFor } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import { makeRng } from './battle';
-import { GEAR_SLOTS } from './formulas';
+import { SET_PARTS } from './formulas';
 import {
   equippedStats,
   itemLabel,
@@ -41,10 +41,10 @@ test('부위마다 성격이 다르다 — 무기는 ATK만, 장갑 STR · 신�
     ['str', 'gloves'],
     ['luk', 'accessory'],
   ] as const) {
-    for (const slot of GEAR_SLOTS) {
-      const v = bySlot(slot)[key];
-      if (slot === owner) expect(v, `${slot}이 ${key}를 준다`).toBeGreaterThan(0);
-      else expect(v, `${slot}은 ${key}를 안 준다`).toBe(0);
+    for (const e of set) {
+      const v = e[key];
+      if (e.slot === owner) expect(v, `${e.slot}이 ${key}를 준다`).toBeGreaterThan(0);
+      else expect(v, `${e.slot}은 ${key}를 안 준다`).toBe(0);
     }
   }
   expect(bySlot('gloves').atk, '장갑은 ATK 대신 STR').toBe(0);
@@ -65,23 +65,28 @@ test('uid는 세이브 안에서만 안 겹치면 된다 — 가진 것 중 가�
   const rng = makeRng(1);
   let save = defaultSave();
   for (let i = 0; i < 3; i++) {
-    save = addItem(save, makeItem(save.inventory, 'eq_t1_weapon_common', rng));
+    save = addItem(save, makeItem(save.inventory, 'eq_t1_longsword_common', rng));
   }
   expect(save.inventory.map((i) => i.uid)).toEqual(['1', '2', '3']);
 });
 
 test('없는 정의로는 개체를 못 만든다 — 세이브에 유령 uid가 남지 않게', () => {
-  expect(() => makeItem([], 'eq_t99_weapon_common', makeRng(1))).toThrow();
+  expect(() => makeItem([], 'eq_t99_longsword_common', makeRng(1))).toThrow();
 });
 
 test('개체 스탯 = 정의 × 품질 × 1.1^강화 (§4.5)', () => {
-  const base = itemStats({ uid: '1', defId: 'eq_t10_weapon_common', quality: 1.0, enhance: 0 });
-  const good = itemStats({ uid: '2', defId: 'eq_t10_weapon_common', quality: 1.2, enhance: 0 });
-  const forged = itemStats({ uid: '3', defId: 'eq_t10_weapon_common', quality: 1.0, enhance: 10 });
+  const base = itemStats({ uid: '1', defId: 'eq_t10_longsword_common', quality: 1.0, enhance: 0 });
+  const good = itemStats({ uid: '2', defId: 'eq_t10_longsword_common', quality: 1.2, enhance: 0 });
+  const forged = itemStats({
+    uid: '3',
+    defId: 'eq_t10_longsword_common',
+    quality: 1.0,
+    enhance: 10,
+  });
 
   expect(good.atk / base.atk).toBeCloseTo(1.2, 2);
   expect(forged.atk / base.atk).toBeCloseTo(2.59, 2);
-  expect(itemLabel({ uid: '4', defId: 'eq_t10_weapon_common', quality: 1.14, enhance: 3 })).toBe(
+  expect(itemLabel({ uid: '4', defId: 'eq_t10_longsword_common', quality: 1.14, enhance: 3 })).toBe(
     '심연 장검 +3 (114%)',
   );
 });
@@ -90,7 +95,7 @@ test('장착하면 전투 스탯이 바뀐다 — 기준선은 그 레벨 common
   const naked = { ...defaultSave(), player: { ...defaultSave().player, level: 30 } };
   const save = geared(30);
 
-  expect(Object.values(save.equipped).filter(Boolean)).toHaveLength(GEAR_SLOTS.length);
+  expect(Object.values(save.equipped).filter(Boolean)).toHaveLength(SET_PARTS);
   // 품질이 0.8~1.2로 굴러가므로 정의 합과 정확히 같진 않다. 절반 이상 얹어주면 된다
   expect(statsOf(save).atk).toBeGreaterThan(statsOf(naked).atk * 1.5);
   expect(equippedStats(save).maxHp).toBeGreaterThan(setBonus(gearSetFor(30)).maxHp * 0.7);
@@ -98,7 +103,7 @@ test('장착하면 전투 스탯이 바뀐다 — 기준선은 그 레벨 common
 
 test('요구 레벨이 모자라면 못 낀다 — null로 돌려줘 호출부가 확인하게 한다', () => {
   let save = defaultSave();
-  const item = makeItem(save.inventory, 'eq_t10_weapon_common', makeRng(1));
+  const item = makeItem(save.inventory, 'eq_t10_longsword_common', makeRng(1));
   save = addItem(save, item);
 
   expect(equipItem(save, item.uid)).toBeNull();
@@ -113,13 +118,13 @@ test('벗어도 HP가 최대치를 넘지 않는다 — 넘으면 체력바가 �
   expect(stripped.player.hp).toBeLessThanOrEqual(statsOf(stripped).maxHp);
   expect(stripped.player.hp).toBeGreaterThan(0);
   // 벗은 건 버려지지 않는다 — 가방에 그대로 있어야 다시 낄 수 있다
-  expect(stripped.inventory).toHaveLength(GEAR_SLOTS.length);
+  expect(stripped.inventory).toHaveLength(SET_PARTS);
 });
 
 test('같은 부위를 갈아 끼우면 칸이 하나로 유지된다', () => {
   const rng = makeRng(3);
   let save = geared(30);
-  const better = makeItem(save.inventory, 'eq_t7_weapon_epic', rng);
+  const better = makeItem(save.inventory, 'eq_t7_longsword_epic', rng);
   save = addItem(save, better);
 
   const swapped = equipItem(save, better.uid)!;
@@ -128,7 +133,7 @@ test('같은 부위를 갈아 끼우면 칸이 하나로 유지된다', () => {
 });
 
 test('itemPower — 품질·강화가 붙은 순서대로 정렬된다 (T17_1)', () => {
-  const base = { uid: '1', defId: 'eq_t5_weapon_common', enhance: 0 };
+  const base = { uid: '1', defId: 'eq_t5_longsword_common', enhance: 0 };
   const plain = { ...base, quality: 1 };
   const good = { ...base, quality: 1.2 };
   const forged = { ...base, quality: 1, enhance: 3 };
@@ -139,7 +144,7 @@ test('itemPower — 품질·강화가 붙은 순서대로 정렬된다 (T17_1)',
   // 부위가 달라도 비교가 선다 — 값이 실제로 주는 몫에 비례하기 때문이다 (§4.5).
   // 장비 몫이 Lv50 60%로 줄어(T17_7 검수 4차) 티어 차이도 줄었다 — 티어 2 전설이 티어 8 일반과 비슷하다
   const highTier = { uid: '2', defId: 'eq_t8_helm_common', quality: 1, enhance: 0 };
-  const lowTier = { uid: '3', defId: 'eq_t2_weapon_epic', quality: 1, enhance: 0 };
+  const lowTier = { uid: '3', defId: 'eq_t2_longsword_epic', quality: 1, enhance: 0 };
   expect(itemPower(highTier)).toBeGreaterThan(itemPower(lowTier));
 });
 
@@ -147,5 +152,5 @@ test('statText — 장신구가 "ATK +0 HP +0 DEF +0"으로 보이지 않는다 
   // 장신구는 LUK만, 신발은 AGI·DEF만 준다. 0인 칸을 찍으면 거짓말이 된다
   expect(statText(equipmentById('eq_t7_accessory_common'))).toMatch(/^LUK \+[\d.]+$/);
   expect(statText(equipmentById('eq_t7_boots_common'))).toMatch(/^DEF \+\d+ AGI \+[\d.]+$/);
-  expect(statText({ atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 })).toBe('스탯 없음');
+  expect(statText({ atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0, eva: 0 })).toBe('스탯 없음');
 });

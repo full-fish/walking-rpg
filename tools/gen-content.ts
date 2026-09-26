@@ -25,6 +25,7 @@ import {
   monsterGold,
   monsterStats,
   RARITIES,
+  slotOfLine,
   TIERS_PER_REGION,
 } from '../src/game/formulas';
 
@@ -47,7 +48,7 @@ export function levelOfTier(tier: number, region: Region): number {
   return loL + ((tier - loT) / (hiT - loT)) * (hiL - loL);
 }
 
-type Extra = { drop: Monster['drop'] } | { boss: number };
+type Extra = { drop: Monster['drop']; weapons?: Monster['weapons'] } | { boss: number };
 
 function build(
   arch: MonsterArchetype,
@@ -77,7 +78,9 @@ function build(
     exp: Math.round(monsterExp(region.id, t, power)),
     gold: Math.round(monsterGold(region.id, t, power)),
     traits: arch.traits,
-    ...('boss' in extra ? { boss: true } : { drop: extra.drop }),
+    ...('boss' in extra
+      ? { boss: true }
+      : { drop: extra.drop, ...(extra.weapons ? { weapons: extra.weapons } : {}) }),
   };
 }
 
@@ -93,6 +96,7 @@ export function generateRegion(region: Region): Monster[] {
       monsters.push(
         build(arch, tier, region, arch.namePool[i], `mon_t${tier}_${suffix}`, {
           drop: arch.drops[i],
+          weapons: arch.weapons?.[String(tier)],
         }),
       );
     });
@@ -145,26 +149,27 @@ export function gearTierLevels(): GearTier[] {
   });
 }
 
-/** 장비 정의 350종 = 티어 10 × 부위 7 × 등급 5 (§7.2). */
+/** 장비 정의 600종 = 티어 10 × 줄 12(손 여섯 · 몸 여섯, T18) × 등급 5 (§7.2). */
 export function generateEquipment(): Equipment[] {
-  const { tierNames, slots } = EQUIPMENT_ARCHETYPES;
+  const { tierNames, lines } = EQUIPMENT_ARCHETYPES;
   const out: Equipment[] = [];
 
   for (const { tier, region, reqLevel, refLevel } of gearTierLevels()) {
-    for (const arch of slots) {
+    for (const arch of lines) {
       for (const rarity of RARITIES) {
         out.push({
-          id: `eq_t${tier}_${arch.slot}_${rarity}`,
+          id: `eq_t${tier}_${arch.line}_${rarity}`,
           name: `${tierNames[tier - 1]} ${arch.names[tier === 1 ? 0 : 1]}`,
           tier,
-          slot: arch.slot,
+          slot: slotOfLine(arch.line),
+          line: arch.line,
           rarity,
           level: reqLevel,
           region,
           sprite: `${arch.spriteTag}_${tier}`,
-          ...gearStats(refLevel, arch.slot, rarity),
+          ...gearStats(refLevel, arch.line, rarity),
           // 값은 티어가 아니라 **그 장비가 실제로 주는 몫**을 따른다 (§4.5)
-          price: gearPrice(refLevel, arch.slot, rarity),
+          price: gearPrice(refLevel, arch.line, rarity),
         });
       }
     }

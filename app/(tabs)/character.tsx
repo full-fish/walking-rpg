@@ -2,18 +2,31 @@ import { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { GEAR_SLOT_LABELS, REGIONS } from '@/content';
+import { ARROWS, GEAR_LINE_LABELS, GEAR_SLOT_LABELS, REGIONS } from '@/content';
 import { dexStats } from '@/game/dex';
-import { expToNext, GEAR_SLOTS, STAT_PER_POINT, type GearSlot } from '@/game/formulas';
+import {
+  expToNext,
+  GEAR_SLOTS,
+  handPartner,
+  STAT_PER_POINT,
+  type GearSlot,
+  type HandLine,
+} from '@/game/formulas';
 import {
   bagFull,
   bagItems,
   equippedRings,
   equippedStats,
+  fitsSlot,
+  isHand,
+  isHandLine,
   itemDef,
   itemPower,
   itemStats,
+  otherHand,
   statText,
+  styleOf,
+  type Hand,
 } from '@/game/items';
 import {
   primaryStats,
@@ -27,9 +40,25 @@ import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
 import { Dex } from '@/ui/Dex';
-import { EmptyCell, ItemCell, ItemGrid, ListIcon, qualityTag, RingCell } from '@/ui/ItemCell';
+import {
+  ArrowCell,
+  EmptyCell,
+  ItemCell,
+  ItemGrid,
+  ListIcon,
+  qualityTag,
+  RingCell,
+} from '@/ui/ItemCell';
 import { Panel } from '@/ui/Panel';
 import { ringName, ringText } from '@/ui/rings';
+import {
+  ARROW_EFFECT_TEXT,
+  SKILL_CYCLE,
+  SKILL_LABEL,
+  SKILL_TEXT,
+  STYLE_LABEL,
+  STYLE_TRAIT_TEXT,
+} from '@/ui/styleText';
 import { Text } from '@/ui/Text';
 import { colors, rarity, space } from '@/ui/theme';
 
@@ -73,12 +102,13 @@ const STATS: { key: StatKey; label: string; effect: string }[] = [
 
 /**
  * 인형 배치 (T17_1). 3열 × 4행에 부위를 사람 모양으로 앉힌다. 하의는 다리 자리다 (T17_4).
- * null은 빈 칸 — 무기가 손 위치에 오려면 양옆이 비어 있어야 한다. 숫자는 반지 칸 번호다 (T17_7).
+ * weapon · offhand가 두 손 자리다 — 둘은 똑같다(T18 확인). 투구 오른쪽이 화살 칸이다(T18_1).
+ * null은 빈 칸, 숫자는 반지 칸 번호다 (T17_7).
  */
-const DOLL: (GearSlot | number | null)[][] = [
-  [null, 'helm', null],
-  ['weapon', 'armor', 'accessory'],
-  ['gloves', 'pants', null],
+const DOLL: (GearSlot | number | 'arrow' | null)[][] = [
+  [null, 'helm', 'arrow'],
+  ['weapon', 'armor', 'offhand'],
+  ['gloves', 'pants', 'accessory'],
   [0, 'boots', 1],
 ];
 
@@ -106,8 +136,16 @@ export default function Character() {
   const [picking, setPicking] = useState<GearSlot | null>(null);
   /** 빈 반지 칸을 누르면 안 낀 반지들을 편다 (T17_7) */
   const [pickingRing, setPickingRing] = useState<number | null>(null);
+  /** 화살 칸을 누르면 가진 화살을 편다 (T18_1) */
+  const [pickingArrow, setPickingArrow] = useState(false);
+  /** 손 후보에서 짝이 안 맞는 걸 눌렀을 때 한 줄 (T18 확인) */
+  const [warn, setWarn] = useState<string | null>(null);
 
   const stats = statsOf(save);
+  const style = styleOf(save);
+  /** 가진 화살 (T18) — 활이면 먹인 걸 쏜다. 특수 화살은 누구나 줍는다(T18_1) */
+  const arrows = ARROWS.filter((a) => (save.arrows[a.id] ?? 0) > 0);
+  const quiver = save.quiver ? ARROWS.find((a) => a.id === save.quiver) : undefined;
   const { unspent } = save.statPoints;
   const primary = primaryStats(save);
   const cost = respecCost(save.player.level);
@@ -138,14 +176,36 @@ export default function Character() {
   const full = bagFull(save);
   const bag = unworn.filter((i) => filter === null || itemDef(i).slot === filter);
 
-  /** 낀 칸은 벗고, 빈 칸은 후보를 편다 (T17_2). */
+  /**
+   * 손 칸이 보여 줄 것 (T18 확인) — 낀 게 있으면 그것. 비었으면 다른 손이 정한다 — 두 손 무기면 같은 무기를 흐리게,
+   * 한 손 줄이면 그 짝 이름(소검 옆은 "방패"), 다른 손도 비었으면 "무기"
+   */
+  const handView = (hand: Hand): { item?: ItemInstance; label?: string; ghost?: boolean } => {
+    const item = equippedIn(hand);
+    if (item) return { item };
+    const other = equippedIn(otherHand(hand));
+    if (!other) return { label: '무기' };
+    const partner = handPartner(itemDef(other).line as HandLine);
+    return partner === null ? { item: other, ghost: true } : { label: GEAR_LINE_LABELS[partner] };
+  };
+
+  /** 낀 칸은 벗고, 빈 칸은 후보를 편다 (T17_2). 두 손 무기가 비친 칸을 누르면 그 무기를 벗는다 (T18 확인) */
   const onSlot = (slot: GearSlot) => {
-    if (equippedIn(slot)) {
-      unequip(slot);
+    const ghost = isHand(slot) && handView(slot).ghost;
+    if (equippedIn(slot) || ghost) {
+      unequip(ghost ? otherHand(slot as Hand) : slot);
       setPicking(null);
     } else {
       setPicking((cur) => (cur === slot ? null : slot));
     }
+    setPickingRing(null);
+    setPickingArrow(false);
+    setWarn(null);
+  };
+
+  const onArrow = () => {
+    setPickingArrow((cur) => !cur);
+    setPicking(null);
     setPickingRing(null);
   };
 
@@ -169,11 +229,34 @@ export default function Character() {
     trade(trades.equipRing(uid, empty < 0 ? 0 : empty));
   };
 
-  /** 그 부위에 지금 낄 수 있는 것들. 센 것부터 — 고르려고 여는 목록이라서다 */
+  /** 그 칸에 지금 낄 수 있는 것들. 센 것부터 — 고르려고 여는 목록이라서다 */
   const candidates = (slot: GearSlot) =>
     unworn
-      .filter((i) => itemDef(i).slot === slot && save.player.level >= itemDef(i).level)
+      .filter((i) => fitsSlot(save, itemDef(i), slot) && save.player.level >= itemDef(i).level)
       .sort((a, b) => itemPower(b) - itemPower(a));
+  /**
+   * 손 칸의 후보 중 **다른 손과 짝이 안 맞는 것** (T18 확인) — 낄 수 있는 것 아래에 흐리게 편다.
+   * 누르면 왜 안 되는지 알려 준다("방패는 소검이랑만 낄 수 있습니다")
+   */
+  const misfits = (slot: GearSlot) =>
+    isHand(slot)
+      ? unworn
+          .filter((i) => {
+            const def = itemDef(i);
+            return (
+              isHandLine(def.line) && !fitsSlot(save, def, slot) && save.player.level >= def.level
+            );
+          })
+          .sort((a, b) => itemPower(b) - itemPower(a))
+      : [];
+  const misfitText = (slot: Hand) => {
+    const other = itemDef(equippedIn(otherHand(slot))!).line as HandLine;
+    const partner = handPartner(other);
+    const name = GEAR_LINE_LABELS[other];
+    return partner === null
+      ? `${josa(name, '은', '는')} 두 손으로 쥡니다`
+      : `${josa(name, '은', '는')} ${josa(GEAR_LINE_LABELS[partner], '이랑', '랑')}만 낄 수 있습니다`;
+  };
 
   return (
     <SafeAreaView style={styles.screen} edges={['top']}>
@@ -198,10 +281,8 @@ export default function Character() {
       <ScrollView contentContainerStyle={styles.body}>
         {tab === '캐릭터' && (
           <>
-            <Panel title={`Lv ${save.player.level} 전사`}>
+            <Panel title={`Lv ${save.player.level} ${save.player.name}`}>
               <Bar label="HP" value={save.player.hp} max={stats.maxHp} color={colors.hp} />
-              {/* MP를 쓰는 건 스킬(T18)이라 지금은 늘 가득 차 있다 */}
-              <Bar label="MP" value={stats.maxMp} max={stats.maxMp} color={colors.exp} />
               <Bar
                 label="EXP"
                 value={save.player.exp}
@@ -226,14 +307,6 @@ export default function Character() {
                   <Button label="+" disabled={unspent <= 0} onPress={() => allocate(key)} />
                 </View>
               ))}
-              <View style={styles.row}>
-                <View style={styles.name}>
-                  <Text dim>지능 INT {primary.int}</Text>
-                  <Text size="sm" dim>
-                    MP +10 · 마법공격 +2 — 스킬이 생기면 배분할 수 있습니다
-                  </Text>
-                </View>
-              </View>
 
               {/* 재분배 (§4.3). 되돌리면 현재 HP가 새 최대치로 잘린다 — 비율은 안 지킨다 */}
               <View style={styles.row}>
@@ -255,15 +328,33 @@ export default function Character() {
               </View>
             </Panel>
 
-            <Panel title="전투력">
+            {/* 무기 계열 (T18) — 오른손 무기가 정한다. 직업 대신이다 */}
+            <Panel title={`계열 — ${STYLE_LABEL[style]}`}>
+              <Text size="sm">{STYLE_TRAIT_TEXT[style]}</Text>
               <Text size="sm" dim>
-                ATK {stats.atk.toFixed(1)}
+                기술 {SKILL_LABEL[style]} — {SKILL_TEXT[style]} ({SKILL_CYCLE})
+              </Text>
+              {style === 'bow' && (
+                <Text size="sm" color={stats.arrows > 0 ? colors.dim : colors.hp}>
+                  화살 {stats.arrows > 0 ? `${stats.arrows}발` : '없음 — 활로 칩니다'} (장비 탭에서
+                  고릅니다)
+                </Text>
+              )}
+              <Text size="sm" dim>
+                무기를 바꾸면 계열이 바뀝니다 — 장검 · 소검(+방패) · 단검 두 자루 · 대검 · 활
+              </Text>
+            </Panel>
+
+            <Panel title="전투력">
+              {/* 공격력 = ATK × 계열의 한 방 배수 — 실제로 한 방에 실리는 값이다. ATK는 배수 전이다 */}
+              <Text size="sm" dim>
+                공격력 {(stats.atk * stats.power).toFixed(1)} · ATK {stats.atk.toFixed(1)}
                 {bonus(gear.atk)} · DEF {stats.def.toFixed(1)}
                 {bonus(gear.def)} · SPD {stats.spd.toFixed(1)}
               </Text>
               <Text size="sm" dim>
-                치명 {(stats.cri * 100).toFixed(1)}% (×{stats.crd.toFixed(2)}) · 회피{' '}
-                {(stats.eva * 100).toFixed(1)}% · 마법공격 {stats.matk.toFixed(1)}
+                명중 {Math.round(stats.acc * 100)}% · 치명 {(stats.cri * 100).toFixed(1)}% (×
+                {stats.crd.toFixed(2)}) · 회피 {(stats.eva * 100).toFixed(1)}%
               </Text>
               <Text size="sm" dim>
                 드랍 +{((stats.dropMult - 1) * 100).toFixed(1)}% · 골드 +
@@ -302,6 +393,22 @@ export default function Character() {
                           <EmptyCell key={j} />
                         ) : typeof slot === 'number' ? (
                           <RingCell key={j} ring={ringIn(slot)} onPress={() => onRing(slot)} />
+                        ) : slot === 'arrow' ? (
+                          <ArrowCell
+                            key={j}
+                            name={quiver?.name}
+                            sprite={quiver?.sprite}
+                            count={quiver ? (save.arrows[quiver.id] ?? 0) : 0}
+                            selected={pickingArrow}
+                            onPress={onArrow}
+                          />
+                        ) : isHand(slot) ? (
+                          <Slot
+                            key={j}
+                            {...handView(slot)}
+                            faded={handView(slot).ghost}
+                            onPress={() => onSlot(slot)}
+                          />
                         ) : (
                           <Slot
                             key={j}
@@ -319,13 +426,19 @@ export default function Character() {
               <Panel title="장비">
                 {GEAR_SLOTS.map((slot) => {
                   const item = equippedIn(slot);
+                  const hand = isHand(slot) ? handView(slot) : undefined;
                   return (
                     <View key={slot} style={styles.row}>
                       <View style={styles.itemRow}>
                         <Icon item={item} size={36} />
                         <View style={styles.name}>
                           <Text>
-                            {GEAR_SLOT_LABELS[slot]} — {item ? itemDef(item).name : '비어 있음'}
+                            {hand ? (hand.label ?? '무기') : GEAR_SLOT_LABELS[slot]} —{' '}
+                            {item
+                              ? itemDef(item).name
+                              : hand?.ghost
+                                ? `${itemDef(hand.item!).name} (두 손)`
+                                : '비어 있음'}
                             {item && item.enhance > 0 ? ` +${item.enhance}` : ''}
                           </Text>
                           {item ? (
@@ -336,13 +449,26 @@ export default function Character() {
                         </View>
                       </View>
                       <Button
-                        label={item ? '해제' : '고르기'}
-                        disabled={item ? full : candidates(slot).length === 0}
+                        label={item || hand?.ghost ? '해제' : '고르기'}
+                        disabled={
+                          item || hand?.ghost
+                            ? full
+                            : candidates(slot).length + misfits(slot).length === 0
+                        }
                         onPress={() => onSlot(slot)}
                       />
                     </View>
                   );
                 })}
+                <View style={styles.row}>
+                  <View style={styles.name}>
+                    <Text>
+                      화살 —{' '}
+                      {quiver ? `${quiver.name} × ${save.arrows[quiver.id] ?? 0}` : '안 골랐음'}
+                    </Text>
+                  </View>
+                  <Button label="고르기" onPress={onArrow} />
+                </View>
                 {save.ringSlots.map((_, slot) => {
                   const ring = ringIn(slot);
                   return (
@@ -368,6 +494,43 @@ export default function Character() {
                     </View>
                   );
                 })}
+              </Panel>
+            )}
+
+            {/* 화살 (T18 → T18_1) — 화살 칸을 누르면 뜬다. 활이 먹인 것을 쏜다. 기본은 상점, 특수는 몬스터가 떨군다 */}
+            {pickingArrow && (
+              <Panel title="화살 — 먹인 것을 쏩니다">
+                {style !== 'bow' && (
+                  <Text size="sm" dim>
+                    활을 들면 먹인 화살을 쏩니다.
+                  </Text>
+                )}
+                {arrows.length === 0 ? (
+                  <Text size="sm" color={colors.hp}>
+                    화살이 없습니다 — 활로 칩니다. 기본 화살은 상점에서 사고, 특수 화살은 몬스터가
+                    떨굽니다.
+                  </Text>
+                ) : (
+                  arrows.map((a) => (
+                    <View key={a.id} style={styles.row}>
+                      <View style={styles.name}>
+                        <Text color={save.quiver === a.id ? colors.gold : undefined}>
+                          {a.name} × {save.arrows[a.id]}
+                        </Text>
+                        <Text size="sm" dim>
+                          ATK +{a.atk} · {ARROW_EFFECT_TEXT[a.effect]}
+                        </Text>
+                      </View>
+                      <Button
+                        label={save.quiver === a.id ? '먹임' : '먹이기'}
+                        tone={save.quiver === a.id ? 'gold' : 'normal'}
+                        disabled={save.quiver === a.id}
+                        onPress={() => trade(trades.setQuiver(a.id))}
+                      />
+                    </View>
+                  ))
+                )}
+                <Button label="닫기" onPress={() => setPickingArrow(false)} />
               </Panel>
             )}
 
@@ -412,12 +575,16 @@ export default function Character() {
               </Panel>
             )}
 
-            {/* 빈 칸을 눌렀을 때만 뜬다. 낄 수 있는 것만, 센 것부터 (T17_2) */}
+            {/* 빈 칸을 눌렀을 때만 뜬다. 낄 수 있는 것부터, 센 것부터 (T17_2). 손 칸은 짝이 안 맞는 것을 아래에 흐리게 (T18 확인) */}
             {picking && (
-              <Panel title={`${GEAR_SLOT_LABELS[picking]} — 낄 수 있는 것`}>
+              <Panel
+                title={`${isHand(picking) ? (handView(picking).label ?? '무기') : GEAR_SLOT_LABELS[picking]} — 낄 수 있는 것`}
+              >
                 {candidates(picking).length === 0 ? (
                   <Text size="sm" dim>
-                    가진 게 없습니다. 상점에서 사거나 사냥터에서 얻으세요.
+                    {isHand(picking) && misfits(picking).length > 0
+                      ? `${misfitText(picking)} — 들 수 있는 게 없습니다.`
+                      : '가진 게 없습니다. 상점에서 사거나 사냥터에서 얻으세요.'}
                   </Text>
                 ) : (
                   candidates(picking).map((item) => (
@@ -439,14 +606,43 @@ export default function Character() {
                         label="장착"
                         tone="gold"
                         onPress={() => {
-                          equip(item.uid);
+                          equip(item.uid, picking);
                           setPicking(null);
                         }}
                       />
                     </View>
                   ))
                 )}
-                <Button label="닫기" onPress={() => setPicking(null)} />
+                {warn && (
+                  <Text size="sm" color={colors.hp}>
+                    {warn}
+                  </Text>
+                )}
+                {misfits(picking).map((item) => (
+                  <View key={item.uid} style={[styles.row, styles.misfit]}>
+                    <View style={styles.itemRow}>
+                      <Icon item={item} size={36} />
+                      <View style={styles.name}>
+                        <Text dim>
+                          {itemDef(item).name}
+                          {item.enhance > 0 ? ` +${item.enhance}` : ''} (
+                          {Math.round(item.quality * 100)}%)
+                        </Text>
+                        <Text size="sm" dim>
+                          {statLine(item)}
+                        </Text>
+                      </View>
+                    </View>
+                    <Button label="못 낌" onPress={() => setWarn(misfitText(picking as Hand))} />
+                  </View>
+                ))}
+                <Button
+                  label="닫기"
+                  onPress={() => {
+                    setPicking(null);
+                    setWarn(null);
+                  }}
+                />
               </Panel>
             )}
           </>
@@ -558,7 +754,7 @@ export default function Character() {
                                 {Math.round(item.quality * 100)}%)
                               </Text>
                               <Text size="sm" dim>
-                                {GEAR_SLOT_LABELS[def.slot]} · {statLine(item)}
+                                {GEAR_LINE_LABELS[def.line]} · {statLine(item)}
                                 {locked ? ` · 요구 Lv${def.level}` : ''}
                               </Text>
                             </View>
@@ -594,11 +790,13 @@ function Slot({
   item,
   label,
   dim,
+  faded,
   onPress,
 }: {
   item?: ItemInstance;
   label?: string;
   dim?: boolean;
+  faded?: boolean;
   onPress?: () => void;
 }) {
   return (
@@ -608,9 +806,16 @@ function Slot({
       tag={item && qualityTag(item)}
       label={label}
       dim={dim}
+      faded={faded}
       onPress={onPress}
     />
   );
+}
+
+/** 받침이 있으면 앞, 없으면 뒤 — "소검은 · 방패는", "소검이랑 · 방패랑" */
+function josa(word: string, withBatchim: string, without: string): string {
+  const code = word.charCodeAt(word.length - 1) - 0xac00;
+  return word + (code >= 0 && code < 11172 && code % 28 !== 0 ? withBatchim : without);
 }
 
 function statLine(item: ItemInstance): string {
@@ -637,6 +842,7 @@ const styles = StyleSheet.create({
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   itemRow: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexShrink: 1 },
   name: { gap: space.xs, flexShrink: 1 },
+  misfit: { opacity: 0.4 },
 
   doll: { gap: space.sm, alignItems: 'center' },
   dollRow: { flexDirection: 'row', gap: space.sm },

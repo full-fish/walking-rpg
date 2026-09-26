@@ -4,8 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import {
   equipmentById,
+  GEAR_LINE_LABELS,
   GEAR_SLOT_LABELS,
   regionById,
+  shopArrows,
   shopConsumables,
   shopGear,
   type Equipment,
@@ -23,6 +25,7 @@ import {
 import { bossBonus } from '@/game/dex';
 import { inTown } from '@/game/field';
 import {
+  ARROW,
   BAG,
   bagExpandCost,
   ENHANCE_MAX,
@@ -47,6 +50,7 @@ import { MaterialPicker, usePicked } from '@/ui/MaterialPicker';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
 import { RARITY_LABEL, RING_INFO, ringName, ringText } from '@/ui/rings';
+import { ARROW_EFFECT_TEXT } from '@/ui/styleText';
 import { colors, rarity, space } from '@/ui/theme';
 
 const TABS = ['상점', '강화', '여관', '창고', '반지'] as const;
@@ -456,6 +460,25 @@ export default function Shop() {
               </Text>
             </Panel>
 
+            {/* 화살 (T18) — 활만 쓴다. 쏠 때마다 1발, 가방 칸은 안 쓴다 */}
+            <Panel title={`화살 — ${ARROW.bundle}발씩`}>
+              {shopArrows(region.id).map((a) => (
+                <Row
+                  key={a.id}
+                  title={`${a.name} × ${save.arrows[a.id] ?? 0}`}
+                  detail={`ATK +${a.atk} · ${ARROW_EFFECT_TEXT[a.effect]} · ${a.price.toLocaleString()}G`}
+                  action="구매"
+                  disabled={gold < a.price}
+                  onPress={() => trade(trades.buyArrows(a.id))}
+                />
+              ))}
+              <Text size="sm" dim>
+                활이 쏠 때마다 1발씩 씁니다. 없으면 활로 칩니다(30%). 처음 산 화살을 먹이고, 캐릭터
+                탭 장비의 화살 칸에서 바꿉니다. 특수 화살(관통 · 불 · 폭탄 …)은 몬스터가 가끔
+                떨굽니다.
+              </Text>
+            </Panel>
+
             {viewBar}
 
             <Panel
@@ -477,7 +500,7 @@ export default function Shop() {
                     icon={compact ? undefined : e}
                     title={compact ? undefined : e.name}
                     detail={
-                      `${GEAR_SLOT_LABELS[e.slot]} · ${statText(e)} · ${e.price.toLocaleString()}G` +
+                      `${GEAR_LINE_LABELS[e.line]} · ${statText(e)} · ${e.price.toLocaleString()}G` +
                       // 레벨이 모자라도 산다 — 미리 사 두고 레벨이 되면 낀다
                       (e.level > save.player.level ? ` · 착용 Lv${e.level}` : '')
                     }
@@ -536,7 +559,7 @@ export default function Shop() {
                   <Row
                     icon={compact ? undefined : itemDef(item)}
                     title={compact ? undefined : itemLabel(item)}
-                    detail={`${GEAR_SLOT_LABELS[equipmentById(item.defId).slot]} · ${sellPrice(item).toLocaleString()}G`}
+                    detail={`${GEAR_LINE_LABELS[equipmentById(item.defId).line]} · ${sellPrice(item).toLocaleString()}G`}
                     action="팔기"
                     onPress={() =>
                       confirm(

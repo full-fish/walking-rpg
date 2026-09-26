@@ -4,6 +4,7 @@ import { Image, Pressable, StyleSheet, View } from 'react-native';
 import {
   bossOf,
   FIELDS,
+  GEAR_LINE_LABELS,
   GEAR_SLOT_LABELS,
   MONSTER_ARCHETYPES,
   monstersOfField,
@@ -135,7 +136,15 @@ function Info({ save, monster }: { save: Save; monster: Monster }) {
       {stage >= 4 && monster.boss && (
         <Text size="sm">첫 처치 보상 · 장비 1개 확정 (희귀 이상)</Text>
       )}
-      {stage >= 4 && monster.drop && <Text size="sm">드랍 · {GEAR_SLOT_LABELS[monster.drop]}</Text>}
+      {stage >= 4 && monster.drop && (
+        <Text size="sm">
+          드랍 · {GEAR_SLOT_LABELS[monster.drop]}
+          {/* 무기는 떨구는 줄까지 (T18) — 원하는 계열을 찾아 사냥터를 고른다 */}
+          {monster.weapons
+            ? ` (${monster.weapons.map((l) => GEAR_LINE_LABELS[l]).join(' · ')})`
+            : ''}
+        </Text>
+      )}
       {stage >= 5 && (
         <Text size="sm">
           HP {monster.maxHp.toLocaleString()} · ATK {monster.atk} · DEF {monster.def} · SPD{' '}

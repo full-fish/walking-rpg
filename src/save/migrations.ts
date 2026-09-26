@@ -126,6 +126,30 @@ export const migrations: Record<number, Migration> = {
 
   /** v11 → v12: 도감 · 걸음 목표 · 출석 (T19). 지금까지 잡은 몬스터는 기록이 없어 0부터 센다 */
   11: (s) => ({ ...s, dex: {}, daily: {}, streak: { count: 0, last: '' } }),
+
+  /**
+   * v12 → v13: 무기 계열 (T18). 지금까지의 무기는 **장검**이다 — 정의 id의 `weapon` 줄을 `longsword`로 바꾼다.
+   * 왼손 칸은 빈 채로 열고, 화살은 없다. 지능(int)은 없앴다 — 늘 0이었다.
+   */
+  12: (s) => {
+    const { int: _int, ...statPoints } = s.statPoints as Record<string, number>;
+    return {
+      ...s,
+      statPoints,
+      inventory: (s.inventory as { defId: string }[]).map((i) => ({
+        ...i,
+        defId: i.defId.replace(/_weapon_/, '_longsword_'),
+      })),
+      equipped: { ...(s.equipped as object), offhand: null },
+      arrows: {},
+      quiver: null,
+    };
+  },
+  /**
+   * v13 → v14: 닉네임 (T18 확인). 빈 이름이면 다음 실행에 이름을 먼저 묻는다.
+   * 화살은 모양이 그대로다 — 가진 관통 · 불 화살은 id가 같아 그대로 특수 화살이 된다(T18_1)
+   */
+  13: (s) => ({ ...s, player: { ...(s.player as object), name: '' } }),
 };
 
 /**

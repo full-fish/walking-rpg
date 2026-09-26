@@ -2,7 +2,7 @@ import { expect, test } from 'vitest';
 
 import { consumableById, fieldById, monstersOfField, regionById } from '../content';
 import { defaultSave, type Ring, type Save } from '../save/schema';
-import { makeRng, shieldLeft, simulateBattle, type Combatant } from './battle';
+import { makeRng, simulateBattle, type Combatant } from './battle';
 import {
   addBuffs,
   carriedPotions,
@@ -194,7 +194,7 @@ test('소재 — 6마리 확정 · 5마리 50% · 4마리 20%에 드랍 배율, 
   const lucky: Save = {
     ...ready(),
     player: { ...ready().player, level: 50 },
-    statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 147, int: 0 },
+    statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 147 },
   };
   expect(statsOf(lucky).dropMult).toBeCloseTo(2.51);
   const runs = new Map<number, { n: number; got: number }>();
@@ -278,9 +278,9 @@ test('반지 — 보호막은 HP보다 먼저 깎이고, 보스 피해는 보스
   expect(shielded.events.length).toBeGreaterThan(plain.events.length);
   const cut = plain.events.findIndex((e) => e.actor === 'monster' && e.hpAfter < 60);
   expect(shielded.events[cut].hpAfter).toBe(Math.min(100, plain.events[cut].hpAfter + 30));
-  expect(shieldLeft(plain.events.slice(0, 1), 30)).toBe(
-    30 - (plain.events[0].actor === 'monster' ? plain.events[0].value : 0),
-  );
+  // 남은 보호막은 이벤트마다 붙은 상태에 있다 (T18) — 물약으로 끊고 이어 뽑을 때 여기서 받는다
+  const first = shielded.events[0];
+  expect(first.state.shield).toBe(Math.max(0, 30 - (first.actor === 'monster' ? first.value : 0)));
 
   // 보스 피해 +15%는 보스에게만
   const boss: Combatant = { ...foe, boss: true };

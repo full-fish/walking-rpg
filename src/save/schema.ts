@@ -17,7 +17,7 @@ import {
 } from '../game/formulas';
 
 /** 세이브 구조를 바꿀 때마다 1씩 올리고 migrations.ts에 변환 한 줄을 추가한다. */
-export const SAVE_VERSION = 12;
+export const SAVE_VERSION = 14;
 
 /**
  * 장비 **한 개체** (§4.5). 정의 ID가 아니라 이걸 저장한다 —
@@ -51,6 +51,8 @@ export type Ring = z.infer<typeof RingSchema>;
 export const SaveSchema = z.object({
   version: z.literal(SAVE_VERSION),
   player: z.object({
+    /** 닉네임 (T18 확인). ''이면 아직 안 정했다 — 앱이 먼저 묻는다. 규칙은 progression.nameError */
+    name: z.string(),
     level: z.int().min(1),
     exp: z.int().min(0),
     gold: z.int().min(0),
@@ -69,20 +71,22 @@ export const SaveSchema = z.object({
   }),
   /** HP 자연회복을 마지막으로 반영한 시각(epoch ms). 10분당 1% (§4.2) */
   hpUpdatedAt: z.int().min(0),
-  /** 1차 스탯 배분. 레벨당 3포인트를 받아 unspent에 쌓인다 (§4.3) */
+  /** 1차 스탯 배분. 레벨당 3포인트를 받아 unspent에 쌓인다 (§4.3). 지능은 T18에 없앴다 */
   statPoints: z.object({
     unspent: z.int().min(0),
     str: z.int().min(0),
     vit: z.int().min(0),
     agi: z.int().min(0),
     luk: z.int().min(0),
-    /** T18 전까지는 0에서 안 움직인다 — 배분 대상이 아니다 (§4.3) */
-    int: z.int().min(0),
   }),
   /** 가진 장비 개체 전부 (§4.5) */
   inventory: z.array(ItemInstanceSchema),
-  /** 부위별로 낀 개체의 uid. 빈 칸은 null (§4.5) */
+  /** 칸별로 낀 개체의 uid. 빈 칸은 null (§4.5). 왼손은 T18 */
   equipped: z.record(z.enum(GEAR_SLOTS), z.string().nullable()),
+  /** 가진 화살 — id → 발 수 (T18). 가방 칸을 안 쓴다 */
+  arrows: z.record(z.string(), z.int().min(0)),
+  /** 활에 먹인 화살 id (T18). null이면 안 골랐다 — 활로 친다 */
+  quiver: z.string().nullable(),
   /** 가진 반지 (T17_7). 가방 칸을 안 쓴다 */
   rings: z.array(RingSchema),
   /** 반지 칸 두 개에 낀 반지의 uid. 빈 칸은 null (T17_7) */
@@ -167,12 +171,14 @@ export type Save = z.infer<typeof SaveSchema>;
 export function defaultSave(): Save {
   return {
     version: SAVE_VERSION,
-    player: { level: 1, exp: 0, gold: 0, hp: 100 },
+    player: { name: '', level: 1, exp: 0, gold: 0, hp: 100 },
     wp: { current: 0, grantedByDate: {}, lastMidnightGrantAt: '' },
     hpUpdatedAt: 0,
-    statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0, int: 0 },
+    statPoints: { unspent: 0, str: 0, vit: 0, agi: 0, luk: 0 },
     inventory: [],
     equipped: Object.fromEntries(GEAR_SLOTS.map((s) => [s, null])) as Save['equipped'],
+    arrows: {},
+    quiver: null,
     rings: [],
     ringSlots: Array.from({ length: RING_SLOTS }, () => null),
     vault: { gold: 0, capacity: VAULT.capacity, expansions: 0 },

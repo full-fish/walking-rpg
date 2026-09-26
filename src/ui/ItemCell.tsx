@@ -13,9 +13,18 @@ import { border, colors, rarity, space } from '@/ui/theme';
 /** 격자 한 칸 (T17_2). 그림이 칸을 꽉 채운다 — 테두리만 빼고 80px. */
 export const CELL = 84;
 
-/** 장비 그림. 아직 그림이 없는 sprite는 빈 칸으로 자리만 잡는다. */
-export function ItemIcon({ def, size }: { def?: Equipment; size: number }) {
-  const source = def ? itemIcons[def.sprite] : undefined;
+/** 장비 그림 — 반지 · 화살은 `sprite`로 부른다. 아직 그림이 없는 sprite는 빈 칸으로 자리만 잡는다. */
+export function ItemIcon({
+  def,
+  sprite,
+  size,
+}: {
+  def?: Equipment;
+  sprite?: string;
+  size: number;
+}) {
+  const id = sprite ?? def?.sprite;
+  const source = id ? itemIcons[id] : undefined;
   const box = { width: size, height: size };
   if (!source) return <View style={box} />;
   return <Image source={source} style={box} resizeMode="contain" />;
@@ -23,7 +32,7 @@ export function ItemIcon({ def, size }: { def?: Equipment; size: number }) {
 
 /**
  * 목록 줄 앞의 그림 (T17_7 검수 5차) — 격자 칸처럼 **테두리 색이 등급**이다.
- * 전에는 목록에서 이름 글자색만 등급을 따라서 한눈에 안 갈렸다. 반지는 그림이 없어 💍로 그린다.
+ * 전에는 목록에서 이름 글자색만 등급을 따라서 한눈에 안 갈렸다.
  */
 export function ListIcon({
   def,
@@ -38,7 +47,7 @@ export function ListIcon({
   const box = { width: size + border * 2, height: size + border * 2 };
   return (
     <View style={[styles.listIcon, box, { borderColor: tone ? rarity[tone] : colors.edge }]}>
-      {ring ? <Text>💍</Text> : <ItemIcon def={def} size={size} />}
+      <ItemIcon def={def} sprite={ring && `ring_${ring.kind}`} size={size} />
     </View>
   );
 }
@@ -58,6 +67,7 @@ export function ItemCell({
   tag,
   label,
   dim,
+  faded,
   selected,
   onPress,
 }: {
@@ -66,6 +76,8 @@ export function ItemCell({
   tag?: string;
   label?: string;
   dim?: boolean;
+  /** 그림까지 흐리게 — 두 손 무기가 다른 손 칸에 비칠 때 (T18 확인) */
+  faded?: boolean;
   selected?: boolean;
   onPress?: () => void;
 }) {
@@ -79,6 +91,7 @@ export function ItemCell({
           styles.cell,
           { borderColor: def ? rarity[def.rarity] : colors.edge },
           selected && styles.selected,
+          faded && styles.faded,
         ]}
       >
         <ItemIcon def={def} size={CELL - border * 2} />
@@ -149,7 +162,7 @@ export function ItemGrid({ children }: { children: ReactNode }) {
 }
 
 /**
- * 반지 칸 (T17_7). 반지 그림이 아직 없어서 글자로 그린다 — 테두리 색이 등급, 아래 한 줄이 ★·강화다.
+ * 반지 칸 (T17_7). 그림은 종류마다 한 장 — 테두리 색이 등급, 아래 한 줄이 ★·강화다.
  * 비어 있으면 "반지"라고만 쓴다. **꾹 누르면 이름과 효과가 뜬다** — 장비 칸과 같다 (T17_7 검수 5차).
  */
 export function RingCell({
@@ -173,9 +186,7 @@ export function RingCell({
           selected && styles.selected,
         ]}
       >
-        <Text size="xl" dim={!ring}>
-          {ring ? '💍' : ''}
-        </Text>
+        {ring && <ItemIcon sprite={`ring_${ring.kind}`} size={CELL - border * 2} />}
         <View style={styles.tag}>
           <Text size="sm" dim={!ring}>
             {ring ? `★${ring.tier}${ring.enhance > 0 ? ` +${ring.enhance}` : ''}` : '반지'}
@@ -200,6 +211,47 @@ export function RingCell({
   );
 }
 
+/**
+ * 화살 칸 (T18_1) — 인형의 투구 오른쪽. 먹인 화살의 그림 · 이름 · 남은 수, 안 먹였으면 흐린 🏹와 "화살".
+ * 누르면 가진 화살을 편다(캐릭터 탭).
+ */
+export function ArrowCell({
+  name,
+  sprite,
+  count,
+  selected,
+  onPress,
+}: {
+  name?: string;
+  sprite?: string;
+  count: number;
+  selected?: boolean;
+  onPress?: () => void;
+}) {
+  return (
+    <Pressable onPress={onPress} style={[styles.cell, selected && styles.selected]}>
+      {sprite ? (
+        <View style={count === 0 && styles.faded}>
+          <ItemIcon sprite={sprite} size={CELL - border * 2} />
+        </View>
+      ) : (
+        <Text size="xl" dim>
+          🏹
+        </Text>
+      )}
+      <View style={styles.tag}>
+        <Text
+          size="sm"
+          dim={!name || count === 0}
+          color={name && count === 0 ? colors.hp : undefined}
+        >
+          {name ? `${name.split(' ')[0]} ${count}` : '화살'}
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
 /** 빈 자리 — 인형 배치에서 칸이 없는 곳을 채운다. */
 export function EmptyCell() {
   return <View style={styles.cell} />;
@@ -217,6 +269,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   selected: { backgroundColor: colors.edgeLit },
+  faded: { opacity: 0.35 },
   listIcon: { borderWidth: border, alignItems: 'center', justifyContent: 'center' },
   backdrop: {
     flex: 1,

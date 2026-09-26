@@ -37,38 +37,27 @@ export const WP_COST = {
 // ─────────────────────────────────────────────────────────────
 
 /**
- * 시작 1차 스탯 (§4.3). RPG에서 스탯이 0부터 시작하는 건 없으니 4~6에서 출발한다.
- *
- * **전투 4종(STR·VIT·AGI·LUK)의 합은 19로 같다** — 어느 직업도 그냥 세지 않는다.
- * INT는 그 위에 얹는다. 지금은 MP와 마법 공격력만 올리고 전투에는 안 쓰이므로(스킬이 T18)
- * 직업마다 달라도 밸런스가 안 움직인다. 마법사만 8로 두어 정체성을 미리 박아둔다.
+ * 시작 1차 스탯 (§4.3). RPG에서 스탯이 0부터 시작하는 건 없으니 4~6에서 출발한다. 합은 19다.
+ * 직업은 없다 (T18) — 싸우는 방식은 무기 계열이 정한다(STYLE_TRAIT). 지능 · MP도 같이 없앴다.
  */
-export const STARTING_STATS: Record<JobId, StatSpend> = {
-  warrior: { str: 5, vit: 6, agi: 4, luk: 4, int: 4 },
-  rogue: { str: 5, vit: 4, agi: 6, luk: 4, int: 4 },
-  mage: { str: 6, vit: 4, agi: 4, luk: 5, int: 8 },
-};
+export const STARTING_STATS: StatSpend = { str: 5, vit: 6, agi: 4, luk: 4 };
 
 /**
- * 1차 스탯을 뺀 나머지 기본값 (§4.3). 전사 Lv1 맨몸은 HP 100 / ATK 20 / DEF 5 / SPD 15다.
+ * 1차 스탯을 뺀 나머지 기본값 (§4.3). Lv1 맨몸은 HP 100 / ATK 20 / DEF 5 / SPD 15다.
  *
- * **ATK·HP·DEF·SPD 모두 "포인트 10점어치"로 맞췄다** (T17_7 검수 4차) — 기본값 + 전사 시작 스탯이
+ * **ATK·HP·DEF·SPD 모두 "포인트 10점어치"로 맞췄다** (T17_7 검수 4차) — 기본값 + 시작 스탯이
  * ATK 10+2×5 · HP 40+10×6 · DEF 2+0.5×6 · SPD 9+1.5×4로, 전부 1점 값의 10배다.
  * 바닥이 다르면 바닥이 낮은 스탯의 1점이 더 세서 그쪽으로 쏠린다(ATK 0 · SPD 4일 때 힘·민첩이 셌다).
  */
 export const BASE_STATS = {
   maxHp: 40,
-  /** 마나. INT를 뺀 나머지 — 전사 Lv1이 60, 마법사가 100이 되는 값 */
-  maxMp: 20,
   atk: 10,
-  /** 마법 공격력. 스킬이 생기면(T18) 여기서 출발한다 */
-  matk: 0,
   def: 2,
   spd: 9,
   /** 크리 확률 */
   cri: 0.04,
   /**
-   * 크리 배율의 바닥 — 힘이 올린다(STAT_PER_POINT.str.crd, T17_7 검수 5차). 전사 시작 힘 5를 더해
+   * 크리 배율의 바닥 — 힘이 올린다(STAT_PER_POINT.str.crd, T17_7 검수 5차). 시작 힘 5를 더해
    * Lv1 맨몸이 **1.5배**이고, Lv50 균등 + 보통 장비(장갑 STR 포함)가 약 3.1배다
    */
   crd: 1.375,
@@ -119,28 +108,114 @@ export function actionRatio(playerSpd: number, monsterSpd: number): number {
   return clamp(playerSpd / monsterSpd, SPD_RATIO_MIN, SPD_RATIO_MAX);
 }
 
+/**
+ * 명중 (T18) — **회피와 따로 굴린다.** 명중에서 빗나가고, 맞을 공격도 상대가 피할 수 있다.
+ * 플레이어도 몬스터도 기본 90%다. 한손검만 95%(STYLE_TRAIT). 몬스터는 이만큼 한 방을 키워서(monsterStats)
+ * 한 판에 잃는 HP가 전과 같다.
+ */
+export const ACCURACY = 0.9;
+
+// ─────────────────────────────────────────────────────────────
+// 무기 계열 (T18) — 직업 대신. 오른손 무기가 싸우는 방식을 정한다
+// ─────────────────────────────────────────────────────────────
+
+/** 계열 5종 — 한손검 · 검과 방패 · 쌍칼 · 대검 · 활 */
+export const STYLES = ['sword', 'shield', 'dual', 'great', 'bow'] as const;
+export type Style = (typeof STYLES)[number];
+
+/**
+ * 계열마다 두 손에 드는 줄 — [오른손, 왼손]. 왼손이 null이면 왼손 칸을 못 쓴다
+ * (장검은 한 손 반으로 받쳐 쥐고, 대검 · 활은 두 손이다).
+ */
+export const STYLE_HANDS: Record<Style, readonly [HandLine, HandLine | null]> = {
+  sword: ['longsword', null],
+  shield: ['shortsword', 'shield'],
+  dual: ['dagger', 'dagger'],
+  great: ['greatsword', null],
+  bow: ['bow', null],
+};
+
+/** 닉네임 길이 (T18 확인, 사용자 결정) — 한글 · 영문 · 숫자만 2~8자 */
+export const NAME = { min: 2, max: 8 } as const;
+
+/** 손 줄의 계열 — 방패는 검과 방패, 단검은 쌍칼. 손 줄이 아니면 한손검으로 친다 */
+export function styleOfLine(line: GearLine): Style {
+  return STYLES.find((s) => (STYLE_HANDS[s] as readonly GearLine[]).includes(line)) ?? 'sword';
+}
+
+/**
+ * 두 손의 짝 (T18 확인). 두 손 칸은 똑같다 — 어느 손에 들든 한 손 줄끼리만 짝을 이룬다(소검 ↔ 방패, 단검 ↔ 단검).
+ * 짝이 없으면(null) 두 손을 다 쓰는 줄이다 — 장검 · 대검 · 활. 그때 다른 손은 비워 둔다.
+ */
+export function handPartner(line: HandLine): HandLine | null {
+  for (const [main, off] of Object.values(STYLE_HANDS)) {
+    if (off === null) continue;
+    if (line === main) return off;
+    if (line === off) return main;
+  }
+  return null;
+}
+
+/**
+ * 계열 특성 (T18, 사용자 결정) — 저절로 도는 규칙이다. **1점 값(STAT_PER_POINT)은 누구에게나 그대로다.**
+ *
+ *   한손검    명중 95% · 대미지 흔들림 70~140%(보통 60~140%) — 가장 고른 무기. 기준 플레이어다
+ *   검과 방패 15%로 적의 공격을 막고(피해 0) 곧바로 반격한다
+ *   쌍칼      연격 — 한 번에 두 번 벤다(한 번에 공격의 절반씩) · 콤보 — 연달아 맞힐수록 +5%(최대 +25%), 빗나가면 처음부터
+ *   대검      느리다(행동 ×0.8) · 강타 — 치명 배율 +1 · 방어 30% 무시
+ *   활        거리 — 적이 다가오는 동안(보통 빠르기로 세 번 쏠 시간) 나만 쏜다. 쏠 때마다 화살 1발, 없으면 30%
+ *
+ * `power`는 **한 방 배수**다 — 특성 · 기술이 주는 만큼을 여기서 덜어 계열끼리 세기를 맞춘다(balance.md "무기 계열").
+ * 무기 몫(LINE_BIAS)으로 맞추면 레벨마다 흔들린다 — 초반 ATK는 대부분 맨몸 몫이라 무기 몫을 줄여도 안 약해지고,
+ * 후반엔 너무 약해졌다. 한 방 배수는 레벨을 안 탄다. 대검만 1보다 크다 — 느린 만큼 한 방이 크다.
+ * 세기는 "한 마리 잡는 동안 잃는 HP"와 보스 승률로 잰다 — 자동 전투라 빨리 잡는 것 자체는 값이 없고,
+ * 오래 싸우면 그만큼 더 맞는 게 값이다.
+ */
+export const STYLE_TRAIT = {
+  sword: { power: 1, acc: 0.95, roll: [0.7, 1.4] },
+  shield: { power: 0.78, block: 0.15 },
+  dual: { power: 0.88, hits: 2, combo: 0.05, comboMax: 5 },
+  great: { power: 1.15, tempo: 0.8, crd: 1, pierce: 0.3 },
+  bow: { power: 0.9, approach: 3, noArrow: 0.3 },
+} as const;
+
+/**
+ * 기술 (T18) — **내가 `gauge`번 행동하면 다음 행동이 저절로 기술이 된다.** 손으로 누르지 않는다(사용자 결정).
+ * 기술의 공격은 빗나가지 않는다. 게이지는 전투마다 0에서 센다.
+ *
+ *   한손검    집중 베기 — 반드시 치명
+ *   검과 방패 가드 — 적의 다음 공격 한 번을 막고 반격한다
+ *   쌍칼      난무 — 곧바로 네 번 벤다(콤보가 이어진다)
+ *   대검      신체파괴 — 맞으면 그 전투 끝까지 적 공격 −10%
+ *   활        거리 벌리기 — 쏘고 한 걸음 물러난다. 적이 다시 붙는 동안(한 번 쏠 시간) 나만 쏜다
+ *
+ * 가드 · 신체파괴 · 거리 벌리기는 시안(두 번 막기 · −15% 두 번 · 세 번 쏠 거리)보다 줄였다 — 보스전처럼 긴 싸움에서
+ * 기술이 여러 번 돌아 방패 · 활의 보스 승률이 100%가 됐다(한손검 30%).
+ */
+export const SKILL = {
+  gauge: 5,
+  guard: 1,
+  flurry: 4,
+  breakCut: 0.1,
+  breakMax: 1,
+  retreat: 1,
+} as const;
+
+/**
+ * 활의 거리를 몬스터 시계로 (T18). 보통 빠르기(기준 플레이어 = 몬스터의 1.2배, MONSTER_BASE.spd)로
+ * `shots`번 쏠 시간이다 — 빠른 사람은 그동안 더 쏜다(세 번이면 4~5번).
+ */
+export function approachTime(shots: number): number {
+  return shots * MONSTER_BASE.spd;
+}
+
 // ─────────────────────────────────────────────────────────────
 // 성장 (§4.3)
 // ─────────────────────────────────────────────────────────────
 
 /**
- * 직업별 레벨당 자동 성장. 배분 불가 (§4.3).
- *
- * **HP·ATK·DEF·SPD는 자동으로 안 오른다** (T17_7 검수 4차) — 레벨업은 포인트 3점만 준다.
- * 캐릭터 몫(Lv50 전투력의 40%)이 전부 찍은 포인트라야 배분이 제대로 갈린다. 자동 성장이 있으면
- * 그만큼이 모두에게 같은 바닥이 되어 몰빵과 균등의 차이가 묽어진다.
- * MP와 마법 공격력은 스킬(T18) 몫이라 남겨 둔다.
- */
-export const JOB_GROWTH = {
-  warrior: { maxMp: 2, matk: 0.2 },
-  rogue: { maxMp: 3, matk: 0.5 },
-  mage: { maxMp: 8, matk: 3.0 },
-} as const;
-
-export type JobId = keyof typeof JOB_GROWTH;
-
-/**
- * 1차 스탯 1포인트당 효과 (§4.3). 이 값이 곧 캐릭터 몫이다 — 레벨 자동 성장이 없다(JOB_GROWTH).
+ * 1차 스탯 1포인트당 효과 (§4.3). 이 값이 곧 캐릭터 몫이다 — **레벨 자동 성장이 없다** (T17_7 검수 4차).
+ * 레벨업은 포인트 3점만 준다. 자동 성장이 있으면 그만큼이 모두에게 같은 바닥이 되어 몰빵과 균등의 차이가 묽어진다.
  *
  * 장비는 기준 맨몸(네 스탯 균등)의 같은 배수를 ATK·HP·DEF·SPD·LUK에 똑같이 얹는다(gearStats) —
  * 스탯마다 "포인트 말고 깔린 몫"의 비율이 같으면, 곱해지는 값들은 고르게 나눌 때 곱이 제일 크다.
@@ -161,8 +236,6 @@ export const STAT_PER_POINT = {
    * 골드 수입이 거의 두 배가 된다. dropRate는 몬스터 장비 드랍과 4·5마리 판의 소재 확률에 곱한다 (MATERIAL_CHANCE).
    */
   luk: { cri: 0.004, dropRate: 0.01, goldFind: 0.01 },
-  /** 마법사용. 쓸 데가 생기는 건 스킬이 들어오는 T18이라 아직 배분 대상이 아니다 */
-  int: { maxMp: 10, matk: 2 },
 } as const;
 
 /** 레벨업마다 받는 수동 배분 포인트 (§4.3). */
@@ -174,11 +247,9 @@ export type StatSpend = {
   vit: number;
   agi: number;
   luk: number;
-  /** T18까지는 항상 0 — 직업 시작값으로만 들어온다 (§4.3) */
-  int: number;
 };
 
-/** 레벨업 포인트를 실제로 넣을 수 있는 스탯 (§4.3). INT는 T18에 합류한다. */
+/** 레벨업 포인트를 넣을 수 있는 스탯 (§4.3). */
 export const SPENDABLE_STATS = ['str', 'vit', 'agi', 'luk'] as const;
 export type SpendableStat = (typeof SPENDABLE_STATS)[number];
 
@@ -188,7 +259,7 @@ export type SpendableStat = (typeof SPENDABLE_STATS)[number];
  */
 export function evenSpend(level: number): StatSpend {
   const each = (Math.max(0, level - 1) * POINTS_PER_LEVEL) / SPENDABLE_STATS.length;
-  return { str: each, vit: each, agi: each, luk: each, int: 0 };
+  return { str: each, vit: each, agi: each, luk: each };
 }
 
 /**
@@ -229,46 +300,47 @@ export function gearShare(level: number): number {
 
 /**
  * 장비가 더해주는 몫. items.ts의 GearBonus와 같은 모양이다 (formulas는 items를 import하지 않는다).
- * STR·AGI·LUK은 1차 스탯이라 포인트처럼 파생 값에 전부 얹힌다 — 장갑 STR은 치명 배율도, 신발 AGI는 회피도 올린다 (T17_7 검수 5차)
+ * STR·AGI·LUK은 1차 스탯이라 포인트처럼 파생 값에 전부 얹힌다 — 장갑 STR은 치명 배율도, 신발 AGI는 회피도 올린다 (T17_7 검수 5차).
+ * `eva`는 활만 준다 (T18) — 회피 확률에 그대로 더한다
  */
-type Gear = { atk: number; maxHp: number; def: number; str: number; agi: number; luk: number };
-const NO_GEAR: Gear = { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 };
+type Gear = {
+  atk: number;
+  maxHp: number;
+  def: number;
+  str: number;
+  agi: number;
+  luk: number;
+  eva: number;
+};
+const NO_GEAR: Gear = { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0, eva: 0 };
 
 /**
  * 레벨·배분·장비로 전투 스탯을 만든다 (§4.3, §4.5). 화면·전투·벤치가 전부 여기를 지난다.
  *
- * 1차 스탯 = 직업 시작값 + 배분한 포인트 + 장비(장갑 STR · 신발 AGI · 장신구 LUK). 장비는 그 위에 **더하기만** 한다.
+ * 1차 스탯 = 시작값 + 배분한 포인트 + 장비(장갑 STR · 신발 AGI · 장신구 LUK). 장비는 그 위에 **더하기만** 한다.
  * 배분을 안 주면 네 스탯 균등(evenSpend)으로 친다 — **장비 곡선의 기준 맨몸**이다.
- * 여기서 나오는 값은 전부 표에 적힌 그대로다. 숨은 배수는 없다.
+ * 여기서 나오는 값은 전부 표에 적힌 그대로다. 숨은 배수는 없다. 무기 계열의 특성은 statsOf가 얹는다 (T18).
  */
 export function combatStats(
   level: number,
-  job: JobId = 'warrior',
   spend: StatSpend = evenSpend(level),
   gear: Gear = NO_GEAR,
 ) {
-  const ups = Math.max(0, level - 1);
-  const growth = JOB_GROWTH[job];
-  const start = STARTING_STATS[job];
+  const start = STARTING_STATS;
   const s = {
     str: start.str + spend.str + gear.str,
     vit: start.vit + spend.vit,
     agi: start.agi + spend.agi + gear.agi,
     luk: start.luk + spend.luk + gear.luk,
-    int: start.int + spend.int,
   };
   return {
     maxHp: Math.round(BASE_STATS.maxHp + STAT_PER_POINT.vit.maxHp * s.vit + gear.maxHp),
-    /** 스킬 자원. 쓰는 곳은 T18 */
-    maxMp: Math.round(BASE_STATS.maxMp + growth.maxMp * ups + STAT_PER_POINT.int.maxMp * s.int),
     atk: BASE_STATS.atk + STAT_PER_POINT.str.atk * s.str + gear.atk,
-    /** 마법 공격력. 평타는 아직 ATK만 쓴다 — 마법 평타·스킬은 T18 */
-    matk: BASE_STATS.matk + growth.matk * ups + STAT_PER_POINT.int.matk * s.int,
     def: BASE_STATS.def + STAT_PER_POINT.vit.def * s.vit + gear.def,
     spd: BASE_STATS.spd + STAT_PER_POINT.agi.spd * s.agi,
     cri: BASE_STATS.cri + STAT_PER_POINT.luk.cri * s.luk,
     crd: BASE_STATS.crd + STAT_PER_POINT.str.crd * s.str,
-    eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * s.agi,
+    eva: BASE_STATS.eva + STAT_PER_POINT.agi.eva * s.agi + gear.eva,
     /** 드랍 배율 — 장비 드랍과 4·5마리 판의 소재 확률에 곱한다 (T19, T17_7 검수 4차) */
     dropMult: 1 + STAT_PER_POINT.luk.dropRate * s.luk,
     /** 골드 배율. killReward가 골드에만 곱한다 (EXP는 안 건드린다) */
@@ -338,7 +410,7 @@ export const FIELDS_PER_REGION = 7;
 export function referencePlayer(level: number, region: number) {
   const { rarity, enhance } = EXPECTED_GEAR[region - 1];
   const worn = gearShare(level) * RARITY_MULT[rarity] * ENHANCE_MULT ** enhance;
-  return combatStats(level, 'warrior', evenSpend(level), gearPart(level, worn, FULL_SET_BIAS));
+  return combatStats(level, evenSpend(level), gearPart(level, worn, setBias('sword')));
 }
 
 /**
@@ -380,20 +452,16 @@ export function monsterStats(
   const common = difficulty * power;
   const length = MONSTER_LENGTH_GROWTH ** Math.max(0, level - 1);
   return {
-    // 치명타 기댓값까지 친 한 방 — 행운·힘 값을 바꿔도 몬스터가 같이 따라온다
-    maxHp: Math.round(
-      MONSTER_BASE.hp *
-        length *
-        ref.atk *
-        (1 + Math.min(1, ref.cri) * (ref.crd - 1)) *
-        common *
-        bias.hp,
-    ),
-    // 회피도 친다 — 신발이 AGI를 주면서(T17_7 검수 5차) 기준 플레이어의 회피가 후반 18%쯤 된다
+    // 치명타 기댓값까지 친 한 방 — 행운·힘 값을 바꿔도 몬스터가 같이 따라온다.
+    // 기준 플레이어는 한손검이다 (T18) — 명중 · 흔들림 · 다섯 번에 한 번 집중 베기까지 친 한 번 행동이다
+    maxHp: Math.round(MONSTER_BASE.hp * length * ref.atk * swordAction(ref) * common * bias.hp),
+    // 회피도 친다 — 신발이 AGI를 주면서(T17_7 검수 5차) 기준 플레이어의 회피가 후반 18%쯤 된다.
+    // 명중(T18)도 친다 — 열에 한 번 빗나가는 만큼 한 방이 커서 한 판에 잃는 HP가 전과 같다
     atk: round2(
       ((MONSTER_BASE.atk * ref.maxHp) /
         damageMultiplier(ref.def, ref.scale) /
         (1 - ref.eva) /
+        ACCURACY /
         length) *
         common *
         bias.atk,
@@ -402,6 +470,17 @@ export function monsterStats(
     spd: round2(MONSTER_BASE.spd * ref.spd * bias.spd),
     scale: round2(ref.scale * difficulty),
   };
+}
+
+/**
+ * 기준 한손검의 행동 한 번이 ATK의 몇 배를 주나 (T18) — 몬스터 HP가 이걸로 "몇 번 행동에 죽나"를 정한다.
+ * 평소 행동은 명중 95% × 치명 기댓값, 여섯 번째마다 집중 베기(반드시 맞고 반드시 치명). 흔들림 평균이 1.05다.
+ * 몬스터의 회피는 전처럼 안 친다 — 원형마다 다른 몫이다.
+ */
+function swordAction(ref: { cri: number; crd: number }): number {
+  const { acc, roll } = STYLE_TRAIT.sword;
+  const hit = acc * (1 + Math.min(1, ref.cri) * (ref.crd - 1));
+  return (((roll[0] + roll[1]) / 2) * (SKILL.gauge * hit + ref.crd)) / (SKILL.gauge + 1);
 }
 
 /** 생성물 JSON에 끝없는 소수가 들어가지 않게 자른다. */
@@ -525,9 +604,13 @@ export function rollRunSize(rng: () => number, extraSix = 0): number {
 // 장비 (§4.5) — Lv50 전투력의 60%가 여기서 나온다
 // ─────────────────────────────────────────────────────────────
 
-/** 부위 7종 (§4.5). 하의는 T17_4에 들어왔다. 순서는 화면에 늘어놓는 순서다 */
+/**
+ * 장비 칸 (§4.5). 하의는 T17_4, **왼손은 T18**에 들어왔다. 순서는 화면에 늘어놓는 순서다.
+ * 왼손은 방패(검과 방패)나 두 번째 단검(쌍칼)만 든다 — 한 벌의 몫은 여전히 "손 + 몸 여섯"이다(SET_PARTS).
+ */
 export const GEAR_SLOTS = [
   'weapon',
+  'offhand',
   'helm',
   'armor',
   'pants',
@@ -536,6 +619,25 @@ export const GEAR_SLOTS = [
   'accessory',
 ] as const;
 export type GearSlot = (typeof GEAR_SLOTS)[number];
+
+/** 몸 부위 여섯 — 줄이 곧 부위다 */
+export const BODY_LINES = ['helm', 'armor', 'pants', 'gloves', 'boots', 'accessory'] as const;
+/** 손에 드는 줄 (T18). 장검이 T18 전의 "무기"다 */
+export const HAND_LINES = [
+  'longsword',
+  'shortsword',
+  'shield',
+  'dagger',
+  'greatsword',
+  'bow',
+] as const;
+export type HandLine = (typeof HAND_LINES)[number];
+/** 장비 줄 (T18) — 부위 하나에 줄이 여럿일 수 있다(무기). 장비 정의 id의 가운데 칸이다 */
+export const GEAR_LINES = [...HAND_LINES, ...BODY_LINES] as const;
+export type GearLine = (typeof GEAR_LINES)[number];
+
+/** 한 벌을 이루는 몫의 수 — 손 하나(한두 자루가 나눠 갖는다) + 몸 여섯. 값(SLOT_PRICE)의 합이 이 수다 */
+export const SET_PARTS = 1 + BODY_LINES.length;
 
 /** 장비 티어 10단계 — 지역마다 2단계씩 (§7.2). 몬스터 티어(1~25)와는 다른 축이다. */
 export const GEAR_TIERS = 10;
@@ -587,21 +689,50 @@ export const RARITY_PRICE: Record<GridRarity, number> = {
  * 하의(T17_4)는 투구·갑옷·장갑의 HP·DEF를 조금씩 떼어 만들었다. 풀세트 합은 그대로라
  * 밸런스 기준선이 안 움직이고, 대신 **하의를 안 입으면 HP·DEF가 5분의 1쯤 빈다.**
  */
-type SlotBias = { atk: number; maxHp: number; def: number; str: number; agi: number; luk: number };
-export const SLOT_BIAS: Record<GearSlot, SlotBias> = {
-  weapon: { atk: 0.75, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 },
-  helm: { atk: 0, maxHp: 0.4, def: 0.1, str: 0, agi: 0, luk: 0 },
-  armor: { atk: 0, maxHp: 0.25, def: 0.35, str: 0, agi: 0, luk: 0 },
-  pants: { atk: 0, maxHp: 0.2, def: 0.2, str: 0, agi: 0, luk: 0 },
-  gloves: { atk: 0, maxHp: 0.15, def: 0.1, str: 0.25, agi: 0, luk: 0 },
-  boots: { atk: 0, maxHp: 0, def: 0.25, str: 0, agi: 1, luk: 0 },
-  accessory: { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 1 },
+type SlotBias = Gear;
+const bias = (b: Partial<SlotBias>): SlotBias => ({ ...NO_GEAR, ...b });
+
+/**
+ * 손 몫 (T18) — T18 전 무기 한 자루의 몫(ATK 0.75)을 계열마다 한두 자루에 나눈다. 세기 차이는 계열의 한 방 배수
+ * (STYLE_TRAIT.power)가 맞추고, 여기서는 **무엇을 주는 무기인가**만 정한다.
+ *
+ *   장검    ATK 0.75 그대로 — 기준 플레이어의 무기다(referencePlayer)
+ *   소검 · 방패  소검이 공격 0.25를 내주고, 방패가 HP · DEF로 받는다
+ *   단검    두 자루가 반씩 — 한 번에 두 번 베니 합이 장검과 같다
+ *   대검    장검과 같은 몫 — 느리고 한 방이 큰 건 계열 규칙이다
+ *   활      0.6 + 화살(ARROW.atk 0.15)이 쏠 때마다 얹힌다. 회피 +3%
+ */
+export const LINE_BIAS: Record<GearLine, SlotBias> = {
+  longsword: bias({ atk: 0.75 }),
+  shortsword: bias({ atk: 0.5 }),
+  shield: bias({ maxHp: 0.12, def: 0.12 }),
+  dagger: bias({ atk: 0.375 }),
+  greatsword: bias({ atk: 0.75 }),
+  bow: bias({ atk: 0.6, eva: 0.03 }),
+  helm: bias({ maxHp: 0.4, def: 0.1 }),
+  armor: bias({ maxHp: 0.25, def: 0.35 }),
+  pants: bias({ maxHp: 0.2, def: 0.2 }),
+  gloves: bias({ maxHp: 0.15, def: 0.1, str: 0.25 }),
+  boots: bias({ def: 0.25, agi: 1 }),
+  accessory: bias({ luk: 1 }),
 };
 
-/** 일곱 부위를 다 낀 몫 — 기준 플레이어(referencePlayer)가 입는 한 벌 */
-const FULL_SET_BIAS: SlotBias = GEAR_SLOTS.reduce(
-  (sum, slot) => {
-    const b = SLOT_BIAS[slot];
+/** 그 줄이 드는 칸 — 방패만 왼손이다. 단검은 오른손 줄이지만 왼손에도 든다(쌍칼, OFFHAND_OF) */
+export function slotOfLine(line: GearLine): GearSlot {
+  if (line === 'shield') return 'offhand';
+  return (HAND_LINES as readonly string[]).includes(line) ? 'weapon' : (line as GearSlot);
+}
+
+/** 그 계열이 한 벌로 드는 줄 — 손(한두 자루) + 몸 여섯 */
+export function styleLines(style: Style): GearLine[] {
+  const [main, off] = STYLE_HANDS[style];
+  return [main, ...(off ? [off] : []), ...BODY_LINES];
+}
+
+/** 한 계열의 한 벌을 다 낀 몫 — 기준 플레이어(referencePlayer)는 한손검(장검) 한 벌이다 */
+function setBias(style: Style): SlotBias {
+  return styleLines(style).reduce((sum, line) => {
+    const b = LINE_BIAS[line];
     return {
       atk: sum.atk + b.atk,
       maxHp: sum.maxHp + b.maxHp,
@@ -609,14 +740,22 @@ const FULL_SET_BIAS: SlotBias = GEAR_SLOTS.reduce(
       str: sum.str + b.str,
       agi: sum.agi + b.agi,
       luk: sum.luk + b.luk,
+      eva: sum.eva + b.eva,
     };
-  },
-  { atk: 0, maxHp: 0, def: 0, str: 0, agi: 0, luk: 0 },
-);
+  }, NO_GEAR);
+}
 
-/** 부위별 가격 몫. 합이 부위 수(7.0)라 "풀세트 = 세트 가격"이 그대로 성립한다. */
-export const SLOT_PRICE: Record<GearSlot, number> = {
-  weapon: 1.5,
+/**
+ * 줄별 가격 몫. 몸 여섯 + 손 하나(1.5)의 합이 SET_PARTS(7.0)라 "풀세트 = 세트 가격"이 그대로 성립한다.
+ * 두 자루 계열은 손 몫 1.5를 나눠 갖는다 — 강화도 두 번 하지만 한 자루 값이 싸서 합은 비슷하다 (T18).
+ */
+export const SLOT_PRICE: Record<GearLine, number> = {
+  longsword: 1.5,
+  shortsword: 0.9,
+  shield: 0.6,
+  dagger: 0.75,
+  greatsword: 1.5,
+  bow: 1.5,
   helm: 0.9,
   armor: 1.2,
   pants: 1.0,
@@ -689,6 +828,112 @@ export function enhanceMaterials(next: number): number {
 export const MATERIAL_BUFF = { max: 3, mult: 1.1 } as const;
 export const BUFF_STATS = ['atk', 'def', 'spd', 'cri', 'crd', 'eva'] as const;
 export type BuffStat = (typeof BUFF_STATS)[number];
+
+// ─────────────────────────────────────────────────────────────
+// 화살 (T18) — 활만 쓴다. 쏠 때마다 1발, 없으면 활로 친다(STYLE_TRAIT.bow.noArrow)
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * 화살 효과 (T18 → T18_1). **기본은 상점에서만 판다.** 나머지 여덟은 특수 화살 — 몬스터가 낮은 확률로 떨군다(ARROW_DROP).
+ * 지역마다 한 티어라 기본 5종 + 특수 5 × 8 = 40종이다(사용자 결정 — 특수도 지역마다 좋아진다).
+ */
+export const ARROW_EFFECTS = [
+  'basic',
+  'pierce',
+  'fire',
+  'bomb',
+  'thin',
+  'ice',
+  'vamp',
+  'shock',
+  'heavy',
+] as const;
+export type ArrowEffect = (typeof ARROW_EFFECTS)[number];
+export type SpecialArrow = Exclude<ArrowEffect, 'basic'>;
+export const SPECIAL_ARROWS = ARROW_EFFECTS.filter((e): e is SpecialArrow => e !== 'basic');
+
+/**
+ * 화살 (T18). 그 지역 상점에서 기본 화살을 `bundle`발씩 판다.
+ * 공격은 그 지역 가운데 레벨 장비 몫의 `atk`배(장검 몫 0.75에 견준다)를 활 공격에 더한다 — 특수도 같은 공격이다.
+ * 값은 활의 유지비다 — 시뮬에서 수입의 5%쯤이 화살로 나간다. 대신 활이 조금 더 세다(사용자 결정 — balance.md "무기 계열").
+ */
+export const ARROW = {
+  bundle: 100,
+  /** 이보다 적으면 모험 탭이 알린다 — 한 판에 많으면 150발쯤 쏜다 */
+  low: 150,
+  atk: 0.15,
+  price: 70,
+  growth: 1.3,
+  /** 보스는 기절 확률이 이만큼만 붙는다 — 한 번 쉬는 값이 긴 싸움에서 너무 크다 */
+  bossStun: 0.5,
+} as const;
+
+/** 효과가 없을 때의 값 — 특수 효과는 여기서 바뀌는 칸만 적는다 */
+const PLAIN_ARROW = {
+  /** 방어 무시 비율 */
+  pierce: 0,
+  /** 치명 확률 + */
+  cri: 0,
+  /** 치명 배율 + */
+  crd: 0,
+  /** 한 발 배수 */
+  power: 1,
+  /** 행동 빠르기 배수 — 먹인 화살이 남아 있는 동안만 */
+  tempo: 1,
+  /** 맞을 때마다 적 공격 − (그 전투 끝까지) · 최대 */
+  weaken: 0,
+  weakenMax: 0,
+  /** 맞을 때마다 적 행동 × (그 전투 끝까지) · 최소 */
+  slow: 1,
+  slowMin: 1,
+  /** 맞힐 때마다 돌아오는 HP — 내 최대 HP의 몫 */
+  drain: 0,
+  /** 맞으면 적이 한 번 쉴 확률 */
+  stun: 0,
+};
+export type ArrowEffectStats = typeof PLAIN_ARROW;
+
+/**
+ * 특수 화살 8종 (T18_1, 사용자 결정 — 기획의 ★). 폭탄 −3%씩 최대 −45% · 얼음 최대 ×0.5는 말씀하신 값이다.
+ * 나머지는 **한 발 값어치가 기본의 1.2~1.4배**(한 마리에 잃는 HP ÷1.2~1.4)가 되게 벤치로 맞춘 값이다 —
+ * 여덟 종 평균이 1.20~1.31배다(balance.md 12장 "화살").
+ *
+ *   관통  방어를 전부 무시 · 한 발 ×1.1   불    치명 확률 +          폭탄  맞을 때마다 적 공격 −
+ *   가는  빠르게 쏘고 한 발은 약하다      얼음  맞을 때마다 적이 느려진다  흡혈  맞힐 때마다 최대 HP의 몫을 되찾는다
+ *   번개  맞으면 적이 한 번 쉰다       무거운 느리게 쏘고 한 발 · 치명 배율이 크다
+ *
+ * 시안에서 바꾼 것 — 관통은 방어 무시만으론 1.12배라 한 발 ×1.1을 붙였다. 흡혈은 "준 피해의 8%"면 몬스터 HP가
+ * 뒤 지역일수록 내 HP보다 커서 1.0배(지역 1)~9배(지역 5)로 흔들렸다 — **내 최대 HP 기준**으로 바꿨다.
+ * 얼음은 맞을 때마다 ×0.9면 1.63배라 ×0.96으로 천천히 늦춘다(최대 ×0.5는 그대로).
+ */
+export const ARROW_EFFECT: Record<ArrowEffect, Partial<ArrowEffectStats>> = {
+  basic: {},
+  pierce: { pierce: 1, power: 1.1 },
+  fire: { cri: 0.2 },
+  bomb: { weaken: 0.03, weakenMax: 0.45 },
+  thin: { tempo: 1.35, power: 0.8 },
+  ice: { slow: 0.96, slowMin: 0.5 },
+  vamp: { drain: 0.0015 },
+  shock: { stun: 0.15 },
+  heavy: { tempo: 0.75, power: 1.6, crd: 0.5 },
+};
+
+/**
+ * 특수 화살 드랍 (T18_1, 사용자 결정 — 기획 ③ 나). 어느 몬스터든 처치마다 `rate` × 장비 드랍과 같은 배율(행운 · 도감 · 보스 카드)로
+ * `bundle`발. 종류는 여덟 중 고르게, 티어는 그 몬스터의 지역이다. 하루 1만 보(약 25마리)면 쏘는 화살의 10%쯤이다.
+ * 계열을 가리지 않는다(기획 ⑤ 나) — 활로 바꾸면 모아 둔 걸 쏜다.
+ */
+export const ARROW_DROP = { rate: 0.05, bundle: 30 } as const;
+
+/** 화살 한 종의 공격 · 효과 · 한 묶음 값. `level`은 그 지역 가운데 레벨이다. 특수는 팔지 않지만 값은 기본과 같게 둔다 */
+export function arrowStats(level: number, region: number, effect: ArrowEffect) {
+  return {
+    ...PLAIN_ARROW,
+    ...ARROW_EFFECT[effect],
+    atk: Math.round(combatStats(level).atk * gearShare(level) * ARROW.atk),
+    price: Math.round(ARROW.price * ARROW.growth ** (region - 1)),
+  };
+}
 
 // ─────────────────────────────────────────────────────────────
 // 반지 (T17_7) — 고유 장비 대신. 특수 소재로만 얻고 올린다
@@ -828,7 +1073,7 @@ export function itemStat(base: number, quality: number, enhance: number): number
  */
 function gearPart(level: number, mult: number, bias: SlotBias): Gear {
   const naked = combatStats(level);
-  const luk = STARTING_STATS.warrior.luk + evenSpend(level).luk;
+  const luk = STARTING_STATS.luk + evenSpend(level).luk;
   return {
     atk: naked.atk * mult * bias.atk,
     maxHp: naked.maxHp * mult * bias.maxHp,
@@ -836,12 +1081,14 @@ function gearPart(level: number, mult: number, bias: SlotBias): Gear {
     str: (naked.atk * mult * bias.str) / STAT_PER_POINT.str.atk,
     agi: (naked.spd * mult * bias.agi) / STAT_PER_POINT.agi.spd,
     luk: luk * mult * bias.luk,
+    // 회피는 확률이라 레벨 · 등급을 안 탄다 — 활의 성격이다 (T18)
+    eva: bias.eva,
   };
 }
 
-/** 장비 한 점의 기본 스탯 (§4.5). 그 레벨의 장비 몫(gearShare) × 등급 배율을 부위가 나눠 갖는다 */
-export function gearStats(level: number, slot: GearSlot, rarity: GridRarity) {
-  const g = gearPart(level, gearShare(level) * RARITY_MULT[rarity], SLOT_BIAS[slot]);
+/** 장비 한 점의 기본 스탯 (§4.5). 그 레벨의 장비 몫(gearShare) × 등급 배율을 줄이 나눠 갖는다 */
+export function gearStats(level: number, line: GearLine, rarity: GridRarity) {
+  const g = gearPart(level, gearShare(level) * RARITY_MULT[rarity], LINE_BIAS[line]);
   return {
     atk: Math.round(g.atk),
     maxHp: Math.round(g.maxHp),
@@ -850,6 +1097,7 @@ export function gearStats(level: number, slot: GearSlot, rarity: GridRarity) {
     str: round1(g.str),
     agi: round1(g.agi),
     luk: round1(g.luk),
+    eva: g.eva,
   };
 }
 
@@ -882,11 +1130,9 @@ export function gearSetPrice(refLevel: number): number {
   return GEAR_PRICE_K * gearShare(refLevel);
 }
 
-/** 장비 한 점의 값. 풀세트를 다 더하면 gearSetPrice가 된다 (SLOT_PRICE 합이 부위 수). */
-export function gearPrice(refLevel: number, slot: GearSlot, rarity: GridRarity): number {
-  return Math.round(
-    (gearSetPrice(refLevel) / GEAR_SLOTS.length) * SLOT_PRICE[slot] * RARITY_PRICE[rarity],
-  );
+/** 장비 한 점의 값. 풀세트를 다 더하면 gearSetPrice가 된다 (SLOT_PRICE 합이 SET_PARTS). */
+export function gearPrice(refLevel: number, line: GearLine, rarity: GridRarity): number {
+  return Math.round((gearSetPrice(refLevel) / SET_PARTS) * SLOT_PRICE[line] * RARITY_PRICE[rarity]);
 }
 
 // ─────────────────────────────────────────────────────────────

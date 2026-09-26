@@ -1,8 +1,9 @@
-import { gearSetFor } from '../content';
+import { arrowById, gearSetFor } from '../content';
 import { defaultSave, type Save } from '../save/schema';
 import type { Outcome } from './battle';
 import { bossBonus, dexStats } from './dex';
 import {
+  ACCURACY,
   MATERIAL_BUFF,
   combatStats,
   GEAR_SLOTS,
@@ -13,22 +14,44 @@ import {
   HP_REGEN_MAX_ELAPSED_MS,
   HP_REGEN_RATE,
   INDIVIDUAL_REWARD_RATE,
+  NAME,
   POINTS_PER_LEVEL,
   RING_SLOTS,
   SPENDABLE_STATS,
   STARTING_STATS,
+  STYLE_TRAIT,
+  handPartner,
   WP_COST,
   type GearSlot,
+  type HandLine,
   type SpendableStat,
   type StatSpend,
+  type Style,
 } from './formulas';
-import { bagFull, equippedStats, itemByUid, itemDef, itemPower, ringBonus } from './items';
+import {
+  bagFull,
+  bagItems,
+  equippedIn,
+  equippedStats,
+  fitsSlot,
+  HANDS,
+  heldHands,
+  isHand,
+  isHandLine,
+  itemByUid,
+  itemDef,
+  itemPower,
+  otherHand,
+  ringBonus,
+  styleOf,
+  type Hand,
+} from './items';
 import { spendWp } from './wp';
 
 /** 몬스터 1마리를 잡고 받는 것. */
 export type Reward = { exp: number; gold: number };
 
-/** 배분할 수 있는 1차 스탯 (§4.3). INT는 T18에 합류한다. */
+/** 배분할 수 있는 1차 스탯 (§4.3). */
 export type StatKey = SpendableStat;
 
 /**
@@ -49,12 +72,13 @@ export function statsOf(save: Save) {
     agi: points.agi + dex.agi,
     luk: points.luk + dex.luk,
   };
-  const base = combatStats(save.player.level, 'warrior', spend, equippedStats(save));
+  const base = combatStats(save.player.level, spend, equippedStats(save));
   // 반지 (T17_7) — 전투력 축 밖의 것만 준다. 입장 WP·자정 WP·6마리 판·클리어 보너스·물약은 쓰는 곳이 본다
   // 보스 도감 3번(T19 검수 2차)도 EXP · 골드에 같이 더한다
   const boss = bossBonus(save).expGold;
   const stats = {
     ...base,
+    ...styleStats(save, styleOf(save), base.crd),
     goldMult: base.goldMult + ringBonus(save, 'gold') + boss,
     dropMult: base.dropMult + ringBonus(save, 'drop'),
     /** EXP 배율 — 반지와 보스 도감만 올린다. 행운은 EXP에 안 붙는다 (§4.3) */
@@ -70,23 +94,45 @@ export function statsOf(save: Save) {
   return stats;
 }
 
+/**
+ * 무기 계열의 특성을 전투 스탯으로 (T18). **1점 값은 안 건드린다** — 무기가 정한 규칙만 얹는다.
+ * 연격은 단검 두 자루, 막기는 방패를 들어야 한다. 활은 먹인 화살을 들고 간다.
+ */
+function styleStats(save: Save, style: Style, crd: number) {
+  const trait = STYLE_TRAIT;
+  // 두 손 칸은 똑같다 (T18 확인) — 어느 손에 들었든 센다
+  const lines = heldHands(save).map((i) => itemDef(i).line);
+  const quiver = style === 'bow' && save.quiver ? arrowById(save.quiver) : undefined;
+  return {
+    style,
+    acc: style === 'sword' ? trait.sword.acc : ACCURACY,
+    crd: crd + (style === 'great' ? trait.great.crd : 0),
+    tempo: style === 'great' ? trait.great.tempo : 1,
+    power: trait[style].power,
+    hits: lines.filter((l) => l === 'dagger').length === 2 ? trait.dual.hits : 1,
+    block: lines.includes('shield') ? trait.shield.block : 0,
+    pierce: style === 'great' ? trait.great.pierce : 0,
+    arrow: quiver,
+    arrows: quiver ? (save.arrows[quiver.id] ?? 0) : 0,
+  };
+}
+
 /** 소재 버프 하나의 배율 — ×1.1에 결의의 반지(T17_7)가 더한다 */
 export function buffMult(save: Save): number {
   return MATERIAL_BUFF.mult + ringBonus(save, 'bossBuff');
 }
 
 /**
- * 화면에 보이는 1차 스탯 = 직업 시작값 + 배분한 포인트 (§4.3).
- * 세이브에는 배분분만 있다 — 시작값은 직업의 성질이라 저장할 게 아니다.
+ * 화면에 보이는 1차 스탯 = 시작값 + 배분한 포인트 (§4.3).
+ * 세이브에는 배분분만 있다 — 시작값은 모두 같아서 저장할 게 아니다.
  */
 export function primaryStats(save: Save): StatSpend {
-  const start = STARTING_STATS.warrior;
+  const start = STARTING_STATS;
   return {
     str: start.str + save.statPoints.str,
     vit: start.vit + save.statPoints.vit,
     agi: start.agi + save.statPoints.agi,
     luk: start.luk + save.statPoints.luk,
-    int: start.int + save.statPoints.int,
   };
 }
 
@@ -204,6 +250,7 @@ export function settleBattle(
   const next: Save = {
     ...save,
     player: {
+      ...save.player,
       level: leveled.level,
       exp: leveled.exp,
       gold: save.player.gold + Math.max(0, Math.floor(reward.gold)),
@@ -243,8 +290,6 @@ export function respecCost(level: number): number {
  * **현재 HP는 새 최대치로 자르기만 하고 비율을 유지하지 않는다.** VIT를 빼면 최대 HP가
  * 줄고 현재 HP도 같이 잘리는데, 여기서 비율을 되돌려주면 "VIT를 뺐다 다시 넣어"
  * 만피를 만드는 우회가 생긴다 — 회복은 물약과 여관이 파는 것이다 (§4.5).
- *
- * INT는 건드리지 않는다. 배분 대상이 아니라 직업이 주는 값이다 (T18).
  */
 export function respec(save: Save): Save | null {
   const wp = spendWp(save.wp, respecCost(save.player.level));
@@ -289,18 +334,59 @@ export function spendPoint(save: Save, stat: StatKey): Save | null {
 }
 
 /**
- * 장비를 낀다 (§4.5). 같은 부위에 있던 건 인벤토리로 돌아간다 — 버리지 않는다.
- * 없는 uid거나 요구 레벨이 모자라면 null을 준다. 호출부가 확인하게 강제한다.
+ * 장비를 낀다 (§4.5). 같은 칸에 있던 건 인벤토리로 돌아간다 — 버리지 않는다.
+ * 없는 uid거나 요구 레벨이 모자라거나 그 칸에 못 끼면 null을 준다. 호출부가 확인하게 강제한다.
+ *
+ * 손 (T18 → T18 확인) — **두 손 칸은 똑같다.** `slot`을 주면 그 손에 끼고, 다른 손과 짝이 안 맞으면 null이다(fitsSlot).
+ * `slot`을 안 주면(가방에서 누름) 알맞은 손을 고르고, 짝이 안 맞는 다른 손은 벗긴다 — 그래서 가방이 차 있으면 못 바꿀 수 있다.
+ * 두 손 무기(장검 · 대검 · 활)는 늘 weapon 칸에 들고 다른 손을 비운다.
  */
-export function equipItem(save: Save, uid: string): Save | null {
+export function equipItem(save: Save, uid: string, slot?: GearSlot): Save | null {
   const inst = itemByUid(save, uid);
   if (!inst) return null;
 
   const def = itemDef(inst);
   if (save.player.level < def.level) return null;
-  if (save.equipped[def.slot] === uid) return save;
+  if (slot !== undefined && !fitsSlot(save, def, slot)) return null;
+  if (!isHandLine(def.line)) {
+    const target = slot ?? def.slot;
+    if (!fitsSlot(save, def, target)) return null;
+    if (save.equipped[target] === uid) return save;
+    return fit(withGear(save, { ...save.equipped, [target]: uid }));
+  }
 
-  return withGear(save, { ...save.equipped, [def.slot]: uid });
+  const partner = handPartner(def.line);
+  const target =
+    partner === null ? 'weapon' : slot && isHand(slot) ? slot : handFor(save, uid, partner);
+  if (save.equipped[target] === uid) return save;
+  const equipped = { ...save.equipped, [target]: uid };
+  const other = otherHand(target);
+  // 다른 손으로 옮겼으면 먼저 손은 비우고, 짝이 안 맞는 다른 손은 벗긴다
+  const held = equipped[other] === null ? undefined : itemByUid(save, equipped[other]);
+  if (equipped[other] === uid || (held && itemDef(held).line !== partner)) equipped[other] = null;
+  return fit(withGear(save, equipped));
+}
+
+/** 가방이 넘치면 못 바꾼다 — 벗긴 게 들어갈 자리가 있어야 한다 */
+function fit(next: Save): Save | null {
+  return bagItems(next).length > next.bag.capacity ? null : next;
+}
+
+/**
+ * 가방에서 누른 한 손 줄이 들어갈 손 (T18 확인). 짝이 든 손의 반대편 — 비었으면 거기, 차 있으면 갈아 낀다.
+ * 짝이 없으면 방패는 offhand, 나머지는 weapon이다(다른 손은 equipItem이 벗긴다).
+ */
+function handFor(save: Save, uid: string, partner: HandLine): Hand {
+  const line = (hand: Hand) => {
+    const item = equippedIn(save, hand);
+    return item && item.uid !== uid ? itemDef(item).line : null;
+  };
+  const beside = HANDS.filter((h) => line(otherHand(h)) === partner);
+  return (
+    beside.find((h) => line(h) === null) ??
+    beside[0] ??
+    (partner === 'shortsword' ? 'offhand' : 'weapon')
+  );
 }
 
 /**
@@ -358,7 +444,7 @@ export function addItem(save: Save, item: Save['inventory'][number]): Save {
   return { ...save, inventory: [...save.inventory, item] };
 }
 
-/** 빈 칸에 알아서 끼워 넣는다 — 상점·드랍 직후 "바로 착용" 용도 (§4.5). */
+/** 빈 칸에 알아서 끼워 넣는다 — 상점·드랍 직후 "바로 착용" 용도 (§4.5). 두 번째 단검은 왼손으로 간다 */
 export function equipAll(save: Save, uids: string[]): Save {
   return uids.reduce<Save>((acc, uid) => equipItem(acc, uid) ?? acc, save);
 }
@@ -382,4 +468,20 @@ export function newGame(): Save {
     enhance: 0,
   }));
   return equipAll({ ...base, inventory }, inventory.map((i) => i.uid));
+}
+
+/**
+ * 닉네임이 안 되는 까닭 (T18 확인, 사용자 결정). 되면 null — 한글 완성형 · 영문 · 숫자만, NAME.min~max자.
+ * 공백 · 특수문자 · 이모지 · 낱자(ㄱ, ㅏ)는 막는다
+ */
+export function nameError(name: string): string | null {
+  const length = [...name].length;
+  if (length < NAME.min || length > NAME.max) return `${NAME.min}~${NAME.max}자로 정해 주세요`;
+  if (!/^[가-힣A-Za-z0-9]+$/.test(name)) return '한글 · 영문 · 숫자만 쓸 수 있습니다';
+  return null;
+}
+
+/** 닉네임을 정한다 (T18 확인). 규칙에 안 맞으면 null */
+export function setName(save: Save, name: string): Save | null {
+  return nameError(name) ? null : { ...save, player: { ...save.player, name } };
 }

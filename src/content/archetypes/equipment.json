@@ -1,47 +1,41 @@
 {
   "tierNames": ["낡은", "무쇠", "강철", "은빛", "흑철", "용린", "수정", "흑요석", "월광", "심연"],
-  "slots": [
-    {
-      "slot": "weapon",
-      "label": "무기",
-      "spriteTag": "sword",
-      "names": ["검", "장검"]
-    },
-    {
-      "slot": "helm",
-      "label": "투구",
-      "spriteTag": "helm",
-      "names": ["두건", "투구"]
-    },
-    {
-      "slot": "armor",
-      "label": "갑옷",
-      "spriteTag": "armor",
-      "names": ["옷", "갑옷"]
-    },
-    {
-      "slot": "pants",
-      "label": "하의",
-      "spriteTag": "pants",
-      "names": ["바지", "하갑"]
-    },
-    {
-      "slot": "gloves",
-      "label": "장갑",
-      "spriteTag": "gloves",
-      "names": ["손싸개", "건틀릿"]
-    },
-    {
-      "slot": "boots",
-      "label": "신발",
-      "spriteTag": "boots",
-      "names": ["신", "각반"]
-    },
-    {
-      "slot": "accessory",
-      "label": "장신구",
-      "spriteTag": "accessory",
-      "names": ["부적", "펜던트"]
+  "slotLabels": {
+    "weapon": "무기",
+    "offhand": "왼손",
+    "helm": "투구",
+    "armor": "갑옷",
+    "pants": "하의",
+    "gloves": "장갑",
+    "boots": "신발",
+    "accessory": "장신구"
+  },
+  "lines": [
+    { "line": "longsword", "label": "장검", "spriteTag": "sword", "names": ["검", "장검"] },
+    { "line": "shortsword", "label": "소검", "spriteTag": "shortsword", "names": ["소검", "소검"] },
+    { "line": "shield", "label": "방패", "spriteTag": "shield", "names": ["방패", "방패"] },
+    { "line": "dagger", "label": "단검", "spriteTag": "dagger", "names": ["단검", "단검"] },
+    { "line": "greatsword", "label": "대검", "spriteTag": "greatsword", "names": ["대검", "대검"] },
+    { "line": "bow", "label": "활", "spriteTag": "bow", "names": ["활", "장궁"] },
+    { "line": "helm", "label": "투구", "spriteTag": "helm", "names": ["두건", "투구"] },
+    { "line": "armor", "label": "갑옷", "spriteTag": "armor", "names": ["옷", "갑옷"] },
+    { "line": "pants", "label": "하의", "spriteTag": "pants", "names": ["바지", "하갑"] },
+    { "line": "gloves", "label": "장갑", "spriteTag": "gloves", "names": ["손싸개", "건틀릿"] },
+    { "line": "boots", "label": "신발", "spriteTag": "boots", "names": ["신", "각반"] },
+    { "line": "accessory", "label": "장신구", "spriteTag": "accessory", "names": ["부적", "펜던트"] }
+  ],
+  "arrows": {
+    "tierNames": ["나무", "쇠", "강철", "은", "흑요석"],
+    "effects": {
+      "basic": "화살",
+      "pierce": "관통 화살",
+      "fire": "불화살",
+      "bomb": "폭탄 화살",
+      "thin": "가는 화살",
+      "ice": "얼음 화살",
+      "vamp": "흡혈 화살",
+      "shock": "번개 화살",
+      "heavy": "무거운 화살"
     }
-  ]
+  }
 }

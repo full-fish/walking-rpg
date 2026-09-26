@@ -10,7 +10,6 @@ import { dayKey, startOfLocalDay } from '../health/steps';
 import type { ItemInstance, Save } from '../save/schema';
 import {
   BOSS_DROP_RARITY,
-  GEAR_SLOTS,
   GEAR_TIERS_PER_REGION,
   REGION_DAILY_GOLD,
   REWARD_GOLD_UNIT,
@@ -20,7 +19,7 @@ import {
   STREAK_REWARDS,
   type DailyReward,
 } from './formulas';
-import { bagFull, makeItem } from './items';
+import { bagFull, makeItem, rollLine } from './items';
 import { addItem } from './progression';
 import { windowKeys } from './wp';
 
@@ -78,9 +77,9 @@ function give(save: Save, reward: DailyReward, got: Got, rng: () => number) {
   }
 
   if (reward.gear) {
-    // 그 지역 높은 티어 · 부위 무작위 · 등급은 보스 보상 표 (희귀 이상)
-    const slot = GEAR_SLOTS[Math.floor(rng() * GEAR_SLOTS.length)];
-    const def = gridItem(region * GEAR_TIERS_PER_REGION, slot, rollRarity(BOSS_DROP_RARITY, rng));
+    // 그 지역 높은 티어 · 부위 무작위(손이면 지금 계열, T18) · 등급은 보스 보상 표 (희귀 이상)
+    const line = rollLine(next, rng);
+    const def = gridItem(region * GEAR_TIERS_PER_REGION, line, rollRarity(BOSS_DROP_RARITY, rng));
     const item = makeItem(next.inventory, def.id, rng);
     next = addItem(next, item);
     out.items.push(item);

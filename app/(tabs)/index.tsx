@@ -6,8 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { bossOf, REGIONS, regionById, type Field } from '@/content';
 import { goalsReady, streakNext } from '@/game/daily';
 import { fieldEntryCost } from '@/game/field';
-import { REGION_COUNT, WP_COST } from '@/game/formulas';
-import { bagFull } from '@/game/items';
+import { ARROW, REGION_COUNT, WP_COST } from '@/game/formulas';
+import { bagFull, styleOf } from '@/game/items';
 import { statsOf } from '@/game/progression';
 import { bossCost, bossState, unlockCost } from '@/game/region';
 import { useSteps } from '@/health/useSteps';
@@ -49,6 +49,7 @@ export default function Adventure() {
   const region = regionById(save.regionProgress.current);
   // 나그네의 반지(T17_7)만큼 깎인 값 — 실제로 내는 값을 보여준다
   const entryCost = fieldEntryCost(save, region.id);
+  const arrowsLeft = save.quiver ? (save.arrows[save.quiver] ?? 0) : 0;
   const { unlocked } = save.regionProgress;
   const boss = bossOf(region.id);
   const bossNow = bossState(save, region.id);
@@ -238,6 +239,12 @@ export default function Adventure() {
             {save.player.hp <= 0 && (
               <Text size="sm" color={colors.hp}>
                 HP가 0입니다. 여관이나 물약으로 회복하세요.
+              </Text>
+            )}
+            {/* 활 (T18) — 화살은 판에 가진 걸 다 들고 가서 쏠 때마다 1발. 떨어지면 30%로 친다 */}
+            {styleOf(save) === 'bow' && arrowsLeft < ARROW.low && (
+              <Text size="sm" color={colors.hp}>
+                화살 {arrowsLeft}발 — 떨어지면 활로 칩니다(30%). 상점에서 삽니다
               </Text>
             )}
             {save.statPoints.unspent > 0 && (
