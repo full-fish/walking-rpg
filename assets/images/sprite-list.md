@@ -1,6 +1,8 @@
 # 스프라이트 생성 목록
 
-이미지 생성 AI에 하나씩 넣을 프롬프트용 목록. 파일명 = sprite id 그대로 써서 assets/images/ 밑에 저장.
+이미지 생성 AI에 하나씩 넣을 프롬프트용 목록. 파일명 = sprite id 그대로 써서 `img/<종류>/`에 두고
+`node tools/crop-sprites.mjs <종류>` — 줄여서 `assets/images/items/<종류>/` · `monsters/<종족>/`에 넣는다.
+들어간 그림은 [gallery.html](gallery.html)에서 한눈에 본다.
 
 ## 프롬프트 쓰는 법 (나노바나나)
 
@@ -18,7 +20,7 @@
 
 ---
 
-## 1. 장비 (70개, assets/images/items/)
+## 1. 장비 (70개, assets/images/items/<부위>/)
 
 슬롯 7종 × 티어 10단계. 파일명: `<sprite>.png`
 
@@ -588,11 +590,11 @@ Same art style as before, now an abyss amulet (near-black pendant with glowing t
 
 ---
 
-## 1-2. 반지 (11개, 아직 안 붙임)
+## 1-2. 반지 (11개, 붙임)
 
-T17_7에 고유 장비 대신 들어온 반지 11종입니다. 지금은 💍 글자로 보입니다. **한 종에 한 장**이고,
+T17_7에 고유 장비 대신 들어온 반지 11종입니다. **한 종에 한 장**이고,
 ★(1~5)와 등급은 게임 안에서 테두리 색과 "★N +강화" 글자로 구분합니다 — 그래서 재질보다 **보석·문양으로 효과를** 말하게 잡았습니다.
-붙일 때는 원본을 `img/ring/ring_<종류>.png`로 두면 잘라서 넣는 스크립트와 `ringIcons` 한 줄을 만들겠습니다.
+붙인 곳: `assets/images/items/ring/` · `itemIcons`의 `ring_<종류>`.
 
 | sprite id | 이름 | 효과 | 그림의 뜻 |
 |---|---|---|---|
@@ -675,6 +677,200 @@ Same art style as before, now a different ring: a black iron band with an orange
 ```
 Same art style as before, now a different ring: a gold band with a red ruby and a tiny silver sword laid across the ruby.
 ```
+
+---
+
+## 1-3. 무기 계열 (T18, 55개, 붙임)
+
+T18에 직업 대신 들어온 무기 계열의 손 장비입니다 — 소검 · 방패 · 단검 · 대검 · 활 각 10티어 + 화살 5티어.
+**장검은 위 sword 그대로**입니다(한손검). 장비와 같은 규칙 — 한 장이 5등급을 다 덮고,
+재질은 sword와 같은 순서(낡은 → 무쇠 → 강철 → 은빛 → 흑철 → 용린 → 수정 → 흑요석 → 월광 → 심연)입니다.
+붙인 곳: `assets/images/items/<줄>/` · `itemIcons`.
+
+**줄마다 1번은 완전한 프롬프트**, 2~10번은 같은 대화창에서 이어 붙입니다.
+
+### shortsword (소검)
+
+| sprite id | 이름(참고) | 프롬프트 |
+|---|---|---|
+| shortsword_1 | 낡은 소검 | `Flat 2D pixel art game icon of a worn old short sword (short broad blade, simple one-handed grip, small crossguard), simple fantasy RPG weapon icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, side view.` |
+| shortsword_2 | 무쇠 소검 | `Same art style as before, now an iron short sword (slightly better quality, shinier).` |
+| shortsword_3 | 강철 소검 | `Same art style as before, now a steel short sword (polished steel, sturdier).` |
+| shortsword_4 | 은빛 소검 | `Same art style as before, now a silver short sword (bright silver with a small engraved pattern).` |
+| shortsword_5 | 흑철 소검 | `Same art style as before, now a black iron short sword (dark blackened metal, heavier and more menacing).` |
+| shortsword_6 | 용린 소검 | `Same art style as before, now a dragon-scale short sword (deep red scale texture, claw-shaped details).` |
+| shortsword_7 | 수정 소검 | `Same art style as before, now a crystal short sword (translucent pale blue crystal, faint glow).` |
+| shortsword_8 | 흑요석 소검 | `Same art style as before, now an obsidian short sword (glossy black volcanic glass with a dark blue sheen).` |
+| shortsword_9 | 월광 소검 | `Same art style as before, now a moonlight short sword (pale silver-blue, crescent moon motif, soft white glow).` |
+| shortsword_10 | 심연 소검 | `Same art style as before, now an abyss short sword (near-black with glowing teal cracks, ominous).` |
+
+### shield (방패)
+
+| sprite id | 이름(참고) | 프롬프트 |
+|---|---|---|
+| shield_1 | 낡은 방패 | `Flat 2D pixel art game icon of a worn old shield (round shield with a metal rim and a center boss), simple fantasy RPG weapon icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, front view.` |
+| shield_2 | 무쇠 방패 | `Same art style as before, now an iron shield (slightly better quality, shinier).` |
+| shield_3 | 강철 방패 | `Same art style as before, now a steel shield (polished steel, sturdier).` |
+| shield_4 | 은빛 방패 | `Same art style as before, now a silver shield (bright silver with a small engraved pattern).` |
+| shield_5 | 흑철 방패 | `Same art style as before, now a black iron shield (dark blackened metal, heavier and more menacing).` |
+| shield_6 | 용린 방패 | `Same art style as before, now a dragon-scale shield (deep red scale texture, claw-shaped details).` |
+| shield_7 | 수정 방패 | `Same art style as before, now a crystal shield (translucent pale blue crystal, faint glow).` |
+| shield_8 | 흑요석 방패 | `Same art style as before, now an obsidian shield (glossy black volcanic glass with a dark blue sheen).` |
+| shield_9 | 월광 방패 | `Same art style as before, now a moonlight shield (pale silver-blue, crescent moon motif, soft white glow).` |
+| shield_10 | 심연 방패 | `Same art style as before, now an abyss shield (near-black with glowing teal cracks, ominous).` |
+
+### dagger (단검)
+
+| sprite id | 이름(참고) | 프롬프트 |
+|---|---|---|
+| dagger_1 | 낡은 단검 | `Flat 2D pixel art game icon of a worn old dagger (short narrow blade, simple grip), simple fantasy RPG weapon icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, side view.` |
+| dagger_2 | 무쇠 단검 | `Same art style as before, now an iron dagger (slightly better quality, shinier).` |
+| dagger_3 | 강철 단검 | `Same art style as before, now a steel dagger (polished steel, sturdier).` |
+| dagger_4 | 은빛 단검 | `Same art style as before, now a silver dagger (bright silver with a small engraved pattern).` |
+| dagger_5 | 흑철 단검 | `Same art style as before, now a black iron dagger (dark blackened metal, heavier and more menacing).` |
+| dagger_6 | 용린 단검 | `Same art style as before, now a dragon-scale dagger (deep red scale texture, claw-shaped details).` |
+| dagger_7 | 수정 단검 | `Same art style as before, now a crystal dagger (translucent pale blue crystal, faint glow).` |
+| dagger_8 | 흑요석 단검 | `Same art style as before, now an obsidian dagger (glossy black volcanic glass with a dark blue sheen).` |
+| dagger_9 | 월광 단검 | `Same art style as before, now a moonlight dagger (pale silver-blue, crescent moon motif, soft white glow).` |
+| dagger_10 | 심연 단검 | `Same art style as before, now an abyss dagger (near-black with glowing teal cracks, ominous).` |
+
+### greatsword (대검)
+
+| sprite id | 이름(참고) | 프롬프트 |
+|---|---|---|
+| greatsword_1 | 낡은 대검 | `Flat 2D pixel art game icon of a worn old two-handed greatsword (very long wide blade, long two-handed grip), simple fantasy RPG weapon icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, side view, diagonal.` |
+| greatsword_2 | 무쇠 대검 | `Same art style as before, now an iron two-handed greatsword (slightly better quality, shinier).` |
+| greatsword_3 | 강철 대검 | `Same art style as before, now a steel two-handed greatsword (polished steel, sturdier).` |
+| greatsword_4 | 은빛 대검 | `Same art style as before, now a silver two-handed greatsword (bright silver with a small engraved pattern).` |
+| greatsword_5 | 흑철 대검 | `Same art style as before, now a black iron two-handed greatsword (dark blackened metal, heavier and more menacing).` |
+| greatsword_6 | 용린 대검 | `Same art style as before, now a dragon-scale two-handed greatsword (deep red scale texture, claw-shaped details).` |
+| greatsword_7 | 수정 대검 | `Same art style as before, now a crystal two-handed greatsword (translucent pale blue crystal, faint glow).` |
+| greatsword_8 | 흑요석 대검 | `Same art style as before, now an obsidian two-handed greatsword (glossy black volcanic glass with a dark blue sheen).` |
+| greatsword_9 | 월광 대검 | `Same art style as before, now a moonlight two-handed greatsword (pale silver-blue, crescent moon motif, soft white glow).` |
+| greatsword_10 | 심연 대검 | `Same art style as before, now an abyss two-handed greatsword (near-black with glowing teal cracks, ominous).` |
+
+### bow (활)
+
+| sprite id | 이름(참고) | 프롬프트 |
+|---|---|---|
+| bow_1 | 낡은 활 | `Flat 2D pixel art game icon of a worn old bow (curved bow with a taut string), simple fantasy RPG weapon icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, side view.` |
+| bow_2 | 무쇠 장궁 | `Same art style as before, now an iron bow (slightly better quality, shinier).` |
+| bow_3 | 강철 장궁 | `Same art style as before, now a steel bow (polished steel, sturdier).` |
+| bow_4 | 은빛 장궁 | `Same art style as before, now a silver bow (bright silver with a small engraved pattern).` |
+| bow_5 | 흑철 장궁 | `Same art style as before, now a black iron bow (dark blackened metal, heavier and more menacing).` |
+| bow_6 | 용린 장궁 | `Same art style as before, now a dragon-scale bow (deep red scale texture, claw-shaped details).` |
+| bow_7 | 수정 장궁 | `Same art style as before, now a crystal bow (translucent pale blue crystal, faint glow).` |
+| bow_8 | 흑요석 장궁 | `Same art style as before, now an obsidian bow (glossy black volcanic glass with a dark blue sheen).` |
+| bow_9 | 월광 장궁 | `Same art style as before, now a moonlight bow (pale silver-blue, crescent moon motif, soft white glow).` |
+| bow_10 | 심연 장궁 | `Same art style as before, now an abyss bow (near-black with glowing teal cracks, ominous).` |
+
+### arrow (화살)
+
+효과(일반 · 관통 · 불)는 글자로 구분하고 그림은 티어마다 한 장입니다.
+
+| sprite id | 이름(참고) | 프롬프트 |
+|---|---|---|
+| arrow_1 | 나무 화살 | `Flat 2D pixel art game icon of a small bundle of three wooden arrows (simple arrowheads, feather fletching), simple fantasy RPG item icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, diagonal.` |
+| arrow_2 | 쇠 화살 | `Same art style as before, now a bundle of three iron-tipped arrows (iron arrowheads).` |
+| arrow_3 | 강철 화살 | `Same art style as before, now a bundle of three steel-tipped arrows (polished steel arrowheads).` |
+| arrow_4 | 은 화살 | `Same art style as before, now a bundle of three silver-tipped arrows (bright silver arrowheads with white fletching).` |
+| arrow_5 | 흑요석 화살 | `Same art style as before, now a bundle of three obsidian-tipped arrows (glossy black glass arrowheads with dark blue fletching).` |
+
+---
+
+## 1-4. 특수 화살 (T18_1, 17장, 붙임)
+
+T18_1에 들어온 특수 화살 여덟 종입니다 — 몬스터가 떨구고, 지역마다 티어가 있습니다(40종). **그림은 종류마다 한 장**이고
+티어는 이름(나무 · 쇠 · 강철 · 은 · 흑요석)으로 가릅니다 — 장비 한 장이 등급 다섯을 덮는 것과 같습니다.
+위 기본 화살(arrow_1~5)은 그대로 씁니다. 붙인 곳: `assets/images/items/arrow/` — 아이콘은 `itemIcons`, 날아가는 화살은 `arrowIcons`.
+
+**아이콘 (8장)** — 화살통 칸 · 화살 목록에 뜹니다. 1번은 완전한 프롬프트, 나머지는 같은 대화창에서 이어 붙입니다.
+
+| sprite id | 이름(참고) | 프롬프트 |
+|---|---|---|
+| arrow_pierce | 관통 화살 | `Flat 2D pixel art game icon of a small bundle of three long slim arrows with needle-like armor-piercing steel tips and pale cyan fletching, simple fantasy RPG item icon, solid magenta (#FF00FF) background, no gradient shading, clean silhouette, diagonal.` |
+| arrow_fire | 불화살 | `Same art style as before, now a bundle of three arrows whose heads are wrapped in cloth and burning with small orange flames.` |
+| arrow_bomb | 폭탄 화살 | `Same art style as before, now a bundle of three arrows each carrying a small round black bomb with a short lit fuse near the tip.` |
+| arrow_thin | 가는 화살 | `Same art style as before, now a bundle of five very thin short darts with tiny white fletching.` |
+| arrow_ice | 얼음 화살 | `Same art style as before, now a bundle of three arrows with pale blue crystal ice heads and frost on the shafts.` |
+| arrow_vamp | 흡혈 화살 | `Same art style as before, now a bundle of three dark red arrows with fang-shaped heads and crimson fletching.` |
+| arrow_shock | 번개 화살 | `Same art style as before, now a bundle of three arrows with bright yellow zigzag lightning-bolt heads crackling with small sparks.` |
+| arrow_heavy | 무거운 화살 | `Same art style as before, now a bundle of two short very thick heavy arrows with large blunt iron heads.` |
+
+**날아가는 화살 (9장)** — 전투 무대에서 아래에서 적에게 날아가는 그림입니다(연출 "나"). 설정의
+[화살 연출: 그림]을 누르면 이 그림으로 날고, 없는 것은 코드로 그린 선으로 납니다. **세로로 긴 그림**(화살촉이 위)입니다.
+
+| sprite id | 이름(참고) | 프롬프트 |
+|---|---|---|
+| fly_basic | 기본 | `Flat 2D pixel art game sprite of a single wooden arrow flying straight upward, arrowhead pointing up, feather fletching at the bottom, slight motion lines, simple fantasy RPG effect sprite, tall vertical composition, solid magenta (#FF00FF) background, no gradient shading, clean silhouette.` |
+| fly_pierce | 관통 | `Same art style as before, now a long slim arrow with a needle steel tip trailing a thin pale cyan light streak.` |
+| fly_fire | 불 | `Same art style as before, now a flaming arrow with orange fire trailing behind it.` |
+| fly_bomb | 폭탄 | `Same art style as before, now an arrow carrying a small round black bomb with a sparking fuse, trailing grey smoke.` |
+| fly_thin | 가는 | `Same art style as before, now three very thin short darts flying side by side.` |
+| fly_ice | 얼음 | `Same art style as before, now an arrow with a pale blue ice crystal head trailing frost sparkles.` |
+| fly_vamp | 흡혈 | `Same art style as before, now a dark red arrow with a fang head trailing crimson mist.` |
+| fly_shock | 번개 | `Same art style as before, now an arrow with a yellow lightning-bolt head surrounded by small electric sparks.` |
+| fly_heavy | 무거운 | `Same art style as before, now a short very thick heavy arrow with a large blunt iron head and strong motion lines.` |
+
+---
+
+## 1-5. 물약 · 소재 (41장, 아직 안 붙임)
+
+물약 6종과 사냥터 소재 35종(지역 5 × 사냥터 7)입니다. 지금은 상점 · 전투 · 소재 고르기 창에 글자로만 보입니다.
+원본은 `img/potion/<sprite id>.png` · `img/material/<sprite id>.png`로 두면 됩니다(sprite id = 게임 안 id).
+장비와 같은 그림체라 **1번은 완전한 프롬프트**, 나머지는 같은 대화창에서 이어 붙입니다.
+
+**물약 (6장)** — 병이 클수록 · 화려할수록 좋은 물약. 붉은 물약 다섯에 엘릭서만 금빛입니다.
+
+| sprite id | 이름 | 프롬프트 |
+|---|---|---|
+| pot_small | 물약(소) | `Flat 2D pixel art game icon of a small round glass potion vial filled with bright red liquid, a simple cork stopper, simple fantasy RPG item icon, solid magenta (#FF00FF) background, no pink or purple on the item, no gradient shading, clean silhouette, centered, no text.` |
+| pot_mid | 물약(중) | `Same art style as before, now a medium round-bottom glass flask of red potion with a cork and a twine tie around the neck.` |
+| pot_large | 물약(대) | `Same art style as before, now a large round glass flask of deep red potion with a cork and a small paper label.` |
+| pot_super | 물약(특) | `Same art style as before, now a tall faceted crystal bottle of glowing red potion with a silver cap.` |
+| pot_best | 물약(최상급) | `Same art style as before, now an ornate gold-trimmed crystal bottle of shining crimson potion with a small ruby on the stopper.` |
+| elixir | 엘릭서 | `Same art style as before, now an ornate golden bottle of glowing golden elixir with soft light rays around it.` |
+
+**소재 (35장)** — 그 사냥터에서만 나는 물건입니다. 이름이 곧 그림이라 이름을 그대로 옮겼습니다.
+1번(mat_r1_meadow)만 완전한 프롬프트입니다. 지역이 바뀌어도 같은 대화창에서 이어 붙이면 됩니다.
+
+| sprite id | 이름 (사냥터) | 프롬프트 |
+|---|---|---|
+| mat_r1_meadow | 들판의 마른 풀 (시작의 들판) | `Flat 2D pixel art game icon of a small bundle of dry golden meadow grass tied with twine, simple fantasy RPG crafting material icon, solid magenta (#FF00FF) background, no pink or purple on the item, no gradient shading, clean silhouette, centered, no text.` |
+| mat_r1_windmill | 멈추지 않는 바람개비 (바람개비 언덕) | `Same art style as before, now a small wooden pinwheel with four cream cloth blades and faint motion lines as if still spinning.` |
+| mat_r1_mushroom | 마르지 않는 홀씨 (버섯 골짜기) | `Same art style as before, now a moist brown mushroom spore pod releasing a few glowing pale green spores.` |
+| mat_r1_bramble | 부러지지 않는 가시 (가시덤불 길) | `Same art style as before, now a single long dark green thorn, hard and shiny like metal.` |
+| mat_r1_goblin | 고블린이 훔친 천 조각 (고블린 굴) | `Same art style as before, now a torn patch of red-and-yellow striped cloth with crude stitches.` |
+| mat_r1_tower | 금이 간 초석 (무너진 돌탑) | `Same art style as before, now a square grey foundation stone with a deep crack and a little moss.` |
+| mat_r1_camp | 빼앗긴 인장 (도적 야영지) | `Same art style as before, now a bronze seal stamp with a wooden handle and an engraved crest on the bottom.` |
+| mat_r2_cave | 빛나는 동굴 이끼 (이끼 낀 동굴) | `Same art style as before, now a clump of glowing teal-green cave moss on a small dark rock.` |
+| mat_r2_oldwood | 말을 거는 나뭇잎 (속삭이는 고목숲) | `Same art style as before, now a large green leaf whose veins form a faint sleepy face.` |
+| mat_r2_web | 끊어지지 않는 거미줄 (거미줄 수풀) | `Same art style as before, now a coil of shiny silver-white spider silk wound around a small twig.` |
+| mat_r2_grave | 삭지 않은 수의 조각 (잊혀진 무덤가) | `Same art style as before, now a neatly folded piece of pale grey burial cloth with a faded stitched pattern.` |
+| mat_r2_logging | 타다 만 장작 (버려진 벌목지) | `Same art style as before, now a half-burnt log with a charred black end and a few faint orange embers.` |
+| mat_r2_quarry | 결이 고운 석재 (무너진 채석장) | `Same art style as before, now a smooth rectangular block of fine-grained grey stone with neat thin layers.` |
+| mat_r2_marsh | 걷히지 않는 늪안개 (안개 낀 늪) | `Same art style as before, now a small corked glass jar holding swirling greenish-grey fog.` |
+| mat_r3_oasis | 마지막 한 모금의 물 (말라붙은 오아시스) | `Same art style as before, now a small worn leather waterskin with one clear blue drop of water at the spout.` |
+| mat_r3_cliff | 절벽의 부서진 뼈대 (무너진 절벽길) | `Same art style as before, now a broken sun-bleached rib bone with a jagged end.` |
+| mat_r3_riverbed | 마른 강바닥의 흔적 (마른 강바닥) | `Same art style as before, now a cracked slab of dried riverbed mud with a wavy ripple pattern.` |
+| mat_r3_fossil | 돌이 된 송곳니 (화석 골짜기) | `Same art style as before, now a large fossilized fang turned to tan stone.` |
+| mat_r3_saltflat | 굳은 소금 결정 (소금 평원) | `Same art style as before, now a cluster of white cubic salt crystals.` |
+| mat_r3_ridge | 능선의 마른 깃털 (바람 능선) | `Same art style as before, now a dry tan-and-brown hawk feather.` |
+| mat_r3_outpost | 초소의 녹슨 열쇠 (버려진 초소) | `Same art style as before, now a large old rusty iron key.` |
+| mat_r4_crater | 식지 않는 분화구 재 (분화구 가장자리) | `Same art style as before, now a small pile of grey ash with glowing orange embers inside.` |
+| mat_r4_hotspring | 식지 않는 온천석 (유황 온천) | `Same art style as before, now a smooth round yellowish stone giving off pale yellow sulfur steam.` |
+| mat_r4_ashfield | 들판에 쌓인 화산재 (재의 들판) | `Same art style as before, now a small cloth pouch spilling dark grey volcanic ash.` |
+| mat_r4_lavatube | 식은 용암 덩이 (용암 동굴) | `Same art style as before, now a lump of black cooled lava rock with faint glowing red cracks.` |
+| mat_r4_hideout | 피로 맺은 서약서 (검은 손 은신처) | `Same art style as before, now a rolled parchment scroll sealed with dark red wax and a black handprint.` |
+| mat_r4_obsidian | 깨진 흑요석 조각 (흑요석 비탈) | `Same art style as before, now a sharp broken shard of glossy black obsidian with a dark blue sheen.` |
+| mat_r4_forge | 꺼지지 않은 불씨 (버려진 대장간) | `Same art style as before, now a small glowing orange ember held in a tiny iron cage.` |
+| mat_r5_abyss | 심연에서 건진 조각 (심연 입구) | `Same art style as before, now a jagged black fragment with glowing teal cracks.` |
+| mat_r5_temple | 물에 불은 기도서 (가라앉은 신전) | `Same art style as before, now a swollen waterlogged old prayer book with a dripping blue cover.` |
+| mat_r5_frost | 녹지 않는 서리 (서리 회랑) | `Same art style as before, now a jagged chunk of pale blue ice covered in frost crystals.` |
+| mat_r5_hall | 대전의 깨진 왕관 (무너진 대전) | `Same art style as before, now a broken gold crown with one piece missing and a single blue gem.` |
+| mat_r5_root | 세계수의 잔뿌리 (세계수 뿌리) | `Same art style as before, now a small tangle of fine roots glowing with golden-green light.` |
+| mat_r5_rift | 공허의 파편 (공허의 균열) | `Same art style as before, now a floating shard of dark void glass edged with teal light.` |
+| mat_r5_throne | 폐왕의 부러진 홀 (폐왕의 옥좌) | `Same art style as before, now the broken top half of a royal scepter with a dull blue orb.` |
 
 ---
 
@@ -801,10 +997,10 @@ T17_5부터 보스는 **그림을 따로** 씁니다(`boss_r{지역}`). 전에�
 sprite id가 겹쳐 그림도 같이 쓸 뻔했습니다. 지역 마지막 관문이라 일반 몬스터보다 크고 위압적으로.
 
 **T17_7부터 보스전 무대에 뜹니다.** 원본을 `img/boss/boss_N.png`(2048px, 투명 배경)로 넣고
-`node tools/crop-sprites.mjs boss` → `assets/images/monsters/boss_rN.png`(512px), 그다음 `src/ui/monsterIcons.ts`에 한 줄.
+`node tools/crop-sprites.mjs boss` → `assets/images/monsters/boss/boss_rN.png`(512px), 그다음 `src/ui/monsterIcons.ts`에 한 줄.
 무대는 **1인칭**이라(T17_7 검수 4차) 보스가 한가운데서 **화면(나)을 봅니다** — 정면이나 정면 3/4 그림이 맞습니다.
 (칼 버전 무대 BossStageSword는 보스가 왼쪽에서 오른쪽을 봤습니다.)
-지금 붙은 것: boss_r1. 나머지는 그림이 올 때까지 이름 상자로 보입니다.
+다섯 다 붙였습니다. `img/boss/boss_2_1.png`(악어 옆모습)은 여분이라 `boss_r2_1.png`로 줄이기만 하고 안 붙였습니다.
 
 | sprite id | 파일명 | 이름 | 지역 | 원형 |
 |---|---|---|---|---|
@@ -848,7 +1044,7 @@ Same art style as before, now another boss: a colossal demon lord of the abyss, 
 
 ---
 
-## 3. 몬스터 — 2차 확장: 티어별 세부 이미지 (총 141개, 나중에)
+## 3. 몬스터 — 2차 확장: 티어별 세부 이미지 (총 141개, beast 13개 빼고 붙임)
 
 1차로 부족하면 여기서 추가. 파일명: `<sprite>.png`
 종족마다 **새 대화**에서 1번부터 붙여 넣으세요 — 1번만 완결된 문장입니다.
