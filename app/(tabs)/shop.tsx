@@ -65,6 +65,7 @@ function Row({
   onPress,
   tone,
   icon,
+  sprite,
 }: {
   /** 비우면 줄에 이름을 안 쓴다 — 격자 창 안에서는 위의 ItemInfo가 이미 보여준다 */
   title?: string;
@@ -73,13 +74,15 @@ function Row({
   disabled?: boolean;
   onPress: () => void;
   tone?: 'normal' | 'gold';
-  /** 장비면 그림을 앞에 붙인다 (T17_6). 물약·여관 줄은 그림이 없다 */
+  /** 장비면 그림을 앞에 붙인다 (T17_6). 여관 줄은 그림이 없다 */
   icon?: Equipment;
+  /** 등급 없는 그림 — 물약 */
+  sprite?: string;
 }) {
   return (
     <View style={styles.row}>
       <View style={styles.itemRow}>
-        {icon && <ListIcon def={icon} />}
+        {(icon || sprite) && <ListIcon def={icon} sprite={sprite} />}
         <View style={styles.name}>
           {title ? <Text>{title}</Text> : null}
           <Text size="sm" dim>
@@ -448,6 +451,7 @@ export default function Shop() {
               {shopConsumables(region.id).map((c) => (
                 <Row
                   key={c.id}
+                  sprite={c.id}
                   title={`${c.name} × ${save.consumables[c.id] ?? 0}`}
                   detail={`${c.heal > 0 ? `HP +${c.heal}` : `HP ${c.healRatio * 100}% 회복`} · ${c.price}G`}
                   action="구매"

@@ -3,8 +3,12 @@ import { Pressable, StyleSheet, View } from 'react-native';
 
 import { regionById } from '@/content';
 import { Button } from '@/ui/Button';
+import { ItemIcon } from '@/ui/ItemCell';
 import { Text } from '@/ui/Text';
 import { border, colors, space } from '@/ui/theme';
+
+/** 소재 그림 크기 — 글자 한 줄 높이쯤 */
+const ICON = 24;
 
 /**
  * 쓸 소재를 고른다 (T17_7 검수 4차) — 강화 +6~ · 반지 교환·올리기 · 소재 버프가 같이 쓴다.
@@ -58,6 +62,7 @@ export function MaterialPicker({
                 onPress={() => (n > 0 ? remove(f.id) : canAdd(f.id) && add(f.id))}
                 style={[styles.chip, n > 0 && styles.on]}
               >
+                <ItemIcon sprite={f.material.id} size={ICON} />
                 <Text size="sm" color={n > 0 ? colors.gold : undefined} dim={have === 0}>
                   {f.material.name} {n > 0 ? `${n}/` : ''}
                   {have}
@@ -72,9 +77,12 @@ export function MaterialPicker({
           const n = taken(f.id);
           return (
             <View key={f.id} style={styles.row}>
-              <Text size="sm" color={n > 0 ? colors.gold : undefined} dim={have === 0}>
-                {f.material.name} {n}/{have}
-              </Text>
+              <View style={styles.item}>
+                <ItemIcon sprite={f.material.id} size={ICON} />
+                <Text size="sm" color={n > 0 ? colors.gold : undefined} dim={have === 0}>
+                  {f.material.name} {n}/{have}
+                </Text>
+              </View>
               <View style={styles.steps}>
                 <Button label="−" disabled={n === 0} onPress={() => remove(f.id)} />
                 <Button label="+" disabled={!canAdd(f.id)} onPress={() => add(f.id)} />
@@ -100,6 +108,9 @@ const styles = StyleSheet.create({
   box: { gap: space.xs },
   wrap: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
   chip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.xs,
     borderWidth: border,
     borderColor: colors.edge,
     paddingHorizontal: space.sm,
@@ -107,5 +118,6 @@ const styles = StyleSheet.create({
   },
   on: { borderColor: colors.gold, backgroundColor: colors.panel },
   row: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  item: { flexDirection: 'row', alignItems: 'center', gap: space.xs, flexShrink: 1 },
   steps: { flexDirection: 'row', gap: space.xs },
 });

@@ -37,17 +37,20 @@ export function ItemIcon({
 export function ListIcon({
   def,
   ring,
+  sprite,
   size = 36,
 }: {
   def?: Equipment;
   ring?: Ring;
+  /** 등급이 없는 것(물약 · 소재) — 테두리는 기본 색 */
+  sprite?: string;
   size?: number;
 }) {
   const tone = def?.rarity ?? ring?.rarity;
   const box = { width: size + border * 2, height: size + border * 2 };
   return (
     <View style={[styles.listIcon, box, { borderColor: tone ? rarity[tone] : colors.edge }]}>
-      <ItemIcon def={def} sprite={ring && `ring_${ring.kind}`} size={size} />
+      <ItemIcon def={def} sprite={sprite ?? (ring && `ring_${ring.kind}`)} size={size} />
     </View>
   );
 }

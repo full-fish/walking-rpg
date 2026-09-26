@@ -7,6 +7,7 @@ import { dexStats } from '@/game/dex';
 import {
   expToNext,
   GEAR_SLOTS,
+  HAND_LINES,
   handPartner,
   STAT_PER_POINT,
   type GearSlot,
@@ -64,6 +65,8 @@ import { colors, rarity, space } from '@/ui/theme';
 
 const TABS = ['캐릭터', '장비', '가방', '도감'] as const;
 type Tab = (typeof TABS)[number];
+/** 가방 [무기] 아래 줄 — 방패는 따로 [방패] 탭이다 */
+const WEAPON_LINES = HAND_LINES.filter((l) => l !== 'shield');
 
 /** 확률 계수를 "%p"로. 0.0025 → "0.25%p" */
 const pp = (v: number) => `${+(v * 100).toFixed(2)}%p`;
@@ -132,6 +135,8 @@ export default function Character() {
   const [grid, setGrid] = useState(true);
   /** 부위 · 전체(null) · 소재 (T17_7 검수 4차 — 가방에서 소재를 본다) */
   const [filter, setFilter] = useState<GearSlot | '소재' | null>(null);
+  /** [무기] 안에서 줄 하나만 — 장검 · 소검 · 단검 · 대검 · 활. null이면 무기 전부 */
+  const [line, setLine] = useState<HandLine | null>(null);
   /** 빈 칸을 누르면 그 부위에 낄 수 있는 것들을 편다 (T17_2) */
   const [picking, setPicking] = useState<GearSlot | null>(null);
   /** 빈 반지 칸을 누르면 안 낀 반지들을 편다 (T17_7) */
@@ -174,7 +179,11 @@ export default function Character() {
   const unworn = bagItems(save);
   /** 차 있으면 못 벗는다 — 벗는 순간 한 칸이 필요해서다 (T17_3) */
   const full = bagFull(save);
-  const bag = unworn.filter((i) => filter === null || itemDef(i).slot === filter);
+  const bag = unworn.filter(
+    (i) =>
+      (filter === null || itemDef(i).slot === filter) &&
+      (filter !== 'weapon' || line === null || itemDef(i).line === line),
+  );
 
   /**
    * 손 칸이 보여 줄 것 (T18 확인) — 낀 게 있으면 그것. 비었으면 다른 손이 정한다 — 두 손 무기면 같은 무기를 흐리게,
@@ -678,6 +687,24 @@ export default function Character() {
               />
             </View>
 
+            {filter === 'weapon' && (
+              <View style={styles.tabs}>
+                <Button
+                  label="무기 전부"
+                  tone={line === null ? 'gold' : 'normal'}
+                  onPress={() => setLine(null)}
+                />
+                {WEAPON_LINES.map((l) => (
+                  <Button
+                    key={l}
+                    label={GEAR_LINE_LABELS[l]}
+                    tone={line === l ? 'gold' : 'normal'}
+                    onPress={() => setLine(l)}
+                  />
+                ))}
+              </View>
+            )}
+
             {/* 소재 (T17_7 검수 4차) — 지역마다 사냥터 일곱 곳의 소재와 가진 수. 칸은 안 쓴다 */}
             {filter === '소재' ? (
               REGIONS.map((region) => (
@@ -687,9 +714,12 @@ export default function Character() {
                 >
                   {region.fields.map((f) => (
                     <View key={f.id} style={styles.row}>
-                      <Text size="sm" dim={!save.materials[f.id]}>
-                        {f.material.name}
-                      </Text>
+                      <View style={styles.itemRow}>
+                        <ListIcon sprite={f.material.id} size={28} />
+                        <Text size="sm" dim={!save.materials[f.id]}>
+                          {f.material.name}
+                        </Text>
+                      </View>
                       <Text size="sm" dim={!save.materials[f.id]}>
                         {f.name} · {save.materials[f.id] ?? 0}개
                       </Text>

@@ -11,7 +11,7 @@ import { buffMult, statsOf } from '@/game/progression';
 import { trades, usePlayer } from '@/stores/usePlayer';
 import { Bar } from '@/ui/Bar';
 import { Button } from '@/ui/Button';
-import { Popup } from '@/ui/ItemCell';
+import { ListIcon, Popup } from '@/ui/ItemCell';
 import { MaterialPicker } from '@/ui/MaterialPicker';
 import { Panel } from '@/ui/Panel';
 import { Text } from '@/ui/Text';
@@ -121,13 +121,16 @@ export default function Field() {
             const heal = potionHeal(save, id);
             return (
               <View key={id} style={styles.row}>
-                <View style={styles.name}>
-                  <Text>
-                    {def.name} × {n}
-                  </Text>
-                  <Text size="sm" dim>
-                    HP +{heal}
-                  </Text>
+                <View style={styles.item}>
+                  <ListIcon sprite={id} />
+                  <View style={styles.name}>
+                    <Text>
+                      {def.name} × {n}
+                    </Text>
+                    <Text size="sm" dim>
+                      HP +{heal}
+                    </Text>
+                  </View>
                 </View>
                 <Button
                   label="사용"
@@ -205,5 +208,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: space.sm,
   },
+  item: { flexDirection: 'row', alignItems: 'center', gap: space.sm, flexShrink: 1 },
   name: { gap: space.xs, flexShrink: 1 },
 });
