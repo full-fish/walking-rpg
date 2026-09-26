@@ -81,8 +81,10 @@ img/              그림 원본 2048px — git에 안 올린다
 
 ## 이미지 갤러리
 
+![전체 그림 모음](assets/images/gallery.png)
+
 종류를 누르면 접힙니다. 종류 고르기 · 칸 크기 조절은 **그림 모음 페이지**에서 합니다 —
-`open assets/images/gallery.html`로 브라우저에서 여세요(GitHub에서는 HTML이 소스로만 보입니다).
+[그림 모음 페이지 열기](https://full-fish.github.io/walking-rpg/assets/images/gallery.html)(GitHub Pages) 또는 `open assets/images/gallery.html`로 브라우저에서 여세요.
 
 <!-- gallery:start -->
 <details open><summary><b>장검</b> sword · 10</summary>
@@ -169,6 +171,18 @@ img/              그림 원본 2048px — git에 안 올린다
 
 </details>
 
+<details open><summary><b>물약</b> potion · 6</summary>
+
+<img src="assets/images/items/potion/elixir.png" width="56" title="elixir.png"> <img src="assets/images/items/potion/pot_best.png" width="56" title="pot_best.png"> <img src="assets/images/items/potion/pot_large.png" width="56" title="pot_large.png"> <img src="assets/images/items/potion/pot_mid.png" width="56" title="pot_mid.png"> <img src="assets/images/items/potion/pot_small.png" width="56" title="pot_small.png"> <img src="assets/images/items/potion/pot_super.png" width="56" title="pot_super.png">
+
+</details>
+
+<details open><summary><b>소재</b> material · 35</summary>
+
+<img src="assets/images/items/material/mat_r1_bramble.png" width="56" title="mat_r1_bramble.png"> <img src="assets/images/items/material/mat_r1_camp.png" width="56" title="mat_r1_camp.png"> <img src="assets/images/items/material/mat_r1_goblin.png" width="56" title="mat_r1_goblin.png"> <img src="assets/images/items/material/mat_r1_meadow.png" width="56" title="mat_r1_meadow.png"> <img src="assets/images/items/material/mat_r1_mushroom.png" width="56" title="mat_r1_mushroom.png"> <img src="assets/images/items/material/mat_r1_tower.png" width="56" title="mat_r1_tower.png"> <img src="assets/images/items/material/mat_r1_windmill.png" width="56" title="mat_r1_windmill.png"> <img src="assets/images/items/material/mat_r2_cave.png" width="56" title="mat_r2_cave.png"> <img src="assets/images/items/material/mat_r2_grave.png" width="56" title="mat_r2_grave.png"> <img src="assets/images/items/material/mat_r2_logging.png" width="56" title="mat_r2_logging.png"> <img src="assets/images/items/material/mat_r2_marsh.png" width="56" title="mat_r2_marsh.png"> <img src="assets/images/items/material/mat_r2_oldwood.png" width="56" title="mat_r2_oldwood.png"> <img src="assets/images/items/material/mat_r2_quarry.png" width="56" title="mat_r2_quarry.png"> <img src="assets/images/items/material/mat_r2_web.png" width="56" title="mat_r2_web.png"> <img src="assets/images/items/material/mat_r3_cliff.png" width="56" title="mat_r3_cliff.png"> <img src="assets/images/items/material/mat_r3_fossil.png" width="56" title="mat_r3_fossil.png"> <img src="assets/images/items/material/mat_r3_oasis.png" width="56" title="mat_r3_oasis.png"> <img src="assets/images/items/material/mat_r3_outpost.png" width="56" title="mat_r3_outpost.png"> <img src="assets/images/items/material/mat_r3_ridge.png" width="56" title="mat_r3_ridge.png"> <img src="assets/images/items/material/mat_r3_riverbed.png" width="56" title="mat_r3_riverbed.png"> <img src="assets/images/items/material/mat_r3_saltflat.png" width="56" title="mat_r3_saltflat.png"> <img src="assets/images/items/material/mat_r4_ashfield.png" width="56" title="mat_r4_ashfield.png"> <img src="assets/images/items/material/mat_r4_crater.png" width="56" title="mat_r4_crater.png"> <img src="assets/images/items/material/mat_r4_forge.png" width="56" title="mat_r4_forge.png"> <img src="assets/images/items/material/mat_r4_hideout.png" width="56" title="mat_r4_hideout.png"> <img src="assets/images/items/material/mat_r4_hotspring.png" width="56" title="mat_r4_hotspring.png"> <img src="assets/images/items/material/mat_r4_lavatube.png" width="56" title="mat_r4_lavatube.png"> <img src="assets/images/items/material/mat_r4_obsidian.png" width="56" title="mat_r4_obsidian.png"> <img src="assets/images/items/material/mat_r5_abyss.png" width="56" title="mat_r5_abyss.png"> <img src="assets/images/items/material/mat_r5_frost.png" width="56" title="mat_r5_frost.png"> <img src="assets/images/items/material/mat_r5_hall.png" width="56" title="mat_r5_hall.png"> <img src="assets/images/items/material/mat_r5_rift.png" width="56" title="mat_r5_rift.png"> <img src="assets/images/items/material/mat_r5_root.png" width="56" title="mat_r5_root.png"> <img src="assets/images/items/material/mat_r5_temple.png" width="56" title="mat_r5_temple.png"> <img src="assets/images/items/material/mat_r5_throne.png" width="56" title="mat_r5_throne.png">
+
+</details>
+
 <details open><summary><b>보스</b> boss · 6</summary>
 
 <img src="assets/images/monsters/boss/boss_r1.png" width="56" title="boss_r1.png"> <img src="assets/images/monsters/boss/boss_r2_1.png" width="56" title="boss_r2_1.png"> <img src="assets/images/monsters/boss/boss_r2.png" width="56" title="boss_r2.png"> <img src="assets/images/monsters/boss/boss_r3.png" width="56" title="boss_r3.png"> <img src="assets/images/monsters/boss/boss_r4.png" width="56" title="boss_r4.png"> <img src="assets/images/monsters/boss/boss_r5.png" width="56" title="boss_r5.png">
@@ -184,6 +198,12 @@ img/              그림 원본 2048px — git에 안 올린다
 <details open><summary><b>인간형</b> bandit · 9</summary>
 
 <img src="assets/images/monsters/bandit/bandit_4.png" width="56" title="bandit_4.png"> <img src="assets/images/monsters/bandit/bandit_5.png" width="56" title="bandit_5.png"> <img src="assets/images/monsters/bandit/bandit_8.png" width="56" title="bandit_8.png"> <img src="assets/images/monsters/bandit/bandit_9.png" width="56" title="bandit_9.png"> <img src="assets/images/monsters/bandit/bandit_12.png" width="56" title="bandit_12.png"> <img src="assets/images/monsters/bandit/bandit_14.png" width="56" title="bandit_14.png"> <img src="assets/images/monsters/bandit/bandit_16.png" width="56" title="bandit_16.png"> <img src="assets/images/monsters/bandit/bandit_20.png" width="56" title="bandit_20.png"> <img src="assets/images/monsters/bandit/bandit_25.png" width="56" title="bandit_25.png">
+
+</details>
+
+<details open><summary><b>야수형</b> beast · 13</summary>
+
+<img src="assets/images/monsters/beast/beast_1.png" width="56" title="beast_1.png"> <img src="assets/images/monsters/beast/beast_2.png" width="56" title="beast_2.png"> <img src="assets/images/monsters/beast/beast_3.png" width="56" title="beast_3.png"> <img src="assets/images/monsters/beast/beast_4.png" width="56" title="beast_4.png"> <img src="assets/images/monsters/beast/beast_5.png" width="56" title="beast_5.png"> <img src="assets/images/monsters/beast/beast_6.png" width="56" title="beast_6.png"> <img src="assets/images/monsters/beast/beast_7.png" width="56" title="beast_7.png"> <img src="assets/images/monsters/beast/beast_8.png" width="56" title="beast_8.png"> <img src="assets/images/monsters/beast/beast_12.png" width="56" title="beast_12.png"> <img src="assets/images/monsters/beast/beast_13.png" width="56" title="beast_13.png"> <img src="assets/images/monsters/beast/beast_15.png" width="56" title="beast_15.png"> <img src="assets/images/monsters/beast/beast_16.png" width="56" title="beast_16.png"> <img src="assets/images/monsters/beast/beast_21.png" width="56" title="beast_21.png">
 
 </details>
 
